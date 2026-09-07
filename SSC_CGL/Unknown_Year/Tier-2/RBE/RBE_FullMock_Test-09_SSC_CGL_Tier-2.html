@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 9</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 9</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> After selling 96 articles, a man earns a profit of selling price of 16 articles. Find profit %</p><p><br/> </p>",
+      "option1": "<p> 20%</p>",
+      "option2": "<p> 12.5%</p>",
+      "option3": "<p> 10%</p>",
+      "option4": "<p> 11.11%</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_bbc821bd9e01bc45.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p>A’ can do a certain work in 60 days. ‘B’ is 25% more efficient than ‘A’, while ‘C’ is 20% more efficient than ‘B’. ‘B’ alone completed 37.5% of work. ‘A’ and ‘C’ together completed the remaining work. The entire work got completed in (days):</p><p><br/> </p>",
+      "option1": "<p> 35</p>",
+      "option2": "<p> 33</p>",
+      "option3": "<p> 32</p>",
+      "option4": "<p> 30</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_5915e37bc48f6948.png"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> A and B can complete a piece of work in 12.5 days and 25 days respectively. If A works full time while B works half of the time, In how many days the entire work will be completed?</p><p><br/> </p>",
+      "option1": "<p> 10</p>",
+      "option2": "<p> 5</p>",
+      "option3": "<p> 12</p>",
+      "option4": "<p> 15</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_e7e149004dcca1a2.png"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> In an office, 11/17 of the total number of employees are males and the rest are females. 7/11 of the number of males are non-technical workers while 1/3 of the number of females are non-technical workers. What fraction of the total number of employees are technical workers?</p><p><br/> </p>",
+      "option1": "<p> 3/17</p>",
+      "option2": "<p> 8/17 </p>",
+      "option3": "<p> 4/17</p>",
+      "option4": "<p> 9/17</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_884ca7c485ef70df.gif"
+    },
+    {
+      "sr_no": 5,
+      "question": "https://appxcontent.kaxa.in/paperimages/1727349126_1727349126272191_thump.png",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_c0c753e0825c623a.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_79095c5475da9ea7.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_1b84721da01593da.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_1359a313bcd6c6c4.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_72a7af455e7b7ecb.gif"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> Three partners X, Y and Z started their business by investing Rs 40,000, Rs 38,000 and Rs 30,000, respectively. After 6 months, X and Z made additional investments of Rs 20,000 and Rs 15,000 respectively, whereas Y withdrew Rs 8,000. Find the share of Y in the total profit of Rs 38,880 made at the end of the year.</p><p><br/> </p>",
+      "option1": "<p> 10950</p>",
+      "option2": "<p> 10200</p>",
+      "option3": "<p> 9800</p>",
+      "option4": "<p> 10880</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_49a8a924480dbc5d.gif"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> The ratio of the incomes of A and B is 6:5, whereas the ratio of their expenditure is 4:5 respectively. If A and B save Rs 4,000 and 1,000 respectively then what is the difference between their expenditures?</p><p><br/> </p>",
+      "option1": "<p> 1200 </p>",
+      "option2": "<p> 1400 </p>",
+      "option3": "<p> 1000 </p>",
+      "option4": "<p> 800</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_acaf712db3777321.jpg"
+    },
+    {
+      "sr_no": 8,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_3f52ec2dc0d2fb4.gif",
+      "option1": "<p> 1/375 </p>",
+      "option2": "<p> 1/250 </p>",
+      "option3": "<p> 1/275 </p>",
+      "option4": "<p> 1/350</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_1dcbfd6466e70d79.jpg"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> On selling an article for Rs.525, the gain is 50% more than the amount of loss incurred on selling it for Rs.480. If the article is sold for Rs.500, then what is the gain/loss percent </p><p><br/> </p>",
+      "option1": "<p> Loss 0.3%</p>",
+      "option2": "<p> Loss 0.4%</p>",
+      "option3": "<p> Profit 0.4%</p>",
+      "option4": "<p> Profit 0.3%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_4098bb668c8dcecb.png"
+    },
+    {
+      "sr_no": 10,
+      "question": "<p> A sum of Rs x amounts to Rs 10927.27 in 1 year at 9% p.a., when the interest is compounded 4-monthly. The value of x is ?</p><p><br/> </p>",
+      "option1": "<p> Rs. 9000 </p>",
+      "option2": "<p> Rs. 10000 </p>",
+      "option3": "<p> Rs. 9500 </p>",
+      "option4": "<p> Rs. 10100</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_9d2eb1f6dd694a4.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p> A shopkeeper bought 1331 quintals of wheat. 30% of it was sold at 20% loss. At what percent gain should he sell the rest to gain 29% on the whole transaction?</p><p><br/> </p>",
+      "option1": "<p> 81</p>",
+      "option2": "<p> 56</p>",
+      "option3": "<p> 50</p>",
+      "option4": "<p> 49</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_1c6f922c3c44cb1.png"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p> Two vessels A and B, each with the capacity of 8 litres, are full of solutions of acid and water. The ratio of acid and water in Vessel A is 3 : 1 and that in case of Vessel B is 5 : 3. Two litres of solution are taken out from B and added to A. After mixing thoroughly, 2 litres of solution are taken out from A and added to B. What is the ratio of acid and water in the final solution in B?</p><p><br/> </p>",
+      "option1": "<p> 11 : 8</p>",
+      "option2": "<p> 13 : 7</p>",
+      "option3": "<p> 7 : 3</p>",
+      "option4": "<p> 9 : 4</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_4060f273d0ca07f3.gif"
+    },
+    {
+      "sr_no": 13,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_77d3377b523c4f11.png",
+      "option1": "<p> 15.5%</p>",
+      "option2": "<p> 18.5%</p>",
+      "option3": "<p> 16%</p>",
+      "option4": "<p> 19%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_d37e9813cf224e14.png"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> Remi earns a profit of 15% on selling an article at a certain price. If she sells the articles for ₹24 more, she will gain 19%. What is the original cost price of 2 such articles?</p><p><br/> </p>",
+      "option1": "<p> ₹1200</p>",
+      "option2": "<p> ₹900</p>",
+      "option3": "<p> ₹1050</p>",
+      "option4": "<p> ₹600</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_bc5ded3810b3109f.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>If the average of the three digit numbers 335, 2x5, x35, 63x and 406 is 411, then what will be the average of x-1, x-3, x+3 and x+5?</p>",
+      "option1": "<p>6</p>",
+      "option2": "<p>4</p>",
+      "option3": "<p>3</p>",
+      "option4": "<p>5</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_12549507aee816fb.gif",
+      "option1": "<p> 2.5</p>",
+      "option2": "<p> 3.5</p>",
+      "option3": "<p> 3</p>",
+      "option4": "<p> 4</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_ee0e4f6a28dea269.png"
+    },
+    {
+      "sr_no": 17,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_65129b8454d17d9f.gif",
+      "option1": "<p> 42°</p>",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_65129b8454d17d9f.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_65129b8454d17d9f.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_65129b8454d17d9f.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_2029ff0ce9620dc8.png"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> A person invested a sum of 10,500 at x% per annum at simple interest and a sum of 13,500 at (x+2.75)% p.a. at simple interest. If the total interest earned on both the investment for 3 years is 4,353.75, then the rate of interest on the first investment is:</p><p><br/> </p>",
+      "option1": "<p> 4.5</p>",
+      "option2": "<p> 5</p>",
+      "option3": "<p> 5.5</p>",
+      "option4": "<p> 6</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_4a14dec56a0b1274.gif"
+    },
+    {
+      "sr_no": 19,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_ae54961253e90c0e.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_142467fb7305058e.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_978f5be3d11dc211.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_8276cddbf184d83b.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_a4acff9f57e5b2ad.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_ab2f09d48b947f89.png"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p> A car travels for 40 minutes at a speed of 40 km/h, for another 50 minutes at a speed of 45 km/h for next 90 minutes at a speed of 60 km/hr. What is the average speed (in km/h) of the car for the entire journey?</p><p><br/> </p>",
+      "option1": "<p> 49 ¼</p>",
+      "option2": "<p> 50 ½</p>",
+      "option3": "<p> 51 7/18</p>",
+      "option4": "<p> 50 5/18</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_b8ba73a33ac95e8c.png"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> What is the difference between the compound interest (in ₹) compounded yearly and compounded half yearly for 18 months at 20% per annum on a sum of ₹50,000?</p><p><br/> </p>",
+      "option1": "<p> 550</p>",
+      "option2": "<p> 500</p>",
+      "option3": "<p> 625</p>",
+      "option4": "<p> 490</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_b485d61bdf871e90.png"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> Radha bought a fridge and a washing machine together for ₹30400. She sold the fridge at a profit of 28 1/3% and the washing machine at a profit of 25%. The selling price of both the articles was equal. The cost price of the washing machine (in ₹) is:</p><p><br/> </p>",
+      "option1": "<p> 15000</p>",
+      "option2": "<p> 15400</p>",
+      "option3": "<p> 14500</p>",
+      "option4": "<p> 20000</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_d18eb49d40bd1599.png"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p> What is the product of the average of first 12 positive odd numbers and the average of first 24 positive even numbers?</p><p><br/> </p>",
+      "option1": "<p> 3000</p>",
+      "option2": "<p> 1500</p>",
+      "option3": "<p> 150</p>",
+      "option4": "<p> 300</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_90db08108afcbe59.gif"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p> Fresh grapes contain 75% water and dry grapes contain 23% water. How many Kg of dry grapes can be obtained by 2310 kg of fresh grapes?</p><p><br/> </p>",
+      "option1": "<p> 500 Kg </p>",
+      "option2": "<p> 600 Kg </p>",
+      "option3": "<p> 800 Kg </p>",
+      "option4": "<p> 750 Kg</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_d85784bd92e01453.jpg"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> X varies directly as √Y, When Y = 20.25, X=18. When X =7.2, then Y=?</p><p><br/> </p>",
+      "option1": "<p> 4.84 </p>",
+      "option2": "<p> 2.56 </p>",
+      "option3": "<p> 1.96 </p>",
+      "option4": "<p> 3.24</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_b4c99fe98e040fed.jpg"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> Two dice are thrown simultaneously. What is the probability of getting two numbers whose product is even?</p><p><br/> </p>",
+      "option1": "<p> 1/2</p>",
+      "option2": "<p> 3/4</p>",
+      "option3": "<p> 3/8</p>",
+      "option4": "<p> 5/16</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_e051df7bf7f5d070.gif"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> For a sample data, mean = 75 and median = 52. For this distribution, the mode is:</p><p><br/> </p>",
+      "option1": "<p> 52</p>",
+      "option2": "<p> 36</p>",
+      "option3": "<p> 48</p>",
+      "option4": "<p> 6</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_fcd9720b74f88e71.png"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690282581192_html_10f97dbec5b0ae1f.gif",
+      "option1": "<p>666</p>",
+      "option2": "<p>600</p>",
+      "option3": "<p>596</p>",
+      "option4": "<p>660</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_327f08f76f62d5a8.png"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> Find the triplicate ratio of 9:7?</p><p><br/> </p>",
+      "option1": "<p> 729:343 </p>",
+      "option2": "<p> 27:21 </p>",
+      "option3": "<p> 81:49</p>",
+      "option4": "<p> 18:14</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_cd91ff929679458b.jpg"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> A boat goes 35 km upstream in 7 hours and downstream in 5 hours. How much time (in hours) will this boat take to cover 24 km in still water?</p><p><br/> </p>",
+      "option1": "<p> 1</p>",
+      "option2": "<p> 2</p>",
+      "option3": "<p> 3</p>",
+      "option4": "<p> 4</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690281767917_html_a0fe8eeef4b2a298.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Select the option that expresses the given sentence in passive voice. </p><p> We can play cricket in the playground. </p>",
+      "option1": "<p> Cricket in the playground can be played by you.</p>",
+      "option2": "<p> Cricket can be played in the playground by us.</p>",
+      "option3": "<p> Cricket could be played in the playground by us.</p>",
+      "option4": "<p> We can played cricket being in the playground.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Active Voice to Passive Voice Transformation: </b> </p><p> <b>Sub + can/may + v1 + Obj ------- Obj + can/may + be + v3 + by + sub. </b> </p><p> The correct passive voice of the given sentence is: <i><b>Cricket can be played in the playground by us. </b></i> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Are they receiving the chief guest at the airport? </p><p><br/> </p>",
+      "option1": "<p> Was the chief guest being received at the airport? </p>",
+      "option2": "<p> is the chief guest being received at the airport? </p>",
+      "option3": "<p> Will they be received by the chief guest at the airport?</p>",
+      "option4": "<p> Will the chief gust be received at the airport?</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Active Voice to Passive Voice Transformation: </b> </p><p> <b>Sub + is/am/are + v1 + ing + Obj ----- Obj + is/am/are + being + v3 + by + Sub</b>. </p><p> Thus, the correct passive voice of the given sentence is: <i><b>Is the chief guest being received at the airport? </b></i> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> The following sentence has been divided into parts. One of them may contain an error. Select the part that contains the error from the given options. If you don’t find any error, mark ‘No error’ as your answer.</p><p> Unless/ you will study hard/ you cannot crack CGL exam. </p><p><br/> </p>",
+      "option1": "<p> Unless</p>",
+      "option2": "<p> you will study hard</p>",
+      "option3": "<p> No error</p>",
+      "option4": "<p> you cannot crack CGL exam</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>The given sentence is grammatically incorrect because will/shall/would do not come with ‘unless’/ ‘if’/ ‘until’/ ‘provided’/ ‘before’/ ‘after’/ ‘in case’/ and ‘as soon as’. </b> </p><p>The correct sentence is: <i><b>Unless you study hard you cannot crack CGL exam.</b></i></p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the most appropriate ANTONYM of the underlined word.</p><p> The internet has brought about <u>enormous</u> changes in the way we communicate and access information.</p>",
+      "option1": "<p> Gigantic</p>",
+      "option2": "<p> Tiny</p>",
+      "option3": "<p> Immense</p>",
+      "option4": "<p> Perplexed</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Enormous</b>: extraordinarily large in size or extent or amount or power or degree. </p><p> <b>Tiny</b>: very small. </p><p> <b>Gigantic</b>: so exceedingly large or extensive as to suggest a giant or mammoth. </p><p> <b>Immense</b>: unusually great in size or amount or degree or especially extent or scope.</p><p> <b>Perplex</b>: be a mystery or bewildering to. </p><p> Thus, the correct antonym of the given word ‘enormous’ is ‘Tiny’.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> The professor would often <u><b>extol</b></u> the virtues of reading, emphasizing its ability to broaden one's knowledge and perspective.</p><p><br/> </p>",
+      "option1": "<p> Heckle</p>",
+      "option2": "<p> Censure</p>",
+      "option3": "<p> Hate</p>",
+      "option4": "<p> Amplify</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Extol</b>: praise, glorify, or honor. </p><p> <b>Censure</b>: harsh criticism or disapproval. </p><p> <b>Heckle</b>: To <i>heckle</i> is to challenge or harass someone.</p><p> <b>Hate</b>: the emotion of intense dislike; a feeling of dislike so strong that it demands action. </p><p><b>Amplify</b>: increase the volume of.</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Don’t touch this mysterious box. </p>",
+      "option1": "<p> This mysterious box does not be touched.</p>",
+      "option2": "<p> This mysterious box must not be touched.</p>",
+      "option3": "<p> This mysterious box don’t be touched.</p>",
+      "option4": "<p> This mysterious box need not be touched.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Passive Voice: \"This mysterious box must not be touched.\"</p><p> In the passive voice, the subject of the active sentence becomes the object of the passive sentence, and the object of the active sentence becomes the subject of the passive sentence.</p><p> The subject \"you\" is omitted in the passive voice.</p><p> \"This mysterious box\" becomes the subject of the passive sentence.</p><p> The verb \"touch\" changes to \"be touched,\" and \"must not\" is added to indicate that the action (touching) is not permitted.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> A person who collects and studies butterflies.</p><p><br/> </p>",
+      "option1": "<p> Entomologist</p>",
+      "option2": "<p> Lepidopterist</p>",
+      "option3": "<p> Ornithologist</p>",
+      "option4": "<p> Botanist</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Lepidopterist. </p><p> <b>Lepidopterist</b>: A lepidopterist is an entomologist who specialises in studying butterflies and moths. </p><p> <b>Entomologist</b>: a person who studies or is an expert in the branch of zoology concerned with insects. </p><p> <b>Ornithologist</b>: An <i>ornithologist</i> is a type of zoologist who focuses on birds. </p><p><b>Botanist</b>: a biologist specializing in the study of plants.</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the correct homonym from the given options to fill in the blank.</p><p> The ________ of the mountain was covered in snow.</p><p><br/> </p>",
+      "option1": "<p> Pique</p>",
+      "option2": "<p> Peak</p>",
+      "option3": "<p> Peke</p>",
+      "option4": "<p> Peek</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Peak</b>: the top or extreme point of something (usually a mountain or hill). </p><p> <b>Pique</b>: cause to feel resentment or indignation. </p><p><b>Peek</b>: to take a brief look.</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. This explains why farmers grow some crops in some areas and not in other areas.</p><p> B. Today, most of our food such as fruit, vegetables, grain, milk and meat comes from plants that are grown and animals that are reared.</p><p> C. Different plants grow in different conditions — rice, for example, requires more water than wheat and barley.</p><p> D. Different animals too, prefer different environments — for instance, sheep and goat can survive more easily than cattle in dry, hilly environments.</p>",
+      "option1": "<p> BCAD</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> BCDA</p>",
+      "option4": "<p> BDAC</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct arrangement is: BCAD: <i><b>Today, most of our food such as fruit, vegetables, grain, milk and meat comes from plants that are grown and animals that are reared. Different plants grow in different conditions — rice, for example, requires more water than wheat and barley. This explains why farmers grow some crops in some areas and not in other areas. Different animals too, prefer different environments — for instance, sheep and goat can survive more easily than cattle in dry, hilly environments.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> The team's success can be attributed ________ hard work and dedication.</p>",
+      "option1": "<p> with</p>",
+      "option2": "<p> to</p>",
+      "option3": "<p> by</p>",
+      "option4": "<p> in</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> In this sentence, the phrase \"can be attributed\" indicates that we are looking for something that is being credited or given as the cause or reason for the team's success. The preposition \"to\" is used to show the connection between the team's success and the reason behind it, which is \"hard work and dedication.\" </p><p> Therefore, the sentence reads: \"The team's success can be attributed to hard work and dedication.\"</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom.</p><p> Life is not always a <u><b>bed of roses</b></u>; it has its fair share of challenges and difficulties.</p>",
+      "option1": "<p> A comfortable and luxurious resting place</p>",
+      "option2": "<p> A situation or experience that is pleasant and easy</p>",
+      "option3": "<p> A beautiful garden filled with roses</p>",
+      "option4": "<p> A difficult and challenging path in life</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p>The idiom \"bed of roses\" is a figurative expression that means a situation or experience that is pleasant, easy, and free from troubles or difficulties. It is often used to describe something that appears to be effortless and enjoyable, without any hardships or obstacles.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. Some of them wanted to know about life after death, others wanted to know why sacrifices should be performed.</p><p> B. They described this as the atman or the individual soul and the brahman or the universal soul. They believed that ultimately, both the atman and the brahman were one. </p><p> C. Many of these thinkers felt that there was something permanent in the universe that would last even after death. </p><p> D. Around the time that the Buddha was preaching and perhaps a little earlier, other thinker also tried to find answers to difficult questions.</p><p><br/> </p>",
+      "option1": "<p> DCAB</p>",
+      "option2": "<p> DACB</p>",
+      "option3": "<p> ACDB</p>",
+      "option4": "<p> DABC</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The correct arrangement is: DACB: Around the time that the Buddha was preaching and perhaps a little earlier, other thinker also tried to find answers to difficult questions. Some of them wanted to know about life after death, others wanted to know why sacrifices should be performed. Many of these thinkers felt that there was something permanent in the universe that would last even after death. They described this as the atman or the individual soul and the brahman or the universal soul. They believed that ultimately, both the atman and the brahman were one. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.<br/> They cried, “Bravo! Well done.”</p>",
+      "option1": "<p> They shouted in joy that they had done well.</p>",
+      "option2": "<p> They exclaimed with wonder that they had done well.</p>",
+      "option3": "<p> They cried loudly for doing well.</p>",
+      "option4": "<p> They cried in joy for doing well.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option A is the correct answer. </p><p> The given sentence is an exclamatory sentence. </p><p> ‘Cried’ will be changed to ‘shouted in joy’. </p><p> Hence, the correct Indirect speech of the given sentence is: <i><b>They shouted in joy that they had done well.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>A. In modern times we sometimes feel that something to be used in everyday life need not be beautiful, or that something beautiful cannot be put to daily use.</p><p>B. We assume that if an object is to be used frequently, it need not be delicate and graceful.</p><p>C. This assumption is quite mistaken in the context of traditional crafts. The best way to understand why this is so, is by making something with your own hands.</p><p>D. Aesthetic beauty and usefulness need not be two separate qualities.</p>",
+      "option1": "<p>DABC</p>",
+      "option2": "<p>DBCA</p>",
+      "option3": "<p>ADBC</p>",
+      "option4": "<p>BCAD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option a is the correct answer.</p><p>The correct arrangement is: DABC: <strong>Aesthetic beauty and usefulness need not be two separate qualities. In modern times we sometimes feel that something to be used in everyday life need not be beautiful, or that something beautiful cannot be put to daily use. We assume that if an object is to be used frequently, it need not be delicate and graceful. This assumption is quite mistaken in the context of traditional crafts. The best way to understand why this is so, is by making something with your own hands.</strong></p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the INCORRECTLY spelt word.</p><p><br/> </p>",
+      "option1": "<p> Allegiance</p>",
+      "option2": "<p> Buoy</p>",
+      "option3": "<p> Capital</p>",
+      "option4": "<p> Concensus</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option D is the correct answer. </p><p> consensus is incorrectly spelt in option d. </p><p> <b>Consensus</b>: agreement in the judgment or opinion reached by a group as a whole. </p><p> <b>Allegiance</b>: the act of binding yourself (intellectually or emotionally) to a course of action. </p><p> <b>Buoy</b>: bright-colored; a float attached by rope to the seabed to mark channels in a harbor or underwater hazards. </p><p> <b>Capital</b>: one of the large alphabetic characters used as the first letter in writing or printing proper names and sometimes for emphasis. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the option that will improve the underlined part of the given sentence. In case no improvement is needed, select 'No improvement required'.</p><p> They each listened carefully to what <u><b>each other</b></u> said.</p><p><br/> </p>",
+      "option1": "<p> one another</p>",
+      "option2": "<p> each another</p>",
+      "option3": "<p> the other</p>",
+      "option4": "<p> No improvement required</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> ‘the other’ will come instead of ‘each other’. </p><p> The correct sentence is: <i>They each listened carefully what the </i><i><b>other</b></i><i> said.</i> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> <br/> <br/> </p><p> A. The earliest method of making pots for storage may have used the coiling technique. The artist rolls out strips of clay and then places one coil upon another, joining them together with his fingers to form a hollow pot.</p><p> B. The most important change came with the invention of the potterís wheel. There are many kinds of wheels used in India today. </p><p> C. The first is a simple flat stone or wooden disc that is turned with the hand or a stick. </p><p> D. By placing a soft lump of clay on the centre of the disc and turning the wheel the potter can change the shape of the clay. </p><p><br/> </p>",
+      "option1": "<p> ACBD</p>",
+      "option2": "<p> CDBA</p>",
+      "option3": "<p> ABCD</p>",
+      "option4": "<p> ADBC</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The correct arrangement is: ABCD: <i><b>The earliest method of making pots for storage may have used the coiling technique. The artist rolls out strips of clay and then places one coil upon another, joining them together with his fingers to form a hollow pot. The most important change came with the invention of the potterís wheel. There are many kinds of wheels used in India today. The first is a simple flat stone or wooden disc that is turned with the hand or a stick. By placing a soft lump of clay on the centre of the disc and turning the wheel the potter can change the shape of the clay.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> Arrange the statements in the correct order to make a meaningful paragraph.</p><p> <br/> A. But, in developed societies, the childhood and adolescence is extended.<br/> B. In rural communities, the customs are more uniform.<br/> C. This provides more opportunities for education and character development.<br/> D. The practices of child rearing vary from culture to culture.</p><p><br/> </p>",
+      "option1": "<p> DABC</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> BCDA</p>",
+      "option4": "<p> DBAC</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p>The correct arrangement is: DBAC: <i><b>The practices of child rearing vary from culture to culture. In rural communities, the customs are more uniform. But, in developed societies, the childhood and adolescence is extended. This provides more opportunities for education and character development.</b></i></p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.<br/> What would / happen if / human beings were / govern by robots?</p><p><br/> </p>",
+      "option1": "<p> happen if</p>",
+      "option2": "<p> What would</p>",
+      "option3": "<p> human beings were</p>",
+      "option4": "<p> govern by robots</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option D is the correct answer. </p><p> Last segment contains error. In the given sentence, “were” is used which can be used to show the passive voice because doer of the verb “govern” is not mentioned hence, we need to mention this in the passive voice. </p><p>So, the correct word will be “governed” instead of “govern”.</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Select the most appropriate option to fill in the blank. <br/> People all over the world are concerned about the human right to live with ______.</p><p><br/> </p>",
+      "option1": "<p> dignity</p>",
+      "option2": "<p> grandeur</p>",
+      "option3": "<p> poise</p>",
+      "option4": "<p> delight</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> <b>Dignity</b>: the quality of being worthy of esteem or respect. </p><p> <b>Grandeur</b>: the quality of being magnificent or splendid or grand. </p><p> <b>Poise</b>: If you have <i>poise</i>, you are cool under stress. People with <i>poise</i> can handle pressure without showing it. </p><p> <b>Delight</b>: a feeling of extreme pleasure or satisfaction. </p><p> Thus, the correct word to fill in the blank is ‘<b>Dignity’</b>. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Select the most appropriate one word substitution for the given phrase:</p><p> The hospital for recuperation or for the treatment of chronic diseases</p><p><br/> </p>",
+      "option1": "<p> sanatorium</p>",
+      "option2": "<p> Asylum</p>",
+      "option3": "<p> Farm</p>",
+      "option4": "<p> Bedlam</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option A is the correct answer.</p><p> Asylum: protection or safety, or a protected and safe place, given esp. to someone who has left a country or place for political reasons: The refugees have asked for political asylum.</p><p> Farm: an area of land with fields and buildings that is used for growing crops and keeping animals</p><p> Bedlam: a place, scene or situation that is full of noise and confusion</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Select the most appropriate option that can substitute the underlined segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.</p><p> <br/> While the online class was going on, they <u><b>had to keep their cameras on.</b></u></p><p><br/> </p>",
+      "option1": "<p> have kept their cameras on</p>",
+      "option2": "<p> No substitution required</p>",
+      "option3": "<p> are keeping their camera on</p>",
+      "option4": "<p> had keep the camera on</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically correct. </p><p> Had to means: to say that something is obligatory. </p><p> So the correct sentence is: <i><b>While the online class was going on, they had to keep their cameras on. </b></i> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> A person who is intolerant of other people's opinions. </p>",
+      "option1": "<p> Bigot</p>",
+      "option2": "<p> Recluse</p>",
+      "option3": "<p> Misanthrope</p>",
+      "option4": "<p> Zealot</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> <b>Bigot</b>: a person with very strong, unreasonable beliefs or opinions and who will not listen to or accept a different opinion. </p><p> <b>Recluse</b>: a person who lives alone and who maintains very little contact with other people or society. </p><p> <b>Misanthrope</b>: a person who hates or avoids other people. </p><p> <b>Zealot</b>: a person who is very enthusiastic and has strong beliefs, especially about religion and politics</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Replace the underlined word with its synonym to make the sentence more meaningful.</p><p> I will <u><b>apprise</b></u> my manager of the project's progress during the team meeting tomorrow.</p><p><br/> </p>",
+      "option1": "<p> Inform</p>",
+      "option2": "<p> Estimate</p>",
+      "option3": "<p> Admire</p>",
+      "option4": "<p> Require</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is ‘Inform’. </p><p> <b>Apprise</b>: inform (somebody) of something. </p><p> <b>Inform</b>: impart knowledge of some fact, state or affairs, or event to. </p><p> <b>Estimate</b>: judge tentatively or form an estimate of (quantities or time). </p><p> <b>Admire</b>: feel admiration for. </p><p> <b>Require</b>: have need of. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the most appropriate option to fill in the blank.<br/> All the guests were shocked at his ______ laughter.</p><p><br/> </p>",
+      "option1": "<p> Unresolved</p>",
+      "option2": "<p> Unrestrained</p>",
+      "option3": "<p> Unrecognised</p>",
+      "option4": "<p> Unremarkable</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Unresolved</b>: not solved. </p><p> <b>Unrestrained</b>: not subject to restraint/ not being under control; out of control. </p><p> <b>Unrecognised</b>: not recognized. </p><p> <b>Unremarkable</b>: found in the ordinary course of events. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> It is imperative that all employees ________ their assigned tasks promptly.</p>",
+      "option1": "<p> completing</p>",
+      "option2": "<p> completed</p>",
+      "option3": "<p> complete</p>",
+      "option4": "<p> to complete</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> (a) completing - This is the present participle form of the verb \"complete.\" It doesn't fit grammatically in the sentence.</p><p> (b) completed - This is the past participle form of the verb \"complete.\" However, using the past participle in this sentence doesn't convey the sense of urgency or necessity indicated by \"It is imperative.\"</p><p> (c) complete - This is the base form of the verb \"complete.\" In this sentence, \"complete\" is the correct choice as it matches the present tense and is the appropriate verb form to indicate that all employees need to complete their assigned tasks.</p><p> (d) to complete - This is the infinitive form of the verb \"complete.\" While infinitives can be used in certain sentence structures, it is not suitable in this context as it would create an awkward construction.</p><p> Therefore, the correct answer is (c) complete. The sentence should be: \"It is imperative that all employees complete their assigned tasks promptly.\" This sentence conveys the urgency and importance of completing the tasks on time. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.</p><p> My sister said to me, “Don’t make a noise .”</p>",
+      "option1": "<p> My sister forbade me to make a noise.</p>",
+      "option2": "<p> My sister refused me to not make a noise.</p>",
+      "option3": "<p> My sister said to me don’t make a noise.</p>",
+      "option4": "<p> My sister assured me not to make a noise.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct indirect speech of the given direct speech is: <i><b>My sister forbade me to make a noise.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech. <br/> Ajay says, “There is going to be a snowfall.”</p><p><br/> </p>",
+      "option1": "<p> Ajay said that there is going to be a snowfall.</p>",
+      "option2": "<p> Ajay said that there was going to be a snowfall.</p>",
+      "option3": "<p> Ajay says that there was going to be a snowfall.</p>",
+      "option4": "<p> Ajay says that there is going to be a snowfall.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> If the Reporting Verb (R.V) is in the present/future tense then tense of Reporting Speech(R.S.) is not changed. Only basic transformation occurs. </p><p> Thus, the correct indirect speech of the given sentence is: <i><b>Ajay says that there is going to be a snowfall.</b></i></p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Select the correctly spelt word.</p><p><br/> </p>",
+      "option1": "<p> Convect</p>",
+      "option2": "<p> Conect</p>",
+      "option3": "<p> Convert</p>",
+      "option4": "<p> Concent</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Convert</b> is correctly spelt. </p><p> Other correct spelling of the other words are- </p><p> <b>Convict</b>: find or declare guilty. </p><p> <b>Connect</b>: connect, fasten, or put together two or more pieces. </p><p> <b>Consent</b>: give an affirmative reply to; respond favorably to. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Photosynthesis is a vital biological process that 1. ____________ in green plants, algae, and some bacteria. It involves the conversion of sunlight, carbon dioxide, and water into glucose (a type of sugar) and oxygen. This process 2. ______________ place in the chloroplasts of plant cells and serves as the primary means of capturing 3. __________ energy to produce food for the organism. Photosynthesis plays a crucial role in supporting life on Earth, as it forms the basis of the food chain and contributes 4. <b>significantly</b> to the maintenance of atmospheric oxygen levels.</p><p> Select the most appropriate option to fill in blank number 1.</p><p><br/> </p>",
+      "option1": "<p> occur</p>",
+      "option2": "<p> occurs</p>",
+      "option3": "<p> happen</p>",
+      "option4": "<p> happens</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Occur</b>: The word occur is used in the sense of ‘come into being as an event or a process’.</p><p> <b>Happen</b>: The word happen is used to convey the sense of ‘take place.’</p><p> And in the given sentence singular helping verb is used earlier. </p><p> Thus, the correct word to fill in the blank is: Occurs. </p><p> The complete sentence is: Photosynthesis is a vital biological process that <i><b>occurs</b></i> in green plants, algae, and some bacteria. It involves the conversion of sunlight, carbon dioxide, and water into glucose (a type of sugar) and oxygen.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Photosynthesis is a vital biological process that 1. ____________ in green plants, algae, and some bacteria. It involves the conversion of sunlight, carbon dioxide, and water into glucose (a type of sugar) and oxygen. This process 2. ______________ place in the chloroplasts of plant cells and serves as the primary means of capturing 3. __________ energy to produce food for the organism. Photosynthesis plays a crucial role in supporting life on Earth, as it forms the basis of the food chain and contributes 4. <b>significantly</b> to the maintenance of atmospheric oxygen levels.</p><p> Select the most appropriate option to fill in blank number 2.</p><p><br/> </p>",
+      "option1": "<p> took</p>",
+      "option2": "<p> takes</p>",
+      "option3": "<p> resembles</p>",
+      "option4": "<p> goes</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence demands singular verb and present tense because there is a singular verb (serves) in the later part of the sentence. </p><p> Thus, the correct word to fill in the blank is: ‘takes’. </p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> Photosynthesis is a vital biological process that 1. ____________ in green plants, algae, and some bacteria. It involves the conversion of sunlight, carbon dioxide, and water into glucose (a type of sugar) and oxygen. This process 2. ______________ place in the chloroplasts of plant cells and serves as the primary means of capturing 3. __________ energy to produce food for the organism. Photosynthesis plays a crucial role in supporting life on Earth, as it forms the basis of the food chain and contributes 4. <b>significantly</b> to the maintenance of atmospheric oxygen levels.</p><p> Select the most appropriate option to fill in blank number 3.</p>",
+      "option1": "<p> nuclear</p>",
+      "option2": "<p> mechanical</p>",
+      "option3": "<p> solar</p>",
+      "option4": "<p> lunatic</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> In the process of photosynthesis, it is understood that sunlight is most important. </p><p> Thus, only solar energy makes sense. </p><p> The complete sentence is: This process <i><b>takes</b></i> place in the chloroplasts of plant cells and serves as the primary means of capturing <i><b>solar</b></i> energy to produce food for the organism.</p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Photosynthesis is a vital biological process that 1. ____________ in green plants, algae, and some bacteria. It involves the conversion of sunlight, carbon dioxide, and water into glucose (a type of sugar) and oxygen. This process 2. ______________ place in the chloroplasts of plant cells and serves as the primary means of capturing 3. __________ energy to produce food for the organism. Photosynthesis plays a crucial role in supporting life on Earth, as it forms the basis of the food chain and contributes 4. <b>significantly</b> to the maintenance of atmospheric oxygen levels.</p><p> Select the most appropriate antonym of the highlighted word Significant.</p><p><br/> </p>",
+      "option1": "<p> meaningful</p>",
+      "option2": "<p> momentous</p>",
+      "option3": "<p> trivial</p>",
+      "option4": "<p> considerable</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Let’s find out the meaning of every word in the option. </p><p> <b>Significant</b>: Use the adjective <i>significant</i> to describe something that is important. Your \"significant other\" means the person who's most important in your life. A significant result in a scientific study is a result large enough to matter.</p><p> <b>Trivial</b>: Something that is <i>trivial</i> is not important or significant. </p><p> <b>Meaningful</b>: having a meaning or purpose. </p><p> <b>Momentous</b>: <i>Momentous</i> describes an important event or moment in time.</p><p> <b>Considerable</b>: large or relatively large in number or amount or extent or degree. </p><p>Thus, the correct antonym of the given word ‘Significant’ is ‘Trivial’.</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> How environmental problems affect different groups is a function of social inequality. Social status and power determine the extent to which people can insulate themselves from environmental crises or overcome it. In some cases, their ‘solutions’ may actually worsen environmental disparities. In Kutch, Gujarat, where water is scarce, richer farmers have invested in deep bore tubewells to tap groundwater to irrigate their fields and grow cash crops. When the rains fail, the earthen wells of the poorer villagers run dry and they do not even have water to drink. At such times, the moist green fields of the rich farmers seem to mock them. Certain environmental concerns sometimes appear to be universal concerns, not particular to specific social groups. For instance, reducing air pollution or protecting biodiversity seem to be in the public interest. A sociological analysis shows, however, that how public priorities are set and how they are pursued may not be universally beneficial. Securing the public interest may actually serve the interests of particular politically and economically powerful groups, or hurt the interests of the poor and politically weak. As the debates over large dams and around protected areas show, the environment as a public interest is a hotly contested arena. The school of social ecology points out that social relations, in particular the organisation of property and production, shape environmental <b>perceptions</b> and practices. Different social groups stand in different relationships to the environment and approach it differently. A Forest Department geared to maximising revenues from supplying large volumes of bamboo to the paper industry will view and use a forest very differently from an artisan who harvests bamboo to make baskets. Their varied interests and ideologies generate environmental conflicts. In this sense, environmental crises have their roots in social inequality. Addressing environmental problems requires changing environment-society relations, and this in turn requires efforts to change relations between different social groups — men and women, urban and rural people, landlords and labourers. Changed social relations will give rise to different knowledge systems and modes of managing the environment.</p><p> <br/> </p><p>What is the title of the given passage?</p>",
+      "option1": "<p> Environmental Concerns and Public Interest</p>",
+      "option2": "<p> Social Inequality and Environmental Problems</p>",
+      "option3": "<p> Sustainable Environmental Management</p>",
+      "option4": "<p> Society: the measure problem of all</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is ‘Social Inequality and Environmental Problems. </p><p> The passage discusses how social inequality influences the way different groups experience and respond to environmental problems. It emphasizes that social status and power determine the extent to which people can insulate themselves from environmental crises or exacerbate disparities. It provides examples of how richer farmers in Kutch, Gujarat, invest in technologies to cope with water scarcity while poorer villagers suffer from lack of access to water. Additionally, the passage highlights how addressing environmental issues requires changing social relations and promoting equitable approaches to environmental management. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> How environmental problems affect different groups is a function of social inequality. Social status and power determine the extent to which people can insulate themselves from environmental crises or overcome it. In some cases, their ‘solutions’ may actually worsen environmental disparities. In Kutch, Gujarat, where water is scarce, richer farmers have invested in deep bore tubewells to tap groundwater to irrigate their fields and grow cash crops. When the rains fail, the earthen wells of the poorer villagers run dry and they do not even have water to drink. At such times, the moist green fields of the rich farmers seem to mock them. Certain environmental concerns sometimes appear to be universal concerns, not particular to specific social groups. For instance, reducing air pollution or protecting biodiversity seem to be in the public interest. A sociological analysis shows, however, that how public priorities are set and how they are pursued may not be universally beneficial. Securing the public interest may actually serve the interests of particular politically and economically powerful groups, or hurt the interests of the poor and politically weak. As the debates over large dams and around protected areas show, the environment as a public interest is a hotly contested arena. The school of social ecology points out that social relations, in particular the organisation of property and production, shape environmental <b>perceptions</b> and practices. Different social groups stand in different relationships to the environment and approach it differently. A Forest Department geared to maximising revenues from supplying large volumes of bamboo to the paper industry will view and use a forest very differently from an artisan who harvests bamboo to make baskets. Their varied interests and ideologies generate environmental conflicts. In this sense, environmental crises have their roots in social inequality. Addressing environmental problems requires changing environment-society relations, and this in turn requires efforts to change relations between different social groups — men and women, urban and rural people, landlords and labourers. Changed social relations will give rise to different knowledge systems and modes of managing the environment.</p><p> <br/> <br/> </p><p> In the context of managing forests, how does a Forest Department differ from an artisan who harvests bamboo for making baskets?</p>",
+      "option1": "<p> They both view forests as sources of revenue.</p>",
+      "option2": "<p> The Forest department focuses on capital expenditure while the artisan prioritizes on building assets to create a large empire.</p>",
+      "option3": "<p> Both groups approach forests with a sustainable mindset.</p>",
+      "option4": "<p> The artisan prioritizes conservation, while the Forest Department focuses on revenue generation.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p>The passage mentions that different social groups stand in different relationships to the environment, which includes their approach to forest management. The Forest Department, as an institution, aims to maximize revenues by supplying large volumes of bamboo to the paper industry, implying that they prioritize economic interests. On the other hand, an artisan who harvests bamboo to make baskets has a different approach, likely valuing the conservation of bamboo resources and sustainability.</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> How environmental problems affect different groups is a function of social inequality. Social status and power determine the extent to which people can insulate themselves from environmental crises or overcome it. In some cases, their ‘solutions’ may actually worsen environmental disparities. In Kutch, Gujarat, where water is scarce, richer farmers have invested in deep bore tubewells to tap groundwater to irrigate their fields and grow cash crops. When the rains fail, the earthen wells of the poorer villagers run dry and they do not even have water to drink. At such times, the moist green fields of the rich farmers seem to mock them. Certain environmental concerns sometimes appear to be universal concerns, not particular to specific social groups. For instance, reducing air pollution or protecting biodiversity seem to be in the public interest. A sociological analysis shows, however, that how public priorities are set and how they are pursued may not be universally beneficial. Securing the public interest may actually serve the interests of particular politically and economically powerful groups, or hurt the interests of the poor and politically weak. As the debates over large dams and around protected areas show, the environment as a public interest is a hotly contested arena. The school of social ecology points out that social relations, in particular the organisation of property and production, shape environmental <b>perceptions</b> and practices. Different social groups stand in different relationships to the environment and approach it differently. A Forest Department geared to maximising revenues from supplying large volumes of bamboo to the paper industry will view and use a forest very differently from an artisan who harvests bamboo to make baskets. Their varied interests and ideologies generate environmental conflicts. In this sense, environmental crises have their roots in social inequality. Addressing environmental problems requires changing environment-society relations, and this in turn requires efforts to change relations between different social groups — men and women, urban and rural people, landlords and labourers. Changed social relations will give rise to different knowledge systems and modes of managing the environment.</p><p> <br/> <br/> </p><p> In Kutch, Gujarat, how do richer farmers cope with water scarcity to irrigate their fields?</p><p><br/> </p>",
+      "option1": "<p> Constructing dams</p>",
+      "option2": "<p> Investing in wind turbines</p>",
+      "option3": "<p> Using deep bore tube wells</p>",
+      "option4": "<p> Building rainwater harvesting systems</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is <b>c) Using deep bore tubewells</b>.</p><p>The passage mentions that in Kutch, Gujarat, where water is scarce, richer farmers have found a solution to cope with water scarcity by investing in <b>deep bore tubewells</b>. These tubewells enable them to tap groundwater, which they can then use for irrigating their fields and grow cash crops. This technological solution allows the richer farmers to access water even during times of inadequate rainfall, providing them with a means to overcome the water scarcity and maintain their agricultural activities.</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> How environmental problems affect different groups is a function of social inequality. Social status and power determine the extent to which people can insulate themselves from environmental crises or overcome it. In some cases, their ‘solutions’ may actually worsen environmental disparities. In Kutch, Gujarat, where water is scarce, richer farmers have invested in deep bore tubewells to tap groundwater to irrigate their fields and grow cash crops. When the rains fail, the earthen wells of the poorer villagers run dry and they do not even have water to drink. At such times, the moist green fields of the rich farmers seem to mock them. Certain environmental concerns sometimes appear to be universal concerns, not particular to specific social groups. For instance, reducing air pollution or protecting biodiversity seem to be in the public interest. A sociological analysis shows, however, that how public priorities are set and how they are pursued may not be universally beneficial. Securing the public interest may actually serve the interests of particular politically and economically powerful groups, or hurt the interests of the poor and politically weak. As the debates over large dams and around protected areas show, the environment as a public interest is a hotly contested arena. The school of social ecology points out that social relations, in particular the organisation of property and production, shape environmental <b>perceptions</b> and practices. Different social groups stand in different relationships to the environment and approach it differently. A Forest Department geared to maximising revenues from supplying large volumes of bamboo to the paper industry will view and use a forest very differently from an artisan who harvests bamboo to make baskets. Their varied interests and ideologies generate environmental conflicts. In this sense, environmental crises have their roots in social inequality. Addressing environmental problems requires changing environment-society relations, and this in turn requires efforts to change relations between different social groups — men and women, urban and rural people, landlords and labourers. Changed social relations will give rise to different knowledge systems and modes of managing the environment.</p><p> <br/> <br/> </p><p> Select the most appropriate synonym of the highlighted word ‘Perception’ amongst the following. </p>",
+      "option1": "<p> Intellect</p>",
+      "option2": "<p> Unconsciousness</p>",
+      "option3": "<p> Misconception</p>",
+      "option4": "<p> Socialising</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> <b>Perception</b>: the process of perceiving; becoming aware of something via the senses</p><p> <b>Intellect</b>: the power of the mind to think and to learn. </p><p> <b>Unconsciousness</b>: the state of not being awake and not aware of things around you<b>. </b> </p><p> <b>Misconception</b>: a wrong idea or understanding of something. </p><p> <b>Socialising</b>: to meet and spend time with people to enjoy oneself; the act of meeting for social purposes. </p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In our increasingly interconnected world, the internet has revolutionized the way we live, work, and communicate. With this digital transformation, however, comes the inevitable rise of cyber threats. Cybersecurity has become an essential aspect of modern life, aimed at protecting individuals, businesses, and governments from the ever-evolving landscape of cybercrime. This essay delves into the significance of cybersecurity, its challenges, and the measures taken to safeguard the digital frontier.</p><p> Cybersecurity encompasses a range of practices and technologies designed to defend against unauthorized access, data breaches, identity theft, and other cyber threats. As we rely more on technology for personal and professional purposes, the importance of robust cybersecurity measures cannot be overstated. Cyberattacks have the potential to disrupt critical infrastructure, compromise sensitive information, and cause significant financial losses.</p><p> One of the primary challenges of cybersecurity is the constant evolution of cyber threats. Cybercriminals continuously devise new techniques and tactics to exploit vulnerabilities in systems and networks. Phishing attacks, ransomware, malware, and social engineering are just a few examples of the tactics employed by malicious actors. As a result, cybersecurity experts must stay ahead of these threats, continually updating and improving defense mechanisms.</p><p> Moreover, the expanding Internet of Things (IoT) has further complicated cybersecurity efforts. With billions of interconnected devices, ranging from smartphones and smart home appliances to industrial machinery, each presents a potential entry point for cyber attackers. Securing this vast network of devices requires comprehensive strategies that encompass hardware, software, and user education.</p><p> In response to these challenges, governments, organizations, and individuals have adopted various cybersecurity measures. The establishment of dedicated cybersecurity agencies and the enactment of data protection laws are some of the ways governments are addressing the issue. Organizations have invested in advanced cybersecurity tools and systems to detect and prevent attacks effectively. Regular security audits, employee training, and incident response plans are becoming integral parts of corporate cybersecurity strategies.</p><p> Individuals also play a crucial role in enhancing cybersecurity. Practicing good cyber hygiene, such as using strong and unique passwords, enabling two-factor authentication, and being cautious with suspicious emails and links, can go a long way in safeguarding personal data and devices.</p><p> In conclusion, cybersecurity has become a paramount concern in the digital age. As technology advances, so do cyber threats, making it imperative for individuals, businesses, and governments to take proactive measures to protect themselves from cybercrime. By adopting robust cybersecurity practices, staying informed about emerging threats, and promoting a culture of cyber awareness, we can fortify the digital frontier and ensure a safer and more secure digital environment for everyone.</p><p> <br/> <br/> </p><p> What is the primary objective of cybersecurity?</p>",
+      "option1": "<p> Exploit vulnerabilities in systems and networks.</p>",
+      "option2": "<p> Facilitate unauthorized access to data.</p>",
+      "option3": "<p> Protect against cyber threats and attacks.</p>",
+      "option4": "<p> Develop new tactics for phishing attacks.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is <b>c) Protect against cyber threats and attacks.</b></p><p> The essay highlights that the primary objective of cybersecurity is to safeguard individuals, businesses, and governments against cyber threats and attacks. Cybersecurity encompasses a range of practices and technologies aimed at defending against unauthorized access, data breaches, identity theft, and other cyber-related risks.</p><p> <b>Option a)</b> \"Exploit vulnerabilities in systems and networks\" is incorrect because cybersecurity is focused on identifying and remedying vulnerabilities, not exploiting them.</p><p> <b>Option b</b>) \"Facilitate unauthorized access to data\" is incorrect because cybersecurity aims to prevent unauthorized access, not facilitate it.</p><p> <b>Option d)</b> \"Develop new tactics for phishing attacks\" is incorrect because cybersecurity efforts are focused on countering and mitigating phishing attacks, not developing new tactics for them.</p><p> In conclusion, the primary purpose of cybersecurity is to protect against cyber threats and attacks by implementing measures to enhance the security and integrity of digital systems and information.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In our increasingly interconnected world, the internet has revolutionized the way we live, work, and communicate. With this digital transformation, however, comes the inevitable rise of cyber threats. Cybersecurity has become an essential aspect of modern life, aimed at protecting individuals, businesses, and governments from the ever-evolving landscape of cybercrime. This essay delves into the significance of cybersecurity, its challenges, and the measures taken to safeguard the digital frontier.</p><p> Cybersecurity encompasses a range of practices and technologies designed to defend against unauthorized access, data breaches, identity theft, and other cyber threats. As we rely more on technology for personal and professional purposes, the importance of robust cybersecurity measures cannot be overstated. Cyberattacks have the potential to disrupt critical infrastructure, compromise sensitive information, and cause significant financial losses.</p><p> One of the primary challenges of cybersecurity is the constant evolution of cyber threats. Cybercriminals continuously devise new techniques and tactics to exploit vulnerabilities in systems and networks. Phishing attacks, ransomware, malware, and social engineering are just a few examples of the tactics employed by malicious actors. As a result, cybersecurity experts must stay ahead of these threats, continually updating and improving defense mechanisms.</p><p> Moreover, the expanding Internet of Things (IoT) has further complicated cybersecurity efforts. With billions of interconnected devices, ranging from smartphones and smart home appliances to industrial machinery, each presents a potential entry point for cyber attackers. Securing this vast network of devices requires comprehensive strategies that encompass hardware, software, and user education.</p><p> In response to these challenges, governments, organizations, and individuals have adopted various cybersecurity measures. The establishment of dedicated cybersecurity agencies and the enactment of data protection laws are some of the ways governments are addressing the issue. Organizations have invested in advanced cybersecurity tools and systems to detect and prevent attacks effectively. Regular security audits, employee training, and incident response plans are becoming integral parts of corporate cybersecurity strategies.</p><p> Individuals also play a crucial role in enhancing cybersecurity. Practicing good cyber hygiene, such as using strong and unique passwords, enabling two-factor authentication, and being cautious with suspicious emails and links, can go a long way in safeguarding personal data and devices.</p><p> In conclusion, cybersecurity has become a paramount concern in the digital age. As technology advances, so do cyber threats, making it imperative for individuals, businesses, and governments to take proactive measures to protect themselves from cybercrime. By adopting robust cybersecurity practices, staying informed about emerging threats, and promoting a culture of cyber awareness, we can fortify the digital frontier and ensure a safer and more secure digital environment for everyone.</p><p> <br/> <br/> </p><p> What makes securing the Internet of Things (IoT) challenging?</p>",
+      "option1": "<p> Limited use of interconnected devices.</p>",
+      "option2": "<p> Few vulnerabilities in IoT devices.</p>",
+      "option3": "<p> The vast network of interconnected devices and potential entry points for attackers.</p>",
+      "option4": "<p> The absence of cyber threats in IoT systems.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is <b>c) The vast network of interconnected devices and potential entry points for attackers.</b></p><p> The essay mentions that the expanding Internet of Things (IoT) has complicated cybersecurity efforts. The IoT involves a vast network of interconnected devices, such as smartphones, smart home appliances, and industrial machinery. Each of these devices potentially serves as an entry point for cyber attackers to gain unauthorized access, compromise data, or cause disruptions.</p><p> <b>Option a)</b> \"Limited use of interconnected devices\" is incorrect because the IoT involves widespread use of interconnected devices, making it challenging to secure the entire network.</p><p> <b>Option b)</b> \"Few vulnerabilities in IoT devices\" is incorrect because IoT devices often have vulnerabilities that can be exploited by cyber attackers. These vulnerabilities need to be addressed through comprehensive security measures.</p><p> <b>Option d)</b> \"The absence of cyber threats in IoT systems\" is incorrect because IoT systems are not immune to cyber threats. On the contrary, the vast network of interconnected devices presents an attractive target for attackers, leading to an increased likelihood of cyber threats in IoT environments.</p><p> In conclusion, the vast and interconnected nature of IoT devices poses a significant challenge in securing the IoT landscape. This complexity necessitates comprehensive strategies and solutions to address potential vulnerabilities and safeguard the IoT ecosystem from cyber threats.</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In our increasingly interconnected world, the internet has revolutionized the way we live, work, and communicate. With this digital transformation, however, comes the inevitable rise of cyber threats. Cybersecurity has become an essential aspect of modern life, aimed at protecting individuals, businesses, and governments from the ever-evolving landscape of cybercrime. This essay delves into the significance of cybersecurity, its challenges, and the measures taken to safeguard the digital frontier.</p><p> Cybersecurity encompasses a range of practices and technologies designed to defend against unauthorized access, data breaches, identity theft, and other cyber threats. As we rely more on technology for personal and professional purposes, the importance of robust cybersecurity measures cannot be overstated. Cyberattacks have the potential to disrupt critical infrastructure, compromise sensitive information, and cause significant financial losses.</p><p> One of the primary challenges of cybersecurity is the constant evolution of cyber threats. Cybercriminals continuously devise new techniques and tactics to exploit vulnerabilities in systems and networks. Phishing attacks, ransomware, malware, and social engineering are just a few examples of the tactics employed by malicious actors. As a result, cybersecurity experts must stay ahead of these threats, continually updating and improving defense mechanisms.</p><p> Moreover, the expanding Internet of Things (IoT) has further complicated cybersecurity efforts. With billions of interconnected devices, ranging from smartphones and smart home appliances to industrial machinery, each presents a potential entry point for cyber attackers. Securing this vast network of devices requires comprehensive strategies that encompass hardware, software, and user education.</p><p> In response to these challenges, governments, organizations, and individuals have adopted various cybersecurity measures. The establishment of dedicated cybersecurity agencies and the enactment of data protection laws are some of the ways governments are addressing the issue. Organizations have invested in advanced cybersecurity tools and systems to detect and prevent attacks effectively. Regular security audits, employee training, and incident response plans are becoming integral parts of corporate cybersecurity strategies.</p><p> Individuals also play a crucial role in enhancing cybersecurity. Practicing good cyber hygiene, such as using strong and unique passwords, enabling two-factor authentication, and being cautious with suspicious emails and links, can go a long way in safeguarding personal data and devices.</p><p> In conclusion, cybersecurity has become a paramount concern in the digital age. As technology advances, so do cyber threats, making it imperative for individuals, businesses, and governments to take proactive measures to protect themselves from cybercrime. By adopting robust cybersecurity practices, staying informed about emerging threats, and promoting a culture of cyber awareness, we can fortify the digital frontier and ensure a safer and more secure digital environment for everyone.</p><p> <br/> <br/> </p><p> The tone of the passage can be described as:</p>",
+      "option1": "<p> Alarmist and fearful</p>",
+      "option2": "<p> Objective and informative</p>",
+      "option3": "<p> Optimistic and idealistic</p>",
+      "option4": "<p> Critical and disapproving</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is <b>b) Objective and informative.</b></p><p> The tone of the passage is objective and informative. It presents facts and information about the significance of cybersecurity, its challenges, and the measures taken to address cyber threats. The passage does not contain any emotional or subjective language that would suggest fear, optimism, idealism, or disapproval. Instead, it provides a neutral and factual account of the topic, informing the reader about the importance of cybersecurity in the digital age.</p><p> Option a) \"Alarmist and fearful\" is incorrect because the passage does not try to evoke fear or alarm in the reader. It discusses cybersecurity in a measured and informative manner.</p><p> Option c) \"Optimistic and idealistic\" is incorrect because while the passage acknowledges the importance of cybersecurity, it does not present an overly positive or idealistic view. It focuses on the practical measures and challenges related to cybersecurity.</p><p> Option d) \"Critical and disapproving\" is incorrect because the passage does not criticize or disapprove of any aspect related to cybersecurity. Instead, it presents a balanced and informative perspective on the topic.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In our increasingly interconnected world, the internet has revolutionized the way we live, work, and communicate. With this digital transformation, however, comes the inevitable rise of cyber threats. Cybersecurity has become an essential aspect of modern life, aimed at protecting individuals, businesses, and governments from the ever-evolving landscape of cybercrime. This essay delves into the significance of cybersecurity, its challenges, and the measures taken to safeguard the digital frontier.</p><p> Cybersecurity encompasses a range of practices and technologies designed to defend against unauthorized access, data breaches, identity theft, and other cyber threats. As we rely more on technology for personal and professional purposes, the importance of robust cybersecurity measures cannot be overstated. Cyberattacks have the potential to disrupt critical infrastructure, compromise sensitive information, and cause significant financial losses.</p><p> One of the primary challenges of cybersecurity is the constant evolution of cyber threats. Cybercriminals continuously devise new techniques and tactics to exploit vulnerabilities in systems and networks. Phishing attacks, ransomware, malware, and social engineering are just a few examples of the tactics employed by malicious actors. As a result, cybersecurity experts must stay ahead of these threats, continually updating and improving defense mechanisms.</p><p> Moreover, the expanding Internet of Things (IoT) has further complicated cybersecurity efforts. With billions of interconnected devices, ranging from smartphones and smart home appliances to industrial machinery, each presents a potential entry point for cyber attackers. Securing this vast network of devices requires comprehensive strategies that encompass hardware, software, and user education.</p><p> In response to these challenges, governments, organizations, and individuals have adopted various cybersecurity measures. The establishment of dedicated cybersecurity agencies and the enactment of data protection laws are some of the ways governments are addressing the issue. Organizations have invested in advanced cybersecurity tools and systems to detect and prevent attacks effectively. Regular security audits, employee training, and incident response plans are becoming integral parts of corporate cybersecurity strategies.</p><p> Individuals also play a crucial role in enhancing cybersecurity. Practicing good cyber hygiene, such as using strong and unique passwords, enabling two-factor authentication, and being cautious with suspicious emails and links, can go a long way in safeguarding personal data and devices.</p><p> In conclusion, cybersecurity has become a paramount concern in the digital age. As technology advances, so do cyber threats, making it imperative for individuals, businesses, and governments to take proactive measures to protect themselves from cybercrime. By adopting robust cybersecurity practices, staying informed about emerging threats, and promoting a culture of cyber awareness, we can fortify the digital frontier and ensure a safer and more secure digital environment for everyone.</p><p> <br/> <br/> </p><p> The word \"fortify\" as used in the passage means:</p><p><br/> </p>",
+      "option1": "<p> Encourage</p>",
+      "option2": "<p> Strengthen</p>",
+      "option3": "<p> Evaluate</p>",
+      "option4": "<p> Eliminate</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The word \"fortify\" is used as a verb in the passage, and it means to strengthen or protect something, especially against potential threats or dangers. In the context of the passage, the term \"fortify\" is used to describe the action of taking proactive measures to protect the digital frontier from cyber threats. </p><p> <b>Encourage</b>: inspire with confidence; give hope or courage to. </p><p> <b>Strengthen</b>: make strong or stronger. </p><p> <b>Evaluate</b>: form a critical opinion of. </p><p><b>Eliminate</b>: terminate, end, or take out. </p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> The presidents of the New York Central and the New York, New Haven and Hartford railroads will swear on a stack of timetables that there are only two. But I say there are three, because I’ve been on the third level of the Grand Central Station. Yes, I’ve taken the obvious step: I talked to a psychiatrist friend of mine, among others. I told him about the third level at Grand Central Station, and he said it was a waking dream wish fulfilment. He said I was unhappy. That made my wife kind of mad, but he explained that he meant the modern world is full of insecurity, fear, war, worry and all the rest of it, and that I just want to escape. Well, who doesn’t? Everybody I know wants to escape, but they don’t wander down into any third level at Grand Central Station. But that’s the reason, he said, and my friends all agreed. Everything points to it, they claimed. </p><p> My stamp collecting, for example; that’s a ‘temporary refuge from reality.’ Well, maybe, but my grandfather didn’t need any refuge from reality; things were pretty nice and peaceful in his day, from all I hear, and he started my collection. It’s a nice collection too, blocks of four of practically every U.S. issue, first-day covers, and so on. President Roosevelt collected stamps too, you know. Anyway, here’s what happened at Grand Central. One-night last summer I worked late at the office. I was in a hurry to get uptown to my apartment so I decided to take the subway from Grand Central because it’s faster than the bus. Now, I don’t know why this should have happened to me. I’m just an ordinary guy named Charley, thirty-one years old, and I was wearing a tan gabardine suit and a straw hat with a fancy band; I passed a dozen men who looked just like me. And I wasn’t trying to escape from anything; I just wanted to get home to Louisa, my wife. I turned into Grand Central from Vanderbilt Avenue, and went down the steps to the first level, where you take trains like the Twentieth Century. Then I walked down another flight to the second level, where the suburban trains leave from, ducked into an arched doorway heading for the subway — and got lost. That’s easy to do. I’ve been in and out of Grand Central hundreds of times, but I’m always bumping into new doorways and stairs and corridors. Once I got into a tunnel about a mile long and came out in the lobby of the Roosevelt Hotel. Another time I came up in an office building on Forty-sixth Street, three blocks away. Sometimes I think Grand Central is growing like a tree, pushing out new corridors and staircases like roots. There’s probably a long tunnel that nobody knows about feeling its way under the city right now, on its way to Times Square, and maybe another to Central Park. And maybe — because for so many people through the years Grand Central has been an exit, a way of escape — maybe that’s how the tunnel I got into... But I never told my psychiatrist friend about that idea.</p><p> <br/> <br/> </p><p> Which word best describes the narrator's feelings about his psychiatrist friend's diagnosis?</p><p><br/> </p>",
+      "option1": "<p> Skeptical</p>",
+      "option2": "<p> Grateful</p>",
+      "option3": "<p> Relieved</p>",
+      "option4": "<p> Enraged</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The best option here is \"a) Skeptical.\" The term \"skeptical\" means having doubts or reservations about something. Since the passage does not reveal the narrator's direct emotional response to the diagnosis, it is reasonable to assume that the narrator might be skeptical about his psychiatrist friend's interpretation of the third level at Grand Central Station and its connection to his desire for escape.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The presidents of the New York Central and the New York, New Haven and Hartford railroads will swear on a stack of timetables that there are only two. But I say there are three, because I’ve been on the third level of the Grand Central Station. Yes, I’ve taken the obvious step: I talked to a psychiatrist friend of mine, among others. I told him about the third level at Grand Central Station, and he said it was a waking dream wish fulfilment. He said I was unhappy. That made my wife kind of mad, but he explained that he meant the modern world is full of insecurity, fear, war, worry and all the rest of it, and that I just want to escape. Well, who doesn’t? Everybody I know wants to escape, but they don’t wander down into any third level at Grand Central Station. But that’s the reason, he said, and my friends all agreed. Everything points to it, they claimed. </p><p> My stamp collecting, for example; that’s a ‘temporary refuge from reality.’ Well, maybe, but my grandfather didn’t need any refuge from reality; things were pretty nice and peaceful in his day, from all I hear, and he started my collection. It’s a nice collection too, blocks of four of practically every U.S. issue, first-day covers, and so on. President Roosevelt collected stamps too, you know. Anyway, here’s what happened at Grand Central. One-night last summer I worked late at the office. I was in a hurry to get uptown to my apartment so I decided to take the subway from Grand Central because it’s faster than the bus. Now, I don’t know why this should have happened to me. I’m just an ordinary guy named Charley, thirty-one years old, and I was wearing a tan gabardine suit and a straw hat with a fancy band; I passed a dozen men who looked just like me. And I wasn’t trying to escape from anything; I just wanted to get home to Louisa, my wife. I turned into Grand Central from Vanderbilt Avenue, and went down the steps to the first level, where you take trains like the Twentieth Century. Then I walked down another flight to the second level, where the suburban trains leave from, ducked into an arched doorway heading for the subway — and got lost. That’s easy to do. I’ve been in and out of Grand Central hundreds of times, but I’m always bumping into new doorways and stairs and corridors. Once I got into a tunnel about a mile long and came out in the lobby of the Roosevelt Hotel. Another time I came up in an office building on Forty-sixth Street, three blocks away. Sometimes I think Grand Central is growing like a tree, pushing out new corridors and staircases like roots. There’s probably a long tunnel that nobody knows about feeling its way under the city right now, on its way to Times Square, and maybe another to Central Park. And maybe — because for so many people through the years Grand Central has been an exit, a way of escape — maybe that’s how the tunnel I got into... But I never told my psychiatrist friend about that idea.</p><p> <br/> <br/> </p><p> Which term can be used to describe the narrator's state of mind when he accessed the third level?</p><p><br/> </p>",
+      "option1": "<p> Anxious</p>",
+      "option2": "<p> Ordinary</p>",
+      "option3": "<p> Ecstatic</p>",
+      "option4": "<p> Confused</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The narrator mentions that he had been in and out of Grand Central Station numerous times before but still often got lost in its complex layout of corridors and doorways. He even compares Grand Central to growing like a tree, pushing out new passages like roots. Given this confusion and the unexpected discovery of the third level, \"confused\" is the most appropriate term to describe the narrator's state of mind during that moment.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> The presidents of the New York Central and the New York, New Haven and Hartford railroads will swear on a stack of timetables that there are only two. But I say there are three, because I’ve been on the third level of the Grand Central Station. Yes, I’ve taken the obvious step: I talked to a psychiatrist friend of mine, among others. I told him about the third level at Grand Central Station, and he said it was a waking dream wish fulfilment. He said I was unhappy. That made my wife kind of mad, but he explained that he meant the modern world is full of insecurity, fear, war, worry and all the rest of it, and that I just want to escape. Well, who doesn’t? Everybody I know wants to escape, but they don’t wander down into any third level at Grand Central Station. But that’s the reason, he said, and my friends all agreed. Everything points to it, they claimed. </p><p> My stamp collecting, for example; that’s a ‘temporary refuge from reality.’ Well, maybe, but my grandfather didn’t need any refuge from reality; things were pretty nice and peaceful in his day, from all I hear, and he started my collection. It’s a nice collection too, blocks of four of practically every U.S. issue, first-day covers, and so on. President Roosevelt collected stamps too, you know. Anyway, here’s what happened at Grand Central. One-night last summer I worked late at the office. I was in a hurry to get uptown to my apartment so I decided to take the subway from Grand Central because it’s faster than the bus. Now, I don’t know why this should have happened to me. I’m just an ordinary guy named Charley, thirty-one years old, and I was wearing a tan gabardine suit and a straw hat with a fancy band; I passed a dozen men who looked just like me. And I wasn’t trying to escape from anything; I just wanted to get home to Louisa, my wife. I turned into Grand Central from Vanderbilt Avenue, and went down the steps to the first level, where you take trains like the Twentieth Century. Then I walked down another flight to the second level, where the suburban trains leave from, ducked into an arched doorway heading for the subway — and got lost. That’s easy to do. I’ve been in and out of Grand Central hundreds of times, but I’m always bumping into new doorways and stairs and corridors. Once I got into a tunnel about a mile long and came out in the lobby of the Roosevelt Hotel. Another time I came up in an office building on Forty-sixth Street, three blocks away. Sometimes I think Grand Central is growing like a tree, pushing out new corridors and staircases like roots. There’s probably a long tunnel that nobody knows about feeling its way under the city right now, on its way to Times Square, and maybe another to Central Park. And maybe — because for so many people through the years Grand Central has been an exit, a way of escape — maybe that’s how the tunnel I got into... But I never told my psychiatrist friend about that idea.</p><p> <br/> <br/> </p><p> What does the narrator compare Grand Central Station's growth to?</p><p><br/> </p>",
+      "option1": "<p> A tree with expanding roots and branches.</p>",
+      "option2": "<p> A rapidly developing city neighbourhood.</p>",
+      "option3": "<p> A tunnel leading to times square.</p>",
+      "option4": "<p> A collection of stamps from different countries.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> In the passage, the narrator mentions that he thinks Grand Central is growing like a tree, pushing out new corridors and staircases like roots. This comparison suggests that the layout of Grand Central Station seems to be continuously expanding and evolving, much like the way a tree grows and extends its roots and branches.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> The presidents of the New York Central and the New York, New Haven and Hartford railroads will swear on a stack of timetables that there are only two. But I say there are three, because I’ve been on the third level of the Grand Central Station. Yes, I’ve taken the obvious step: I talked to a psychiatrist friend of mine, among others. I told him about the third level at Grand Central Station, and he said it was a waking dream wish fulfilment. He said I was unhappy. That made my wife kind of mad, but he explained that he meant the modern world is full of insecurity, fear, war, worry and all the rest of it, and that I just want to escape. Well, who doesn’t? Everybody I know wants to escape, but they don’t wander down into any third level at Grand Central Station. But that’s the reason, he said, and my friends all agreed. Everything points to it, they claimed. </p><p> My stamp collecting, for example; that’s a ‘temporary refuge from reality.’ Well, maybe, but my grandfather didn’t need any refuge from reality; things were pretty nice and peaceful in his day, from all I hear, and he started my collection. It’s a nice collection too, blocks of four of practically every U.S. issue, first-day covers, and so on. President Roosevelt collected stamps too, you know. Anyway, here’s what happened at Grand Central. One-night last summer I worked late at the office. I was in a hurry to get uptown to my apartment so I decided to take the subway from Grand Central because it’s faster than the bus. Now, I don’t know why this should have happened to me. I’m just an ordinary guy named Charley, thirty-one years old, and I was wearing a tan gabardine suit and a straw hat with a fancy band; I passed a dozen men who looked just like me. And I wasn’t trying to escape from anything; I just wanted to get home to Louisa, my wife. I turned into Grand Central from Vanderbilt Avenue, and went down the steps to the first level, where you take trains like the Twentieth Century. Then I walked down another flight to the second level, where the suburban trains leave from, ducked into an arched doorway heading for the subway — and got lost. That’s easy to do. I’ve been in and out of Grand Central hundreds of times, but I’m always bumping into new doorways and stairs and corridors. Once I got into a tunnel about a mile long and came out in the lobby of the Roosevelt Hotel. Another time I came up in an office building on Forty-sixth Street, three blocks away. Sometimes I think Grand Central is growing like a tree, pushing out new corridors and staircases like roots. There’s probably a long tunnel that nobody knows about feeling its way under the city right now, on its way to Times Square, and maybe another to Central Park. And maybe — because for so many people through the years Grand Central has been an exit, a way of escape — maybe that’s how the tunnel I got into... But I never told my psychiatrist friend about that idea.</p><p> <br/> <br/> </p><p> What is the primary theme or message conveyed in the passage?</p>",
+      "option1": "<p> The importance of stamp collecting as a hobby.</p>",
+      "option2": "<p> The allure of escapism in the modern world.</p>",
+      "option3": "<p> The history of Grand Central Station’s development.</p>",
+      "option4": "<p> The challenge of finding hidden tunnels in cities.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Throughout the passage, the narrator discusses his experiences with Grand Central Station, particularly his accidental discovery of the third level, which seems to be a hidden and mysterious place. The narrator's psychiatrist friend interprets this third level as a manifestation of the narrator's desire to escape from the challenges, insecurities, and worries of the modern world. The idea of escapism is further reinforced through the narrator's hobby of stamp collecting, which serves as a \"temporary refuge from reality.\"</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>What is SI unit of magnetic induction?</p>",
+      "option1": "<p>Farad</p>",
+      "option2": "<p>Weber</p>",
+      "option3": "<p>Coulomb</p>",
+      "option4": "<p>Tesla</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Tesla</p><p>Magnetic induction, also called electromagnetic induction refers to the production of voltage (or EMF) across an electrical conductor placed inside a varying magnetic field.</p><p>Farad is SI unit of Electrical Capacity,</p><p>Weber is SI unit of Magnetic Flux,</p><p>Coulomb is SI unit of Electrical Charge.</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p> What is the rank of India in the World Press Freedom Index 2023?</p><p><br/> </p>",
+      "option1": "<p> 150</p>",
+      "option2": "<p> 143</p>",
+      "option3": "<p> 161</p>",
+      "option4": "<p> 147</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 161. </p><p> <br/> </p><p> The rank of India in the World Press Freedom Index 2023 is 161 out of 180 countries. In 2022 it was 150th. Norway, Ireland and Denmark occupied the top three positions. While Vietnam, China and North Korea were at the bottom on the list. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p> Which amongst the following pass is not located in Himachal Pradesh?</p><p><br/> </p>",
+      "option1": "<p> Bara-La</p>",
+      "option2": "<p> Nathu-La</p>",
+      "option3": "<p> Cha-La</p>",
+      "option4": "<p> Shipki-La</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Nathu-La. It is located in Sikkim. Bara-La, Cha-La and Shipki-La are located in Himachal Pradesh. </p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Which of the following statements are correct regarding the benefits of the retired President of India?</p><p>A. The former President of India will also be entitled to a monthly pension of ₹1.5 lakh.</p><p>B. He/She is entitled to a secretarial staff comprising a private secretary, a personal assistant, an additional private secretary, two peons, and office expenses up to ₹1 lakh per annum.</p><p>C. He/She is also entitled to free highest-class travel anywhere in India, accompanied by one person, by rail, air, or steamer.</p>",
+      "option1": "<p>A and B only</p>",
+      "option2": "<p>A, B and C</p>",
+      "option3": "<p>B and C only</p>",
+      "option4": "<p>A and C only</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. Statement A is wrong because the former President of India is entitled to a monthly pension of ₹2.5 lakh. Statement B and C are correct about President.</p><p>Important articles related to President of India:</p><p>Article 52: The President of India, Article 53: Executive power of the Union.</p><p>Article 54: Election of President Article 55: Manner of election of President.</p><p>Article 56: Term of office of President Article 57: Eligibility for re-election.</p><p>Article 58: Qualifications for election as president</p><p>Article 59: Conditions of President’s office Article 60: Oath or affirmation by the President Article 61: Procedure for impeachment of the President</p><p>Article 62: Time of holding election to fill vacancy in the office of President.</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p> Which of the following is considered a Revenue expense?</p><p><br/> </p>",
+      "option1": "<p> Subsidies</p>",
+      "option2": "<p> Construction of ports and highways</p>",
+      "option3": "<p> Construction of school buildings</p>",
+      "option4": "<p> the money given by the government in the form of loans to states or repayment of its borrowings.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Revenue expenditure: It is the expenditure by the government which does not impact its assets or liabilities. For example, this includes salaries, interest, payments, pensions, and administrative expenses. </p><p> Capital Expenditure: It is used to create assets or to reduce liabilities. It consists of: </p><p> ) the long-term investments by the government on creating assets such as roads and hospitals, and</p><p> the money given by the government in the form of loans to states or repayment of its borrowings.</p><p> Construction of Ports, highway and school buildings they all comes in Capital expenditure. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p> Namami Gange Programme was launched in------------?</p><p><br/> </p>",
+      "option1": "<p> May 2014</p>",
+      "option2": "<p> June 2014</p>",
+      "option3": "<p> July 2014</p>",
+      "option4": "<p> Aug 2015</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. The Namami Gange Programme is an Integrated Conservation Mission, approved as ‘Flagship Programme’ by the Union Government in June 2014 with budget outlay of Rs.20,000 Crore to accomplish the twin objectives of effective abatement of pollution, conservation and rejuvenation of National River Ganga.</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p> In which year was the Estimates Committee constituted for the first time in India?</p><p><br/> </p>",
+      "option1": "<p> 1948</p>",
+      "option2": "<p> 1949</p>",
+      "option3": "<p> 1947</p>",
+      "option4": "<p> 1950</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 1950. </p><p> The first Estimates Committee in the post-independence era was constituted in 1950. Originally, it had 25 members but in 1956 its <b>membership was raised to 30. All the thirty members are from Lok Sabha only.</b> The Rajya Sabha has no representation in this committee. The function of the committee is to examine the estimates included in the budget and suggest ‘economies’ in public expenditure. Hence, it has been described as a ‘<b>continuous economy committee’.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>What is the rank of India in Human Development Report(HDI) in 2023-24?</p>",
+      "option1": "<p>130</p>",
+      "option2": "<p>126</p>",
+      "option3": "<p>135</p>",
+      "option4": "<p>134</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 134. India’s rank in HDI index is 134. It was 132th in 2022, 130th in 2020. </p><p>HDI is a composite index that measures average achievement in human development taking into account four indicators: </p><p>1. Life expectancy at birth (Sustainable Development Goal 3).</p><p>2. Expected ears of schooling (Sustainable Development Goal 4.3).</p><p>3. Mean years of schooling (Sustainable Development Goal 4.4).</p><p>4. Gross national income (GNI) (Sustainable Development Goal 8.5).</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p> The 2nd Buddhist council was held in the reign of which of the following king?</p><p><br/> </p>",
+      "option1": "<p> Kanishka</p>",
+      "option2": "<p> Ajatashatru</p>",
+      "option3": "<p> Ashoka</p>",
+      "option4": "<p> Kalashoka</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Kalashoka. </p><p> <br/> </p><p> 2nd Buddhist council was held in 383 BC in Vaishali in the Patronage of Kalashoka. Sabbakami was the chairman of the council. </p><p> First Council: It was <b>held soon after the Mahaparinirvan</b> of the Buddha, around <b>483 BC</b> <b>under the patronage of</b> <b>King Ajatshatru</b> and was presided by Mahakasyapa, a monk. It was held in the Sattapani cave at Rajgriha. </p><p> Third Council: It was held in 250 BC in<b> Patliputra</b> <b>under the</b> <b>patronage of Ashoka</b> and was presided by Moggaliputta Tissa. </p><p> Fourth Council: It was held in 72 AD at<b> Kundalvana, Kashmir</b>. It was presided by Vasumitra, while<b> Asvaghosa </b>was his deputy under the patronage of King Kanishka of Kushan Empire. In this council Buddhism was divided into two sects namely Mahayan and Hinayan. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p> Which of the following options is correct regarding sexually transmitted disease (STD)?</p><p> <br/> </p><p> Statement A: Sexually transmitted diseases (STDs) are infections transmitted from an infected person to an uninfected person through sexual contact.</p><p> Statement B: HIV, HPV and Hepatitis B virus is responsible for STD.</p><p><br/> </p>",
+      "option1": "<p> Only Statement B is correct</p>",
+      "option2": "<p> Both Statements A and B incorrect</p>",
+      "option3": "<p> Only Statement A is correct</p>",
+      "option4": "<p> Both Statements A and B correct</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Sexually transmitted diseases (STDs), or sexually transmitted infections (STIs), are infections that are passed from one person to another through sexual contact. HIV, HPV and Hepatitis B virus is responsible for STD.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p> Which of the following is the longest river bridge of India? </p><p><br/> </p>",
+      "option1": "<p> Dhola Sadiya Bridge</p>",
+      "option2": "<p> Dibang River Bridge</p>",
+      "option3": "<p> Mahatma Gandhi Setu</p>",
+      "option4": "<p> Bogibeel Bridge</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Dhola Sadiya Bridge. The Bhupen Hazarika Setu is another name for the Dhola Sadiya Bridge. The Dhola Sadiya Bridge, which spans the great Brahmaputra, is now the longest bridge above water in India. The 9.15 kilometre long bridge, which Prime Minister Narendra Modi opened, connects Assam and Arunachal Pradesh. It shortens the journey by five hours and 165 kilometres between Assam and Arunachal Pradesh. </p><p> <br/> </p><p> Dibang River Bridge is at the 2nd Position with the length of 6.2 Km, Mahatma Gandhi Setu Bridge is at 3rd position with the length of 5.75 Km and Bgibeel Bridge is at 5th position with length 4.94 Km. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p> Which amongst the following is not a quality of Prokaryotes?</p><p><br/> </p>",
+      "option1": "<p> It contains single chromosome which is circular in shape.</p>",
+      "option2": "<p> Nucleus is present.</p>",
+      "option3": "<p> Membrane bound cell organelles are absent.</p>",
+      "option4": "<p> Size of cell is generally small compare to the size of cell of Eukaryotes.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Nucleus is absent in the Prokaryotes. It is present in Eukaryotes. Other three option are correct about Prokaryotes. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p> Who was the founder of Gupta dynasty?</p><p><br/> </p>",
+      "option1": "<p> Chandragupta I</p>",
+      "option2": "<p> Sri Gupta</p>",
+      "option3": "<p> Ghatotkach</p>",
+      "option4": "<p> Samudragupta</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Sri Gupta. He was the founder of Gupta dynasty. The period of Gupta is referred as the ‘Classical Age’ or ‘Golden age’ of ancient India and was perhaps the most Prosperous era in the Indian History. </p><p> Famous ruler of Gupta Dynasty: Chandragupta I, Samudragupta, Chandragupta II (Vikramaditya), Kumaragupta and Skandagupta. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p> Which article of Indian Constitution is related to the Formation of new States and alteration of areas, boundaries or names of existing States?</p><p><br/> </p>",
+      "option1": "<p> Article 2</p>",
+      "option2": "<p> Article 3</p>",
+      "option3": "<p> Article 8</p>",
+      "option4": "<p> Article 10</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Article 3. It empowers Parliament to make decisions in accordance with the law regarding any changes or alterations required in the areas, boundaries, or names of existing States. </p><p> Article 2: “Parliament may by law admit into the Union, or establish, new States on such terms and conditions as it thinks fit.” </p><p> Article 8: Citizenship of certain persons of Indian origin residing outside India. This article deals with the rights of people of Indian origin residing outside India for purposes of employment, marriage, and education. </p><p> Article 10: Any person who is considered a citizen of India under any of the provisions of this Part shall continue to be citizens and will also be subject to any law made by the Parliament.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p> Deficiency of which of the following vitamins causes excessive bleeding from wounds?</p><p><br/> </p>",
+      "option1": "<p> Vitamin K</p>",
+      "option2": "<p> Vitamin A</p>",
+      "option3": "<p> Vitamin D</p>",
+      "option4": "<p> Vitamin E</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Vitamin K. </p><p> Vitamin K is important for blood clotting and bone health. The main symptom of a vitamin K deficiency is excessive bleeding. Conditions that can lead to a deficiency include celiac disease and cystic fibrosis. </p><p> Vitamin A deficiency diseases: Night blindness, Dry Skin, Dry Eyes, Infertility, Delayed growth, etc. </p><p> Vitamin D deficiency can lead to a loss of bone density, which can contribute to osteoporosis and fractures (broken bones). In children, it causes the bones to become soft and bend. </p><p> Vitamin E deficiency may cause impaired reflexes and coordination, difficulty walking, and weak muscles.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p> Shallbugh Wetland Conservation Reserve is located in which state?</p><p><br/> </p>",
+      "option1": "<p> Tamil Nadu</p>",
+      "option2": "<p> Jammu and Kashmir</p>",
+      "option3": "<p> Maharashtra</p>",
+      "option4": "<p> Uttar Pradesh</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Jammu and Kashmir. Shallbugh Wetland Conservation Reserve lies west of Anchar Lake in the Sindh river delta. This shallow wetland is primarily fed by rainfall, snowmelt from the Kashmir Himalayas, and stream water flowing from the Sindh river and Anchar Lake. It is 75th Ramsar sites of India. </p><p> Top 5 Ramsar Sites in India: Sunderbans Wetland (West Bengal), Vembanad Kol Wetland (Kerala), Chilika Lake(Odisha), Kolleru Lake(Andhra Pradesh), Bhitarkanika Mangroves (Odisha). </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p> Identify which of the following statements are correct.</p><p> <br/> </p><p> 1.The Sun is at the centre of the Solar System. </p><p> 2. The Sun is the composed of 71% Hydrogen, 26.5% Helium and 2.5% other elements. </p><p> 3. Hydrogen and Helium are the main gases present in the Sun. </p><p><br/> </p>",
+      "option1": "<p> 2 and 3 only</p>",
+      "option2": "<p> 1 and 2 only</p>",
+      "option3": "<p> 1 and 3 only</p>",
+      "option4": "<p> 1, 2 and 3</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> All of the above statement are correct. The Sun is at the centre of the Solar system. Its size is thirteen lakh times as that of the Earth. It is the nearest star to the Earth. It is an ultimate energy for life on Earth. Its diameter is 14 lakh kms. The outer layer of sun’s atmosphere made up of thin hot gases, is called Corona. Corona is visible only during a total eclipse of the sun. The sequence of planets according to their distance from the Sun is Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p> If the radius of the current carrying wire is doubled then it’s resistance will:</p><p><br/> </p>",
+      "option1": "<p> increase by 4 times</p>",
+      "option2": "<p> decrease by 4 times</p>",
+      "option3": "<p> increase by 2 times</p>",
+      "option4": "<p> remain same</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690282536837_html_7395d79a40f3790c.gif"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p> The statement “pressure exerted by a gas (of a given mass, kept at a constant temperature) is inversely proportional to the volume occupied by it” is known as:</p><p><br/> </p>",
+      "option1": "<p> Charle’s law</p>",
+      "option2": "<p> Boyle’s law</p>",
+      "option3": "<p> Pascal’s law</p>",
+      "option4": "<p> Avogadro’s law</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Boyle’s law. Boyles law states that the pressure exerted by a gas (of a given mass, kept at a constant temperature) is inversely proportional to the volume occupied by it. In other words, the pressure and volume of a gas are inversely proportional to each other as long as the temperature and the quantity of gas are kept constant. </p><p> Charle’s law: It states that e volume of a given mass of gas varies directly with the absolute temperature of the gas when pressure is kept constant. </p><p> Pascal’s law: “The external static pressure applied on a confined liquid is distributed or transmitted evenly throughout the liquid in all directions”. </p><p> Avogadro’s law: under the same conditions of temperature and pressure, equal volumes of different gases contain an equal number of molecules.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p> What is rank of India in GDP?</p><p><br/> </p>",
+      "option1": "<p> 4th </p>",
+      "option2": "<p> 5th </p>",
+      "option3": "<p> 6th </p>",
+      "option4": "<p> 8th </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 5th. India is the world’s fifth-largest economy by nominal GDP and the third-largest by Purchasing Power Parity (PPP). United States is at the top position and followed by China, Japan, Germany and India respectively.</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>Which of the following is a Kharif Fasal?</p>",
+      "option1": "<p>Maize</p>",
+      "option2": "<p>Barley</p>",
+      "option3": "<p>Mustard</p>",
+      "option4": "<p>Peas</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The Kharif cropping season starts with the onset of the Indian subcontinent’s monsoon. Kharif crops are typically sown at the beginning of the first monsoon rains (depending on region to region). Harvesting season begins from the 3rd week of September to October (the exact harvesting dates differ from region to region). Examples: Rice, Maize, Sorghum, Bajra, Soybean, Cotton, etc.</p><p>Rabi Crops: Rabi crops are known as winter crops. They are grown in October or November. Examples: Wheat, Barley, Oats, Pulses, Mustard, Linseed, etc.</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p> Which part of the Constitution of India consists of the idea of a Welfare State?</p><p><br/> </p>",
+      "option1": "<p> Fundamental Rights</p>",
+      "option2": "<p> Preamble</p>",
+      "option3": "<p> Fundamental Duties</p>",
+      "option4": "<p> Directive Principles of State Policy</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Directive Principles of State Policy. DPSP talks about Welfare state. The Directive Principles of State Policy (DPSP) are a set of guidelines that the Indian Constitution lays down for the government to promote social welfare and economic equality in the country.</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p> Which state is most populated district of India?</p><p><br/> </p>",
+      "option1": "<p> Thane</p>",
+      "option2": "<p> Bangalore</p>",
+      "option3": "<p> North Twenty Four Paraganas</p>",
+      "option4": "<p> Pune</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Thane. </p><p> Thane is the most populated district of India with population 11060148. North 24 Parganas is at 2nd position, Bangalore is at 3rd Position and Pune is at 4th position in the most populated districts list. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p> Which of the following is not a folk dance of Uttar Pradesh?</p><p><br/> </p>",
+      "option1": "<p> Charkula</p>",
+      "option2": "<p> Kathak</p>",
+      "option3": "<p> Kajri</p>",
+      "option4": "<p> Bidesiya</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Bidesiya. It is a folk dance of Bihar. Bidesiya is a form of dance-drama that is believed to have been created by Bhikhari Thakur, a barber with a passion for drama. It deals with social issues and conflict between traditional and modern, rich and poor. </p><p> Charkula, Kathak and Kajri are folk dance of Uttar Pradesh. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p> A Book titled “Kathakali Dance Theatre: A Visual Narrative of Sacred Indian Mime” is written by whom?</p><p><br/> </p>",
+      "option1": "<p> Dr. Vijay Darda</p>",
+      "option2": "<p> Satish Chandra</p>",
+      "option3": "<p> KK Gopalakrishnan</p>",
+      "option4": "<p> Ruskin Bond</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is KK Gopalakrishnan. <b>KK Gopalakrishnan</b> has recently released a captivating book titled<b> “Kathakali Dance Theatre: A Visual Narrative of Sacred Indian Mime.”</b> The book offers a behind-the-scenes look into the world of Kathakali, focusing on the green room, artists’ struggles, and the unique bonds forged during long make-up hours. </p><p> Ruskin Bond has written new book titled “The Golden Years”.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>457, 474, 493, ? ,545</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image002.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image003.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image004.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image005.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image006.png",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image004.png"
+    },
+    {
+      "sr_no": 103,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image007.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image008.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image009.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image010.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image011.png",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image010.png"
+    },
+    {
+      "sr_no": 104,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image012.png"
+    },
+    {
+      "sr_no": 105,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image013.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image014.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image015.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image016.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image017.png",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image017.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image018.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image019.png"
+    },
+    {
+      "sr_no": 107,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image020.png"
+    },
+    {
+      "sr_no": 108,
+      "question": "<p>After a long negotiation, they finally reached a COACRD that satisfied both parties.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Accord is correct word.</p>"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>1. Talisman</p><p>2. Tantamount</p><p>3. Tangential</p><p>4. Tantalizing</p><p>5. Taciturn</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Correct rearrangement is:</p><p>4,5,1,3,4,2</p>"
+    },
+    {
+      "sr_no": 110,
+      "question": "",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image021.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image022.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image023.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image024.png",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image022.png"
+    },
+    {
+      "sr_no": 111,
+      "question": "<p>Statements:</p><p>All actresses are silver.</p><p>All silvers are gold.</p><p>All bronzes are gold.</p><p>Conclusion:</p><p>I. Some silvers are bronze.</p><p>II. Some bronzes are actresses. </p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image025.png"
+    },
+    {
+      "sr_no": 112,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image018.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image019.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "<p>Statement: during peak hours, there has been a notable rise in traffic congestion within the city.</p><p>Courses of Action:</p><p>I. Enhance the public transportation system and its offerings to present feasible alternatives to individuals’ cars.</p><p>II. Impose substantial penalties on individual drives during periods of high traffic volume.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The given statement is talking about to during peak hours, there has been a notable rise in traffic congestion within the city.</p><p>Conclusion I is talking about enhance the public transportation system and its offerings to present feasible alternatives to individuals’ cars. Which can reduce the traffic during the peak hours. So, conclusion I is correct.</p><p>Conclusion II is talking about to impose substantial penalties on individual drives during periods of high traffic volume. This conclusion doesn’t sound logical. So, this conclusion does not follow.</p><p>Hence, only conclusion I follow the given statement.</p>"
+    },
+    {
+      "sr_no": 114,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image026.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image027.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image028.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image029.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image030.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image031.png",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image030.png"
+    },
+    {
+      "sr_no": 116,
+      "question": "<p>Which two numbers should be interchanged to make the following equation correct?</p><p>96 ÷ 6 ─ 2 × 8 + 32 = 32</p>",
+      "option1": "<p>6 and 8</p>",
+      "option2": "<p>2 and 6</p>",
+      "option3": "<p>32 and 6</p>",
+      "option4": "<p>8 and 2</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image035.png"
+    },
+    {
+      "sr_no": 117,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image036.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "<p> ECF, JHK, ? , TRU, YWZ</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image037.png"
+    },
+    {
+      "sr_no": 119,
+      "question": "<p>IDF, NIK, ? , UPR, WRT, XSU</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image038.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>102 + 17 − 12 × 27 ÷ 34 =?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image039.png"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>Statement:</p><p>India’s largest lender bank has announced that it will be allowing customers to exchange ₹2,000 notes without a requisition slip for amounts up to ₹30,000.</p><p>Conclusions:</p><p>I. No one will be allowed to withdraw an amount of more than ₹30,000.</p><p>II. No requisition slip is required for exchange of up to ₹30,000.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Given statement is talking about India’s largest lender bank has announced that it will be allowing customers to exchange ₹2,000 notes without a requisition slip for amounts up to ₹30,000.</p><p>While Conclusion I is talking about “No one will be allowed to withdraw an amount of more than ₹30,000” which is not given in the statement. therefore, conclusion I doesn’t follow the statement.</p><p>Conclusion II is talking about “No requisition slip is required for exchange of up to ₹30,000” and this conclusion sounds logical. So, conclusion II follows the statement.</p><p>Hence, only conclusion II follows the statement.</p>"
+    },
+    {
+      "sr_no": 122,
+      "question": "<p>The ETNSIL night was interrupted only by the gentle rustling of leaves in the breeze.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>SILENT is the correct answer.</p>"
+    },
+    {
+      "sr_no": 123,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image040.png"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>Pulp : Paper : : Sugarcane : ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Like pulp is related to paper as well jaggery is related to sugarcane.</p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image041.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image042.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image043.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image044.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image045.png",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image043.png"
+    },
+    {
+      "sr_no": 126,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except d, all are synonyms.</p>"
+    },
+    {
+      "sr_no": 127,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image046.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image047.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image048.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image049.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image050.png",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image050.png"
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>8 : 504 : : 4 : 60 : : 6 : ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523717852_image051.png"
+    },
+    {
+      "sr_no": 129,
+      "question": "<p>I. Elizabeth is on her way, which is great news.</p><p>II. Censor board has lifted up the objections from Om Raut’s film.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>It can’t be derived from these two sentences that Elizabeth is Om Raut’s film. Both I and II are effects of some causes.</p><p>Hence, both I and II are effects of independent causes.</p>"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p>Statement:</p><p>The new government policy aims to reduce carbon emissions by 50% within the next decade.</p><p>Conclusions:</p><p>I. The government will ban all the vehicles that run on fossil fuel immediately.</p><p>II. The government will shut down all the coal-fired power plants.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Given statement is talking about “The new government policy aims to reduce carbon emissions by 50% within the next decade”.</p><p>Conclusion I is talking about “The government will ban all the vehicles that run on fossils fuel immediately”. Immediately ban of fossils fuel is not possible. Therefore, conclusion I doesn’t follows the statement.</p><p>Conclusion II is talking about “The government will shut down all the coal-fired power plants”. This conclusion is also possible. Therefore, conclusion II doesn’t follow the statement.</p><p>Hence, neither conclusion I nor II follow the statement.</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 9</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

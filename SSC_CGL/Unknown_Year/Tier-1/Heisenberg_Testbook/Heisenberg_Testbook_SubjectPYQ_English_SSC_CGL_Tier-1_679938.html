@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Simple and Compound Both</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">45:00:00</div>
+      <div class="hdr-testname">Simple and Compound Both</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Simple and Compound Both</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Simple and Compound Both</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Simple and Compound Both</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">45:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 3, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "A sum of Rs 2,432 amounts to Rs 2,681.28 in 2 years at a certain rate percent per annum, interest compounded yearly. What will be simple interest (in Rs) on the same sum for&nbsp;<span class=\"math-tex\">\\(4\\frac{3}{8}\\)</span>&nbsp;years at double the same rate?", "comp": "", "opts": ["1,094.40", "1,276.80", "1,064", "1,368"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Rs. 2,432 amounts to Rs.2,681.28 in 2 years&nbsp;</p>\n\n<p><strong>Formulas used:</strong></p>\n\n<p>When the interest is compounded annually&nbsp;</p>\n\n<p>A = P (1 + r/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">n</span></p>\n\n<p>Simple interest = P&nbsp;&times; R/100&nbsp;&times; Time&nbsp;</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>A = P (1 + r/100)<sup>n</sup></p>\n\n<p>&rArr; 2681.28 = 2432 (1 + r/100)<sup>2</sup></p>\n\n<p>&rArr;&nbsp;2681.28/2432 = [(100 + r)/100]<sup>2</sup></p>\n\n<p>&rArr; 441/400 =&nbsp;[(100 + r)/100]<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span></p>\n\n<p>&radic;441/400 =&nbsp;(100 + r)/100</p>\n\n<p>&rArr; 21/20 =&nbsp;(100 + r)/100</p>\n\n<p>&rArr; 105 = 100 + r&nbsp;</p>\n\n<p>&rArr; r = 5%</p>\n\n<p>Simple Interest on Rs.2432 at 10% p.a. for&nbsp;<span class=\"math-tex\">\\(4\\frac{3}{8}\\)</span>&nbsp;years.&nbsp;</p>\n\n<p>&rArr; SI = 2432&nbsp;&times; 10/100&nbsp;&times; 35/8&nbsp;</p>\n\n<p><strong>&there4; Simple interest = Rs.1064</strong></p>\n", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "A man invested \u20b94,500 at 5% per annum and \u20b95,500 at 8% per annum simple interest. Both investments were for 4 years each. The amount received from the lower rate of interest is what per cent (rounded off to the nearest integer) of the amount received from the higher rate of interest?", "comp": "", "opts": ["63%", "74%", "51%", "48%"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">The simple interest got by the person is\u00a0 \u00a0\u21d2\u00a0\u00a04500\u00a0\u00d7 5\u00a0\u00d7 4\u00a0/ 100 = 900</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The simple interest got by the person is\u00a0 \u00a0\u21d2\u00a0 5500\u00a0\u00d7 8\u00a0\u00d7 4\u00a0/ 100 = 1760</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">\u200b</span><span style=\"color: rgb(33, 37, 41);\">% of lower SI w.r.t. higher SI\u00a0</span>will be (900/1760)\u00a0\u00d7 100 \u21d2 51%\u00a0<br />\nBut\u00a0<span style=\"color: rgb(33, 37, 41);\">\u200b% of lower and higher amounts =(5400/7260)\u00a0\u00d7 100<br />\n=\u00a074%</span></p>\n", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "A man invested a total of Rs.12,050 in two parts, one at 10% p.a. simple interest for 2 years and the other at the same rate at compound interest, interest being compounded annually, for the same time. The amounts he received from both the parts are equal. The sum (in Rs.) invested at the compound interest is:", "comp": "", "opts": ["5,780", "6,000", "5,800", "5,850"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total investment = Rs.12050</p>\n\n<p>Rate of interest = 10%&nbsp;</p>\n\n<p>Time = 2 years&nbsp;</p>\n\n<p><strong>Formulas used:</strong></p>\n\n<p>Simple Interest = Principal&nbsp;&times; Time&nbsp;&times; Rate/100&nbsp;</p>\n\n<p>Amount = Principal + Simple Interest&nbsp;</p>\n\n<p>In Compound Interest; Amount = Principal&nbsp;&times; (1 + R/100)<sup>n</sup></p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let the sum invested at compound interest be = y&nbsp;</p>\n\n<p>&rArr; Sum invested at simple interest = 12050 - y&nbsp;</p>\n\n<p>As per the question;</p>\n\n<p>(12050 - y) + (12050 - y) &times; 10/100&nbsp;&times; 2 = y&nbsp;&times; (1 + 10/100)<sup>2</sup></p>\n\n<p>&rArr;&nbsp;(12050 - y) [1 + 1/5] = y&nbsp;&times; 11/10&nbsp;&times; 11/10&nbsp;</p>\n\n<p>&rArr;&nbsp;(12050 - y) &times; 6/5&nbsp;= y&nbsp;&times; 121/100&nbsp;</p>\n\n<p>&rArr; 12050 &times; 6/5 - y &times;&nbsp;6/5&nbsp;= y&nbsp;&times; 121/100&nbsp;</p>\n\n<p>&rArr;14460 = 121y/100 + 6y/5</p>\n\n<p>&rArr; 14460 = (121y + 120y)/100&nbsp;</p>\n\n<p>&rArr; 14460 = 241y/100&nbsp;</p>\n\n<p>&rArr;y = (14460&nbsp;&times; 100)/241&nbsp;</p>\n\n<p>&rArr; y = 6000&nbsp;</p>\n\n<p><strong>&there4; The sum invested on compound interest is Rs.6000.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span>Equivalent rate of interest in the case of CI&nbsp;</p>\n\n<p>&rArr; 10 + 10 + (10&nbsp;&times; 10)/100 = 21%</p>\n\n<p>Let a and b be the sum invested on SI and CI.</p>\n\n<p>a + (a&nbsp;&times; 2&nbsp;&times; 10)/100 = b + (b&nbsp;&times; 21)/100</p>\n\n<p>&rArr; a/b = 121/120</p>\n\n<p>(121 + 120) units = 12050</p>\n\n<p>&rArr; 241 units = 12050</p>\n\n<p>&rArr; 1 unit = 12050/241 = 50</p>\n\n<p>The sum invested on CI = 120 units = 50&nbsp;&times; 120</p>\n\n<p>&rArr; Rs. 6000</p>\n\n<p><span style=\"font-weight: 700; \">&nbsp;The sum invested on compound interest is Rs.6000.</span></p>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "A sum lent out at compound interest amounts to Rs. 1,250 in one year and to Rs. 1,458 in 3 years at a certain rate percentage p.a. What is the simple interest on the same sum for <span class=\"math-tex\">\\(5\\frac{2}{5}\\)</span>&nbsp;years at the same rate of interest?", "comp": "", "opts": ["Rs. 480", "Rs. 500", "Rs. 520", "Rs. 600"], "cidx": 1, "sol": "<p>As we know,</p>\n\n<p>A = P (1 + r/100)<sup>t</sup></p>\n\n<p>&rArr; 1250 = P (1 + r/100)<sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---(1)</p>\n\n<p>Again</p>\n\n<p>&rArr; 1458 = P (1 + r/100)<sup>3</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ---(2)</p>\n\n<p>From equation (1) and equation (2)</p>\n\n<p>1458/1250 = [P (1 + r/100)<sup>3</sup>]/[P (1 + r/100)<sup>1</sup>]</p>\n\n<p>&rArr; 729/625 = (1 + r/100)<sup>2</sup></p>\n\n<p>&rArr; &radic;729/625 = 1 + r/100</p>\n\n<p>&rArr; 27/25 - 1 = r/100</p>\n\n<p>&rArr; r/100 = 2/25</p>\n\n<p>&rArr; r = 2/25 &times; 100</p>\n\n<p>&rArr; r = 8%</p>\n\n<p>From equation (1)</p>\n\n<p>1250 = P (1 + 8/100)</p>\n\n<p>&rArr; P = 1250 &times; 25/27</p>\n\n<p>&rArr; P = (1250 &times; 25)/27</p>\n\n<p>Again,</p>\n\n<p>Time = 27/5 and R = 8%</p>\n\n<p>SI = Prt/100</p>\n\n<p>SI = (1250 &times; 25 &times; 27 &times; 8)/(100 &times; 5 &times; 27)</p>\nSI = 500", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "S borrowed some amount from R and promised to pay him 8% interest. Then S invested the borrowed amount in a scheme, upon which he earned a profit of 5% after paying R, the principal amount with interest. How much percentage R would have gained, if he would have invested in the scheme directly?", "comp": "", "opts": ["13.4%", "13%", "14.4%", "14%"], "cidx": 1, "sol": "<p>Let the borrowed amount be P</p>\n\n<p>Interest paid to R = 0.08P</p>\n\n<p>Total amount paid to R = 1.08P</p>\n\n<p>Profit earned by S after paying R = 0.05P</p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Total earnings of S = 1.13P</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Profit percentage if R invested directly = 13%.</span></p>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "A certain sum becomes Rs. 13650 at 15% p.a. simple interest after 2 years. What will be the amount (in Rs.) of the same sum after 1 year at the same rate of interest, if the interest is compounded half yearly? (nearest to a Rs.)", "comp": "", "opts": ["10500", "11000", "13625", "12134"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Amount = Rs. 13650</p>\n\n<p>Rate of Interest = 15%</p>\n\n<p>Time = 2 Years</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>S.I = PRT/100</p>\n\n<p>Amount = Principal + S.I</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let the Principal be Rs. x</p>\n\n<p>S.I = Rs. (13650&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>x)</p>\n\n<p>According to the question,</p>\n\n<p>&rArr; (x&nbsp;&times; 15&nbsp;&times; 2)/100 = 13650&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>x</p>\n\n<p>&rArr; 3x/10 = 13650&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>x</p>\n\n<p>&rArr; 3x = 136500&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>10x</p>\n\n<p>&rArr; 13x = 136500</p>\n\n<p>&rArr; x = 10500</p>\n\n<p>Now, if rate of interest is compounded half yearly, the interest becomes half and Time becomes twice</p>\n\n<p>So, Rate of interest = 15%&nbsp;&divide; 2 = 7.5%</p>\n\n<p>Time period = 1&nbsp;&times; 2 = 2 years</p>\n\n<p>Now, amount after 1 year = Rs. 10500&nbsp;&times; (107.5/100)<sup>2</sup></p>\n\n<p>&rArr; Rs. 12134.0625&nbsp;&asymp; Rs. 12134</p>\n\n<p><strong>&there4; Amount becomes Rs. 12134 after 1 year if compounded half yearly</strong></p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "Peter invested a certain sum of money in a scheme paying 10% simple interest per annum, while Rachel invested half of the sum that Peter invested in a scheme paying 10% interest per annum compounded annually. Also, while Peter invested for 2 years, Rachel invested for 3 years. If the difference in the interest earned by Peter and Rachel was Rs. 897, what was the sum that Rachel had invested?", "comp": "", "opts": ["Rs.&nbsp;13,000", "Rs.&nbsp;12,900", "Rs.&nbsp;13,100", "Rs.&nbsp;12,960"], "cidx": 0, "sol": "<p>Let's denote Peter's principal (the sum he invested) as (P) \u21d2 SI\u00a0= <span class=\"math-tex\">\\(\\frac{P\\times 2\\times10}{100}\\)</span>\u00a0=\u00a0<span class=\"math-tex\">\\(\\frac{P}{5}\\)</span></p>\n\n<p>Rachel's principal = (P/2) \u21d2 CI = <span class=\"math-tex\">\\( \\frac{P}{2}[(1 + \\frac{10}{100})^3 - 1]\\)</span>\u00a0\u21d2 CI =\u00a0<span class=\"math-tex\">\\( \\frac{P}{2}[(\\frac{11}{10})^3 - 1]\\)</span>\u00a0=\u00a0<span class=\"math-tex\">\\( \\frac{P}{2}[0.331]\\)</span></p>\n\n<p>Interest Difference =\u00a0897</p>\n\n<p><span class=\"math-tex\">\\(\\frac{P}{5}\\)</span>\u00a0-\u00a0<span class=\"math-tex\">\\( \\frac{P}{2}[0.331]\\)</span>\u00a0= 897\u00a0\u21d2\u00a0P = Rs. 26000</p>\n\n<p>The sum that Rachel had invested =P/2 = 26000/2 =\u00a0\u00a0Rs. 13,000.</p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "A sum of Rs. 12,000 is invested for 15 months at 10% per annum compounded half yearly. What is the percentage gain, at the end of 15 months, correct to one decimal place?", "comp": "", "opts": ["13.0%", "13.1%", "12.8%", "12.9%"], "cidx": 0, "sol": "<p>Suppose P = Principal, R = rate of interest and N = time</p>\n\n<p>Compound interest calculated half yearly = P(1 + (R/2)/100)<sup>2n</sup> &ndash; 1</p>\n\n<p>Given,</p>\n\n<p>Time = 1 year and 3 months</p>\n\n<p>Amount = 12000(1 + 5/100)<sup>2</sup> = 13230</p>\n\n<p>Simple Interest = (13230 &times; 3/12 &times; 10)/100 = 330.75</p>\n\n<p>Amount after 15 months = 13230 + 330.75 = Rs.13560.75</p>\nPercentage increase = (13560.75 &ndash; 12000) / (12000) &times; 100 = 13.0%", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "A certain sum amounts to \u20b9 11,520 in 4 years at the rate of 15% p.a. simple interest. what will be the amount of the same sum in 2 years at the same rate, if the interest is compounded 8-monthly (nearest to a \u20b9)?", "comp": "", "opts": ["\u20b9 9,338", "\u20b9 9,583", "\u20b9 9,853", "\u20b9 9,538"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>Amount =&nbsp;<span style=\"\">\u20b9 11,520&nbsp;</span></p>\n\n<p>T = 4 years, R = 15% p.a. simple interest</p>\n\n<p><strong>Concept Used:</strong></p>\n\n<p>SI = (P &times; R &times; T)/100</p>\n\n<p>Where, P&nbsp;is principal, r is rate of interest&nbsp;</p>\n\n<p>If p be the principal, r be the rate of interest then the interest compounded 8 monthly then compound interest will be P x [(1 + r/100)<sup>3</sup>&nbsp;- 1]</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>SI = PRT/100</p>\n\n<p>= P x 15 x (4/100)</p>\n\n<p>= 3P/5</p>\n\n<p>Amount = P + SI</p>\n\n<p>&rArr; 11520&nbsp;= P + 3P/5</p>\n\n<p><span style=\"\">&rArr; P</span>&nbsp;= 7200</p>\n\n<p>Time = 3years (compounded 8 monthly)</p>\n\n<p>Rate = 15/12 x 8 = 10%</p>\n\n<p>CI =&nbsp;<span style=\"\">P x [(</span><span style=\"\">1 + r/100)</span><span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">3</span><span style=\"\">&nbsp;- 1]</span></p>\n\n<p><span style=\"\">= 7200 x&nbsp;[(</span><span style=\"\">1 + 10/100)</span><span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">3</span><span style=\"\">&nbsp;- 1]</span></p>\n\n<p>= 2383</p>\n\n<p>Amount = 7200 + 2383</p>\n\n<p>= 9583</p>\n\n<p><strong>Therefore,&nbsp;<span style=\"\">the amount of the same sum in 2 years at the same rate, if the interest is compounded 8-monthly is&nbsp;\u20b99583</span></strong></p>\n\n<p><strong><span style=\"\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/confusion-points-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Confusion Points</u></span></strong></span>&nbsp;&rArr;</span></strong><span style=\"\">&nbsp;2 year =&nbsp; 3&nbsp;&times; 8 months&nbsp;</span></p>\n\n<p><span style=\"\">so here we use 3 year.</span></p>\n", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "The simple interest on a sum of Rs. 8,000 at a certain rate per cent per annum for 3 years is Rs. 3,600. What will be the amount (in Rs.) of the same sum after 2 years at the same rate, if the interest is compounded 8-monthly?", "comp": "", "opts": ["10,580", "10,648", "11,239", "10,450"], "cidx": 1, "sol": "<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>Rate (R) = (SI \u00d7 100) \u00f7 (P \u00d7 T) = (3600 \u00d7 100) \u00f7 (8000 \u00d7 3) = 15% p.a.</p>\n<p>For 8-monthly compounding, cycle rate = 15% \u00d7 (8 \u00f7 12) = 10% per 8 months.</p>\n<p>Total time of 2 years = 24 months, which gives 24 \u00f7 8 = 3 compounding cycles.</p>\n<p>Amount after 3 cycles at 10% growth = 8000 \u00d7 (11/10)<sup>3</sup></p>\n<p>Amount = 8000 \u00d7 1.331 = 10648.</p>\n<p><strong>\u2234 The correct answer is \u20b910,648.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Principal (P) = \u20b98000</p>\n<p>Simple Interest (SI) = \u20b93600</p>\n<p>Time for SI (T) = 3 years</p>\n<p><strong>Formula Used:</strong></p>\n<p>Simple Interest = (P \u00d7 R \u00d7 T) \u00f7 100</p>\n<p>Compound Amount (A) = P(1 + R/100)<sup>n</sup></p>\n\n<img src=\"https://cdn.testbook.com/temp_a777c53772304f1090ca57fefeadfd32.png/1777641426.png\" style=\"max-width: 450px;\" />\n\n<p><strong>Calculations:</strong></p>\n<p>\u21d2 SI = (P \u00d7 R \u00d7 T) \u00f7 100</p>\n<p>\u21d2 3600 = (8000 \u00d7 R \u00d7 3) \u00f7 100</p>\n<p>\u21d2 3600 = 240 \u00d7 R</p>\n<p>\u21d2 R = 15% per annum</p>\n<p>\u21d2 The rate for an 8-monthly period = 15% \u00d7 (8 \u00f7 12) = 10%</p>\n<p>\u21d2 Time duration = 2 years = 24 months</p>\n<p>\u21d2 Number of 8-monthly cycles (n) = 24 \u00f7 8 = 3</p>\n<p>\u21d2 Total Amount = P(1 + R/100)<sup>n</sup></p>\n<p>\u21d2 Total Amount = 8000 \u00d7 (1 + 10/100)<sup>3</sup></p>\n<p>\u21d2 Total Amount = 8000 \u00d7 (11/10) \u00d7 (11/10) \u00d7 (11/10)</p>\n<p>\u21d2 Total Amount = 8000 \u00d7 (1331 \u00f7 1000)</p>\n<p>\u21d2 Total Amount = 8 \u00d7 1331 = 10648</p>\n<p><strong>\u2234 The correct answer is \u20b910,648.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Effective Compounding Rate</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">When interest is compounded k-monthly, the applicable rate per cycle becomes R% \u00d7 (k \u00f7 12) and total cycles become Total Months \u00f7 k.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Compound vs Simple Interest Difference</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">For 2 years, CI \u2212 SI = P(R/100)<sup>2</sup>. For 3 years, CI \u2212 SI = P(R/100)<sup>2</sup> \u00d7 (3 + R/100).</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Compounding Frequencies</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">If compounded Half-yearly: Rate is halved, time cycles are doubled. If Quarterly: Rate becomes one-fourth, time cycles become four times.</p></p>", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "<span style=\"\">The simple interest on a certain sum of \u20b9 P at a rate of r% per annum for 3 years is Rs.11,250 and the compound interest on the same sum for 2 years at the same rate percent p.a. is \u20b9 7,650. What is the value of P and r, respectively?</span>", "comp": "", "opts": ["\u20b9 93750 and 4%", "<span style=\"\">\u20b9 93750 and 5%</span>", "<span style=\"\">\u20b9 92500 and 6%</span>", "<span style=\"\">\u20b9 92500 and 7%</span>"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">SI for 1 year = 11,250 \u00f7 3 = Rs 3,750, SI for 2 year = 2 \u00d7 3750 = Rs 7500</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Difference between CI\u00a0and SI for 2 year = 7650 - 7500 = Rs 150</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">P =\u00a0</span><span class=\"math-tex\">\\(SI\\times 100\\over {R\\times T}\\)</span>\u00a0\u21d2\u00a0Rate % =\u00a0<span class=\"math-tex\">\\(150\\over 3750\\)</span>\u00a0\u00d7 100 = 4%\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0</span>Principal =\u00a0<span class=\"math-tex\">\\(3750\\times 100\\over {1\\times4}\\)</span>\u00a0= Rs 93,750</p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "The difference in compound interest on a certain sum at 10% p.a. for one year, when the interest is compounded half-yearly and yearly, is Rs. 88.80. What is the simple interest on the same sum for <span class=\"math-tex\">\\(1\\frac{2}{3}\\)</span>&nbsp;years at the same rate?", "comp": "", "opts": ["Rs. 5,986", "Rs. 5,980", "Rs. 5,920", "Rs. 5,916"], "cidx": 2, "sol": "<span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>Difference in <strong>effective interest rate</strong> for 1 year = (5 \u00d7 5) / 100 = 0.25%.</p>\n<p>0.25% of <strong>Sum</strong> = Rs. 88.80 \u21d2 100% of <strong>Sum</strong> (Principal) = 88.80 \u00d7 400 = Rs. 35,520.</p>\n<p><strong>Simple Interest</strong> for 1<sup>2</sup>/<sub>3</sub> (or 5/3) years = (35,520 \u00d7 10 \u00d7 5/3) / 100.</p>\n<p>Required <strong>SI</strong> = 35,520 \u00f7 6 = Rs. 5,920.</p>\n<p><strong>\u2234 The correct answer is Rs. 5,920.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong> Rate (R) = 10% p.a., Time (T) = 1 year, Difference in <strong>CI</strong> = Rs. 88.80.</p>\n<p><strong>Formula Used:</strong> CI = P[(1 + r/n)<sup>nt</sup> \u2212 1]; SI = (P \u00d7 R \u00d7 T) / 100.</p>\n<div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_070085f4.png/1784620858.png\" style=\"max-width: 100%; height: auto; width: 420px; max-height: 200px;\"></div>\n<p>\u21d2 Case 1 (Yearly): CI<sub>1</sub> = P \u00d7 10% = 0.10P</p>\n<p>\u21d2 Case 2 (Half-yearly): Rate = 5%, Periods = 2; CI<sub>2</sub> = P[(1 + 0.05)<sup>2</sup> \u2212 1] = 0.1025P</p>\n<p>\u21d2 Difference = 0.1025P \u2212 0.10P = 0.0025P</p>\n<p>\u21d2 0.0025P = 88.80 \u21d2 P = 88.80 / 0.0025 = 35,520</p>\n<p>\u21d2 For SI: T = 5/3 years, R = 10%</p>\n<p>\u21d2 SI = (35,520 \u00d7 10 \u00d7 5/3) \u00f7 100 = 35,520 \u00d7 50 \u00f7 300</p>\n<p>\u21d2 SI = 35,520 \u00f7 6 = 5,920</p>\n<p><strong>\u2234 The correct answer is Rs. 5,920.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Half-Yearly Compounding</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">When interest is compounded <strong>half-yearly</strong>, the annual rate is divided by 2 (R' = R/2) and the time is multiplied by 2 (n = 2T).</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Difference for Two Periods</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The difference between CI and SI for two periods is given by P \u00d7 (R/100)<sup>2</sup>, where R is the rate per period.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Effective Rate Method</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">For two successive changes of a% and b%, the effective change is (a + b + ab/100)%. This is useful for <strong>Compound Interest</strong> calculations.</p>", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "A borrowed a sum of Rs. 160000 from B at 10% per annum simple interest. At the same time he lent the same sum to C at the same rate on compound interest, compounded semi-annually for 2 years, Find the amount (in Rs.) earned by A in the whole transaction.", "comp": "", "opts": ["4281", "4280", "2481", "2840"], "cidx": 2, "sol": "<p><strong>&nbsp;Given:</strong></p>\n\n<p>Principal = Rs. 160000</p>\n\n<p>Rate = 10%</p>\n\n<p>Time = 2 years</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>SI = (P&nbsp;&times; R&nbsp;&times; T)/100</p>\n\n<p>Amount = P&nbsp;&times; (1 + r/100)<sup>t</sup></p>\n\n<p>CI = Amount&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>&nbsp;Principal</p>\n\n<p>When compound semi-annually, r&#39; = r/2 and t&#39; = 2&nbsp;&times; t</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>According to the question</p>\n\n<p>SI = (160000&nbsp;&times; 10&nbsp;&times; 2)/100</p>\n\n<p>&rArr; Rs. 32000</p>\n\n<p>Now,</p>\n\n<p>Compounded amount when compounded semi annually = P(1 + r/200)<sup>2&nbsp;&times; t</sup></p>\n\n<p>Compounded amount = 160000[1 + 10/200)<sup>2&nbsp;&times; 2</sup></p>\n\n<p>&rArr; 160000(21/20)<sup>4</sup></p>\n\n<p>&rArr; Rs. (160000&nbsp;&times; 21/20&nbsp;&times; 21/20&nbsp;&times; 21/20&nbsp;&times; 21/20)</p>\n\n<p>&rArr; Rs. 194481</p>\n\n<p>CI = Amount&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>Principal = (194481&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>160000)</p>\n\n<p>&rArr; Rs. 34481</p>\n\n<p>Now, the amount earned by A in the whole transaction = CI&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>SI</p>\n\n<p>&rArr; (34481&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>32000)</p>\n\n<p>&rArr; Rs. 2481</p>\n\n<p><strong>&there4; Required amount earned by A in the whole transaction is 2481</strong></p>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "The compound interest on a certain sum at 16<span class=\"math-tex\">\\(\\frac{2}{3}\\)</span>% p. a for 3 years is Rs. 6,350 What will be the simple interest on the same at the same rate for <span class=\"math-tex\">\\(5\\frac{2}{3}\\)</span>&nbsp;years?", "comp": "", "opts": ["Rs. 11,400", "Rs. 10,200", "Rs. 4,620", "Rs. 9, 600"], "cidx": 1, "sol": "<p><strong>Detailed Method:</strong></p>\n\n<p>Rate = <span class=\"math-tex\">\\(16\\frac{2}{3} = \\frac{{50}}{3}{\\rm{\\% }}\\)</span><br />\nTime = 3 years</p>\n\n<p>CI = 6350</p>\n\n<p>As we know,</p>\n\n<p>CI = P [(1 + r/100)<sup>3</sup> \u2013 1]</p>\n\n<p>6350 = P [{1 + (50/3 \u00d7 100)<sup>3</sup>} \u2013 1]</p>\n\n<p>\u21d2 6350 = P [(1 + 1/6)<sup>3</sup> \u2013 1]</p>\n\n<p>\u21d2 6350 = P [(7/6)<sup>3</sup> \u2013 1]</p>\n\n<p>\u21d2 6350 = P [343/216 \u2013 1]</p>\n\n<p>\u21d2 6350 = P [127/216]</p>\n\n<p>\u21d2 P = 6350 \u00d7 (216/127)</p>\n\n<p>\u21d2 P = 10800</p>\n\n<p>Now,</p>\n\n<p>P = 10800, <span class=\"math-tex\">\\(r = 16\\frac{2}{3}\\% = \\frac{{50}}{3}\\% \\;and\\;T = 5\\frac{2}{3} = \\frac{{17}}{3}year\\;\\)</span>\u00a0</p>\n\n<p>As we know,</p>\n\n<p>SI = Prt/100</p>\n\n<p>SI = (10800 \u00d7 50 \u00d7 17)/(3 \u00d7 3 \u00d7 100)</p>\n\n<p>SI = 10200</p>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "<span style=\"\">On a sum of money, when invested for 2 years, compound interest and simple interest are \u20b9300 and \u20b9250, respectively. For both simple and compound interests the rate of interest per annum is the same, and for compound interest, interest is compounded annually. Find the rate of interest per annum.</span>", "comp": "", "opts": ["10%", "20%", "40%", "30%"], "cidx": 2, "sol": "<span style=\"color: rgb(33, 37, 41);\">Difference between C.I. and S.I. for 2 years =\u00a0</span><span class=\"math-tex\">\\((CI - SI)\\over(SI ~of~ one~ year)\\)</span><span style=\"color: rgb(33, 37, 41);\">\u00a0\u00d7\u00a0100 =\u00a0<span class=\"math-tex\">\\((300 - 250)\\over(125)\\)</span>\u00a0\u00d7\u00a0100 =\u00a0\u00a040%.</span>", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "The simple interest on a certain sum for&nbsp;<span class=\"math-tex\">\\(3\\frac{1}{2}\\)</span>&nbsp;years at the rate of 10% per annum is Rs. 2940.&nbsp;What will be the compound interest (in Rs.) on the same sum for&nbsp;<span class=\"math-tex\">\\(1\\frac{1}{2}\\)</span>&nbsp;years at the same rate when interest is compounded half-yearly (nearest to a rupee)?", "comp": "", "opts": ["1125", "1564", "1324", "1470"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Simple interest = Rs. 2940</p>\n\n<p>Time =&nbsp;<span class=\"math-tex\">\\(3\\frac{1}{2}\\)</span>&nbsp;years</p>\n\n<p>Rate = 10%</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>S.I = (P &times; t &times; r)/100</p>\n\n<p>C.I = P(1 + r/100)<sup>n</sup>&nbsp;- P</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let principal be P</p>\n\n<p>According to the question,</p>\n\n<p>2940 =&nbsp;(P &times; 3.5&nbsp;&times; 10)/100</p>\n\n<p>&rArr; P = Rs. 8400</p>\n\n<p>C.I = 8400(1 + 5/100)<sup><span style=\"font-size: 10.5px;\">3</span></sup>&nbsp;- 8400</p>\n\n<p>&rArr;&nbsp;8400 &times; (21/20)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">3</span>&nbsp;- 8400</p>\n\n<p>&rArr;&nbsp;8400 &times; 9261/8000&nbsp;- 8400</p>\n\n<p>&rArr; 9724.05&nbsp;- 8400</p>\n\n<p>&rArr; Rs. 1324.05&nbsp;&asymp; Rs. 1324</p>\n\n<p><strong>&there4; Compound interest will be Rs.&nbsp;1324</strong></p>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "A certain sum amounts to Rs.291600 in 2 years and to Rs.314928 in 3 years on compound interest compounded annually. How much will be the simple interest (in Rs.) on Rs.40000 at the same rate for 2 years?", "comp": "", "opts": ["6400", "8000", "7500", "9600"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Amount in 2 years = Rs.291600</p>\n\n<p>Amount in 3 years = Rs.314928</p>\n\n<p><strong>Formula:</strong></p>\n\n<p>Let P = Principal, R = rate of interest and N = time period</p>\n\n<p>Compound interest = P(1 + R/100)<sup>n</sup> - P</p>\n\n<p>Amount = P(1 + R/100)<sup>n</sup></p>\n\n<p>Simple interest = PNR/100</p>\n\n<p><b>Calculation:</b></p>\n\n<p>&rArr; 291600 = P(1 + R/100)<sup>2</sup></p>\n\n<p>&rArr; 314928 = P(1 + R/100)<sup>3</sup></p>\n\n<p>&rArr; 1.08 = (1 + R/100)</p>\n\n<p>&rArr; R = 8%</p>\n\n<p>Rate of interest is 8% per annum.</p>\n\n<p>Then,</p>\n\n<p>Simple interest = 40000&nbsp;&times; 8&nbsp;&times; 2/100 = Rs.6400</p>\n\n<p><strong>&there4;&nbsp;simple interest on Rs.40000 at the same rate for 2 years is Rs.6400.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "A certain sum amounts to Rs. 14,641 in 4 years at 10% p.a. when interest is compounded annually. What will be the amount of the same sum (in Rs.) in&nbsp;<span class=\"math-tex\">\\(3\\frac{2}{5}\\)</span>&nbsp;years at the same rate at simple interest?", "comp": "", "opts": ["13,400", "14,000", "13,200", "13,600"], "cidx": 0, "sol": "<p><span style=\"color: rgb(33, 37, 41);\">A = P [1 + (r/100)]</span><span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">n</span>\u00a0<span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0</span>14641 = x\u00a0[1 + (10/100)]<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">4</span>\u00a0\u21d2\u00a0x = 10000</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total interest in\u00a0<span class=\"math-tex\">\\(3{2\\over5}\\)</span>\u00a0years = (17/5)\u00a0\u00d7 10 = 34%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The total amount will become =\u00a010000 + [10000\u00a0\u00d7 (34/100)] = 10000 + 3400 = Rs. 13400</p>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "There is a 60% increase in an amount in 5 years at simple interest. What will be the compound interest on Rs. 6,250 for two years at the same rate of interest, when the interest is compounded yearly?", "comp": "", "opts": ["Rs. 1,500", "Rs. 1,590", "Rs. 1,560", "Rs 1480"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>A Simple Interest on a particular sum is 60% of the principle in 5 years.</p>\n\n<p>Let P be the principle and R% is the rate of interest p.a.</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>Simple Interest <strong>( S.I ) = ( P&times; R&times; T )/ 100</strong></p>\n\n<p>Where P = Principle, R = Rate of interest, T = time period</p>\n\n<p>Compound Interest <strong>( C.I ) = P(1 + R/100)<sup>T</sup> &ndash; P</strong></p>\n\n<p>Where P = Principle, R = Rate of interest, T = time period</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>&rArr; As from the given formula</p>\n\n<p>&nbsp; S.I for 5 years = 60%&times; P = P&times; R%&times; 5</p>\n\n<p>&rArr; R% = 60% / 5 = 12%&nbsp; &nbsp; &nbsp; ____( 1 )</p>\n\n<p>As 12% = ( +3/25) = 28/25</p>\n\n<p>&rArr; C.I = 6250( 1 + 12/100 )<sup>2</sup> &ndash; 6250</p>\n\n<p>(\u2235 Principle is given = Rs 6250 )</p>\n\n<p>&rArr; C.I = 6250 (28/25)<sup>2</sup> &ndash; 6250 = 6250&times; 784/625 &ndash; 6250</p>\n\n<p>( As 28<sup>2 </sup>= 784, 25<sup>2</sup> = 625 )</p>\n\n<p><strong>C.I = 7840 &ndash; 6250 = Rs 1590</strong></p>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "A man invests Rs. 7,000 at 8% per annum simple interest for 2 years and Rs. 10,000 at compound interest at the same rate for the same period, compounded annually. What will be the total interest and the total amount (in Rs.) respectively, on maturity?", "comp": "", "opts": ["19,748 and 2,874", "19,784 and 2,784", "2,784 and 19,784", "2,748 and 19,784"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Sum = Rs.7000</p>\n\n<p>Rate of interest = 8%</p>\n\n<p>Time = 2 years</p>\n\n<p><strong>Formula:</strong></p>\n\n<p>Let P = Principal, R = rate of interest and N = time</p>\n\n<p>SI = PNR/100</p>\n\n<p>CI = P(1 + R/100)<sup>2</sup> - P</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>SI = 7000 &times; 8 &times; 2/100 = Rs.1120</p>\n\n<p>Amount after SI = 7000 + 1120 = Rs.8120</p>\n\n<p>CI = 10000(1 + 8/100)<sup>2</sup> - 10000 = Rs.1664</p>\n\n<p>Amount after CI = 10000 + 1664 = Rs.11664</p>\n\n<p><strong>&there4; Total amount after maturity = 8120 + 11664 = Rs.19784</strong></p>\n\n<p><strong>Total interest after 2 years = 1120 + 1664 = Rs.2784</strong></p>\n", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "A deposited \u20b91,56,250 at 8% simple interest for 2 years. How much more money will A have in his account at the end of two years, if at the same rate of interest the sum is invested in compound interest, compounded annually", "comp": "", "opts": ["\u20b91,740.90", "\u20b91,000", "\u20b92,000", "\u20b91,540.40"], "cidx": 1, "sol": "<span style=\"color: rgb(33, 37, 41);\">Required difference =\u00a0</span>156250\u00a0\u00d7 {(8\u00a0\u00d7 8)/100}\u00a0<span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0156250\u00a0\u00d7 0.64/100 = Rs.1000</span>", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "<font style=\" vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">Calculate the difference between the compound interest and the simple interest on an amount of \u20b95,000 at the rate of 8% for 3 years.&nbsp;</font></font><font style=\" vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">(nearest \u20b9)&nbsp;</font></font>", "comp": "", "opts": ["<span style=\"\">\u20b9108</span>", "<span style=\"\">\u20b9105</span>", "<span style=\"\">\u20b9102</span>", "<span style=\"\">\u20b999</span>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Difference between SI and CI</p>\n\n<p style=\"color: rgb(33, 37, 41);\">For 3 years = P{(300 + R)/100}{R/100}<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0= <span style=\"\">\u20b9\u00a0</span>99</p>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "The difference between the compound interest and the simple interest on a given principal is \u20b91,725 in 2 years and the rate of interest in both cases is 25% per annum, and in the case when interest is compunded, it is compounded annually. Find the principal.", "comp": "", "opts": ["\u20b925,600", "\u20b926,500", "\u20b926,400", "\u20b927,600"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">P\u00a0\u00d7\u00a0(R/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0=\u00a0Difference of (CI - SI) for 2 yrs</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0P\u00a0\u00d7\u00a0(25/100)<span style=\"line-height: 0; position: relative; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">2</span>\u00a0=\u00a01725\u00a0<span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0P\u00a0\u00d7 1/16 =\u00a01725</span>\u00a0=\u00a0Rs. 27600</p>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "Find the difference between the simple interest and the compound interest payable annually on a sum of Rs. 6,500 at 7% per annum for 3 years. (Correct to two decimal places.)", "comp": "", "opts": ["Rs. 94.34", "Rs. 97.78", "Rs. 98.73", "Rs. 95.67"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">CI - SI = 6500{(1 + 7%)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">3</span>\u00a0- 1] - (7\u00a0\u00d7 3)/100} \u21d2\u00a06500{(1 + 0.07)<span style=\"line-height: 0; position: relative; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">3</span>\u00a0- 1] - 21/100}\u00a0\u21d2 CI - SI = 6500\u00a0\u00d7 0.015043 = Rs. 97.78</p>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "On a certain sum of money lent out at 16% per annum, the difference between the compound interest for 1 year, payable half-yearly, and the simple interest for 1 year is Rs. 60. The sum is:", "comp": "", "opts": ["<span style=\"\">Rs. 937.5</span>", "<span style=\"\">Rs. 9,000</span>", "<span style=\"\">Rs. 9,365</span>", "<span style=\"\">Rs. 9,375</span>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">SI =\u00a0<span class=\"math-tex\">\\(\\frac{x\\times 16\\times 1}{100}\\)</span>\u00a0=\u00a0<span class=\"math-tex\">\\(\\frac{4x}{25}\\)</span>\u00a0and CI = x<span class=\"math-tex\">\\(\\left(1+\\frac{16}{2\\times 100}\\right)^2\\)</span>\u00a0\u2013 x = x(1.1664\u00a0\u2013 1) = 0.1664x</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Difference, 0.1664x\u00a0\u2013 0.16x = 60 \u21d2 0.0064x = 60 \u21d2 x =\u00a0<span class=\"math-tex\">\\(\\frac{60}{0.0064}\\)</span>\u00a0= Rs 9,375</p>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "Varun and Madhur invested Rs. 25,000 each in different schemes. Varun earned simple interest at 11% per annum, whereas Madhur earned compound interest at 10% per annum compounded annually. Who received more interest after 2 years and how much?", "comp": "", "opts": ["Varun, Rs. 500", "Madhur, Rs. 250", "Madhur, Rs. 302.50", "Varun, Rs. 250"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Rate of interest = 11%</p>\n\n<p><strong>Formula:</strong></p>\n\n<p>Let P = Principal, R = rate of interest and N = time</p>\n\n<p>Simple interest = PNR/100</p>\n\n<p>Compound interest = P(1 + R/100)<sup>n</sup> - P</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>SI earned by Varun = (25000 &times; 2 &times; 11)/100 = Rs.5500</p>\n\n<p>Equivalent rate of interest for Madhur = 10 + 10 + (10&nbsp;&times; 10)/100 = 21%</p>\n\n<p>Compound interest for Madhur = 21% of 25000 = (25000&nbsp;&times; 21)/100</p>\n\n<p>&rArr; Rs. 5250</p>\n\n<p>Difference between interests = 5500 - 5250 = Rs.250</p>\n\n<p><strong>&there4; Varun earned Rs.250 more interest than Madhur.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "<p>The simple interest on a sum of money at 10% per annum for 2 years is Rs. 8,100. What would be the compound interest (in Rs.) on the same sum for the same period at 15% p. a., when the interest is compounded yearly? (nearest to Rs. 1)</p>\n", "comp": "", "opts": ["13,061", "8,100", "14,671", "12,751"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>R = 10%</p>\n\n<p>T = 2 years</p>\n\n<p>SI = Rs.8,100</p>\n\n<p>R<sub>2</sub>&nbsp;for CI = 15%</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>S.I. = (P&nbsp;&times; R&nbsp;&times; T)/100</p>\n\n<p>A = P(1+ R/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">T</span></p>\n\n<p>C.I. = A&nbsp;&ndash;&nbsp;P</p>\n\n<p>Where,&nbsp;</p>\n\n<p>P &rarr; Principle</p>\n\n<p>T &rarr;&nbsp;Time</p>\n\n<p>R &rarr; Rate</p>\n\n<p>A &rarr; Amount&nbsp;</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>S.I. = (P&nbsp;&times; R&nbsp;&times; T)/100</p>\n\n<p>&rArr; 8<span style=\"font-size:20px;\">,<span style=\"font-size:14px;\">100 = (P &times; 2 &times; 10)/100</span></span></p>\n\n<p>&rArr;&nbsp;8,100 <span style=\"font-size:20px;\"><span style=\"font-size:14px;\">= P/5</span></span></p>\n\n<p>&rArr; P = 5 &times; 8,100</p>\n\n<p>&rArr; P = 40,500</p>\n\n<p>Now for C.I.</p>\n\n<p>A&nbsp;= P(1+ R/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">T</span></p>\n\n<p>&rArr; A&nbsp;= 40,500(1 + 15/100)<sup>2</sup>&nbsp;</p>\n\n<p>&rArr; A = 40,500(1 +3/20)<sup>2</sup></p>\n\n<p>&rArr; A = 40,500(23/20)<sup>2</sup>&nbsp;</p>\n\n<p>&rArr; A = 40,500&nbsp;&times; (23/20) &times; (23/20)</p>\n\n<p>&rArr; A = 53561.25</p>\n\n<p>CI = A &ndash; P</p>\n\n<p>&rArr; C.I. = 53561.25 &ndash; 40500 = Rs. 13,061.25&nbsp;&asymp; Rs. 13,061</p>\n\n<p><strong>&there4; The required compound interest is Rs. 13,061</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span>10% for 2 years = 20% of principle = 8100</p>\n\n<p>&rArr; 20P/100 = 8100</p>\n\n<p>&rArr; P = 40500</p>\n\n<p>Equivalent rate of interest for 2 years = 15 + 15 + (15&nbsp;&times; 15)/100 = 32.25%</p>\n\n<p>C.I. = 32.25% of 40500</p>\n\n<p>&rArr; 32.25&nbsp;&times; 40500 /100 =&nbsp; Rs. 13061.25&nbsp;&asymp; Rs. 13061</p>\n\n<p>&there4; The required CI is Rs. 13061.</p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "A sum amounts to Rs. 6580 in 2 years and amounts to Rs. 7896 in 3 years on compound interest (compounding annually) at the same rate of interest. What is the annual rate of interest?", "comp": "", "opts": ["30 percent", "40 percent", "15 percent", "20 percent"], "cidx": 3, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>If the sum amounts to Rs. 6580 in 2 years and Rs. 7896 in 3 years, the difference (Rs. 7896 - Rs. 6580 = Rs. 1316) would be the interest earned in the third year.</p>\n\n<p>So, the interest for the third year, Rs. 1316, was obtained from the amount that was there at the end of two years, which is Rs. 6580.</p>\n\n<p>Interest for third year = Sum after 2 years &times; annual interest rate</p>\n\n<p>1316 = 6580 <span style=\"color: rgb(33, 37, 41);\">&times;</span> r</p>\n\n<p>Solving this equation for r gives us:</p>\n\n<p>r = 1316/6580&nbsp;<span style=\"color: rgb(33, 37, 41);\">&times; 100 = 20%</span></p>\n\n<p><strong>So, the annual rate of interest is&nbsp;20%.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "If the difference between the compounded interest and simple&nbsp;interest at 17% on a sum of money for 2 years (compounded annually) is Rs. 433.50, then compound interest (in Rs.) is:", "comp": "", "opts": ["Rs. 5,533.50", "Rs. 2,735.50", "Rs. 5,100", "Rs. 2,500"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>R = 17%</p>\n\n<p>Difference between compound interest and simple interest for 2 years = Rs. 433.50</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Difference between compound interest and simple interest for 2 years = P&nbsp;&times;&nbsp;R/100&nbsp;&times; R/100</p>\n\n<p>Compound interest = P&nbsp;&times; (1 + R/100)<sup>T&nbsp;</sup>- P</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Difference between compound interest and simple interest for 2 years = P&nbsp;&times;&nbsp;R/100&nbsp;&times; R/100</p>\n\n<p>&rArr; 433.50 = P&nbsp;&times; 17/100&nbsp;&times; 17/100</p>\n\n<p>&rArr; 43350&nbsp;&times; 100 = P&nbsp;&times; 289</p>\n\n<p>&rArr;&nbsp;P =&nbsp;4335000/289 = 15000</p>\n\n<p>Compound interest =&nbsp;P&nbsp;&times; (1+R/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">T&nbsp;</span>- P</p>\n\n<p>&rArr; 15000&nbsp;&times; (1 + 17/100)<sup>2</sup>&nbsp;- 15000</p>\n\n<p>&rArr; 15000&nbsp;&times; [(117/100&nbsp;&times; 117/100) &ndash; 1]</p>\n\n<p>&rArr; 15000 &times; (13689 &ndash; 10000)/10000</p>\n\n<p>&rArr; (15&nbsp;&times; 3689)/10</p>\n\n<p>&rArr; Rs. 5533.5</p>\n\n<p><strong>&there4; Compound interest for two years is Rs. 5533.5&nbsp;</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n\n<p>2 years Effective rate for S.I. = RT&nbsp;</p>\n\n<p>&rArr; 17&nbsp;&times; 2 = 34%&nbsp;</p>\n\n<p>2 years Effective rate for C.I = 2R&nbsp;+ R<sup>2</sup>/100&nbsp;</p>\n\n<p>&rArr; 2&nbsp;&times; 17 + 17<sup>2</sup>/100</p>\n\n<p>&rArr; 34 + 2.89 = 36.89%&nbsp;</p>\n\n<p>Difference in rates = 36.89%&nbsp;&ndash; 34% = 2.89%&nbsp;</p>\n\n<p>Now, 2.89% = 433.50&nbsp;</p>\n\n<p>Here we have to find C.I so = (433.50/2.89)&nbsp;&times; 36.89 = 5533.5&nbsp;</p>\n\n<p><strong>&there4; The compound interest for two years is Rs. 5533.5</strong></p>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "The simple interest on a certain sum of money for 5 years at the rate of 10% per annum is half the compound interest on Rs. 5,000 for 2 years at the rate of 10% per annum, interest compounded yearly. The sum placed on simple interest is:", "comp": "", "opts": ["Rs. 1,050", "Rs. 1,540", "Rs. 1,500", "Rs. 1,450"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p><span style=\"\">The simple interest on a certain sum of money for 5 years at the rate of 10% per annum is half the compound interest on Rs. 5,000 for 2 years at the rate of 10% per annum, interest compounded yearly</span></p>\n\n<p><strong><span style=\"\">Formula used:</span></strong></p>\n\n<p><span style=\"\">SI = (P&nbsp;&times; R&nbsp;&times; T)/100</span></p>\n\n<p><span style=\"\">CI = P(1 + R/100)<sup>T</sup>&nbsp;</span>&ndash;&nbsp;P</p>\n\n<p>Where, P = Principal, R = Rate, T = Time</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p><span style=\"\">CI = P(1 + R/100)<span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">T</span>&nbsp;</span><span style=\"\">&ndash;&nbsp;</span><span style=\"\">P</span></p>\n\n<p><span style=\"\">&rArr; 5000(1 + 10/100)<sup>2</sup>&nbsp;&ndash; 5000</span></p>\n\n<p><span style=\"\">&rArr; 5000(110/100)<sup>2</sup>&nbsp;&ndash; 5000</span></p>\n\n<p><span style=\"\">&rArr; (5000&nbsp;&times; 11/10&nbsp;&times; 11/10) &ndash; 5000</span></p>\n\n<p><span style=\"\">&rArr; Rs. 6050&nbsp;&ndash; 5000</span></p>\n\n<p><span style=\"\">&rArr; Rs. 1050</span></p>\n\n<p><span style=\"\">Now,</span></p>\n\n<p><span style=\"\">SI is half the CI = Rs. (1050&nbsp;&times; 1/2) = Rs. 525</span></p>\n\n<p><span style=\"\">Now,</span></p>\n\n<p><span style=\"\">SI = (P&nbsp;&times; R&nbsp;&times; T)/100</span></p>\n\n<p><span style=\"\">&rArr; 525 = (P&nbsp;&times; 5&nbsp;&times; 10)/100</span></p>\n\n<p><span style=\"\">&rArr; 525 = 50P/100</span></p>\n\n<p><span style=\"\">&rArr; P = Rs. (525&nbsp;&times; 100)/50</span></p>\n\n<p><span style=\"\">&rArr; P = Rs. 1050</span></p>\n\n<p><strong>&there4;&nbsp;<span style=\"\">The sum placed on simple interest is Rs. 1,050</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "A sum of Rs. 7500 amounts to Rs. 9075 at 10% p.a, interest being compounded yearly in a certain time. The simple interest (in Rs.) on the same sum for the same time and the same rate is:", "comp": "", "opts": ["1500", "1530", "1480", "1520"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>A = 9075</p>\n\n<p>P = 7500</p>\n\n<p>R = 10%</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>A = P(1 + r/100)<sup>n</sup></p>\n\n<p>SI = (P&nbsp;&times; R&nbsp;&times; T)/100</p>\n\n<p>where,</p>\n\n<p>A = Amount</p>\n\n<p>P = Principal</p>\n\n<p>r = Rate of Interest</p>\n\n<p>n = number of years</p>\n\n<p>SI = Simple Interest</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>A = P (1 + r/100)<sup>n</sup></p>\n\n<p>&rArr; 9075 = 7500( 1 + 10/100)<sup>T</sup></p>\n\n<p>&rArr; 9075/7500 = (1 + 1/10)<sup>T</sup></p>\n\n<p>&rArr; 121/100 = (11/10)<sup>T</sup></p>\n\n<p>&rArr; (11/10)<sup>2</sup>&nbsp;= (11/10)<sup>T</sup></p>\n\n<p>&rArr;T = 2 years</p>\n\n<p>Now,&nbsp;</p>\n\n<p>P = 7500</p>\n\n<p>R = 10%</p>\n\n<p>T = 2 years</p>\n\n<p>SI = P&nbsp;&times; R&nbsp;&times; T/100</p>\n\n<p>&rArr; (7500&nbsp;&times; 10&nbsp;&times; 2)/100</p>\n\n<p>&rArr; 1500</p>\n\n<p><strong>&there4; The simple interest is 1500</strong></p>\n", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "Simple interest and compound interest (Compounding annually) on a principal at a certain rate of interest for 2 years is Rs. 1600 and Rs. 1760 respectively. What is the principle?", "comp": "", "opts": ["<span style=\"\">Rs. 7000</span>", "<span style=\"\">Rs. 6000</span>", "<span style=\"\">Rs. 4000</span>", "<span style=\"\">Rs. 10000</span>"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">SI for 1 year = 1600/2 = Rs. 800, Difference between SI and CI = 1760 - 1600 = Rs. 160, Rate of interest(R) = (160/800)\u00a0\u00d7 100 = 20%</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">SI =\u00a0</span><span class=\"math-tex\">\\(\\dfrac{P \\times R \\times T}{100}\\)</span>\u00a0\u21d2\u00a0800\u00a0=\u00a0<span class=\"math-tex\">\\(\\dfrac{P \\times 20 \\times 1}{100}\\)</span>\u00a0\u21d2 P = 4000</p>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "The difference between the compound and the simple interests for 3 years at the rate of 20% per annum is \u20b9432. What is the principal lent?", "comp": "", "opts": ["\u20b93378", "\u20b9<span style=\"\">3375</span>", "\u20b93385", "\u20b93380"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">20% = 20/100 = 1/5, Time =\u00a03 years</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Assume that the Principle is 5<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">3</span>\u00a0= 125 Rs.\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/11/F2_Mamta_SSC_16.11.2022_D3.png\" style=\"height: 112px; width: 109px;\" /></p>\n\n<p style=\"color: rgb(33, 37, 41);\">SI for\u00a03\u00a0years = 75 Rs. and CI\u00a0for 3 years = 91 Rs.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 91 - 75 = 16\u00a0\u21d2 16 = 432\u00a0\u21d2 1 unit = 432/16\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The principle, 125 units =\u00a03375 Rs.</p>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "<div>The difference between compound interest compounded annually and simple interest on a certain sum at a rate of 15% per annum for 2 years is \u20b91,944. Find the compound interest compounded annually (in \u20b9) on the same sum for the same period at a rate of 10% per annum.</div>\n", "comp": "", "opts": ["<span style=\"\">27,216</span>", "<span style=\"\">18,060</span>", "<span style=\"\">18,144</span>", "<span style=\"\">20,500</span>"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">P(1 + 15/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0- P = (P \u00d7 15 \u00d7 2)/100 + 1944<br />\n\u21d2 1.3225P - P = 0.3P + 1944 \u21d2 0.3225P - 0.3P = 1944\u00a0\u21d2 P = 86400</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now, the CI\u00a0for 10% \u21d2 86400(1 + 10/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0- 86400 \u21d2 104544 - 86400 = \u20b918144</p>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "Find the compound interest at the rate of 7% pa compounded annually for two years on the principal that yields a simple interest of Rs. 9450 for 3 years at 7% p.a.", "comp": "", "opts": ["Rs. 12,678.40", "Rs. 6,520.50", "Rs. 12,345.20", "Rs. 10,127"], "cidx": 1, "sol": "<p>As we know,</p>\n\n<p>SI = Prt/100</p>\n\n<p>SI = 9450 and r = 7% and t = 3 year</p>\n\n<p>9450 = (P &times; 7 &times; 3)/100</p>\n\n<p>P = 9450 &times; (100/21) = 45000</p>\n\n<p>As we know,</p>\n\n<p>A = P (1 + r/100)<sup>2</sup></p>\n\n<p>A = 45000 &times; (1 + 7/100)<sup>2</sup></p>\n\n<p>A = 45000 &times; (107/100) &times; (107/100)</p>\n\n<p>A = 51520.5</p>\n\n<p>CI = A = P</p>\nCI = 51520.5 - 45000 = 6520.5", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "The difference between the compound interest (compounding half yearly) for 1 year and the simple interest for 1 year on a certain sum lent out at the annual rate of 10 percent is Rs. 25. What is the sum?", "comp": "", "opts": ["Rs. 12000", "<span style=\"\">Rs. 6000</span>", "<span style=\"\">Rs. 8000</span>", "<span style=\"\">Rs. 10000</span>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Compound Interest for 1 year = P[(1 + r/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">n</span>\u00a0- 1]</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Simple Interest for 1 year = (P \u00d7 r \u00d7 t) / 100</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 P[(1 + 5/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0- 1] - (P \u00d7 10 \u00d7 1) / 100 = 25</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 P = Rs. 10,000.</p>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "Nutan gets two offers of loan from a bank and an app. The app offered Rs. 10,000 at 15 Percent per annum compounded annually for 2 years and the bank offered the same amount at the same rate and for the same time but on simple interest. Find the difference between the interests.", "comp": "", "opts": ["<span style=\"\">Rs. 375</span>", "<span style=\"\">Rs. 400</span>", "<span style=\"\">Rs. 250</span>", "<span style=\"\">Rs. 225</span>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">D = PR<span style=\"position: relative; line-height: 0; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">2</span>/100<span style=\"position: relative; line-height: 0; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">2</span>\u00a0\u21d2 D\u00a0 = 10000\u00a0\u00d7\u00a015<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>/100<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0= 225</p>\n", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "If the difference between the compound interest compounded annually and the simple interest on a certain sum of money for three years at 10% per annum is Rs. 279, then the sum (in Rs.) is:", "comp": "", "opts": ["9,000", "10,000", "8,000", "7,500"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Rate = 10%</p>\n\n<p>Time = 3 years</p>\n\n<p>The difference between the CI and SI = Rs. 279</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>SI = (P&nbsp;&times; R&nbsp;&times; T)/100</p>\n\n<p>Amount = P(1 + r/100)<sup>t</sup></p>\n\n<p>CI = A&nbsp;<span style=\" line-height: 115%;  background: white;\">&ndash;&nbsp;</span>P</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let Principal be x</p>\n\n<p>SI = (x&nbsp;&times; 10&nbsp;&times; 3)/100</p>\n\n<p>&rArr; 3x/10</p>\n\n<p>Now,</p>\n\n<p>Amount = P(1 + r/100)<sup>t</sup></p>\n\n<p>&rArr; x(1 + 10/100)<sup>3</sup></p>\n\n<p>&rArr; [x(100 + 10)/100]<sup>3</sup></p>\n\n<p>&rArr; [x(110/100)<sup>3</sup>]</p>\n\n<p>&rArr; (x&nbsp;&times; 11/10&nbsp;&times; 11/10&nbsp;&times; 11/10)</p>\n\n<p>&rArr; 1331x/1000</p>\n\n<p>Now,</p>\n\n<p><span style=\"\">CI = A&nbsp;</span><span style=\"line-height: 16.1px; background: white;\">&ndash;&nbsp;</span><span style=\"\">P</span></p>\n\n<p><span style=\"\">&rArr; CI = (1331x/1000&nbsp;&ndash; x)</span></p>\n\n<p><span style=\"\">&rArr; (1331x&nbsp;&ndash;&nbsp;1000x)/1000</span></p>\n\n<p><span style=\"\">&rArr; 331x/1000</span></p>\n\n<p><span style=\"\">The difference between the CI and SI = Rs. 279</span></p>\n\n<p><span style=\"\">&rArr; 331x/1000&nbsp;&ndash; 3x/10 = 279</span></p>\n\n<p><span style=\"\">&rArr; (331x&nbsp;&ndash; 300x)/1000 = 279</span></p>\n\n<p><span style=\"\">&rArr; 31x/1000 = 279</span></p>\n\n<p><span style=\"\">&rArr; x = (9&nbsp;&times; 1000)</span></p>\n\n<p><span style=\"\">&rArr; Rs. 9000</span></p>\n\n<p><strong><span style=\"\">&there4; The required sum is Rs. 9000&nbsp;</span></strong></p>\n\n<p><strong><span style=\"\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></span></strong></p>\n\n<p><strong><span style=\"\">Formula used:</span></strong></p>\n\n<p><span style=\"\"><span class=\"math-tex\">\\(\\frac{P\u00d7 r^2 \u00d7 (300 + r)}{100^3 }\\)</span></span>&nbsp;= Difference between C.I &amp; S.I for 3 years</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>&rArr;&nbsp;<span class=\"math-tex\">\\(\\frac{P\u00d7 10^2 \u00d7 (300 + 10)}{100^3 }\\)</span>&nbsp;= 279</p>\n\n<p>&rArr; P = (279&nbsp;&times; 100<sup>3</sup>)/(100&nbsp;&times; 310)</p>\n\n<p><span style=\"\">&rArr; P = 9000</span></p>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "Find the difference between the compound interest and simple interest when a sum of Rs.15,625 is invested for 3 years at 4% per annum.", "comp": "", "opts": ["Rs. 76", "<span style=\"\">Rs. 96</span>", "<span style=\"\">Rs. 56</span>", "<span style=\"\">Rs. 86</span>"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">S.I. =\u00a0<span class=\"math-tex\">\\(\\frac{(15625 \u00d7 3 \u00d7 4)}{100}\\)</span>\u00a0= Rs.1875. Now,\u00a0A = P\u00a0\u00d7 (1 +\u00a0<span class=\"math-tex\">\\(\\frac{R}{100}\\)</span>)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">t</span>\u00a0\u21d2 A = 15625\u00a0\u00d7 (1 +\u00a0<span class=\"math-tex\">\\(\\frac{4}{100}\\)</span>)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">3</span>\u00a0 = 15625\u00a0\u00d7\u00a0<span class=\"math-tex\">\\(\\frac{26}{25}\\)</span>\u00a0\u00d7\u00a0<span class=\"math-tex\">\\(\\frac{26}{25}\\)</span>\u00a0\u00d7\u00a0<span class=\"math-tex\">\\(\\frac{26}{25}\\)</span>\u00a0\u21d2 A = Rs.17576\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now, C.I. = A - P\u00a0\u21d2\u00a0C.I. =\u00a017576 - 15625 = Rs.1951\u00a0<br />\nRequired difference = Rs(1951 - 1875) = Rs.76\u00a0</p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "The simple interest accrued on a certain principal is Rs. 1200 in 3 years at the rate of 8% per annum. What would be the compound interest (compounding annually) accrued on twice of that principal at the rate of 10% per annum in 2 years?", "comp": "", "opts": ["Rs. 1,050&nbsp;", "Rs. 2,150", "Rs. 2,100", "Rs. 1,100"], "cidx": 2, "sol": "<p><span style=\"color: rgb(33, 37, 41);\">S.I. = (P \u00d7 R \u00d7 T)/100\u00a0\u21d2 1200\u00a0= (P \u00d7 8\u00a0\u00d7 3)/100 \u21d2 P = 5000</span></p>\n\n<p>Compound interest,</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span class=\"math-tex\">\\(\\begin{array}{l} = {\\rm{P}}\\left[ {{{\\left( {1 + \\frac{r}{{100}}} \\right)}^n} - 1} \\right] = 10000\\left[ {{{\\left( {1 + \\frac{10}{{100}}} \\right)}^2} - 1} \\right]\\\\ = 2100\\end{array}\\)</span></p>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "The difference between the simple interest and the compound interest on a certain amount at 9% per annum for two years is \u20b9162, what is the principal?", "comp": "", "opts": ["\u20b919700", "\u20b919000", "\u20b920000", "\u20b919500"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Difference = P\u00a0\u00d7 (R/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0\u21d2\u00a0162 = P\u00a0\u00d7\u00a0\u00a0(9/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0\u21d2 P = (162\u00a0\u00d7 10000)/81 \u21d2 P = 20000</p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "The simple interest on a sum of money at 10% per annum for 4 years is \u20b93,200. What will be the amount (in \u20b9) of the same sum for the same period at the same rate of interest when the interest is compounded annually?", "comp": "", "opts": ["11,712.80", "11,217.80", "11,127.80", "11,172.80"], "cidx": 0, "sol": "<span style=\"color: rgb(33, 37, 41);\">S.I = (P \u00d7 T \u00d7 R)/100\u00a0</span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u21d2\u00a0</span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">3200 = (P \u00d7 4 \u00d7 10)/100\u00a0</span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u21d2 P = 8000</span>\n\n<p style=\"color: rgb(33, 37, 41);\">Now, A = 8000(1 + 10/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">4</span>\u00a0\u21d2\u00a0A = 8000(14641/10000) \u21d2\u00a0A = 11712.80</p>\n", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "The compound interest on a certain sum at the end of two years is Rs. 408. The simple interest on the same sum for the same time is Rs. 400. The rate of interest per annum is:&nbsp;", "comp": "", "opts": ["80%", "40%", "4%", "8%"], "cidx": 2, "sol": "<p>SI for 2 years = 400</p>\n\n<p>SI for 1 year = 400/2 = 200</p>\n\n<p>Difference between CI and SI = 408 - 400 = 8</p>\n&there4; Rate of interest = (8/200) &times; 100 = 4%", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "If the difference between the compound interest and simple interest on a certain sum of money for three years at 10% p.a. is Rs. 558, then the sum is:", "comp": "", "opts": ["Rs. 18,500", "Rs. 15,000", "Rs. 16,000", "Rs. 18,000"], "cidx": 3, "sol": "<span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>For 10% rate (1/10) over 3 years, let <strong>Principal</strong> = 10<sup>3</sup> = 1000 units.</p>\n<p>The difference (D) between <strong>CI</strong> and <strong>SI</strong> is given by the ratio: D = 3R + 1 (where R is the denominator 10).</p>\n<p>\u21d2 Difference = 3(10) + 1 = 31 units.</p>\n<p>Given 31 units = \u20b9558 \u21d2 1 unit = 558 \u00f7 31 = 18.</p>\n<p><strong>Sum (Principal)</strong> = 1000 units \u00d7 18 = \u20b918,000.</p>\n<p><strong>\u2234 The correct answer is \u20b918,000.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong> Rate (R) = 10% per annum, Time (T) = 3 years, Difference (D) = \u20b9558.</p>\n<p><strong>Formula Used:</strong> Difference (D) = P(R/100)<sup>2</sup> \u00d7 [(300 + R) / 100]</p>\n<div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_dfc2cac9.png/1784030198.png\" style=\"max-width: 100%; height: auto;\"></div>\n<p>\u21d2 558 = P \u00d7 (10/100)<sup>2</sup> \u00d7 [(300 + 10) / 100]</p>\n<p>\u21d2 558 = P \u00d7 (1/10)<sup>2</sup> \u00d7 (310 / 100)</p>\n<p>\u21d2 558 = P \u00d7 (1/100) \u00d7 (31/10)</p>\n<p>\u21d2 558 = P \u00d7 (31 / 1000)</p>\n<p>\u21d2 P = (558 \u00d7 1000) \u00f7 31</p>\n<p>\u21d2 P = 18 \u00d7 1000</p>\n<p>\u21d2 P = 18,000</p>\n<p><strong>\u2234 The correct answer is \u20b918,000.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Difference for 2 Years</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The difference between CI and SI for 2 years is given by D = P(R/100)<sup>2</sup>.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Compound Interest Formula</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">Amount (A) = P(1 + R/100)<sup>n</sup>, where n is the number of years. CI = A \u2212 P.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Effective Rate Method</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">For 10% rate for 3 years, the effective SI is 30% and the effective CI is 33.1%. The difference is 3.1% of the Principal.</p>", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "<p style=\"text-align: justify;\">Compound interest (compounding annually) on a sum for 2 years is Rs. 4180. If rate of interest is 20 percent per annum, then what is the sum?</p>\n", "comp": "", "opts": ["<span style=\"\">Rs. 8800</span>", "<span style=\"\">Rs. 9800</span>", "<span style=\"\">Rs. 9500</span>", "<span style=\"\">Rs. 8500</span>"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">CI = P[(1 + r/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">t</span>\u00a0- 1] \u21d2 4180 = P[(1 + 20/100)<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">2</span>\u00a0- 1]\u00a0\u21d2\u00a0<span style=\"color: rgb(33, 37, 41);\">P = 9500</span></p>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "What is the compound interest (in Rs.) at the rate of 10%, compounded annually, for 3 years on the principal which in 8 years at the rate of 12% per annum gives Rs. 4,800 as simple interest?", "comp": "", "opts": ["1,655", "1,505", "1,455", "2,045"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">P =\u00a0<span class=\"math-tex\">\\(4800\u00d7100\\over 8\u00d7 12\\)</span>\u00a0= Rs 5000, Effective discount = 10 + 10 +\u00a0<span class=\"math-tex\">\\(10 \u00d7 10 \\over 100\\)</span>\u00a0= 21% and final effective discount = 21\u00a0+ 10 +\u00a0<span class=\"math-tex\">\\(21 \u00d7 10 \\over 100\\)</span>\u00a0= 33.1%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">CI =\u00a0<span class=\"math-tex\">\\(5000\u00d7 33.1\u00d7 1\\over100\\)</span>\u00a0= Rs 1655.</p>\n", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "The difference between the simple and compound interest on a certain sum of money at an 8% rate of interest per annum for two years is Rs. 56. Find the sum.&nbsp;&nbsp;", "comp": "", "opts": ["Rs. 8,750", "Rs. 7,058", "Rs. 7,805", "Rs. 8,057"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Rate = 8%</p>\n\n<p>CI - SI = 56</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>CI - SI = (PR<sup>2</sup>)/100<sup>2</sup></p>\n\n<p><strong>Calculation:&nbsp;</strong></p>\n\n<p>&rArr; 56 = (P &times; 8 &times; 8)/100<sup>2</sup></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;&nbsp;</span>P =&nbsp;<span class=\"math-tex\">\\(\\frac{56 \\times 100 \\times 100}{8 \\times 8}\\)</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; P = 8,750</span></p>\n\n<p><strong><span style=\"color: rgb(33, 37, 41);\">&there4; The sum = 8,750. Option 1) is correct.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "The difference between the simple interest and compound interest on \u20b91,000 for 1 year at 20% per annum, compounded half-yearly, is:", "comp": "", "opts": ["<span style=\"\">\u20b9 8</span>", "<span style=\"\">\u20b9 5</span>", "<span style=\"\">\u20b9 10</span>", "<span style=\"\">\u20b9 12</span>"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">R\u00a0= 20/2\u00a0= 10%, T =\u00a01\u00a0\u00d7 2\u00a0= 2 years</p>\n\n<div style=\"color: rgb(33, 37, 41);\">SI =\u00a0\u00a0<span style=\"\"><span style=\"\"><span class=\"math-tex\">\\(\\frac{P\u00d7 R\u00d7 T}{100}\\)</span></span></span><span style=\"\"><span style=\"\">\u00a0=\u00a0<span class=\"math-tex\">\\( \\frac{1000\u00d710\u00d72}{100}\\)</span></span></span>\u00a0= Rs. 200</div>\n\n<div style=\"color: rgb(33, 37, 41);\">\u00a0</div>\n\n<div style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">A =\u00a0</span><span class=\"math-tex\">\\(P(1+\\frac{R}{100})^T=1000(1+\\frac{10}{100})^2\\)</span>\u00a0<span style=\"color: rgb(33, 37, 41);\">=\u00a0Rs. 1210</span></div>\n\n<div style=\"color: rgb(33, 37, 41);\">\u00a0</div>\n\n<div style=\"color: rgb(33, 37, 41);\">\n<p>\u21d2 I = A - P = 1210-1000\u00a0<span style=\"color: rgb(33, 37, 41);\">= Rs. 210</span></p>\n\n<p>Difference = CI\u00a0- SI = 210-200 = Rs.10</p>\n</div>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "The simple interest on a certain sum at the end of three years at 5% p.a. is Rs. 1,200. The compound interest on the same sum for the same period at the same rate is (interest compounded yearly).", "comp": "", "opts": ["Rs. 820", "Rs. 1,800", "Rs. 1,260", "Rs. 1,261"], "cidx": 3, "sol": "<p><strong>Tree Method:</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/04/F1_S.G_10.4.20_Pallavi_D2.png\" style=\"width: 179px; height: 207px;\" /></strong></p>\n\n<p>CI for three years = 1200 + 60 + 1 = 1261</p>\n\n<p><strong>Detailed Method:</strong></p>\n\n<p>R = 5%, t = 3 years SI = 1200</p>\n\n<p>As we know,</p>\n\n<p>SI = Prt/100</p>\n\n<p>\u21d2 1200 = (P \u00d7 5 \u00d7 3)/100</p>\n\n<p>\u21d2 P = 8000</p>\n\n<p>Again, As we know,</p>\n\n<p>A = P (1 + r/100)<sup>t</sup></p>\n\n<p>\u21d2 A = 8000 (1 + 5/100)<sup>3</sup></p>\n\n<p>\u21d2 A = 8000 \u00d7 (21/20) \u00d7 (21/20) \u00d7 (21/20)</p>\n\n<p>\u21d2 A = 9261</p>\n\n<p>\u21d2 CI = 9261 \u2013 8000</p>\n\n<p>\u21d2 CI = 1261</p>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "What will be the compound interest on Rs. 14,000 for 2 years at the rate of 10% per annum compounded annually?&nbsp;", "comp": "", "opts": ["Rs. 1,490", "Rs. 6,940", "Rs. 3,490", "Rs. 2,940"], "cidx": 3, "sol": "<p><span class=\"math-tex\">\\(A = P(1 + r/100)^t\\)</span>\u00a0=\u00a0<span class=\"math-tex\">\\(= 14000(1 + 10/100)^2= 16940\\)</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Compound interest = A - P = 16940 - 14000 = 2940</p>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 162000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

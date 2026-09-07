@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Percentage - 02</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">45:00:00</div>
+      <div class="hdr-testname">Percentage - 02</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Percentage - 02</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Percentage - 02</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Percentage - 02</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">45:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 3, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "In an entrance examination at different centres, a total of 25, 30, 40, 45, 60 and 100 students appeared. The pass percentages of the different centres are 20%, 30%, 35%, 40%, 50% and 75%, respectively. The pass percentage of the entrance examination is: (correct to the nearest integer)", "comp": "", "opts": ["59%", "50%", "53%", "43%"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>The Number of students has given at different centers are 25, 30, 40, 45, 60, and 100</p>\n\n<p>and passing percentages has given on respective centres are 20%, 30%, 35%, 40%, 50% and 75%.</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Pass percentages = (total number of pass students/total number of appeared students) &times; 100</p>\n\n<p>A number of passing students at individual centers = a number of students on centers &times; given the percentage of that center.</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let the center&#39;s names are A, B, C, D, E, and F.</p>\n\n<p>Number of passing students at centres A = 25 &times; 20%</p>\n\n<p>&rArr; 5</p>\n\n<p>Number of passing students at centres B = 30 &times; 30%</p>\n\n<p>&rArr; 9</p>\n\n<p>Number of passing students at centres C = 40 &times; 35%</p>\n\n<p>&rArr; 14</p>\n\n<p>Number of passing students at centres D = 45 &times; 40%</p>\n\n<p>&rArr; 18</p>\n\n<p>Number of passing students at centres E = 60 &times; 50%</p>\n\n<p>&rArr; 30</p>\n\n<p>And Number of passing students at centres F = 100 &times; 75%</p>\n\n<p>&rArr; 75</p>\n\n<p>Now total number of passing students = 5 + 9 + 14 + 18 + 30 + 75</p>\n\n<p>&rArr; 151</p>\n\n<p>Total number of students appeared = 25 + 30 + 40 + 45 + 60 + 100</p>\n\n<p>&rArr; 300</p>\n\n<p>Pass percentages = (151/300) &times; 100</p>\n\n<p>&rArr; 50.33%</p>\n\n<p><strong>Hence, the passing percentage, nearest to the integer is 50%.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></p>\n\n<p><strong><span class=\"math-tex\">\\({\\rm{Passing\\;percentages}} = \\frac{{{\\rm{summation\\;of\\;}}\\left( {{\\rm{number\\;of\\;students\\;appeared\\;at\\;centres\\;}} \\times {\\rm{\\;their\\;passing\\;percentages\\;respectively}}} \\right)}}{{{\\rm{total\\;number\\;of\\;students\\;appeared\\;at\\;centres}}}} \\times 100\\)</span></strong></p>\n\n<p>Passing percentages = [(25 &times; 20% + 30 &times; 30% + 40 &times; 35% + 45 &times; 40% + 60 &times; 50% + 100 &times; 75%)/(25 + 30 + 40 + 45 + 60 + 100)] &times; 100</p>\n\n<p>&rArr; [(5 + 9 + 14 + 18 + 30 + 75)/300] &times; 100</p>\n\n<p>&rArr; [151/300] &times; 100</p>\n\n<p>&rArr; 50.33%</p>\n\n<p><strong>Hence, the passing percentage, nearest to the integer is 50%.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "A is 48% more then B. C is 60% more than twice the difference between A and B. By what percent is C more than A (correct to one decimal place)?", "comp": "", "opts": ["3.8%", "4.6%", "5.2%", "4.1%"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>A = 148%B</p>\n\n<p>C = 160% of 2(A&nbsp;&ndash; B)</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>According to question</p>\n\n<p>&rArr; A = 148/100&nbsp;&times; B</p>\n\n<p>&rArr; A = 1.48B&nbsp; &nbsp; &nbsp; ----(1)</p>\n\n<p>&rArr;&nbsp;C = 160/100&nbsp;&times; 2(A&nbsp;&ndash; B)</p>\n\n<p>&rArr;&nbsp;C = 3.2(A&nbsp;&ndash; B)</p>\n\n<p>&rArr; C = 3.2A&nbsp;&ndash; 3.2A/1.48</p>\n\n<p>&rArr; C = (4.736A&nbsp;&ndash; 3.2A)/1.48</p>\n\n<p>&rArr; C = 1.536A/1.48</p>\n\n<p>&rArr; C = 1.038A</p>\n\n<p>&rArr; C/A = 1.038/1</p>\n\n<p>% of C more than A = (1.038&nbsp;&ndash; 1)/1&nbsp;&times; 100</p>\n\n<p>&rArr; 3.8%</p>\n\n<p><strong>&there4;&nbsp;C more than A by 3.8%</strong></p>\n", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "The income of A is 40% less than of B. If A gets 25% rise in his income B gets 40% rise in his income, then the percentage increase (correct to two decimal places) in the combined incomes of A and B will be:", "comp": "", "opts": ["37.86", "35.19", "31.67", "34.38"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>A&#39;s income is 40% less than B</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let the income of B be Rs. 100</p>\n\n<p>Then, income of A = 40% less than B = 60</p>\n\n<p>A&#39;s new income = 75</p>\n\n<p>B&rsquo;s new income = 140</p>\n\n<p>Total of New income = 140 + 75 = 215</p>\n\n<p>Original income = 100 + 60 = 160</p>\n\n<p>increase in income = 215&nbsp;- 160 = 55</p>\n\n<p>% increase in income = 55/160</p>\n\n<p>&rArr; 34.38% (Approx)</p>\n\n<p><strong>&there4; Required answer is 34.38%</strong></p>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "In a factory with 400 employees, the ratio of the number of male employees to that of female employees is 5&nbsp;\u2236 3. There are 87.5% regular employees in the factory. If 92% of male employees are regular employees, then what is the percentage of regular female employees?", "comp": "", "opts": ["87.5%", "78%", "80%", "85%"], "cidx": 2, "sol": "<p><span style=\"\">The total number of regular employees = (87.5/100)\u00a0\u00d7 400 = 350</span></p>\n\n<p><span style=\"\">The\u00a0ratio of the number of male employees to that of female employees =\u00a05\u00a0\u2236 3</span></p>\n\n<p><span style=\"\">Number of male employees = (5/8)\u00a0\u00d7 400 = 250, Number of female employees = 400 - 250 = 150</span></p>\n\n<p><span style=\"\">The\u00a0number\u00a0of regular male employees = (92/100)\u00a0\u00d7\u00a0250 = 230</span></p>\n\n<p><span style=\"\">The\u00a0percentage of regular female employees = [(350 - 230)/150]\u00a0\u00d7 100 = (120/150)\u00a0\u00d7 100 = 80%</span></p>\n", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "Suresh&#39;s expenditure and savings are in the ratio of 3 : 1. His income increases by 25%. If his savings increase by 20%, then by how much percentage does his expenditure increase?", "comp": "", "opts": ["27 (2)/(3)%", "25 (2)/(3)%", "28 (2)/(3)%", "26 (2)/(3)%"], "cidx": 3, "sol": "<p>Let original income be 4x. Expenditure = 3x, Savings = x.</p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">New income = 4x + 25%(4x) = 5x\u00a0</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">New savings = x + 20%(x) = 1.2x.</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">New expenditure = 5x - 1.2x = 3.8x.</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Percentage increase in expenditure = [(3.8x - 3x) / 3x] \u00d7 100 =\u00a026</span><sup style=\"font-family: var(--bs-body-font-family); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">2</sup><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">/3%.</span></p>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "The price of diesel increased by 16%. A person wants to increase his expenditure on diesel by 10% only. By what percentage, correct to one decimal place, should be reduce his consumption?", "comp": "", "opts": ["3.7%", "4.5%", "5.2%", "6.5%"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Percentage increase in the price of diesel = 16%</p>\n\n<p>Percentage increase in expenditure = 10%</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>P&nbsp;&times;&nbsp;Q = E</p>\n\n<p>Where P is Price, Q is Quantity and E is expenditure</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let initial price be P<sub>1</sub>, quantity be Q<sub>1</sub>, and expenditure be E<sub>1</sub>&nbsp;</p>\n\n<p>P<sub>1</sub>&nbsp;&times; Q<sub>1</sub>&nbsp;= E<sub>1</sub>&nbsp;</p>\n\n<p>&rArr; Q<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;=&nbsp;E<sub>1</sub>/P<sub>1</sub></p>\n\n<p>Let new price be P<sub>2</sub>, new quantity consumed be Q<sub>2</sub>, and new expenditure be E<sub>2</sub>&nbsp;</p>\n\n<p>P<sub>2</sub>&nbsp;= P<sub>1</sub>&nbsp;+&nbsp;16% of P<sub>1</sub></p>\n\n<p>&rArr;&nbsp;P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;= 1.16P<sub>1</sub>&nbsp;</p>\n\n<p>E<sub>2</sub>&nbsp;= E<sub>1</sub>&nbsp;+ 10% of E<sub>1</sub>&nbsp;</p>\n\n<p>&rArr;&nbsp;E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;= 1.1E<sub>1</sub>&nbsp;</p>\n\n<p>P<sub>2</sub>&nbsp;&times; Q<sub>2</sub>&nbsp;= E<sub>2</sub>&nbsp;</p>\n\n<p>1.16P<sub>1</sub>&nbsp;&times; Q<sub>2</sub>&nbsp;= 1.1E<sub>1</sub>&nbsp;</p>\n\n<p>&rArr; Q<sub>2</sub>&nbsp;= (1.1/1.16)&nbsp;&times;&nbsp;E<sub>1</sub>/P<sub>1</sub>&nbsp;</p>\n\n<p>&rArr; Q<sub>2</sub>&nbsp;= 0.948&nbsp;&times;&nbsp;E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>/P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;</p>\n\n<p>&rArr; Q<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;= 0.948&nbsp;&times; Q<sub>1</sub>&nbsp;</p>\n\n<p>Change in Quantity = Q<sub>1</sub>&nbsp;&ndash;&nbsp;0.948&nbsp;&times; Q<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;</p>\n\n<p>&rArr;&nbsp;Change in Quantity = 0.052Q<sub>1</sub>&nbsp;</p>\n\n<p>Percentage change = (Change in Quantity/Initial Quantity)&nbsp;&times; 100</p>\n\n<p>&rArr;&nbsp;Percentage change = (0.052Q<sub>1</sub>/Q<sub>1</sub>)&nbsp;&times; 100</p>\n\n<p>&rArr; 5.2%</p>\n\n<p><strong>&there4; Percentage change is 5.2%</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span>Let the price of diesel and quantity of diesel&nbsp;be Rs. 100 and 100 litres respectively</p>\n\n<p>Total expenditure = Rs. 100&nbsp;&times; 100</p>\n\n<p>&rArr; Rs. 10,000</p>\n\n<p>Increased expenditure = Rs. 10,000&nbsp;&times; 110%</p>\n\n<p>&rArr; Rs. 11,000</p>\n\n<p>Increased price of diesel = Rs. 100&nbsp;&times; 116%</p>\n\n<p>&rArr; Rs. 116</p>\n\n<p>New consumption of diesel = 11,000/116</p>\n\n<p>&rArr; 94.82&nbsp;&asymp; 94.8 litres</p>\n\n<p>Percentage decrease in consumption of diesel = [(100&nbsp;&ndash; 94.8)/100]&nbsp;&times; 100</p>\n\n<p>&rArr; 5.2%</p>\n\n<p><span style=\"font-weight: 700;\">&there4; Percentage change is 5.2%</span></p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "Ayush spends 25% of an amount of money on an insurance policy, 26% on food, 23% on children&rsquo;s education and 19% on recreation. He deposits the remaining amount of Rs. 26,600 in the bank. What is the total amount (in Rs. ) that he spends on food and recreation together?&nbsp;&nbsp;", "comp": "", "opts": ["1,95,000&nbsp;", "1,71,000&nbsp;", "1,62,000&nbsp;", "1,83,000&nbsp;"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">The total percentage he spends in a month</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 Percentage he spent= 25% + 26% + 23% +\u00a019%=93%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0Percentage he deposit= Total percentage - Percentage he spent = 100% - 93%= 7%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 7%= 26600 \u21d2\u00a01%= Rs. 3800</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0Amount he spent on\u00a0recreation= 19%= 19\u00a0x 1%= 19\u00a0x 3800= Rs. 72200</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0Amonut he spent on food= 26%= 26 x 1% = 26 x 3800= Rs. 98800</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0Total money he spent on food and\u00a0recreation= Rs. 98800\u00a0+ Rs. 72200 = Rs. 171000</p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "A man invests \u20b944,000 in some shares in the ratio 1 : 4 : 5 which pay dividends of 10%, 15% and 25% on his investment for one year, respectively. His total dividend income is:", "comp": "", "opts": ["\u20b97,850", "\u20b98,580", "\u20b97,970", "\u20b98,510"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">The money he receives from 10% interest is,\u21d2\u00a044000\u00a0\u00d7 1/10\u00a0\u00d7 1/10 = 440</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The money he receives from 15% interest is,\u21d2\u00a044000\u00a0\u00d7 4/10\u00a0\u00d7 15/100\u00a0= 2640</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The money he receives from 25% interest is,\u21d2\u00a044000\u00a0\u00d7 5/10\u00a0\u00d7 25/100\u00a0= 5500</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total amount is 5500 + 2640 + 440 = <span style=\"color: rgb(33, 37, 41);\">\u20b9</span> 8580</p>\n", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "If the numerator of a fraction is increased by 12% and its denominator is reduced by 8%, it gives a new fraction <span class=\"math-tex\">\\(\\frac{16}{17}\\)</span>. What is the original fraction?", "comp": "", "opts": ["<span class=\"math-tex\">\\(\\frac{92}{119}\\)</span>", "<span class=\"math-tex\">\\(\\frac{23}{28}\\)</span>", "<span class=\"math-tex\">\\(\\frac{28}{23}\\)</span>", "<span class=\"math-tex\">\\(\\frac{119}{92}\\)</span>"], "cidx": 0, "sol": "<span style=\"color: rgb(33, 37, 41);\">(X\u00a0\u00d7 112%)/(Y\u00a0\u00d7 92%) = 16/17\u00a0\u21d2\u00a0(X\u00a0\u00d7 28)/(Y\u00a0\u00d7 23) = 16/17 \u21d2 X/Y = (4</span><span style=\"color: rgb(33, 37, 41);\">\u00a0\u00d7\u00a023</span><span style=\"color: rgb(33, 37, 41);\">)/(17 \u00d7 7</span><span style=\"color: rgb(33, 37, 41);\">) = 92/119</span>", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "If A&rsquo;s income is 40% of B&rsquo;s income and B&rsquo;s income is 24% more than C&rsquo;s income, then by what percentage is C&rsquo;s income more than A&rsquo;s income? (Your answer should be correct to one decimal place.)", "comp": "", "opts": ["101.6", "75.6", "50.4", "104.2"], "cidx": 0, "sol": "<p>Let the income of C be 100x</p>\n\n<p>Income of B = 100x &times; (124/100) = 124x</p>\n\n<p>Income of A = 124x &times; (40/100) = 49.6x</p>\nIncome of C is more than that of A by (%) = [(100x &ndash; 49.6x)/49.6x] &times; 100 = 101.6%", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "A woman sold her earphone for \u20b92,000 and got a percentage profit equal to the numerical value of cost price. The cost price of the earphone is:", "comp": "", "opts": ["<span style=\"\">\u20b9500</span>", "<span style=\"\">\u20b9200</span>", "<span style=\"\">\u20b9600</span>", "<span style=\"\">\u20b9400</span>"], "cidx": 3, "sol": "<p><strong>Given</strong></p>\n\n<p>selling price of earphone= 2000Rs</p>\n\n<p>profit percentage = numerical value of cost price</p>\n\n<p><strong>Formula used</strong></p>\n\n<p>profit percentage=<span class=\"math-tex\">\\(\\frac{Sp-Cp}{Cp}\u00d7 100\\)</span></p>\n\n<p>Sp = selling price= 2000Rs</p>\n\n<p>Cp = cost price</p>\n\n<p><strong>Calculation</strong></p>\n\n<p>from the question,&nbsp;</p>\n\n<p>= Profit percentage,=&nbsp;<span class=\"math-tex\">\\(\\frac{Sp-Cp}{Cp}\u00d7 100\\)</span></p>\n\n<p>&rArr; CP = (2000 - CP)/(CP)&nbsp;&times; 100</p>\n\n<p>Let CP be x,&nbsp;</p>\n\n<p>&rArr; x = (2000 - x)/x&nbsp; &times; 100</p>\n\n<p>&rArr; x<sup>2</sup> = (2000 - x)&nbsp;&times; 100</p>\n\n<p>&rArr; x<sup>2</sup> + 100x -&nbsp;2,00,00</p>\n\n<p>&rArr; x<sup>2</sup> + 500x - 400x -&nbsp;2,00,000 = 0</p>\n\n<p>&rArr; x(x + 500) - 400(x + 500)</p>\n\n<p>&rArr; (x - 400) (x + 500) = 0</p>\n\n<p>&rArr; x = 400 as CP can not be negative</p>\n\n<p><strong>The cost price of the earphone is Rs. 400</strong></p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "The monthly salary of a person is Rs. 50,000. He spends 40% of his salary on household expenses, 25% on rent, and 15% on transportation, and saves the remaining amount. What is his yearly savings?", "comp": "", "opts": ["Rs.&nbsp;1,00,000&nbsp;", "Rs.&nbsp;1,10,000&nbsp;", "<span style=\"color: rgb(88, 89, 91);\">Rs.&nbsp;</span>1,20,000", "Rs.&nbsp;90,000"], "cidx": 2, "sol": "<p>\u21d2 Household expenses = 40% of 50000 = 0.4 \u00d7 50000 = Rs. 20,000</p>\n\n<p>\u21d2 Rent = 25% of 50000 = 0.25 <span style=\"color: rgb(33, 37, 41);\">\u00d7</span>\u00a050000 = Rs. 12,500</p>\n\n<p>\u21d2 Transportation = 15% of 50000 = 0.15 <span style=\"color: rgb(33, 37, 41);\">\u00d7</span>\u00a050000 = Rs. 7,500</p>\n\n<p>\u21d2 Remaining amount = 50000 - (20000 + 12500 + 7500) = Rs. 10,000</p>\n\n<p>\u21d2 Yearly savings= 10000 <span style=\"color: rgb(33, 37, 41);\">\u00d7</span>\u00a012 = Rs. 120,000</p>\n", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "If <span class=\"math-tex\">\\(66\\frac{2}{3}\\%\\)</span>&nbsp;of 75% of one-eighth of a certain number is 179, then <span class=\"math-tex\">\\(33\\frac{1}{3}\\%\\)</span>&nbsp;of three-fourth of that number is:", "comp": "", "opts": ["537", "787.6", "859.2", "716"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>66.66% of 75% of 1/8 of a number = 179</p>\n\n<p><b>Calculation:</b></p>\n\n<p>Let the number be x.</p>\n\n<p>66.66%&nbsp;&times; 75%&nbsp;&times; 1/8&nbsp;&times; (x)&nbsp;= 179</p>\n\n<p>&rArr; x &times; 2/3 &times; 3/4 &times; 1/8 = 179</p>\n\n<p>&rArr; x = 179 &times; 16</p>\n\n<p>&rArr; 33 % of 3/4 of 179 &times; 16</p>\n\n<p>&rArr; 179 &times; 16 &times; 3/4 &times; 1/3</p>\n\n<p>&rArr; 716&nbsp;</p>\n\n<p>&there4; The correct answer is<strong> 716</strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "A shopkeeper charges Rs. 1.50 to photocopy a sheet of paper and a discount of 5.5% is given on all photocopies done after&nbsp;400 sheets. How much will it cost to photocopy 800 sheets of paper?", "comp": "", "opts": ["Rs. 1,167", "Rs. 1,160", "Rs. 1,176", "Rs. 1,276"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total number of sheets = 800</p>\n\n<p><span style=\"\">A shopkeeper charges Rs. 1.50 to photocopy a sheet of paper</span></p>\n\n<p><span style=\"\">A discount of 5.5% is given on all photocopies done after&nbsp;400 sheets</span></p>\n\n<p><strong><span style=\"\">Calculation:</span></strong></p>\n\n<p><span style=\"\">According to the question</span></p>\n\n<p style=\"\">Cost to photocopy next 400 sheets = Rs. (400&nbsp;&times; 1.50)&nbsp;</p>\n\n<p style=\"\">&rArr; Rs. 600</p>\n\n<p style=\"\">Now,</p>\n\n<p><span style=\"\">Cost to photocopy after 400 sheets = [(400&nbsp;&times; 1.50)&nbsp;&times; 94.5/100]</span></p>\n\n<p><span style=\"\">&rArr; (600&nbsp;&times; 94.5/100)</span></p>\n\n<p><span style=\"\">&rArr; (6&nbsp;&times; 94.5)</span></p>\n\n<p><span style=\"\">&rArr; Rs. 567</span></p>\n\n<p style=\"\">Cost to photocopy 800 sheets of paper = Rs. (600 + 567)</p>\n\n<p style=\"\">&rArr; Rs. 1,167</p>\n\n<p style=\"\"><strong>&there4; The required cost is Rs. 1,167</strong></p>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "In an election, the winning candidate received 15744 votes, which are 48% of the electorate. The only other candidate received 22% of the electorate. What is the number of members who did NOT vote?", "comp": "", "opts": ["9860", "9870", "9840", "9850"], "cidx": 2, "sol": "<p><span style=\"\">Total votes be x</span></p>\n\n<p><span style=\"\">48% of x = 15744 \u21d2\u00a0x = (15744/48)\u00a0\u00d7 100 \u21d2\u00a0x = 32800</span></p>\n\n<p>Votes received by other candidates, 22% of 32800 \u21d2 22\u00a0\u00d7 328 = 7216 votes</p>\n\n<p>Total votes received = 15744 + 7216 = 22960</p>\n\n<p>No. of people did not voted = 32800 - 22960 = 9840</p>\n", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "A crate of fruits contains one spoiled fruit for every 25 fruits. 60% of the spoiled fruits were sold. If the seller had sold 48 spoiled fruits, then the number of&nbsp;fruits in the crate were:", "comp": "", "opts": ["2000", "1200", "2400", "3000"], "cidx": 0, "sol": "<p>\u00a0</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>Let the total number of fruits in the crate be 'x'.</p>\n\n<p>According to the question,</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of spoiled fruits sold = 48</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 x\u00a0\u00d7 (1/25)\u00a0\u00d7 (60/100) = 48</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 x = 2000</p>\n\n<p><strong>\u2234 The number of fruits is 2000.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "The population of a town is increased by 15% in the first year and 8% in the second year, but decreased by&nbsp;<span class=\"math-tex\">\\(12\\frac{1}{2}\\%\\)</span> in the third year. If the population at the end of the third year is 26,082, find the original population of town.", "comp": "", "opts": ["30,000", "25,000", "24,000", "28,000"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>The increase in population first year = 15%</p>\n\n<p>The increase in population second&nbsp;year = 8%</p>\n\n<p>The decrease in population third year = 12 (1/2)%</p>\n\n<p>The population at the end of the third year =&nbsp;26,082,</p>\n\n<p><b>Calculation:</b></p>\n\n<p>Let the initial population be x.</p>\n\n<p>The population at the end of first year&nbsp;= x&nbsp;&times; 115%</p>\n\n<p>The population at the end of second&nbsp;year&nbsp;= (x&nbsp;&times; 115%)&nbsp;&times; 108%</p>\n\n<p>The population at the end of third&nbsp;year&nbsp;= (x&nbsp;&times; 115%)&nbsp;&times; 108%&nbsp;&times; [100 - (25/2)]% = 26082</p>\n\n<p>(x&nbsp;&times; 115%)&nbsp;&times; 108%&nbsp;&times; [100 - (25/2)]% = 26082</p>\n\n<p>x&nbsp;&times; (115/100)&nbsp;&times; (108/100)&nbsp;&times; (175/200) = 26082</p>\n\n<p>Simplifying and solving,&nbsp;</p>\n\n<p>x = 24,000</p>\n\n<p><strong>&there4; The initial population is 24,000.</strong></p>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></strong>15% = 3/20, 8% = 2/25,&nbsp;12 (1/2)%&nbsp;= 1/8</p>\n\n<p>Let the initial population be y</p>\n\n<p>y&nbsp;&times; 23/20&nbsp;&times; 27/25&nbsp;&times; 7/8 =&nbsp;26,082</p>\n\n<p>y = (26,082&nbsp;&times; 20&nbsp;&times; 25&nbsp;&times; 8)/ 23&nbsp;&times; 27&nbsp;&times; 7</p>\n\n<p>y = 24,000</p>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "In an examination, 54% of the candidates passed in science and 42% failed in mathematics. If 32% failed in both subjects, what percentage passed in both subjects?", "comp": "", "opts": ["56%", "48%", "32%", "44%"], "cidx": 3, "sol": "<p>Percentage of candidates failed in science = 46%</p>\n\n<p>Percentage of candidates failed in mathematics = 42%</p>\n\n<p>Total Percentage of failed candidates = (46% + 42%) - 32% = 88% &minus; 32% = 56%</p>\nPercentage of candidates passed in both the subjects = 100% &minus; 56% = 44%", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "If a% of 240 is c and c% of a is 117.6, then the value of a + c is:", "comp": "", "opts": ["144", "260", "196", "238"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>&nbsp;a% of 240 =&nbsp;c</p>\n\n<p>c% of a = 117.6</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>m% of n = (m&nbsp;&times;&nbsp;n)/100</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>(a&nbsp;&times;&nbsp;240)/100 = c</p>\n\n<p>&rArr; a/c = 5/12</p>\n\n<p>Let the number a and c be 5x and 12x</p>\n\n<p>(12x&nbsp;&times; 5x)/100 = 117.6</p>\n\n<p>&rArr; 60x<sup>2</sup>&nbsp;= 11760</p>\n\n<p>&rArr; x<sup>2</sup>&nbsp;= 11760/60</p>\n\n<p>&rArr; x<sup>2</sup>&nbsp;= 196</p>\n\n<p>&rArr; x = 14</p>\n\n<p>(a + c) = (5x + 12x) = 17x</p>\n\n<p>After putting the value of x</p>\n\n<p>17x = 17&nbsp;&times; 14</p>\n\n<p>&rArr; (a + c) = 238</p>\n\n<p><strong>&there4; The value of (a + c) is 238</strong></p>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "Kumar&rsquo;s salary is \u20b930,000 per month. He spends 25% of this on food and rent and 20% of the remaining on education. But he pays 5% of his total salary on paying the income tax and saves \u20b98,000 after all these three deductions. What is the amount (in \u20b9.) available with him after his savings?", "comp": "", "opts": ["8500", "7500", "7250", "8550"], "cidx": 0, "sol": "<p><strong>Given:- </strong>Salary = Rs. 30,000 and he spends 25% of total salary in food and rent and 20% of left salary on education</p>\n\n<p>5% on tax and saves 8000</p>\n\n<p><strong>To find:-</strong>&nbsp;Total amount after saving</p>\n\n<p><span style=\"font-weight: 700; \">Calculation</span><strong>:-</strong> Salary of Kumar = Rs. 30,000 /month</p>\n\n<p>Let the available amount after savings be Rs. x</p>\n\n<p>According to the question, He spends his salary on different items-</p>\n\n<p>&rArr;25% of salary + 20% of remaining salary + 5% of income tax + 8000(savings) + x= 30,000</p>\n\n<p><span style=\"\">&rArr;<span class=\"math-tex\">\\({25\\over 100}\\times 30000\\)</span> + <span class=\"math-tex\">\\({20\\over 100}\\times \\left(30000- \\frac{25}{100}\\times 30000\\right)\\)</span> + <span class=\"math-tex\">\\({5\\over 100}\\times 30000\\)</span>&nbsp;+ 8000(savings) + x = 30,000</span></p>\n\n<p><span style=\"\">&rArr;7500 + 4500 + 1500 + 8000 + x = 30,000</span></p>\n\n<p><span style=\"\">&rArr;x = 30,000 - 21,500</span></p>\n\n<p><span style=\"\">&rArr;x =&nbsp;</span>8500</p>\n\n<p>&nbsp;</p>\n\n<p><strong>The left amount after all the deductions and saving is Rs. 8500</strong></p>\n", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "In an election, a candidate secured 41% of the votes polled and lost the election by 97,632. What is the number of votes obtained by the winning candidate?", "comp": "", "opts": ["360072", "222384", "542400", "320016"], "cidx": 3, "sol": "<p>Let total votes = V</p>\n\n<p>Votes secured by losing candidate = 0.41V,\u00a0Votes of winning candidate = 0.59V</p>\n\n<p>0.59V - 0.41V = 97,632 \u21d2 0.18V = 97,632</p>\n\n<p>V = 97,632 / 0.18 = 542,400</p>\n\n<p>Votes of winning candidate = 0.59 \u00d7 542,400 = 320,016.</p>\n", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "In a certain year, the population of a city was 18000. If in the next year, the population of males increased by 5% and that of females increased by 7%, and the total population increased to 19200, then what was the ratio of the populations of males and females in that given year?&nbsp;", "comp": "", "opts": ["2&nbsp;\u2236&nbsp;5", "1&nbsp;\u2236&nbsp;5", "4&nbsp;\u2236&nbsp;3", "3&nbsp;\u2236&nbsp;5&nbsp;&nbsp;"], "cidx": 1, "sol": "<span style=\"color: rgb(33, 37, 41);\">\u00a0M + F = 18000\u00a0 ...(1)</span><br style=\"color: rgb(33, 37, 41);\" />\n<span style=\"color: rgb(33, 37, 41);\">\u00a0</span><br style=\"color: rgb(33, 37, 41);\" />\n<span style=\"color: rgb(33, 37, 41);\">\u21d2 (105/100) M + (107/100)F = 19200 ...(2)<br />\n<br />\nPut the value of M from equation (1) We get,<br />\n<br />\n\u21d2 105(18000 -\u00a0 F ) + 107F = 1920000\u00a0\u00a0<br />\n<br />\n\u21d2 F = 15,000<br />\n<br />\n\u21d2 M = 18000 - 15000 = 3000<br />\n<br />\nThe ratio of the populations of males and females\u00a0\u21d2\u00a0</span><span style=\"color: rgb(33, 37, 41);\">3000 :15000\u00a0</span><span style=\"color: rgb(33, 37, 41);\">\u21d2</span><span style=\"color: rgb(33, 37, 41);\">\u00a0Ratio = 1 : 5</span><br style=\"color: rgb(33, 37, 41);\" />\n\u00a0", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "A total of 7,50,000 voters participated in the election. A candidate received 3,82,500 votes which was 60% of the total valid votes. What was the percentage of invalid votes in the election?", "comp": "", "opts": ["15%", "20%", "12%", "18%"], "cidx": 0, "sol": "<p>60% of the total valid votes\u00a0\u2192 382500</p>\n\n<p>100% valid votes =\u00a0<span style=\"color: rgb(33, 37, 41);\">382500\u00a0\u00d7 5/3 = 637500</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Invalid votes = 750000\u00a0- 637500 = 112500</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">The percent of invalid votes = 112500/750000\u00a0\u00d7 100 = 15%</span></p>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "In an election between two candidates, the difference between the candidates who won and lost was 2,500 votes. The candidate who won got 75% of the votes, and there were no invalid votes. The total number of votes polled of the losing candidate was:", "comp": "", "opts": ["1875", "5000", "1250", "3750"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0The difference in votes (75% - 25% = 50% of total votes) = 2,500.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">So, (50% \u00d7 V = 2,500)\u00a0\u21d2\u00a0<span class=\"math-tex\">\\((V = \\frac{2,500}{0.5} = 5,000).\\)</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0Votes for the losing candidate = 25% of total votes = (0.25 \u00d7\u00a0V = 0.25 \u00d7 5,000 = 1,250).</p>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "The population of a village is 9,000. If the annual birth rate is 12.5% and the annual death rate is 2.5%, calculate the population after three years.&nbsp;", "comp": "", "opts": ["<span style=\"\">12256</span>", "<span style=\"\">11979</span>", "<span style=\"\">10959</span>", "<span style=\"\">10755</span>"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p><span style=\"\">The Initial population (P) of a village =&nbsp;9,000</span></p>\n\n<p><span style=\"\">The annual birth rate =&nbsp;12.5% </span></p>\n\n<p><span style=\"\">The annual death rate =&nbsp;2.5%</span></p>\n\n<p><strong><span style=\"\">Concept used:</span></strong></p>\n\n<p><span style=\"\">Population = P(1 + R/100)<sup>T</sup></span></p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>The annual growth Rate (R) = Birth Rate - Death Rate = 12.5% - 2.5% = 10%</p>\n\n<p>According to the question,</p>\n\n<p>Population after 3years will be = 9000(1 + 10/100)<span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">3</span></p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>P<sub>f</sub>&nbsp;= 9000 (1.1)<sup>3</sup>&nbsp;</p>\n\n<p><span style=\"\">&rArr; P</span><span style=\" line-height: 0; position: relative; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;\">f</span><span style=\"\">&nbsp;= 9000 &times; 1.331 = 11979</span></p>\n\n<p><strong><span style=\"\">&there4; The population after three years will be 11979.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "From the salary of a software engineer, if 15% is used as house rent, 25% of the remaining is spent on household items, 25% of the remaining as income tax, and 15% of the remaining on clothing, then he is left with Rs.&nbsp;10,404. Find his total salary.", "comp": "", "opts": ["Rs.&nbsp;24,600", "<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>23,600", "<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>25,600", "<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>22,600"], "cidx": 2, "sol": "<p>Let total Salary be s.\u00a0</p>\n\n<p>\u21d2 s\u00a0\u00d7 (85/100)\u00a0\u00d7 (75/100)\u00a0\u00d7 (75/100)\u00a0\u00d7 (85/100) = 10,404\u00a0</p>\n\n<p>\u21d2 s = (10404\u00a0\u00d7 100\u00a0\u00d7 100 \u00d7 100\u00a0\u00d7 100) / (85\u00a0\u00d7 75\u00a0\u00d7 75\u00a0\u00d7 85)</p>\n\n<p>\u21d2 s =\u00a025,600.</p>\n", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "If the word PHOTOGRAPH is spelled with &lsquo;F&rsquo; in place of &lsquo;PH&rsquo;, then what would be the percentage reduction in the number of letters?", "comp": "", "opts": ["20%", "10%", "25%", "18%"], "cidx": 0, "sol": "<p>Total word in PHOTOGRAPH is = 10</p>\n\n<p>If PH is replaced by F, then the total word in FOTOGRAF is = 8</p>\n\n<p>Required percentage = [(10 - 8)/10] &times; 100 = 20%</p>\n\n<p><strong>Mistake Point:</strong></p>\n\n<p>PHOTOGRAPH has two&nbsp;PH hence both will be replaced by F, so total alphabet left = 8</p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "24% of Reena&rsquo;s salary is equal to 38% of Sunita&rsquo;s salary. Veena&rsquo;s salary is two-third of the total salary of Reena and Sunita. If Veena&rsquo;s salary is Rs. 62,000, then Sunita&rsquo;s salary is:", "comp": "", "opts": ["Rs. 32,000", "Rs. 35,000", "Rs. 36,000", "Rs. 38,000"], "cidx": 2, "sol": "<span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n\n<p>Ratio of Salaries Reena (R) : Sunita (S) = 38 : 24 = 19 : 12</p>\n\n<p>Total units (R + S) = 19 + 12 = 31 units</p>\n\n<p>Veena&rsquo;s salary = 2/3 &times; 31 units = 62,000</p>\n\n<p>31 units = 62,000 &times; 3/2 = 93,000 &rArr; 1 unit = 3,000</p>\n\n<p>Sunita&rsquo;s salary (12 units) = 12 &times; 3,000 = 36,000</p>\n\n<p><strong>&there4; The correct answer is Rs. 36,000.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n\n<p><strong>Given:</strong></p>\n\n<p>24% of Reena&rsquo;s salary (R) = 38% of Sunita&rsquo;s salary (S)</p>\n\n<p>Veena&rsquo;s salary (V) = 2/3 &times; (R + S) = 62,000</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>Ratio = Value<sub>1</sub> / Value<sub>2</sub></p>\n<svg height=\"200\" style=\"display:block;margin:12px 0;background:#ffffff;border-radius:10px;border:1px solid #cccccc;\" viewbox=\"0 0 420 200\" width=\"420\" xmlns=\"http://www.w3.org/2000/svg\"> <rect fill=\"#ddeeff\" height=\"30\" stroke=\"#2255cc\" stroke-width=\"1.5\" width=\"190\" x=\"40\" y=\"40\"></rect> <text fill=\"#222222\" text-anchor=\"middle\" x=\"135\" y=\"60\">Reena (19 units)</text> <rect fill=\"#fff0cc\" height=\"30\" stroke=\"#cc5500\" stroke-width=\"1.5\" width=\"120\" x=\"230\" y=\"40\"></rect> <text fill=\"#222222\" text-anchor=\"middle\" x=\"290\" y=\"60\">Sunita (12 units)</text> <line stroke=\"#888888\" stroke-dasharray=\"5,3\" x1=\"40\" x2=\"350\" y1=\"85\" y2=\"85\"></line> <text fill=\"#2255cc\" text-anchor=\"middle\" x=\"195\" y=\"105\">Total (R + S) = 31 units</text> <rect fill=\"#ccffcc\" height=\"30\" stroke=\"#007700\" stroke-width=\"1.5\" width=\"206\" x=\"40\" y=\"130\"></rect> <text fill=\"#222222\" text-anchor=\"middle\" x=\"143\" y=\"150\">Veena = 2/3 of Total = Rs. 62,000</text> <text fill=\"#2255cc\" font-weight=\"bold\" text-anchor=\"middle\" x=\"210\" y=\"185\">Sunita (12 units) = ?</text> </svg>\n\n<p>&rArr; 24% &times; R = 38% &times; S</p>\n\n<p>&rArr; R / S = 38 / 24 = 19 / 12</p>\n\n<p>&rArr; Let R = 19x and S = 12x</p>\n\n<p>&rArr; V = (2/3) &times; (19x + 12x) = 62,000</p>\n\n<p>&rArr; (2/3) &times; 31x = 62,000</p>\n\n<p>&rArr; 31x = 62,000 &times; (3 / 2)</p>\n\n<p>&rArr; 31x = 93,000</p>\n\n<p>&rArr; x = 93,000 / 31 = 3,000</p>\n\n<p>&rArr; Sunita&rsquo;s salary = 12x = 12 &times; 3,000 = 36,000</p>\n\n<p><strong>&there4; The correct answer is Rs. 36,000.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Percentage Equality to Ratio</p>\n\n<p style=\"margin:0 0 8px 0;color:#444444;\">If a% of X = b% of Y, then the ratio X : Y is always b : a. This helps in directly assigning units to variables.</p>\n\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Base Change in Percentage</p>\n\n<p style=\"margin:0 0 8px 0;color:#444444;\">Percentage is always calculated on a base value. In this problem, the salaries of Reena and Sunita serve as the base for their respective percentage calculations.</p>\n\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Ratio Unitary Method</p>\n\n<p style=\"margin:0 0 8px 0;color:#444444;\">To find a specific value when a sum or a fraction of the sum is given, divide the total value by the total number of ratio units to find the value of 1 unit.</p>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "If 30% of Ravi&rsquo;s income is equal to 40% of Suresh&rsquo;s income, then 50% of Ravi&rsquo;s income is equal to what percentage of Suresh&rsquo;s income?", "comp": "", "opts": ["<span class=\"math-tex\">\\(66\\frac{1}{3}\\)</span>%", "<span class=\"math-tex\">\\(33\\frac{1}{3}\\)</span>%", "<span class=\"math-tex\">\\(33\\frac{2}{3}\\)</span>%", "<span class=\"math-tex\">\\(66\\frac{2}{3}\\)</span>%"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Ravi's income equals to % of Suresh's income</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u21d2 0.30R = 0.40S </span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u21d2 R/S = 0.40 / 0.30 </span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u21d2 R/S = 4 / 3</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now, for 50% of Ravi's income:</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 (0.50 \u00d7 4) / 3 \u21d2 2 / 3 \u21d2 (2 / 3) \u00d7 100 = 66.67%</p>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "In an election between two candidates, 15% of the voters did not cast their votes and 10% of the votes polled were found invalid. The successful candidate got 55% of the valid votes and won by a majority of 6120 votes. The number of voters enrolled on the voters list was:", "comp": "", "opts": ["70000", "80000", "72000", "75000"], "cidx": 1, "sol": "<p><strong>GIVEN:</strong></p>\n\n<p>Votes by which the successful candidate won the election = 6120</p>\n\n<p><strong>CALCULATION:</strong></p>\n\n<p>Let the&nbsp; initial votes be x&nbsp;</p>\n\n<p>15% of the voters did not cast their votes and 10% of the votes were declared invalid</p>\n\n<p>Hence, Total valid votes = x&nbsp;&times; ( 85/100)&nbsp;&times; ( 90/100)</p>\n\n<p>Successful candidate received 55% of valid votes</p>\n\n<p>&rArr; non -successful candidate received&nbsp; 45% of valid votes</p>\n\n<p>&rArr; Difference = ( 55 -45) = 10%</p>\n\n<p>Votes by which successful candidate won the election = 6120</p>\n\n<p>&rArr; x&nbsp;&times; ( 85/100)&nbsp;&times; ( 90/100)&nbsp;&times; ( 10/100) = 6120</p>\n\n<p>&rArr; x&nbsp;= 80,000.</p>\n\n<p><strong>Hence, the number of voters enrolled on the voter list were 80,000.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "The monthly income of a person was Rs. 80,000 and his monthly expenditure was Rs. 45,000. Next year, his Income Increased by 16% and his expenditure Increased by 8%. Find the percentage increase in his savings (correct to 2 decimal places).&nbsp;", "comp": "", "opts": ["26.29%", "25.35%", "44.36%", "30.25%"], "cidx": 0, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span>\n<p>Ratio of <strong>Income : Expenditure : Savings</strong> = 80,000 : 45,000 : 35,000 = 16 : 9 : 7</p>\n<p>Total units of <strong>Income Increase</strong> = 16 \u00d7 16% = 256</p>\n<p>Total units of <strong>Expenditure Increase</strong> = 9 \u00d7 8% = 72</p>\n<p>Total units of <strong>Savings Increase</strong> = 256 \u2212 72 = 184</p>\n<p>Percentage Increase in <strong>Savings</strong> = 184 \u00f7 7 \u2248 26.29%</p>\n<p><strong>\u2234 The correct answer is 26.29%.</strong></p>\n\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong> Monthly Income = \u20b980,000, Monthly Expenditure = \u20b945,000</p>\n<p><strong>Formula Used:</strong> Savings = Income \u2212 Expenditure; % Increase = (Change \u00f7 Original) \u00d7 100</p>\n<div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_6e38024a.png/1784055757.png\" style=\"max-width: 100%; height: auto;\"></div>\n<p>\u21d2 <strong>Original Savings</strong> = 80,000 \u2212 45,000 = \u20b935,000</p>\n<p>\u21d2 <strong>Increase in Income</strong> = 16% of 80,000 = \u20b912,800</p>\n<p>\u21d2 <strong>Increase in Expenditure</strong> = 8% of 45,000 = \u20b93,600</p>\n<p>\u21d2 <strong>Increase in Savings</strong> = 12,800 \u2212 3,600 = \u20b99,200</p>\n<p>\u21d2 <strong>Percentage Increase in Savings</strong> = (9,200 \u00f7 35,000) \u00d7 100</p>\n<p>\u21d2 % Increase = 920 \u00f7 35 \u2248 26.2857%</p>\n<p><strong>\u2234 The correct answer is 26.29%.</strong></p>\n\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Fundamental Income Identity</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Total Income is always the sum of Expenditure and Savings (I = E + S). Any change in Income must be balanced by changes in E and S.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Weighted Average Method</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Income % change = (Exp Ratio \u00d7 Exp % change + Savings Ratio \u00d7 Savings % change) \u00f7 (Exp Ratio + Savings Ratio).</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Percentage Change Formula</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Percentage Change = [(Final Value \u2212 Initial Value) \u00f7 Initial Value] \u00d7 100.</p>", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "The monthly income of Manisha was \u20b91,20,000 and her monthly expenditure was \u20b955,000. Next year, her income increased by 22% and her expenditure increase by 10%. Find the percentage increase in her savings (correct to 2 decimal places).", "comp": "", "opts": ["28.16%", "26.25%", "32.15%", "30.08%"], "cidx": 2, "sol": "<p><span style=\"\">Savings = 120000 - 55000 = Rs. 65000</span></p>\n\n<p><span style=\"\">After an increment in salary by 22% and expenses by 10% then \u21d2\u00a0Salary = 120000(1 + 22%) \u21d2\u00a0120000(1 + 0.22)</span></p>\n\n<p><span style=\"\">\u21d2\u00a0Salary = 120000\u00a0\u00d7 1.22 = Rs. 146400</span>, Expenses = 55000(1 + 10%)<span style=\"\">\u00a0\u21d2\u00a0\u00a055000 \u00d7 1.10 = Rs. 60500</span></p>\n\n<p><span style=\"\">Savings after increment = Rs. 146400 - Rs. 60500 = Rs. 85900.</span></p>\n\n<p><span style=\"\">Growth in savings, \u21d2 85,900 - 65,000 = 20,900, %Increase = 20,900/65,000\u00a0\u00d7 100 \u21d2 32.15%</span></p>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "Three candidates were participating in an election. The person in third place got 20% of the total votes while the difference between the votes of the winner and the first runner-up was 20% of the total votes. If the difference between the votes of the first runner-up and the second runner-up was 37,000, how many votes did the winner receive?", "comp": "", "opts": ["<span style=\"\">1,80,000</span>", "<span style=\"\">1,85,000</span>", "<span style=\"\">1,75,000</span>", "<span style=\"\">1,95,000</span>"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Let's assume\u00a0that total votes = 100 unit</p>\n\n<p style=\"color: rgb(33, 37, 41);\">So, person in\u00a03<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">rd</span>\u00a0place got 20% which is = 20 unit\u00a0remaining 80 unit</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Difference of votes of 1st and 2nd is 20%, so winner must got 50 unit and 2<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">nd</span>\u00a0got 30 unit</p>\n\n<p style=\"color: rgb(33, 37, 41);\">According to the question, the difference of votes between 2<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">nd</span>\u00a0and 3<span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">rd</span>\u00a0is 37000</p>\n\n<p style=\"color: rgb(33, 37, 41);\">So,(30 - 20) =\u00a010 unit \u2192\u00a037,000 then, winner 50 unit\u00a0\u2192 37000/10\u00a0\u00d7 50 = 37000\u00a0\u00d7 5 = 185000</p>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "35% of the students in a college are girls and the rest are boys. The total number of students in the college is 2800. 75% of the boys and 85% of the girls passed the final examination. The percentage of total students who passed the final examination is :", "comp": "", "opts": ["80%", "82%", "78%", "78.5%"], "cidx": 3, "sol": "<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/09/F5_Madhuri_SSC_15.09.2022_D2.png\" style=\"width: 141px; height: 163px;\" /></p>\n\n<p>(x - 75)/(85 - x) = 7&nbsp;\u2236 13</p>\n\n<p>&rArr; 13x - 975 = 595 - 7x</p>\n\n<p>&rArr; 20x = 1570</p>\n\n<p>&rArr; x = 78.5%</p>\n\n<p><strong>Traditional method:</strong></p>\n\n<p><strong>Given:</strong></p>\n\n<p>Total number of students in a college = 2800</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Total girls in a college = 2800&nbsp;&times;&nbsp;35/100 = 980</p>\n\n<p>Total boys in a college = 2800 - 980 = 1820</p>\n\n<p>Total number of girls and boys passed in exam = 980&nbsp;&times; 85/100 + 1820&nbsp;&times; 75/100 = 833 + 1365 = 2198</p>\n\n<p><strong>&there4;&nbsp;The percentage of total students who passed the final examination is = 2198/2800&nbsp;&times; 100 = 78.5%</strong></p>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "The population of a town is 15000. If the population increases by 15% in the first year, by 25% in the second year and due to pollution it decreases by 6% in the third year, what will be its population after 3 years?(Round off number in answer)", "comp": "", "opts": ["20269", "25269", "28269", "15269"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Initial Population (P) = 15,000</p>\n\n<p>Increase in 1st year = 15%</p>\n\n<p>Increase in 2nd year = 25%</p>\n\n<p>Decrease in 3rd year = 6%</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Population after n years = P &times; (1 + r1) &times; (1 + r2) &times; (1 - r3)</p>\n\n<p>Where, r1, r2, r3 are the rates of increase/decrease in decimal form.</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>r1 = 15% = 0.15</p>\n\n<p>r2 = 25% = 0.25</p>\n\n<p>r3 = 6% = 0.06</p>\n\n<p>Population after 1st year = 15000 &times; (1 + 0.15)</p>\n\n<p>&rArr; Population after 1st year = 15000 &times; 1.15</p>\n\n<p>&rArr; Population after 1st year = 17250</p>\n\n<p>Population after 2nd year = 17250 &times; (1 + 0.25)</p>\n\n<p>&rArr; Population after 2nd year = 17250 &times; 1.25</p>\n\n<p>&rArr; Population after 2nd year = 21562.5</p>\n\n<p>Population after 3rd year = 21562.5 &times; (1 - 0.06)</p>\n\n<p>&rArr; Population after 3rd year = 21562.5 &times; 0.94</p>\n\n<p>&rArr; Population after 3rd year &asymp; 20269.35</p>\n\n<p>Rounded off, Population after 3rd year &asymp; 20269</p>\n\n<p><strong>&there4; The correct answer is option 1.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "In a constituency, 90% of the total number of people on the electoral roll cast their votes during an election. 15% of the votes cast were declared invalid. Jeeta secured 60% of the valid votes. If Jeeta secured 91,800 valid votes, what was the total number of people on the electoral roll?&nbsp;", "comp": "", "opts": ["2,16,000", "2,25,000", "1,80,000", "2,00,000"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">100x \u00d7 90%\u00a0\u00d7 85%\u00a0\u00d7 60% = 91800 \u21d2 100x\u00a0= (91800\u00a0\u00d7\u00a0100\u00a0\u00d7 100)/(85\u00a0\u00d7 6 \u00d7 9) \u21d2 x = (20\u00a0\u00d7\u00a0100\u00a0\u00d7 100) \u21d2\u00a0x =\u00a0200000</p>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "In an election between two candidates, P received 42% of the valid votes and Q won by 45,360 votes. 20% people did not cast their vote. If 10% of the votes cast were found invalid, what is the total number of votes registered in the poll booth?", "comp": "", "opts": ["3,93,750", "3,59,000", "3,93,600", "3,53,790"], "cidx": 0, "sol": "<p>P's votes = 42% of 72% of V , Q's votes = 58% of 72% of V</p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Difference = 16% of 72% of V = 45,360 </span>\u21d2<span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u00a00.16 \u00d7 0.72 \u00d7 V = 45,360</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">V = 45,360 / 0.1152 = 3,93,750</span></p>\n", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "A reduction of 20% in the price of bananas enables a customer to buy 6 more bananas for \u20b980. What is the reduced price of bananas per dozen (in \u20b9)?", "comp": "", "opts": ["36", "35", "32", "40"], "cidx": 2, "sol": "<p>Let the original price of a banana be 5x, new price will be 4x(reduced by 20%)</p>\n\n<p style=\"color: rgb(97, 106, 124); \">\u21d2\u00a0<span class=\"math-tex\">\\(80\\over 4x\\)</span>\u00a0-\u00a0<span class=\"math-tex\">\\(80\\over 5x\\)</span>\u00a0= 6 \u21d2\u00a0<span class=\"math-tex\">\\({80 (5 - 4)}\\over 4 \\times 5 \\times x\\)</span>\u00a0= 6 \u21d2\u00a0<span class=\"math-tex\">\\({80 (5 - 4)}\\over 20 \\times x\\)</span>\u00a0= 6</p>\n\n<p style=\"color: rgb(97, 106, 124); \">\u21d2\u00a0<span class=\"math-tex\">\\(4\\over x\\)</span>\u00a0= 6 \u21d2 x =\u00a0<span class=\"math-tex\">\\(2\\over3\\)</span></p>\n\n<p style=\"color: rgb(97, 106, 124); \">The new price of bananas is\u00a0\u21d2 4x = 4\u00a0\u00d7<span class=\"math-tex\">\\(2\\over3\\)</span></p>\n\n<p style=\"color: rgb(97, 106, 124); \">The price per dozen is \u21d2 4\u00a0\u00d7\u00a0<span class=\"math-tex\">\\(2\\over3\\)</span>\u00a0\u00d7 12 = 32</p>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "A number is decreased by 35%, then increased by 25% and then further increased by 15%. What is the net increase/decrease percentage in the number (correct to the nearest integer)?", "comp": "", "opts": ["6% increase", "15% decrease", "14% increase", "7% decrease"], "cidx": 3, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>Let the number be 100</p>\n\n<p>Number is decreased by 35%</p>\n\n<p>&rArr; (100% - 35%)&nbsp;&times; 100 = 65</p>\n\n<p>Number is increased by 25%</p>\n\n<p>&rArr;&nbsp;<span style=\"\">(100% +&nbsp;25%)&nbsp;&times; 65&nbsp;= 81.25</span></p>\n\n<p><span style=\"\">Number is increased by 15%</span></p>\n\n<p><span style=\"\">&rArr;&nbsp;</span><span style=\"\">(100% + 15%)&nbsp;&times; 81.25&nbsp;= 93&nbsp;(approximated to nearest integer)</span></p>\n\n<p><span style=\"\">&there4; Net difference = 93 - 100 = -7</span></p>\n\n<p><strong><span style=\"\">There is a net decrease of 7%.</span></strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span>&nbsp;The negative sign in the answer shows that there is a decrease in the value i.e., the final number has decreased.&nbsp;</p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "Mohan gets 12% increase in his sale amount in the first year and 15% increase in the second year, with that his present sale is \u20b91,28,800. What was his sale two years ago?", "comp": "", "opts": ["\u20b91,25,000", "\u20b91,00,000", "\u20b91,75,000", "\u20b91,50,000"], "cidx": 1, "sol": "<p>Present sale = \u20b91,28,800</p>\n\n<p>First year increase = 12% , Second year increase = 15%</p>\n\n<p>Sale two years ago = Present sale / (1 + 12/100) / (1 + 15/100)</p>\n\n<p>Sale two years ago = \u20b91,28,800 / (1.12 \u00d7 1.15)\u00a0\u00a0= \u20b91,28,800 / 1.288</p>\n\n<p>Sale two years ago = \u20b91,00,000</p>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "In an election between two candidates, 85% of the electorate cast their votes 6% of the votes polled were declared invalid. If the winning candidate secured 60% of the valid votes, how many votes did the winning candidate receive if the number of eligible voters was 10000?", "comp": "", "opts": ["4784", "4804", "4794", "4824"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total number of eligible voter = 10000</p>\n\n<p>Total casted votes = 85% of eligible voter</p>\n\n<p>Total invalid votes = 6% of casted votes</p>\n\n<p>Votes received by winning candidate = 60% of valid votes.</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Total casted votes = 85% of eligible voter =&nbsp;<span class=\"math-tex\">\\(\\frac{85\\ \\times\\ 10000 }{100}\\)</span>&nbsp;= 8500</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Total invalid votes = 6% of casted votes =&nbsp;<span class=\"math-tex\">\\(\\frac{8500\\ \\times\\ 6}{100}\\)</span>&nbsp;= 510</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Total valid votes = casted votes - invalid votes = 8500 - 510 = 7990</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Votes received by winning candidate = 60% of valid votes =&nbsp;<span class=\"math-tex\">\\(\\frac{60\\ \\times\\ 7990}{100}\\)</span>&nbsp;= 4794 votes</span></p>\n\n<p><strong><span style=\"color: rgb(33, 37, 41);\">&there4; The correct answer is 4794 votes.&nbsp;</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "If price of rice is increased by 25 percent, then by what percentage consumption of rice should be decreased so that the expenditure incurred on rice gets decreased by 40 percent?", "comp": "", "opts": ["<span style=\"\">52 percent</span>", "<span style=\"\">43.33 percent</span>", "<span style=\"\">42 percent</span>", "<span style=\"\">48 percent</span>"], "cidx": 0, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span>\n<p>Price ratio = 100 : 125 = 4 : 5</p>\n<p>Expenditure ratio = 100 : 60 = 5 : 3</p>\n<p>Consumption ratio = (Expenditure / Price) = (5/4) : (3/5) = 25 : 12</p>\n<p>Decrease in <strong>consumption</strong> = 25 \u2212 12 = 13 units</p>\n<p>Percentage decrease = (13 \u00f7 25) \u00d7 100 = 52%</p>\n<p><strong>\u2234 The correct answer is 52 percent.</strong></p>\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Price of <strong>rice</strong> increased by <strong>25%</strong>.</p>\n<p>Target <strong>expenditure</strong> decrease = <strong>40%</strong>.</p>\n<p><strong>Formula Used:</strong></p>\n<p><strong>Expenditure</strong> = <strong>Price</strong> \u00d7 <strong>Consumption</strong></p>\n<div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_b2e085fe.png/1784052653.png\" style=\"max-width: 100%; height: auto;\"></div>\n<p>\u21d2 Let initial <strong>Price</strong> (P<sub>1</sub>) = 100 and initial <strong>Consumption</strong> (C<sub>1</sub>) = 100</p>\n<p>\u21d2 Initial <strong>Expenditure</strong> (E<sub>1</sub>) = 100 \u00d7 100 = 10,000</p>\n<p>\u21d2 New <strong>Price</strong> (P<sub>2</sub>) = 100 + 25% = 125</p>\n<p>\u21d2 New <strong>Expenditure</strong> (E<sub>2</sub>) = 10,000 \u2212 40% = 6,000</p>\n<p>\u21d2 New <strong>Consumption</strong> (C<sub>2</sub>) = E<sub>2</sub> \u00f7 P<sub>2</sub> = 6,000 \u00f7 125 = 48</p>\n<p>\u21d2 Percentage decrease in <strong>consumption</strong> = [(100 \u2212 48) \u00f7 100] \u00d7 100 = 52%</p>\n<p><strong>\u2234 The correct answer is 52 percent.</strong></p>\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Price and Consumption Relationship</p>\n<p style='margin:0 0 8px 0;color:#444444;'>When <strong>expenditure</strong> is kept constant, the <strong>price</strong> is inversely proportional to <strong>consumption</strong>: P<sub>1</sub> \u00d7 C<sub>1</sub> = P<sub>2</sub> \u00d7 C<sub>2</sub>.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Net Percentage Change Formula</p>\n<p style='margin:0 0 8px 0;color:#444444;'>The net percentage change in a product (like Expenditure = Price \u00d7 Consumption) can be expressed as: Net % = a + b + (a \u00d7 b \u00f7 100), where a and b are percentage changes in the factors.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Base 100 Assumption</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Assuming base values as 100 simplifies <strong>percentage</strong> calculations in <strong>quantitative aptitude</strong> problems involving ratios and changes.</p>", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "When the price of a commodity increased by 23%, a family reduced its consumption in such a way that the expenditure on it was only 5% more. By what percentage has the family reduced the consumption of the commodity (correct to one decimal place)?", "comp": "", "opts": ["14.2%", "15.2%", "15.8%", "14.6%"], "cidx": 3, "sol": "<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>Let the initial price and initial expenditure both be 100.</p>\n<p>New Price = 100 + 23 = 123, and New Expenditure = 100 + 5 = 105.</p>\n<p>Reduction in consumption % = [(New Price \u2212 New Expenditure) \u00f7 New Price] \u00d7 100</p>\n<p>\u21d2 [(123 \u2212 105) \u00f7 123] \u00d7 100 = (18 \u00f7 123) \u00d7 100 \u2248 14.6%</p>\n<p><strong>\u2234 The correct answer is 14.6%.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<svg width=\"420\" height=\"180\" viewBox=\"0 0 420 180\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display:block;margin:12px 0;background:#ffffff;border-radius:10px;border:1px solid #cccccc;\">\n  <defs>\n    <marker id=\"arrow-red\" viewBox=\"0 0 10 10\" refX=\"8\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-start-reverse\">\n      <path d=\"M 0 0 L 10 5 L 0 10 z\" fill=\"#cc0000\"/>\n    </marker>\n    <marker id=\"arrow-orange\" viewBox=\"0 0 10 10\" refX=\"8\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-start-reverse\">\n      <path d=\"M 0 0 L 10 5 L 0 10 z\" fill=\"#cc5500\"/>\n    </marker>\n    <marker id=\"arrow-green\" viewBox=\"0 0 10 10\" refX=\"8\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto-start-reverse\">\n      <path d=\"M 0 0 L 10 5 L 0 10 z\" fill=\"#007700\"/>\n    </marker>\n  </defs>\n\n  <line x1=\"30\" y1=\"130\" x2=\"390\" y2=\"130\" stroke=\"#888888\" stroke-width=\"1.5\" stroke-dasharray=\"5,3\"/>\n  \n  <circle cx=\"60\" cy=\"130\" r=\"6\" fill=\"#2255cc\"/>\n  <circle cx=\"160\" cy=\"130\" r=\"6\" fill=\"#cc5500\"/>\n  <circle cx=\"360\" cy=\"130\" r=\"6\" fill=\"#cc0000\"/>\n  \n  <text x=\"60\" y=\"155\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"14\" fill=\"#2255cc\" font-weight=\"bold\">Base (100)</text>\n  <text x=\"160\" y=\"155\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"14\" fill=\"#cc5500\" font-weight=\"bold\">Exp (105)</text>\n  <text x=\"360\" y=\"155\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"14\" fill=\"#cc0000\" font-weight=\"bold\">Price (123)</text>\n  \n  <path d=\"M 65 125 Q 210 20 355 125\" fill=\"none\" stroke=\"#cc0000\" stroke-width=\"1.5\" marker-end=\"url(#arrow-red)\"/>\n  <rect x=\"170\" y=\"55\" width=\"80\" height=\"20\" fill=\"#ffffff\" rx=\"4\"/>\n  <text x=\"210\" y=\"70\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#cc0000\" font-weight=\"bold\">+23% Price</text>\n\n  <path d=\"M 65 125 Q 110 70 155 125\" fill=\"none\" stroke=\"#cc5500\" stroke-width=\"1.5\" marker-end=\"url(#arrow-orange)\"/>\n  <rect x=\"80\" y=\"80\" width=\"60\" height=\"20\" fill=\"#ffffff\" rx=\"4\"/>\n  <text x=\"110\" y=\"94\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#cc5500\" font-weight=\"bold\">+5% Exp</text>\n  \n  <path d=\"M 355 125 Q 260 80 165 125\" fill=\"none\" stroke=\"#007700\" stroke-width=\"1.5\" stroke-dasharray=\"4,2\" marker-end=\"url(#arrow-green)\"/>\n  <rect x=\"220\" y=\"85\" width=\"80\" height=\"20\" fill=\"#ffffff\" rx=\"4\"/>\n  <text x=\"260\" y=\"99\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"13\" fill=\"#007700\" font-weight=\"bold\">-18 Reduce</text>\n</svg>\n\n<p><strong>Given:</strong></p>\n<p>Percentage increase in price = 23%</p>\n<p>Percentage increase in expenditure = 5%</p>\n<p><strong>Formula Used:</strong></p>\n<p>Expenditure = Price \u00d7 Consumption</p>\n<p><strong>Calculation:</strong></p>\n<p>Let the initial price of the commodity be \u20b9100 and initial consumption be 100 units.</p>\n<p>\u21d2 Initial Expenditure = 100 \u00d7 100 = 10000</p>\n<p>\u21d2 New Price = \u20b9100 + 23% of \u20b9100 = \u20b9123</p>\n<p>\u21d2 New Expenditure = 10000 + 5% of 10000 = 10500</p>\n<p>Let the new consumption be C.</p>\n<p>\u21d2 New Expenditure = New Price \u00d7 New Consumption</p>\n<p>\u21d2 10500 = 123 \u00d7 C</p>\n<p>\u21d2 C = 10500 \u00f7 123 = 3500 \u00f7 41 units</p>\n<p>\u21d2 Reduction in consumption = Initial Consumption \u2212 New Consumption</p>\n<p>\u21d2 Reduction in consumption = 100 \u2212 (3500 \u00f7 41) = (4100 \u2212 3500) \u00f7 41 = 600 \u00f7 41</p>\n<p>\u21d2 Percentage reduction = [(600 \u00f7 41) \u00f7 100] \u00d7 100</p>\n<p>\u21d2 600 \u00f7 41 = 14.634... %</p>\n<p>Rounding off to one decimal place, we get 14.6%.</p>\n<p><strong>\u2234 The correct answer is 14.6%.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Expenditure, Price and Consumption</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The fundamental rule governing these quantities is: Expenditure = Price \u00d7 Consumption. If expenditure is kept constant, consumption is inversely proportional to the price.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Constant Expenditure Rule</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">When a family does not change its expenditure despite a price increase of R%, the percentage reduction in consumption required is given directly by: [R \u00f7 (100 + R)] \u00d7 100.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Successive Percentage Change Formula</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">If two successive changes of A% and B% occur, the net effective percentage change can be calculated as: Net Change = A + B + (A \u00d7 B) \u00f7 100.</p></p>", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "The income of a company increases by x% per year. If its income is&nbsp;\u20b931,25,000 in the year 2019, and the income in 2017 was&nbsp;\u20b920,00,000, then what is the value of x?", "comp": "", "opts": ["18", "15", "20", "25"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Income of a company increase by x% per year.</p>\n\n<p>Income in 2017 = Rs. 20,00,000</p>\n\n<p>Income in 2019 = Rs. 31,25,000</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>P<sub>M&nbsp;</sub>= P<sub>O</sub>(1 + r%)<sup>t</sup></p>\n\n<p>P<sub>M</sub>, P<sub>O</sub>, r and t represents present income, original income, rate of increase in income and time respectively.</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Rate of increase in income = x%</p>\n\n<p>31,25,000 = 20,00,000(1 + x%)<sup>2</sup></p>\n\n<p>&rArr; &radic;3125000/2000000 = (1 + x%)</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>&radic;1.5625 = (1 + x%)</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>1.25 = (1 + x%)</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>1.25 - 1 = x%</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>0.25 = x%</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>0.25 = x/100</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>(0.25&nbsp;&times; 100) = x</p>\n\n<p><span style=\"\">&rArr;&nbsp;</span>25 = x</p>\n\n<p><strong>&there4; Rate of increase in income is 25%.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "At an election involving two candidates, 68 votes are declared invalid. The winning candidate gets 52% of the valid votes and wins by 98 votes. The total number of votes polled is:&nbsp;", "comp": "", "opts": ["2475&nbsp;", "2250&nbsp;", "2518&nbsp;", "2500"], "cidx": 2, "sol": "<p>0.52V - 0.48V = 98 , 0.04V = 98 , V = 98 / 0.04 , V = 2450\u00a0</p>\n\n<p>Total votes = V + Invalid votes</p>\n\n<p>Total votes =\u00a0 2518</p>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "A man spent 30% of his monthly income on rent. He spent 15% of the remaining amount on food. 35% of the amount now left was used for all other expenses. If Rs. 1,62,435 was left with him, then his monthly income was:", "comp": "", "opts": ["<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>4,80,000", "<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>4,20,000", "<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>3,60,000", "<span style=\"color: rgb(33, 37, 41);\">Rs.&nbsp;</span>5,40,000"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Let total income is 100.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">After rent payment the income is 100 - 30 = 70</p>\n\n<p style=\"color: rgb(33, 37, 41);\">On food he spent 70\u00a0\\15/100 = 10.5</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Remaining amount 70-10.5 = 59.5</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now after spending 35% of the remaining the left amount is, \u21d2 59.5\u00a0\u00d7 65/100 = 38.675</p>\n\n<p style=\"color: rgb(33, 37, 41);\">As per the question,</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Value of 38.675 % = Rs\u00a01,62,435</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The value of 100%,\u00a0 \u21d2\u00a0(1,62,435 / 38.675)\u00a0\u00d7 100 =\u00a0Rs.\u00a04,20,000</p>\n", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "Mr. X has a monthly income of $26,500 and his monthly expenditure is $20,500. The next year, his salary is increased by 12% and expenditure is increased by 6%. His savings increase by how much percent?", "comp": "", "opts": ["32.5%", "27.3<span style=\"\">%</span>", "32.0<span style=\"\">%</span>", "34.7<span style=\"\">%</span>"], "cidx": 0, "sol": "<p>Original saving =<span style=\"color: rgb(33, 37, 41);\">\u00a0</span><span style=\"color: rgb(33, 37, 41);\">$</span><span style=\"color: rgb(33, 37, 41);\">6,000</span></p>\n\n<p>New income =\u00a0<span style=\"\">$26</span>,500 + 12% of <span style=\"\">$</span>26,500 \u21d2\u00a0<span style=\"\">$</span>29,680</p>\n\n<p>New expenditure =\u00a0<span style=\"\">$</span>20,500 + 6% of <span style=\"\">$</span>20,500 \u21d2 <span style=\"\">$</span>21,730</p>\n\n<p>New saving = <span style=\"\">$</span>(29,680 \u2013 <span style=\"\">$</span>21,730)\u00a0<span style=\"\">\u21d2 $</span>7950\u00a0</p>\n\n<p>Change in saving =\u00a0\u00a0<span style=\"\">$</span>(7950 \u2013 6,000) =\u00a0<span style=\"\">$1</span>,950</p>\n\n<p>Percentage of increase in his saving = (1950/6,000) \u00d7 100 \u21d2 32.5%</p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "Ravi initially used to save 20% of his monthly income. Recently his monthly income&nbsp;was raised by 25%. His nominal savings also went up by 5%. What percentage of his&nbsp;present nominal income does Ravi currently save?", "comp": "", "opts": ["25%", "20%", "15%", "16.8%"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Let's assume that Ravi's income = 100 unit,\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">He saves 20%, so his savings = 20 unit</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now, his income increases 25%, so new income = 125</p>\n\n<p style=\"color: rgb(33, 37, 41);\">New savings = 20\u00a0\u00d7 105/100 = 21</p>\n\n<p style=\"color: rgb(33, 37, 41);\">So, the required percentage = 21/125\u00a0\u00d7 100 = 16.8%</p>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "<p>Rice is now being sold at Rs. 29 per kg. During the last month, its cost was Rs. 25 per kg. By how much percentage should a family reduce its consumption, so as to keep the expenditure the same as before?</p>\n\n<p>(correct to nearest integer)</p>\n", "comp": "", "opts": ["13%", "15%", "14%", "12%"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>New selling price = Rs. 29 per kg</p>\n\n<p>Old selling price = Rs. 25 per kg</p>\n\n<p>Expenditure = constant</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>(i) Expenditure = Price&nbsp;&times;&nbsp;Quantity</p>\n\n<p>(ii) Percentage difference = {(Old price - New price)/Old price}&nbsp;&times; 100</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>Let expenditure, initial selling price and&nbsp;initial quantity&nbsp;be C, P<sub>1</sub>&nbsp;and Q<sub>1</sub>&nbsp;respectively.</p>\n\n<p>C = P<sub>1</sub>&nbsp;&times; Q<sub>1</sub></p>\n\n<p>&rArr; C = 25&nbsp;&times; Q<sub>1</sub></p>\n\n<p>&rArr; Q<sub>1</sub>&nbsp;= C/25</p>\n\n<p>Let final selling price and final quantity&nbsp;be P<sub>2</sub>&nbsp;and Q<sub>2</sub>&nbsp;respectively.</p>\n\n<p>C = P<sub>2</sub>&nbsp;&times; Q<sub>2</sub></p>\n\n<p>&rArr; C = 29&nbsp;&times; Q<sub>2</sub></p>\n\n<p>&rArr; Q<sub>2</sub>&nbsp;= C/29</p>\n\n<p>Percentage difference = (Q<sub>2</sub>&nbsp;- Q<sub>1</sub>)/Q<sub>1</sub>&nbsp;&times;100</p>\n\n<p>&rArr; {(C/29&nbsp;- C/25)/(C/25)} &times;100</p>\n\n<p>&rArr; [{(25C - 29C)/(25 &times; 29)}/(C/25)] &times; 100</p>\n\n<p>&rArr; {&ndash;(4C/725)/(C/25)} &times; 100</p>\n\n<p>&rArr; {&ndash;(4C&nbsp;&times; 25)/725C} &times; 100</p>\n\n<p>&rArr;&nbsp;&ndash;13.79%&nbsp;&asymp; &ndash;14%</p>\n\n<p><strong>&there4;&nbsp;By 14% should a family reduce its consumption, so as to keep the expenditure the same as before.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></p>\n\n<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Price&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Consumption</p>\n\n<p>Old&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;25&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>29</strong></p>\n\n<p>New&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;29&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>25</strong></p>\n\n<p>Expenditure&nbsp; &nbsp; &nbsp;25&nbsp;&times; 29&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style=\"color: rgb(33, 37, 41);\">29&nbsp;&times; 25</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Thus, family should reduce their consumption by 4 kg</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">% Reduction = (4/29)&nbsp;&times; 100 = 13.79&nbsp;&asymp; 14%</span></p>\n\n<p><strong>&there4; The family should reduce the consumption by 14%.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "The price of diesel is increased by 26%. A person wants to increase his expenditure by 15% only. By what percentage, correct to one decimal place, should he decrease his consumption ?", "comp": "", "opts": ["9.5%", "6.5%", "7.2%", "8.7%"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Percentage increase in the price of diesel = 26%</p>\n\n<p>Percentage increase in total expenditure = 15%</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>P&nbsp;&times; C&nbsp;= E</p>\n\n<p>Where P is Price, C&nbsp;is Consumption and E is expenditure</p>\n\n<p><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p>Let initial price be P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>, consumption&nbsp;be C<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>, and expenditure be E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;</p>\n\n<p>P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;&times; C<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;= E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;</p>\n\n<p>&rArr; C<span style=\"position: relative; line-height: 0; vertical-align: baseline; bottom: -0.25em; font-size:10.5px;\">1</span>&nbsp;=&nbsp;E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>/P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span></p>\n\n<p>Let new price be P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>, new quantity consumed be C<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>, and new expenditure be E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;</p>\n\n<p>P<sub>2</sub>&nbsp;= P<sub>1</sub>&nbsp;+ 26% of P<sub>1</sub>&nbsp;</p>\n\n<p>&rArr;&nbsp;P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;= 1.26P<sub>1</sub>&nbsp;</p>\n\n<p>E<sub>2</sub>&nbsp;= E<sub>1</sub>&nbsp;+&nbsp;15% of E<sub>1</sub>&nbsp;</p>\n\n<p>&rArr;&nbsp;E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;= 1.15E<sub>1</sub>&nbsp;</p>\n\n<p>As, P<sub>2</sub>&nbsp;&times; C<sub>2</sub>&nbsp;= E<sub>2</sub>&nbsp;</p>\n\n<p>&rArr;&nbsp;1.26P<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;&times; C<sub>2</sub>&nbsp;=&nbsp;1.15E<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;</p>\n\n<p>&rArr; C<sub>2</sub>&nbsp;= (1.15E<sub>1</sub>)/(1.26P<sub>1</sub>)</p>\n\n<p>&rArr;&nbsp;C<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;= 0.9126 &times; E<sub>1</sub>/P<sub>1</sub>&nbsp;</p>\n\n<p>&rArr; C<sub>2</sub>&nbsp;= 0.9126C<sub>1</sub>&nbsp;</p>\n\n<p>Decrease in consumption = C<sub>1</sub>&nbsp;&ndash; C<sub>2</sub>&nbsp;</p>\n\n<p>&rArr; Decrease in consumption = C<sub>1</sub>&nbsp;&ndash; 0.9126C<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;= 0.0874C<sub>1</sub>&nbsp;</p>\n\n<p>Percentage decrease in consumption = (Decrease in consumption/Initial consumption)&nbsp;&times; 100</p>\n\n<p>&rArr;&nbsp;Percentage decrease in consumption = (0.0874C<sub>1</sub>/C<sub>1</sub>)&nbsp;&times; 100</p>\n\n<p><strong>&there4; The percentage decrease in consumption is 8.7% (correct to 1 decimal place)</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span>&nbsp;26% = 26/100</p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:60%;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>(Initial price)P<sub>1</sub></td>\n\t\t\t<td>(After increasing price)P<sub>2</sub></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Rs. 100/lit</td>\n\t\t\t<td>Rs. 126/lit</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:80%;\">\n\t<thead>\n\t\t<tr>\n\t\t\t<th scope=\"col\">&nbsp;</th>\n\t\t\t<th scope=\"col\">Initial&nbsp;</th>\n\t\t\t<th scope=\"col\"><strong>After increasing</strong></th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Price</td>\n\t\t\t<td>100</td>\n\t\t\t<td>115</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td><span style=\"font-weight: 700; \">consumption diesel in a liter</span></td>\n\t\t\t<td>1 lit</td>\n\t\t\t<td>115/126 lit&nbsp;</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<p>&there4; Consumption&nbsp;decrease = 1 - (115/126) = (126 - 115)/126 = 11/126</p>\n\n<p>&there4;&nbsp;<span style=\"font-weight: 700; \">The percentage decrease in consumption is 8.7%&nbsp;</span></p>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 162000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

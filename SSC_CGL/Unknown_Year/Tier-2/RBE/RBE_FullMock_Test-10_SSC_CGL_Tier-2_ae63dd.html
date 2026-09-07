@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 10</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 10</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> In how many months will Rs.12,500 yield Rs.5500 as compound interest at 10% per quarter compounded semi-annually?</p><p><br/> </p>",
+      "option1": "<p> 18</p>",
+      "option2": "<p> 24</p>",
+      "option3": "<p> 9</p>",
+      "option4": "<p> 12</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_dca212f3fd512824.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> P and Q start a shop with a capital of 1,50,000 and 4,50,000 respectively . After a year, out of the profit of Rs 1,60,000, P gets his share of profit plus some money that is not a part of the profit ,as his salary . If P gets a total of 70,000, what is thrice the amount of the salary (in Rs) he received?</p><p><br/> </p>",
+      "option1": "<p> 30,000</p>",
+      "option2": "<p> 50,000</p>",
+      "option3": "<p> 20,000</p>",
+      "option4": "<p> 90,000</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_e2557b98fc85af50.gif"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> 67% and 85% pure acid solutions are mixed to obtain 54 litres of 71% pure acid solution. Find the quantity of 67% pure acid solution taken to form the mixture.</p><p><br/> </p>",
+      "option1": "<p> 42</p>",
+      "option2": "<p> 12</p>",
+      "option3": "<p> 18</p>",
+      "option4": "<p> 28</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_259ce904cbede106.gif"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p>A hemisphere depression of diameter 6 cm is cut out from each face of a cubical block of sides 14 cm. Find the surface area of the remaining solid (in cm2).</p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_4954ad72c002102.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_4954ad72c002102.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_4954ad72c002102.gif",
+      "option4": "<p>none of these</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> A can do a certain work in 12 days, while B can do the same work in 18 days. If they work together then they complete the work in x days. Find 5*x /4.</p><p><br/> </p>",
+      "option1": "<p> 8</p>",
+      "option2": "<p> 36</p>",
+      "option3": "<p> 9</p>",
+      "option4": "<p> 5</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_a52b918f3dbfad7c.png"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> A man sells two articles, first at 5% loss and second on 15% profit. Find their selling price if the difference between the Cost price is 4400, if selling price of both articles are the same.</p><p><br/> </p>",
+      "option1": "<p> 29335</p>",
+      "option2": "<p> 28540</p>",
+      "option3": "<p> 24035</p>",
+      "option4": "<p> 21545</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_91e4cb0e3412d2a5.png"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> Find the standard deviation of the following data (rounded off to two decimal places).</p><p> 5, 3, 4, 7</p><p><br/> </p>",
+      "option1": "<p> 1.48</p>",
+      "option2": "<p> 3.21</p>",
+      "option3": "<p> 4.12</p>",
+      "option4": "<p> 2.45</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_9f957429ffc374aa.png"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> Find the LCM of 22 X 33 X 72, 23 X 32 X 52 X 74 and 2 X 53 X 11.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 2 X 3 X 5 X 7 X 11</p>",
+      "option2": "<p> 23 X 33 X 53 X 74</p>",
+      "option3": "<p> 23 X 33 X 53 X 74 X 11</p>",
+      "option4": "<p> 2 X 3 X 5 X 7</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_72153cdd30875cb0.gif"
+    },
+    {
+      "sr_no": 9,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_ede655758fdb6c68.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_a4522b158d99bc0e.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_bfed4aaa9b4618ac.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_73ab89f01af5c157.gif",
+      "option4": "<p> 432</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_c3379edc68e8aa14.png"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_355f4662c8ef097.gif",
+      "option1": "<p> 1</p>",
+      "option2": "<p> 2</p>",
+      "option3": "<p> (2)1/2</p>",
+      "option4": "<p> 0</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_c7aff5cdc7304b02.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p> A man sells his goods at 10% profit. Had he purchased it for Rs 500 less and sold it for Rs 100 less, then he would gain 10% more profit. Find 50% of initial cost price.</p><p><br/> </p>",
+      "option1": "<p> 5000</p>",
+      "option2": "<p> 3500</p>",
+      "option3": "<p> 6000</p>",
+      "option4": "<p> 2500</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_c2c225686fd1d1ab.jpg"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p> If x(x+y+z)=20, y(x+y+z)=30 and z(x+y+z)=50, find the value of 2(x+y+z).</p><p><br/> </p>",
+      "option1": "<p> 20 </p>",
+      "option2": "<p> -20 </p>",
+      "option3": "<p> 15 </p>",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_2525c641e37775e3.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_5098597f8caefda9.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p>An amount fetched a total simple interest of Rs 3200 at the rate of 6.66% yearly in 6 years. What is the amount (in Rs)?</p>",
+      "option1": "<p>8000</p>",
+      "option2": "<p>10000</p>",
+      "option3": "<p>12000</p>",
+      "option4": "<p>16000</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_1b298c284ee81569.gif"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> A and B together can do a piece of work in 12 days. B and C together can do the same work in 36 days and A and C together can do the same work in 24 days. In how many days will A, B and C complete 22/3 part of the entire work, working together?</p><p><br/> </p>",
+      "option1": "<p> 72</p>",
+      "option2": "<p> 63</p>",
+      "option3": "<p> 96</p>",
+      "option4": "<p> 39</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_12b3cb4e55782f99.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>A train covers a distance between station A and station B in 100 minutes. If the speed of the train is reduced by 16.67% , then the same distance is covered in __________ minutes. </p>",
+      "option1": "<p>160</p>",
+      "option2": "<p>80</p>",
+      "option3": "<p>120</p>",
+      "option4": "<p>116</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_eba393a9c95856e6.png",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_462df6bd2731ffee.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_ee39c7c792e6b777.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_7c9fc029d07958f6.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_816b0635e3b534cd.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_b422fc3d6ce43537.gif"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> The population of a country increases by 10% each year. How much percent more will the population of the country be after 3 years from the beginning?</p><p><br/> </p>",
+      "option1": "<p> 33.1% </p>",
+      "option2": "<p> 40% </p>",
+      "option3": "<p> 46.41% </p>",
+      "option4": "<p> 60%</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_99666cd899b2d770.jpg"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> Speed of A is 62.5% more than the speed of B and the speed of B is 20 % less than the speed of C. If B takes 26 minutes more than C to cover a distance, Find the 15% of the actual time taken by A?</p><p><br/> </p>",
+      "option1": "<p> 36 min</p>",
+      "option2": "<p> 12 min</p>",
+      "option3": "<p> 24 min</p>",
+      "option4": "<p> 15 min</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_8ddfd1b624f5d49e.png"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> If a:b = c:d, then which of the following ratio is equal to a:c?</p><p><br/> </p>",
+      "option1": "<p> b:d </p>",
+      "option2": "<p> both (a) and (d) </p>",
+      "option3": "<p> a+d: b+c </p>",
+      "option4": "<p> a+b: c+d</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_dc56611cd744c6a6.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_538345c69bd85bc8.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_640621c5f9a807d9.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_1691460f8106f7ed.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_db577304e5ddac86.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_bad858a7193ce7cd.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_8d26f64522217288.gif"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> The length of a room floor exceeds its breadth by 20 m. The area of the floor remains unaltered when the length is decreased by 10 m but the breadth is increased by 5 m. The area of the floor (in square metres) is:</p><p><br/> </p>",
+      "option1": "<p> 280</p>",
+      "option2": "<p> 325</p>",
+      "option3": "<p> 300</p>",
+      "option4": "<p> 420</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_87d6bc28edb213ad.gif"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> Find the average of</p><p> 1,2,2,3,3,3,4,4,4,4,5,5,5,5,5……… (10,10,……….10 times)</p><p><br/> </p>",
+      "option1": "<p> 33/7</p>",
+      "option2": "<p> 10</p>",
+      "option3": "<p> 5</p>",
+      "option4": "<p> 7</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_fc122875ea315ceb.jpg"
+    },
+    {
+      "sr_no": 23,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_34b5a717c482b718.gif",
+      "option1": "<p> 71</p>",
+      "option2": "<p> 69</p>",
+      "option3": "<p> 89</p>",
+      "option4": "<p> 73</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_937f7bba1943b30f.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_7eff9a34349fb3d5.gif",
+      "option1": "<p> 2</p>",
+      "option2": "<p> 3</p>",
+      "option3": "<p> 6</p>",
+      "option4": "<p> 12</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_1806a9093556e641.gif"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> Two dice are tossed. The probability that the total score is a prime number is:</p><p><br/> </p>",
+      "option1": "<p> 1/6</p>",
+      "option2": "<p> 5/12</p>",
+      "option3": "<p> 1/2</p>",
+      "option4": "<p> 7/9</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_eac29e4ea492ad29.png"
+    },
+    {
+      "sr_no": 26,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_fb77b8296428090c.gif",
+      "option1": "<p> 58</p>",
+      "option2": "<p> 47</p>",
+      "option3": "<p> 48</p>",
+      "option4": "<p> 28</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_a47635b03077d517.png"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> A can paint a house in 25 days, and B can do it in 30 days. Along with C, they did the job in 10 days only. Then, C alone can do 40% the job in how many days?</p><p><br/> </p>",
+      "option1": "<p> 12</p>",
+      "option2": "<p> 9</p>",
+      "option3": "<p> 15</p>",
+      "option4": "<p> 3</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_875b3057fa0be8eb.png"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_666427aa2000d358.gif",
+      "option1": "<p> 4</p>",
+      "option2": "<p> 3</p>",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_a9bc2dd5e0b6320b.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_d37d0a0f9a165ed2.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_8bc4a151738c2db9.gif"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> The average weight of 52 students in a class of 62.1 kg. If 12 students having average weight of 57.1 kg leave the class and 20 students having average weight 63.6 kg join the class, then what is the average weight ( in kg) of the students in the class (correct to one decimal place)?</p><p><br/> </p>",
+      "option1": "<p> 56.1 </p>",
+      "option2": "<p> 55.2</p>",
+      "option3": "<p> 62.1</p>",
+      "option4": "<p> 63.6</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_6bcab8f6db85df00.jpg"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> A man bought 75 Kg rice and added 33.33% impurities to it. He sold the mixture at a rate of the cost price. Find his profit percent?</p><p><br/> </p>",
+      "option1": "<p> 66.67%</p>",
+      "option2": "<p> 33.33%</p>",
+      "option3": "<p> 14.28%</p>",
+      "option4": "<p> 20%</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288636241_html_6f1381042302f7ba.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. Every object experiences this force due to every other object in the universe. All objects on the earth, for example, experience the force of gravity due to the earth.</p><p> B. In particular, gravity governs the motion of the moon and artificial satellites around the earth, motion of the earth and planets around the sun, and, of course, the motion of bodies falling to the earth.</p><p> C. It plays a key role in the large-scale phenomena of the universe, such as formation and evolution of stars, galaxies and galactic clusters. </p><p> D. The gravitational force is the force of mutual attraction between any two objects by virtue of their masses. It is a universal force.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> DCAB</p>",
+      "option2": "<p> DABC</p>",
+      "option3": "<p> ABCD</p>",
+      "option4": "<p> CABD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Putting all the sentences together in the order DABC, the paragraph provides a comprehensive explanation of the gravitational force and its effects at various scales, from objects on Earth to celestial bodies and even the formation of galaxies. </p><p> Sentence D introduces the topic of the paragraph. Sentence A further elaborates on the concept of the gravitational force. And followed by Sentence B and C. </p><p> The correct arrangement is: DABC: <i><b>The gravitational force is the force of mutual attraction between any two objects by virtue of their masses. It is a universal force. Every object experiences this force due to every other object in the universe. All objects on the earth, for example, experience the force of gravity due to the earth. In particular, gravity governs the motion of the moon and artificial satellites around the earth, motion of the earth and planets around the sun, and, of course, the motion of bodies falling to the earth. It plays a key role in the large-scale phenomena of the universe, such as formation and evolution of stars, galaxies and galactic clusters.</b></i></p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the correct active voice of the given sentence.<br/> Ronit was pushed into the pool by Kuldeep.</p><p><br/> </p>",
+      "option1": "<p> Ronit had pushed Kuldeep into the pool.</p>",
+      "option2": "<p> Kuldeep pushed Ronit into the pool.</p>",
+      "option3": "<p> Kuldeep was pushing Ronit into the pool.</p>",
+      "option4": "<p> Ronit pushed Kuldeep into the pool.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rules: </b> </p><p> <b>Sub + v2 + Obj -------- Obj + was/were + v3 + by + Sub. </b> </p><p>Thus, the correct active voice of the given sentence is: <i><b>Kuldeep pushed Ronit into the pool.</b></i></p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph. </p><p> A. The race was already finished. The tortoise has reached there before him. The tortoise has won the game, even if he was the slowest one.</p><p> B. Once there was a race going on. A tortoise and a Hare participated when the hare started to run faster. After a while, the hare stopped near a tree and looked back.</p><p> C. He started to run again towards the final point. But when he got there, he was surprised.</p><p> D. He couldn't find the tortoise anywhere near him. He thought that the tortoise was lagging. So, he started to sleep under the tree. When he woke up, he couldn't see the tortoise.</p><p><br/> </p>",
+      "option1": "<p> ACBD</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> BDCA</p>",
+      "option4": "<p> CDBA</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The correct arrangement is: BDCA: <i><b>Once there was a race going on. A tortoise and a Hare participated when the hare started to run faster. After a while, the hare stopped near a tree and looked back. He couldn't find the tortoise anywhere near him. He thought that the tortoise was lagging. So, he started to sleep under the tree. When he woke up, he couldn't see the tortoise. He started to run again towards the final point. But when he got there, he was surprised. The race was already finished. The tortoise has reached there before him. The tortoise has won the game, even if he was the slowest one.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.<br/> Sharpness and accuracy of judgment</p><p><br/> </p>",
+      "option1": "<p> Knowledge</p>",
+      "option2": "<p> Estimation</p>",
+      "option3": "<p> Acumen</p>",
+      "option4": "<p> Experience</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Acumen</b>: the ability to understand and judge things quickly and clearly. </p><p> <b>Knowledge</b>: knowledge (of about something) information, understanding and skills that you have gained through learning or experience. </p><p> <b>Estimation</b>: your opinion of someone or something. </p><p> <b>Experience</b>: the things that you have done in your life; the knowledge or skill that you get from seeing or doing something. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate option to replace the underlined word in the given sentence.</p><p> This math problem is ____________ than the one we did yesterday.</p>",
+      "option1": "<p> easier</p>",
+      "option2": "<p> easy</p>",
+      "option3": "<p> easiest</p>",
+      "option4": "<p> most easy</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The sentence in question is comparing the difficulty level of the current math problem to the one done yesterday. We need to use the comparative degree to indicate that the current problem is either easier or more difficult than the previous one. </p><p> \"<b>easier</b>\" is the comparative degree of the adjective \"easy.\" It correctly compares the difficulty level of the current math problem to the one done yesterday.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> <br/> The manager said, “Could you please / confirm me whether you / have received all the items / that you had ordered?”</p>",
+      "option1": "<p> The manager said, “could you please</p>",
+      "option2": "<p> confirm me whether you</p>",
+      "option3": "<p> have received all the items</p>",
+      "option4": "<p> that you had ordered</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically incorrect. </p><p> Here, ‘confirm whether you’ should be used instead of ‘confirm me whether you’. </p><p> Because, The pronoun ‘me’ cannot be the direct object of the verb ‘confirm’ and hence, it must be removed. </p><p>The correct sentence is: The manager said, “Could you please / <b>confirm whether you</b> / have received all the items / that you had ordered?”</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> The gatekeeper refused her admittance in the hall. </p>",
+      "option1": "<p> Her admittance in the hall was being refused by the gatekeeper.</p>",
+      "option2": "<p> Her admittance in the hall had been refused by the gatekeeper.</p>",
+      "option3": "<p> Her admittance in the hall was refused by the gatekeeper.</p>",
+      "option4": "<p> Her admittance in the hall is refused by the gatekeeper.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rules: </b> </p><p> <b>Sub + v2 + Obj ------ Obj + was/were + v3 + by + Sub. </b> </p><p> Thus, the correct passive voice is: Her admittance in the hall was refused by the gatekeeper.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the option that expresses the given sentence in passive voice. </p><p> The police are questioning Nikita and Jubin. </p>",
+      "option1": "<p> Nikita and Jubin is being questioned by the police.</p>",
+      "option2": "<p> Nikita and Jubin have been questioning the police.</p>",
+      "option3": "<p> Nikita and Jubin have been questioned by the police.</p>",
+      "option4": "<p> Nikita and Jubin are being questioned by the police.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation: </b> </p><p> <b>Sub + is/am/are + v1 + ing + Obj ----- Obj + is/am/are + being + v1 + ing + Sub. </b> </p><p> Thus, the correct passive voice of the given sentence is: <i><b>Nikita and Jubin are being questioned by the police.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> Circular building or hall with a dome. </p>",
+      "option1": "<p> Edifice</p>",
+      "option2": "<p> Palace</p>",
+      "option3": "<p> Rotunda</p>",
+      "option4": "<p> Spire</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Rotunda</b>: a building having a circular plan and a dome. </p><p> <b>Edifice</b>: a large impressive building. </p><p> <b>Palace</b>: a large house that is or was the home of a king or queen. </p><p> <b>Spire</b>: a tall pointed tower on the top of a church. </p><p> Thus, the correct answer is ‘Rotunda’. </p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Given below are four sentences which are jumbled. Pick the option that gives their correct order.</p><p> <br/> A. It is a Park quite different from any other we have seen.<br/> B. One difference is that it is made from nearly 250 tons of scrap.<br/> C. Another difference is that it is powered by wind and solar energy<br/> D. A new Park called Bharat Darshan Park has been thrown open to the public in New Delhi.</p><p><br/> </p>",
+      "option1": "<p> DABC</p>",
+      "option2": "<p> ACDB</p>",
+      "option3": "<p> DBCA</p>",
+      "option4": "<p> BACD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct arrangement is: DABC: <i><b>A new Park called Bharat Darshan Park has been thrown open to the public in New Delhi. It is a Park quite different from any other we have seen. One difference is that it is made from nearly 250 tons of scrap. Another difference is that it is powered by wind and solar energy. </b></i> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the sentence that contains no spelling errors.</p><p><br/> </p>",
+      "option1": "<p> I apologise for the spelling mistake in amendment numbered. </p>",
+      "option2": "<p> I apologise for the speling mistake in amendment numbered.</p>",
+      "option3": "<p> I apologise for the spelling mistake in ammendment numbered.</p>",
+      "option4": "<p> I apologise for the spelling mistake in amendment numbured. </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Spelling, amendment and numbered are correct words. </p><p> The sentence with no spelling error is: <i><b>I apologise for the spelling mistake in amendment numbered.</b></i></p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> <br/> The chef's <u><b>deliberate</b></u> addition of exotic spices to the dish created a unique and unforgettable flavor. </p>",
+      "option1": "<p> Unconditional</p>",
+      "option2": "<p> Unintentional</p>",
+      "option3": "<p> Unilateral</p>",
+      "option4": "<p> Emotional</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Deliberate</b>: carefully thought out in advance. </p><p> <b>Unintentional</b>: without deliberate intent. </p><p> <b>Unconditional</b>: not conditional. </p><p> <b>Emotional</b>: of or pertaining to emotion. </p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p>Select the most appropriate ANTONYM of the highlighted word.</p><p>She made a <strong>surreptitious</strong> entrance into the party, hoping to avoid drawing attention to herself.</p>",
+      "option1": "<p>Clandestine</p>",
+      "option2": "<p>Covert</p>",
+      "option3": "<p>Blatant</p>",
+      "option4": "<p>Concealed</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p><p><strong>Surreptitious</strong>: done secretly; marked by quiet and caution and secrecy; taking pains to avoid being observed.</p><p><strong>Blatant</strong>: very clear or obvious.</p><p><strong>Clandestine</strong>: secret and often not legal.</p><p><strong>Covert</strong>: done secretly.</p><p><strong>Concealed</strong>: to hide something/somebody; to prevent something/somebody from being seen or discovered.</p><p>Thus, the correct antonym of the given word ‘Surreptitious’ is ‘Blatant’.</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Select the most appropriate option to fill in the blank.<br/> Harish’s voice ______ in the empty rooms of their new house.</p>",
+      "option1": "<p> Reverted</p>",
+      "option2": "<p> Resounded</p>",
+      "option3": "<p> Resorted</p>",
+      "option4": "<p> Relapsed</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Reverted</b>: to return to a former state or activity. </p><p> <b>Resounded</b>: fill or echo throughout a place. To <i>resound</i> is to echo with sounds, usually loudly. When you sing in the shower, your voice <i>resounds</i>.</p><p> <b>Resort</b>: turning to something or someone else for assistance. </p><p> <b>Relapsed</b>: deteriorate in health. </p><p> Thus, the most correct word to fill in the blank is ‘resounded’. </p><p> Complete sentence is: Harish’s voice <i><b>resounded</b></i> in the empty rooms of their new house.</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph. </p><p> A. Reproduction is defined as a biological process in which an organism gives rise to young ones (offspring) similar to itself. </p><p> B. Reproduction enables the continuity of the species, generation after generation. </p><p> C. The offspring grow, mature and in turn produce new offspring. </p><p> D. Thus, there is a cycle of birth, growth and death. </p>",
+      "option1": "<p> ACDB</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> ABCD</p>",
+      "option4": "<p> ACBD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct arrangement is: ACDB: <i><b>Reproduction is defined as a biological process in which an organism gives rise to young ones (offspring) similar to itself. The offspring grow, mature and in turn produce new offspring. Thus, there is a cycle of birth, growth and death. Reproduction enables the continuity of the species, generation after generation.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the option that expresses the given sentence in direct/indirect speech. </p><p> She said, “How beautiful is this rain!”</p>",
+      "option1": "<p> She exclaimed with joy that the rain is very beautiful.</p>",
+      "option2": "<p> She exclaimed with joy that the rain was very beautiful.</p>",
+      "option3": "<p> She exclaimed with joy that it was raining beautiful.</p>",
+      "option4": "<p> She exclaimed with sorrow that the rain has been very beautiful.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>If Reporting Verb (R.V) is in past tense and Reported Speech (R.S.) is in the present tense then following transformation occurs. </b> </p><p> <b>Simple Present Tense ----- Simple Past Tense. </b> </p><p> <b>Present Continuous Tense ---- Past Continuous Tense. </b> </p><p> <b>Present Perfect Tense ----- Past Perfect Tense. </b> </p><p> <b>Present Perfect Continuous Tense --- Past Perfect Continuous Tense</b>. </p><p> And given sentence is an exclamatory sentence. </p><p>Thus, the correct indirect form is: <i>She exclaimed with joy that the rain was very beautiful.</i></p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Select the correct homonym from the given options to fill in the blank.</p><p> Kim Jhon is such an ___________ that he only cares about himself. </p>",
+      "option1": "<p> assured</p>",
+      "option2": "<p> egoist</p>",
+      "option3": "<p> narcissist</p>",
+      "option4": "<p> joyful</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Egoist</b>: A conceited and self-centered person; a self-centered person with little regard for others. </p><p> <b>Assured</b>: marked by assurance; exhibiting confidence. </p><p> <b>Narcissist</b>: someone who is excessively self-centered. </p><p> <b>Joyful</b>: full of or producing joy. </p><p> Egoist and Narcissist they both are correct for meaning but in the given sentence ‘an’ is used. </p><p> So, the correct word to fill in the blank is ‘Egoist’. </p><p> The complete sentence is: Kim Jhon is such an <i><b>Egoist</b></i> that he only cares about himself.</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> The amount of money/ are not sufficient/ for the project.</p><p><br/> </p>",
+      "option1": "<p> The amount of money</p>",
+      "option2": "<p> are not sufficient</p>",
+      "option3": "<p> for the project</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given segment is grammatically incorrect and error lies in second segment. </p><p> <b>Rule: With uncountable nouns we use ‘Amount of/quantity of’ followed by a singular verb. </b> </p><p> Thus, the correct sentence is: The amount of money is not sufficient for the project. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> Select the most appropriate synonym of the given word. </p><p> Fragrance </p>",
+      "option1": "<p> Taste</p>",
+      "option2": "<p> Aroma</p>",
+      "option3": "<p> Touch</p>",
+      "option4": "<p> Prodigy</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Fragrance</b>: A <i>fragrance</i> is a smell, usually a pleasant or sweet smell. Often perfumes are called <i>fragrances</i>.</p><p> <b>Aroma</b>: <i>Aroma</i> is the word for a fragrant scent, one that pleases the nose in a way that makes you lick your lips. </p><p> <b>Taste</b>: <i>Taste</i> is the ability to tell the difference between flavors in your mouth. </p><p> <b>Touch</b>: make physical contact with, come in contact with. </p><p> <b>Prodigy</b>: an unusually gifted or intelligent (young) person; someone whose talents excite wonder and admiration. </p><p>Thus, the correct synonym of the given word ‘Fragrance’ is ‘Aroma’. </p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. Based on whether there is participation of one organism or two in the process of reproduction, it is of two types.</p><p> B. When two parents (opposite sex) participate in the reproductive process and also involve fusion of male and female gametes, it is called sexual reproduction.</p><p> C. There is a large diversity in the biological world and each organism has evolved its own mechanism to multiply and produce offspring. The organism's habitat, its internal physiology and several other factors are collectively responsible for how it reproduces.</p><p> D. When offspring is produced by a single parent with or without the involvement of gamete formation, the reproduction is asexual.</p><p><br/> </p>",
+      "option1": "<p> CBAD</p>",
+      "option2": "<p> DABC</p>",
+      "option3": "<p> CADB</p>",
+      "option4": "<p> CDAB</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The correct arrangement is: CADB: <i><b>There is a large diversity in the biological world and each organism has evolved its own mechanism to multiply and produce offspring. The organism's habitat, its internal physiology and several other factors are collectively responsible for how it reproduces. Based on whether there is participation of one organism or two in the process of reproduction, it is of two types. When offspring is produced by a single parent with or without the involvement of gamete formation, the reproduction is asexual. When two parents (opposite sex) participate in the reproductive process and also involve fusion of male and female gametes, it is called sexual reproduction.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Select the most appropriate synonym of the word given in brackets to fill in the blank.</p><p> Despite the challenging circumstances, her ____________ determination never wavered.</p>",
+      "option1": "<p> indomitable</p>",
+      "option2": "<p> ephemeral</p>",
+      "option3": "<p> incongruous</p>",
+      "option4": "<p> abstruse</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The word \"determination\" in the sentence indicates that we need an adjective that describes a strong, unwavering, and persistent quality. Let's examine each option: </p><p> <b>indomitable</b> - This adjective means not easily discouraged or defeated; unable to be subdued. It perfectly fits the context, as it describes a strong and unwavering determination. </p><p> <b>ephemeral</b> - This adjective means lasting for a short period, transient, or fleeting.</p><p> <b>incongruous</b> - This adjective means not in harmony or not in agreement with something else. </p><p> <b>abstruse</b> - This adjective means difficult to understand or comprehend, often related to complex and obscure subjects. </p><p> Therefore, the correct answer is A) indomitable. It describes the unwavering and strong determination despite challenging circumstances.</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Select the INCORRECTLY spelt word.</p><p><br/> </p>",
+      "option1": "<p> Sergeant</p>",
+      "option2": "<p> Recomend</p>",
+      "option3": "<p> Supersede</p>",
+      "option4": "<p> Similar</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Recommend is incorrectly spelt. </p><p> <b>Sergeant</b>: an officer with a low position in the army or air force. </p><p> <b>Recommend</b>: to say that somebody/something is good and that somebody should try or use him/her/it. </p><p> <b>Supersede</b>: to take the place of somebody/something which existed or was used before and which has become old-fashioned. </p><p><b>Similar</b>: like somebody/something but not exactly the same.</p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the option that expresses the given sentence in reported speech.</p><p> Gita said to Babita, “Can you beat this wrestler?”</p>",
+      "option1": "<p> Gita asked Babita if could she beat this wrestler.</p>",
+      "option2": "<p> Gita asked Babita if could she beat that wrestler.</p>",
+      "option3": "<p> Gita asked Babita if she could beat this wrestler.</p>",
+      "option4": "<p> Gita asked Babita if she could beat that wrestler.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> <b>Direct Speech to Indirect Speech rules: </b> </p><p> <b>Interrogative Sentences: </b> </p><p> <b>1. Change ‘Said to’ into asked, questioned, inquired or interrogated. </b> </p><p> <b>2. ‘Question Mark (?)’ should be changed into ‘full stop’. </b> </p><p> <b>3. The sentences will not be in interrogative form in Indirect Speech. This means that helping verb is used after the subject. </b> </p><p> <b>4. Tense and Pronoun shall be changed according to the rules. </b> </p><p> <b>5. If the question can be answered in yes/no, conjunction if / whether will be used. If the question is of ‘wh family’ no conjunction will be used. </b> </p><p>The correct Indirect speech of the given sentence is: <i><b>Gita asked Babita if she could beat that wrestler.</b></i></p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Sukesh Fernandes died ____________ Cancer. </p>",
+      "option1": "<p> from</p>",
+      "option2": "<p> of</p>",
+      "option3": "<p> against</p>",
+      "option4": "<p> due</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Rule of Preposition: </b> </p><p> <b>Died of disease. </b> </p><p> <b>Died from reason. </b> </p><p> Thus, ‘of’ is the correct word to fill in the blank. </p><p> The complete sentence is: Sukesh Fernandes died of Cancer. </p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Choose the correct One Word Substitution (OWS) amongst the following. </p><p> The practice of a woman having more than one husband at the same time.</p><p><br/> </p>",
+      "option1": "<p> Polygamy</p>",
+      "option2": "<p> Polyphony</p>",
+      "option3": "<p> Polyandry</p>",
+      "option4": "<p> Philanderer</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Polyandry</b>: the practice or custom of a woman being married to more than one man at the same time. </p><p> <b>Polygamy</b>: the custom of having more than one wife at the same time. </p><p> <b>Polyphony</b>: the style of simultaneously combining a number of parts, each forming an individual melody and harmonizing with each other. </p><p> <b>Philanderer</b>: a man who has many sexual relationships without intending to be emotionally involved. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom.</p><p> Virat bought his new house <u><b>for a song</b></u>. </p>",
+      "option1": "<p> very cheaply</p>",
+      "option2": "<p> very costly</p>",
+      "option3": "<p> on loan</p>",
+      "option4": "<p> very easily</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> <b>For a song: Very cheaply; for a very small amount of money. </b> </p><p> Example: This old car can be bought/had <i>for a song</i>.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> ______________ is a long journey, especially by sea.</p><p><br/> </p>",
+      "option1": "<p> fight</p>",
+      "option2": "<p> voyage</p>",
+      "option3": "<p> odyssey</p>",
+      "option4": "<p> safari</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Voyage</b>: a long journey by sea or in space. </p><p> <b>Fight</b>: to use physical strength, guns, weapons, etc. against somebody/something. </p><p> <b>Odyssey</b>: a long and eventful or adventurous journey or experience. </p><p> <b>Safari</b>: a trip to see or hunt wild animals, especially in East Africa. </p><p> Thus, the correct word to fill in the blank is Voyage. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom.</p><p> Yashaswi Jaiswal proved to be the <u><b>dark horse</b></u> in the IPL. </p>",
+      "option1": "<p> A strong intruder</p>",
+      "option2": "<p> A skilled team</p>",
+      "option3": "<p> The most powerful</p>",
+      "option4": "<p> An unexpected winner</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> <b>Dark horse: a candidate or competitor about whom little is known but who unexpectedly wins or succeeds; an unexpected winner. </b> </p><p> a person who keeps their interests and ideas secret, especially someone who has a surprising ability or skill: Anna's such a dark horse - I had no idea she'd published a novel.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.</p><p> “Do you want some more chocolates?” asked my friend.</p><p><br/> </p>",
+      "option1": "<p> My friend asked me if I want some more chocolates.</p>",
+      "option2": "<p> My friend said to me if I wanted some more chocolates.</p>",
+      "option3": "<p> My friend asked me whether I wanted some more chocolates.</p>",
+      "option4": "<p> My friend asked me that I wanted some more chocolates.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Direct Speech to Indirect Speech rules: </b> </p><p> <b>Interrogative Sentences: </b> </p><p> <b>1. Change ‘Said to’ into asked, questioned, inquired or interrogated. </b> </p><p> <b>2. ‘Question Mark (?)’ should be changed into ‘full stop’. </b> </p><p> <b>3. The sentences will not be in interrogative form in Indirect Speech. This means that helping verb is used after the subject. </b> </p><p> <b>4. Tense and Pronoun shall be changed according to the rules. </b> </p><p> <b>5. If the question can be answered in yes/no, conjunction if / whether will be used. If the question is of ‘wh family’ no conjunction will be used. </b> </p><p> Thus, the correct indirect form of the given sentence is: </p><p><i><b>My friend asked me whether I wanted some more chocolates.</b></i></p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> If you thought that yoga was all about bending and twisting your body in odd shapes, it’s time to rethink. Yoga is (1) ______ more. In very simple words, giving care (2) ______ your body, mind and breath is yoga. Derived (3) ______ the Sankrit word ‘yuj’ which means ‘to unite or integrate’, yoga is (4) ______ 5,000-year-old Indian body of knowledge. Yoga is all about harmonising the body with the mind and breath through means of various breathing exercises, yoga poses (asanas) and meditation.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank no. 1.</p><p><br/> </p>",
+      "option1": "<p> all</p>",
+      "option2": "<p> much</p>",
+      "option3": "<p> few</p>",
+      "option4": "<p> many</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The most appropriate word to fill in the blank is ‘much’. </p><p> The phrase ‘much more’ means something is more valuable or useful to somebody than someone thinks. </p><p>The complete sentence is: If you thought that yoga was all about bending and twisting your body in odd shapes, it’s time to rethink. Yoga is <i><b>much</b></i> more. </p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> If you thought that yoga was all about bending and twisting your body in odd shapes, it’s time to rethink. Yoga is (1) ______ more. In very simple words, giving care (2) ______ your body, mind and breath is yoga. Derived (3) ______ the Sankrit word ‘yuj’ which means ‘to unite or integrate’, yoga is (4) ______ 5,000-year-old Indian body of knowledge. Yoga is all about harmonising the body with the mind and breath through means of various breathing exercises, yoga poses (asanas) and meditation.</p><p> Select the most appropriate option to fill in blank no. 2.</p><p><br/> </p>",
+      "option1": "<p> to</p>",
+      "option2": "<p> for</p>",
+      "option3": "<p> at</p>",
+      "option4": "<p> on</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Care to means looking after somebody/something so that he/she/it has what she/he/it needs for his/her/its health and protection. </p><p> The complete sentence is: In very simple words, giving care <i><b>to</b></i> your body mind and breath is yoga.</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> If you thought that yoga was all about bending and twisting your body in odd shapes, it’s time to rethink. Yoga is (1) ______ more. In very simple words, giving care (2) ______ your body, mind and breath is yoga. Derived (3) ______ the Sankrit word ‘yuj’ which means ‘to unite or integrate’, yoga is (4) ______ 5,000-year-old Indian body of knowledge. Yoga is all about harmonising the body with the mind and breath through means of various breathing exercises, yoga poses (asanas) and meditation.</p><p> Select the most appropriate option to fill in blank no. 3.</p>",
+      "option1": "<p> of</p>",
+      "option2": "<p> out</p>",
+      "option3": "<p> by</p>",
+      "option4": "<p> from</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Derived from: ‘to get something (especially a feeling or an advantage) from something. </p><p> The complete sentence is: Derived <i><b>from</b></i> the Sankrit word ‘yuj’ which means ‘to unite or integrate’, yoga is a 5,000-year-old Indian body of knowledge.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> If you thought that yoga was all about bending and twisting your body in odd shapes, it’s time to rethink. Yoga is (1) ______ more. In very simple words, giving care (2) ______ your body, mind and breath is yoga. Derived (3) ______ the Sankrit word ‘yuj’ which means ‘to unite or integrate’, yoga is (4) ______ 5,000-year-old Indian body of knowledge. Yoga is all about harmonising the body with the mind and breath through means of various breathing exercises, yoga poses (asanas) and meditation.</p><p> Select the most appropriate option to fill in blank no. 4.</p>",
+      "option1": "<p> one</p>",
+      "option2": "<p> an</p>",
+      "option3": "<p> a</p>",
+      "option4": "<p> the</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The most appropriate article for the given blank is “a”. </p><p> The complete sentence is: yoga is <i><b>a</b></i> 5,000-year-old Indian body of knowledge. </p><p> The complete cloze test is: If you thought that yoga was all about bending and twisting your body in odd shapes, it’s time to rethink. Yoga is <i><b>much</b></i> more. In very simple words, giving care <i><b>to</b></i> your body, mind and breath is yoga. Derived <i><b>from</b></i> the Sankrit word ‘yuj’ which means ‘to unite or integrate’, yoga is <i><b>a</b></i> 5,000-year-old Indian body of knowledge. Yoga is all about harmonising the body with the mind and breath through means of various breathing exercises, yoga poses (asanas) and meditation. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> After two and a half months of widespread and continuing violence in Manipur, which included a conflagration in early May, Prime Minister Narendra Modi finally broke his silence, after video images of tribal women being paraded naked in Thoubal district on May 4 once again showed up the heinous nature of the conflict in the State. But Mr. Modi is yet to acknowledge the causes and the consequences of the conflict that is threatening to spiral out of control. The Supreme Court of India’s suo motu cognisance of the sexual assault seen in the video and its issuance of ultimatums to both the Union and the State governments to bring the perpetrators to book or to step aside and let the judiciary take action are a stinging indictment of their failure in restoring normalcy in Manipur. After outrage expressed by Members of Parliament and political representatives cutting across party lines, Mr. Modi, who has maintained a conspicuous and unexplained silence on the raging violence in Manipur, weighed in on the crime and promised punishment of the guilty. For a leader who has always sought the limelight and the need to dominate the airwaves, Mr. Modi’s stand on the Manipur violence till now had betrayed an insouciant attitude towards the crisis in the State. The renewed attention on the Manipur conflict has finally led the State government to promise that it will bring the perpetrators to book, but the events of the last two and a half months reveal a significant gulf between the Meitei and the Kuki-Zo communities. Steps towards reconciliation would require much better leadership than what the much touted “double engine” government of the Bharatiya Janata Party (BJP) has offered so far. </p><p> Q1. The word \"insouciant\" in the passage means:</p><p><br/> </p>",
+      "option1": "<p> Heinous</p>",
+      "option2": "<p> Indifferent</p>",
+      "option3": "<p> Conspicuous</p>",
+      "option4": "<p> Condemning</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is indifferent. </p><p> Insouciant: marked by blithe unconcern. </p><p> The word \"insouciant\" is an adjective used to describe someone who is carefree or indifferent, often to the point of being unconcerned or nonchalant. In the context of the passage, it is used to describe Prime Minister Narendra Modi's attitude towards the crisis in Manipur. The passage criticizes Mr. Modi's lack of response and delayed action, suggesting that his initial silence betrayed a careless or indifferent attitude towards the ongoing violence in the state.</p><p> A. \"Heinous\" is not the correct meaning of \"insouciant.\" The word \"heinous\" means extremely wicked or evil, which is not the intended meaning here.</p><p> B. \"Conspicuous\" is not the correct meaning of \"insouciant.\" The word \"conspicuous\" means easily noticeable or standing out, which is not relevant to Mr. Modi's attitude in the passage.</p><p> C. \"Condemning\" is not the correct meaning of \"insouciant.\" The word \"condemning\" means expressing strong disapproval or criticism, which is not the intended meaning here.</p><p> In conclusion, \"insouciant\" in the passage means careless or indifferent, reflecting the criticism of Mr. Modi's lack of response and apparent unconcern towards the crisis in Manipur.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> After two and a half months of widespread and continuing violence in Manipur, which included a conflagration in early May, Prime Minister Narendra Modi finally broke his silence, after video images of tribal women being paraded naked in Thoubal district on May 4 once again showed up the heinous nature of the conflict in the State. But Mr. Modi is yet to acknowledge the causes and the consequences of the conflict that is threatening to spiral out of control. The Supreme Court of India’s suo motu cognisance of the sexual assault seen in the video and its issuance of ultimatums to both the Union and the State governments to bring the perpetrators to book or to step aside and let the judiciary take action are a stinging indictment of their failure in restoring normalcy in Manipur. After outrage expressed by Members of Parliament and political representatives cutting across party lines, Mr. Modi, who has maintained a conspicuous and unexplained silence on the raging violence in Manipur, weighed in on the crime and promised punishment of the guilty. For a leader who has always sought the limelight and the need to dominate the airwaves, Mr. Modi’s stand on the Manipur violence till now had betrayed an insouciant attitude towards the crisis in the State. The renewed attention on the Manipur conflict has finally led the State government to promise that it will bring the perpetrators to book, but the events of the last two and a half months reveal a significant gulf between the Meitei and the Kuki-Zo communities. Steps towards reconciliation would require much better leadership than what the much touted “double engine” government of the Bharatiya Janata Party (BJP) has offered so far. </p><p> What is the primary focus of the passage?</p>",
+      "option1": "<p> Criticizing Prime Minister Narendra Modi's leadership.</p>",
+      "option2": "<p> Analysing the social divisions in Manipur.</p>",
+      "option3": "<p> Describing the violence in North East.</p>",
+      "option4": "<p> Highlighting the need for reconciliation in Manipur.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> The primary focus of the passage is on the ongoing violence in Manipur and the need for reconciliation between the communities involved. The passage discusses the widespread violence and the incident of tribal women being paraded naked, highlighting the heinous nature of the conflict in the state. It criticizes the delayed response and silence of Prime Minister Narendra Modi, who finally addressed the issue after public outrage and intervention from the Supreme Court. The passage emphasizes that steps towards reconciliation would require better leadership than what the BJP's \"double engine\" government has offered so far. </p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p><strong>Read the following passage and answer the questions given after it.</strong></p><p>After two and a half months of widespread and continuing violence in Manipur, which included a conflagration in early May, Prime Minister Narendra Modi finally broke his silence, after video images of tribal women being paraded naked in Thoubal district on May 4 once again showed up the heinous nature of the conflict in the State. But Mr. Modi is yet to acknowledge the causes and the consequences of the conflict that is threatening to spiral out of control. The Supreme Court of India’s suo motu cognisance of the sexual assault seen in the video and its issuance of ultimatums to both the Union and the State governments to bring the perpetrators to book or to step aside and let the judiciary take action are a stinging indictment of their failure in restoring normalcy in Manipur. After outrage expressed by Members of Parliament and political representatives cutting across party lines, Mr. Modi, who has maintained a conspicuous and unexplained silence on the raging violence in Manipur, weighed in on the crime and promised punishment of the guilty. For a leader who has always sought the limelight and the need to dominate the airwaves, Mr. Modi’s stand on the Manipur violence till now had betrayed an insouciant attitude towards the crisis in the State. The renewed attention on the Manipur conflict has finally led the State government to promise that it will bring the perpetrators to book, but the events of the last two and a half months reveal a significant gulf between the Meitei and the Kuki-Zo communities. Steps towards reconciliation would require much better leadership than what the much touted “double engine” government of the Bharatiya Janata Party (BJP) has offered so far.</p><p>Based on the information in the passage, what could be a suitable title for the passage?</p>",
+      "option1": "<p>\"The Ongoing Violence in Manipur and Its Consequences\"</p>",
+      "option2": "<p>\"The Bharatiya Janata Party's Leadership Crisis in Manipur\"</p>",
+      "option3": "<p>\"The Supreme Court's Ultimatums to the Government\"</p>",
+      "option4": "<p>\"Tribal Women's Plight and the Silence of Prime Minister Modi\"</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option a is the correct answer.</p><p>The passage discusses the ongoing violence in Manipur and its consequences, including the incident of tribal women being paraded naked. A suitable title for the passage could be \"The Ongoing Violence in Manipur and Its Consequences.\"</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> After two and a half months of widespread and continuing violence in Manipur, which included a conflagration in early May, Prime Minister Narendra Modi finally broke his silence, after video images of tribal women being paraded naked in Thoubal district on May 4 once again showed up the heinous nature of the conflict in the State. But Mr. Modi is yet to acknowledge the causes and the consequences of the conflict that is threatening to spiral out of control. The Supreme Court of India’s suo motu cognisance of the sexual assault seen in the video and its issuance of ultimatums to both the Union and the State governments to bring the perpetrators to book or to step aside and let the judiciary take action are a stinging indictment of their failure in restoring normalcy in Manipur. After outrage expressed by Members of Parliament and political representatives cutting across party lines, Mr. Modi, who has maintained a conspicuous and unexplained silence on the raging violence in Manipur, weighed in on the crime and promised punishment of the guilty. For a leader who has always sought the limelight and the need to dominate the airwaves, Mr. Modi’s stand on the Manipur violence till now had betrayed an insouciant attitude towards the crisis in the State. The renewed attention on the Manipur conflict has finally led the State government to promise that it will bring the perpetrators to book, but the events of the last two and a half months reveal a significant gulf between the Meitei and the Kuki-Zo communities. Steps towards reconciliation would require much better leadership than what the much touted “double engine” government of the Bharatiya Janata Party (BJP) has offered so far. </p><p> The passage suggests that steps towards reconciliation in Manipur would require:</p><p><br/> </p>",
+      "option1": "<p> Increased political representation of the Meitei community</p>",
+      "option2": "<p> Stronger measures from the State government</p>",
+      "option3": "<p> Improved leadership compared to the current BJP government</p>",
+      "option4": "<p> The Supreme Court's active involvement</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The passage implies that achieving reconciliation in Manipur would necessitate better leadership than what the current BJP government has offered so far. It highlights the need for more effective measures to bridge the gulf between the Meitei and Kuki-Zo communities and address the ongoing violence in the state. </p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> The environment is a key determinant of social and individual health. You may be aware that many of our health problems are caused by environmental degradation. Exposure to air, water and soil pollution, chemicals in the environment, or noise, can cause cancer, respiratory, cardiovascular and communicable diseases, as well as some other serious health disorders. Although environmental degradation can affect the health of the whole population, some groups are particularly vulnerable, including children, pregnant women, the elderly and persons with pre-existing family history of certain diseases. Recall what you have learnt in the chapter on water management. As you are aware that number of factors contribute to environmental degradation, but the most important factor is the misuse and over use of natural resources. All that the nature has provided to us such as soil, air, water, minerals, sunshine (sunlight), animals and plants, etc., are known as natural resources. Human beings use these directly or indirectly for their survival and welfare. The problem lies in how these natural resources are distributed and used. If at any time one person or a group of people uses more than their fair share of resources, an imbalance is created. This leads to environmental health problems for others. It is, therefore, essential for every individual to ensure that natural resources are protected and are not misused or over used, so that social and individual health is not affected adversely. In India, we have had a great tradition of environmental conservation. We have been taught since ages to respect nature and to recognise that all forms of life — human, animal and plant are closely interrelated. Disturbance in one gives rise to an imbalance in others. Our Constitution also has provisions for protection of environment. </p><p> The passage states that our Constitution has provisions for the protection of:</p><p><br/> </p>",
+      "option1": "<p> Social welfare</p>",
+      "option2": "<p> Cultural heritage</p>",
+      "option3": "<p> Natural resources and the environment</p>",
+      "option4": "<p> Industrial growth</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The correct answer is <b>c) Natural resources and the environment.</b></p><p> The passage mentions that \"Our Constitution also has provisions for the protection of the environment.\" This means that India's Constitution includes specific provisions aimed at safeguarding natural resources and the environment. These provisions are put in place to ensure the responsible use and conservation of natural resources and to protect the environment from degradation and harm. </p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> The environment is a key determinant of social and individual health. You may be aware that many of our health problems are caused by environmental degradation. Exposure to air, water and soil pollution, chemicals in the environment, or noise, can cause cancer, respiratory, cardiovascular and communicable diseases, as well as some other serious health disorders. Although environmental degradation can affect the health of the whole population, some groups are particularly vulnerable, including children, pregnant women, the elderly and persons with pre-existing family history of certain diseases. Recall what you have learnt in the chapter on water management. As you are aware that number of factors contribute to environmental degradation, but the most important factor is the misuse and over use of natural resources. All that the nature has provided to us such as soil, air, water, minerals, sunshine (sunlight), animals and plants, etc., are known as natural resources. Human beings use these directly or indirectly for their survival and welfare. The problem lies in how these natural resources are distributed and used. If at any time one person or a group of people uses more than their fair share of resources, an imbalance is created. This leads to environmental health problems for others. It is, therefore, essential for every individual to ensure that natural resources are protected and are not misused or over used, so that social and individual health is not affected adversely. In India, we have had a great tradition of environmental conservation. We have been taught since ages to respect nature and to recognise that all forms of life — human, animal and plant are closely interrelated. Disturbance in one gives rise to an imbalance in others. Our Constitution also has provisions for protection of environment. </p><p> <br/> <br/> </p><p> What is the most important factor contributing to environmental degradation, according to the passage?</p>",
+      "option1": "<p> Lack of government regulations</p>",
+      "option2": "<p> Overpopulation</p>",
+      "option3": "<p> Misuse and overuse of natural resources</p>",
+      "option4": "<p> Inadequate education about the environment</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is <b>c) Misuse and overuse of natural resources.</b></p><p> The passage states that \"the most important factor\" contributing to environmental degradation is the \"misuse and overuse of natural resources.\" It emphasizes that human beings use natural resources directly or indirectly for their survival and welfare. </p><p>However, if individuals or groups use more than their fair share of resources, it creates an imbalance and leads to environmental health problems for others. </p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p><strong>Read the given passage and answer the questions that follow.</strong></p><p><br/> </p><p>The environment is a key determinant of social and individual health. You may be aware that many of our health problems are caused by environmental degradation. Exposure to air, water and soil pollution, chemicals in the environment, or noise, can cause cancer, respiratory, cardiovascular and communicable diseases, as well as some other serious health disorders. Although environmental degradation can affect the health of the whole population, some groups are particularly vulnerable, including children, pregnant women, the elderly and persons with pre-existing family history of certain diseases. Recall what you have learnt in the chapter on water management. As you are aware that number of factors contribute to environmental degradation, but the most important factor is the misuse and over use of natural resources. All that the nature has provided to us such as soil, air, water, minerals, sunshine (sunlight), animals and plants, etc., are known as natural resources. Human beings use these directly or indirectly for their survival and welfare. The problem lies in how these natural resources are distributed and used. If at any time one person or a group of people uses more than their fair share of resources, an imbalance is created. This leads to environmental health problems for others. It is, therefore, essential for every individual to ensure that natural resources are protected and are not misused or over used, so that social and individual health is not affected adversely. In India, we have had a great tradition of environmental conservation. We have been taught since ages to respect nature and to recognise that all forms of life — human, animal and plant are closely interrelated. Disturbance in one gives rise to an imbalance in others. Our Constitution also has provisions for protection of environment.</p><p>What is the primary focus of the passage?</p>",
+      "option1": "<p>Analysing environmental degradation in India</p>",
+      "option2": "<p>Exploring the relationship between health and natural resources</p>",
+      "option3": "<p>Discussing India's tradition of environmental conservation</p>",
+      "option4": "<p>None of these</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is <strong>b) Exploring the relationship between health and natural resources. </strong></p><p>The primary focus of the passage is to discuss the relationship between health and natural resources. It highlights that environmental degradation, caused by factors such as misuse and overuse of natural resources, can lead to various health problems for individuals and the entire population. The passage emphasizes the importance of protecting and conserving natural resources to ensure social and individual health is not adversely affected.</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> The environment is a key determinant of social and individual health. You may be aware that many of our health problems are caused by environmental degradation. Exposure to air, water and soil pollution, chemicals in the environment, or noise, can cause cancer, respiratory, cardiovascular and communicable diseases, as well as some other serious health disorders. Although environmental degradation can affect the health of the whole population, some groups are particularly vulnerable, including children, pregnant women, the elderly and persons with pre-existing family history of certain diseases. Recall what you have learnt in the chapter on water management. As you are aware that number of factors contribute to environmental degradation, but the most important factor is the misuse and over use of natural resources. All that the nature has provided to us such as soil, air, water, minerals, sunshine (sunlight), animals and plants, etc., are known as natural resources. Human beings use these directly or indirectly for their survival and welfare. The problem lies in how these natural resources are distributed and used. If at any time one person or a group of people uses more than their fair share of resources, an imbalance is created. This leads to environmental health problems for others. It is, therefore, essential for every individual to ensure that natural resources are protected and are not misused or over used, so that social and individual health is not affected adversely. In India, we have had a great tradition of environmental conservation. We have been taught since ages to respect nature and to recognise that all forms of life — human, animal and plant are closely interrelated. Disturbance in one gives rise to an imbalance in others. Our Constitution also has provisions for protection of environment. </p><p> <br/> <br/> </p><p> What does the word \"adversely\" mean in the following sentence from the passage?</p>",
+      "option1": "<p> Positively</p>",
+      "option2": "<p> Directly</p>",
+      "option3": "<p> Negatively</p>",
+      "option4": "<p> Partially</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Adversely</b>: When something affects you <i>adversely</i>, it's harmful or negative. Holding a cinder block will <i>adversely</i> affect your running speed. </p><p> <b>Positively</b>: so as to be positive; in a positive manner. </p><p> <b>Directly</b>: without deviation. </p><p> <b>Negatively</b>: in a harmful manner. </p><p><b>Partially</b>: in part; in some degree; not wholly.</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> According to World Health Organisation (WHO) ‘‘Health is the state of complete physical, emotional, and social well-being, not merely the absence of diseases or infirmity.’’ This definition has remained unchanged since 1948. All of us want to maintain positive health, i.e., a perfect blend of physical, social and mental. Taking adequate amounts of essential nutrients in our diet is necessary to maintain positive health. Physical health is probably the most easily understood aspect. Mental health can be defined as a state of emotional and psychological well-being in which an individual is able to use her or his cognitive and emotional capabilities, function in society, and meet the ordinary demands of everyday life. In other words, the absence of a recognised mental disorder is not necessarily an indicator of mental health. One way to assess mental health is to see how effectively and successfully a person functions. Feeling capable and competent, being able to handle normal levels of stress, maintaining satisfying relationships, and leading an independent life; and being able to ‘bounce back’ or recover from difficult situations are all signs of good mental health. Physical fitness is good bodily health; it is the result of regular exercise, proper diet and nutrition, and proper rest for physical recovery. The term physical fitness is used in two ways: general fitness (a state of health and well-being) and specific fitness (a task-oriented definition based on the ability to perform specific aspects of sports or occupations). Physical fitness is the capacity of the heart, blood vessels, lungs, and muscles to function at optimal efficiency. Earlier, fitness was defined as the capacity to carry out the day’s activities without undue fatigue. Automation, increased leisure time, and changes in lifestyles following the Industrial Revolution meant that this criterion was no longer sufficient. In the present context, optimum efficiency is the key. Physical fitness is now defined as the body’s ability to function efficiently and effectively in work and leisure activities, to be healthy, to resist diseases and to meet emergency situations. Fitness can also be divided into five categories: aerobic fitness, muscular strength, muscular endurance, flexibility, and body composition. Being fit prepares one to meet mental and emotional challenges. One feels strong and energetic if one is fit. Fitness provides one with the ability to meet routine physical demands with enough reserve energy to rise to a sudden challenge, such as running to catch a bus.</p><p> Thus, health is a state of complete mental, physical and social wellbeing whereas fitness is the ability to meet the demands of a physical task. A well-nourished and fit person is better able to learn and has more energy, stamina, and self-esteem. A healthy eating pattern along with regular exercise will certainly help to remain fit. Teenagers between the ages of 12 and 18 who have unhealthy eating behaviours and are undernourished develop eating disorders.</p><p> What does the passage suggest about mental health?</p>",
+      "option1": "<p> It is solely determined by the absence of recognized mental disorders.</p>",
+      "option2": "<p> It involves the ability to handle stress and maintain satisfying relationships.</p>",
+      "option3": "<p> It is not as significant as physical and social well-being.</p>",
+      "option4": "<p> It is defined by the capacity to perform specific aspects of sports or occupations.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage suggests that mental health is not solely determined by the absence of recognized mental disorders. Instead, it is described as a state of emotional and psychological well-being in which an individual is capable of using their cognitive and emotional capabilities, functioning in society, and meeting the ordinary demands of everyday life. This involves being able to handle normal levels of stress, maintain satisfying relationships, and lead an independent life. In other words, mental health encompasses a person's ability to effectively handle emotional and psychological challenges and maintain a positive state of well-being.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> According to World Health Organisation (WHO) ‘‘Health is the state of complete physical, emotional, and social well-being, not merely the absence of diseases or infirmity.’’ This definition has remained unchanged since 1948. All of us want to maintain positive health, i.e., a perfect blend of physical, social and mental. Taking adequate amounts of essential nutrients in our diet is necessary to maintain positive health. Physical health is probably the most easily understood aspect. Mental health can be defined as a state of emotional and psychological well-being in which an individual is able to use her or his cognitive and emotional capabilities, function in society, and meet the ordinary demands of everyday life. In other words, the absence of a recognised mental disorder is not necessarily an indicator of mental health. One way to assess mental health is to see how effectively and successfully a person functions. Feeling capable and competent, being able to handle normal levels of stress, maintaining satisfying relationships, and leading an independent life; and being able to ‘bounce back’ or recover from difficult situations are all signs of good mental health. Physical fitness is good bodily health; it is the result of regular exercise, proper diet and nutrition, and proper rest for physical recovery. The term physical fitness is used in two ways: general fitness (a state of health and well-being) and specific fitness (a task-oriented definition based on the ability to perform specific aspects of sports or occupations). Physical fitness is the capacity of the heart, blood vessels, lungs, and muscles to function at optimal efficiency. Earlier, fitness was defined as the capacity to carry out the day’s activities without undue fatigue. Automation, increased leisure time, and changes in lifestyles following the Industrial Revolution meant that this criterion was no longer sufficient. In the present context, optimum efficiency is the key. Physical fitness is now defined as the body’s ability to function efficiently and effectively in work and leisure activities, to be healthy, to resist diseases and to meet emergency situations. Fitness can also be divided into five categories: aerobic fitness, muscular strength, muscular endurance, flexibility, and body composition. Being fit prepares one to meet mental and emotional challenges. One feels strong and energetic if one is fit. Fitness provides one with the ability to meet routine physical demands with enough reserve energy to rise to a sudden challenge, such as running to catch a bus.</p><p> Thus, health is a state of complete mental, physical and social wellbeing whereas fitness is the ability to meet the demands of a physical task. A well-nourished and fit person is better able to learn and has more energy, stamina, and self-esteem. A healthy eating pattern along with regular exercise will certainly help to remain fit. Teenagers between the ages of 12 and 18 who have unhealthy eating behaviours and are undernourished develop eating disorders.</p><p> <br/> <br/> </p><p> The passage mentions five categories of fitness, which one of the following is NOT among them?</p><p><br/> </p>",
+      "option1": "<p> Muscular Strength</p>",
+      "option2": "<p> Muscular endurance</p>",
+      "option3": "<p> Body composition</p>",
+      "option4": "<p> Emotional intelligence</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Emotional intelligence is not mentioned as one of the five categories of fitness in the passage. The five categories of fitness mentioned in the passage are:</p><p> Muscular strength, Muscular endurance, Body composition, Flexibility and Aerobic fitness.</p><p> Emotional intelligence, while an essential aspect of overall well-being, is not specifically included in the list of fitness categories discussed in the passage.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p><strong>Read the following passage and answer the questions given after it.</strong></p><p><br/> </p><p>According to World Health Organisation (WHO) ‘‘Health is the state of complete physical, emotional, and social well-being, not merely the absence of diseases or infirmity.’’ This definition has remained unchanged since 1948. All of us want to maintain positive health, i.e., a perfect blend of physical, social and mental. Taking adequate amounts of essential nutrients in our diet is necessary to maintain positive health. Physical health is probably the most easily understood aspect. Mental health can be defined as a state of emotional and psychological well-being in which an individual is able to use her or his cognitive and emotional capabilities, function in society, and meet the ordinary demands of everyday life. In other words, the absence of a recognised mental disorder is not necessarily an indicator of mental health. One way to assess mental health is to see how effectively and successfully a person functions. Feeling capable and competent, being able to handle normal levels of stress, maintaining satisfying relationships, and leading an independent life; and being able to ‘bounce back’ or recover from difficult situations are all signs of good mental health. Physical fitness is good bodily health; it is the result of regular exercise, proper diet and nutrition, and proper rest for physical recovery. The term physical fitness is used in two ways: general fitness (a state of health and well-being) and specific fitness (a task-oriented definition based on the ability to perform specific aspects of sports or occupations). Physical fitness is the capacity of the heart, blood vessels, lungs, and muscles to function at optimal efficiency. Earlier, fitness was defined as the capacity to carry out the day’s activities without undue fatigue. Automation, increased leisure time, and changes in lifestyles following the Industrial Revolution meant that this criterion was no longer sufficient. In the present context, optimum efficiency is the key. Physical fitness is now defined as the body’s ability to function efficiently and effectively in work and leisure activities, to be healthy, to resist diseases and to meet emergency situations. Fitness can also be divided into five categories: aerobic fitness, muscular strength, muscular endurance, flexibility, and body composition. Being fit prepares one to meet mental and emotional challenges. One feels strong and energetic if one is fit. Fitness provides one with the ability to meet routine physical demands with enough reserve energy to rise to a sudden challenge, such as running to catch a bus.</p><p>Thus, health is a state of complete mental, physical and social wellbeing whereas fitness is the ability to meet the demands of a physical task. A well-nourished and fit person is better able to learn and has more energy, stamina, and self-esteem. A healthy eating pattern along with regular exercise will certainly help to remain fit. Teenagers between the ages of 12 and 18 who have unhealthy eating behaviours and are undernourished develop eating disorders.</p><p><br/> </p><p>What is the primary difference between \"general fitness\" and \"specific fitness\"?</p>",
+      "option1": "<p>General fitness focuses on physical well-being, while specific fitness is about mental health.</p>",
+      "option2": "<p>General fitness is task-oriented, while specific fitness is about overall well-being.</p>",
+      "option3": "<p>General fitness is based on the ability to perform specific aspects of sports, while specific fitness is about health and well-being.</p>",
+      "option4": "<p>General fitness refers to a state of health and well-being, while specific fitness is about the ability to perform specific aspects of sports or occupations.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to the passage, the primary difference between \"general fitness\" and \"specific fitness\" lies in their focus and definition. General fitness is described as a state of health and well-being, encompassing physical, emotional, and social aspects of an individual's overall condition. On the other hand, specific fitness is task-oriented and is based on the ability to perform specific aspects of sports or occupations. It refers to the capacity to excel in particular physical activities or meet the demands of specific tasks or roles.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> According to World Health Organisation (WHO) ‘‘Health is the state of complete physical, emotional, and social well-being, not merely the absence of diseases or infirmity.’’ This definition has remained unchanged since 1948. All of us want to maintain positive health, i.e., a perfect blend of physical, social and mental. Taking adequate amounts of essential nutrients in our diet is necessary to maintain positive health. Physical health is probably the most easily understood aspect. Mental health can be defined as a state of emotional and psychological well-being in which an individual is able to use her or his cognitive and emotional capabilities, function in society, and meet the ordinary demands of everyday life. In other words, the absence of a recognised mental disorder is not necessarily an indicator of mental health. One way to assess mental health is to see how effectively and successfully a person functions. Feeling capable and competent, being able to handle normal levels of stress, maintaining satisfying relationships, and leading an independent life; and being able to ‘bounce back’ or recover from difficult situations are all signs of good mental health. Physical fitness is good bodily health; it is the result of regular exercise, proper diet and nutrition, and proper rest for physical recovery. The term physical fitness is used in two ways: general fitness (a state of health and well-being) and specific fitness (a task-oriented definition based on the ability to perform specific aspects of sports or occupations). Physical fitness is the capacity of the heart, blood vessels, lungs, and muscles to function at optimal efficiency. Earlier, fitness was defined as the capacity to carry out the day’s activities without undue fatigue. Automation, increased leisure time, and changes in lifestyles following the Industrial Revolution meant that this criterion was no longer sufficient. In the present context, optimum efficiency is the key. Physical fitness is now defined as the body’s ability to function efficiently and effectively in work and leisure activities, to be healthy, to resist diseases and to meet emergency situations. Fitness can also be divided into five categories: aerobic fitness, muscular strength, muscular endurance, flexibility, and body composition. Being fit prepares one to meet mental and emotional challenges. One feels strong and energetic if one is fit. Fitness provides one with the ability to meet routine physical demands with enough reserve energy to rise to a sudden challenge, such as running to catch a bus.</p><p> Thus, health is a state of complete mental, physical and social wellbeing whereas fitness is the ability to meet the demands of a physical task. A well-nourished and fit person is better able to learn and has more energy, stamina, and self-esteem. A healthy eating pattern along with regular exercise will certainly help to remain fit. Teenagers between the ages of 12 and 18 who have unhealthy eating behaviours and are undernourished develop eating disorders.</p><p> <br/> <br/> </p><p> Physical fitness is now defined as the body's ability to:</p>",
+      "option1": "<p> Resist diseases and meet emergency situations.</p>",
+      "option2": "<p> Carry out daily activities without undue fatigue.</p>",
+      "option3": "<p> Function efficiently and effectively in work and leisure activities.</p>",
+      "option4": "<p> Maintain specific aspects of sports and occupations.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> According to the passage, physical fitness is now defined as the body's ability to function efficiently and effectively in work and leisure activities. It refers to the capacity of the heart, blood vessels, lungs, and muscles to work optimally, enabling an individual to perform daily tasks and engage in leisure activities with ease and without undue fatigue. Physical fitness is not solely about resisting diseases or meeting emergency situations (option a) nor about solely carrying out daily activities (option b) or maintaining specific aspects of sports and occupations (option d). It encompasses the body's overall ability to handle various physical demands effectively.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p> Which of the statements is NOT correct regarding energy?</p><p><br/> </p>",
+      "option1": "<p> An object in motion possesses what is known as the kinetic energy of the object</p>",
+      "option2": "<p> The energy possessed by a body due to its change in position or shape is called the potential energy.</p>",
+      "option3": "<p> The Gravitational Potential energy of an object of mass, M raised through a height, H from the earth’s surface is given by MgH</p>",
+      "option4": "<p> An object of mass m moving with velocity v has a kinetic energy of (mv)/2</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288853330_html_16eb5c348130de5a.png"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p> Who amongst the following has won the Women’s singles title at the 2023 French Open?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Karolina Muchova</p>",
+      "option2": "<p> Iga Swaiatek</p>",
+      "option3": "<p> Elena Rybakina</p>",
+      "option4": "<p> Coco Glauff</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Iga Swaiatek. </p><p> Iga Swiatek defeated Karolina Muchova 6-2, 5-7, 6-4 in the final. </p><p> It was her third career championship at the French Open and fourth Grand Slam title Final.</p><p> Men’s Singles-: Novak Djokovic won the Men’s singles title at the 2023 French Open. It was his 23rd Grand Slam title with a third French Open triumph.</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p> Which of the following statement is NOT correct?</p><p><br/> </p>",
+      "option1": "<p> Mahendragiri is the highest peak in the Eastern Ghats. </p>",
+      "option2": "<p> The height of the Western Ghats progressively decreases from north to south. </p>",
+      "option3": "<p> The Western Ghats cause orographic rain. </p>",
+      "option4": "<p> The Eastern Ghats stretch from the Mahanadi Valley to the Nilgiris in the south.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The height of the Western Ghats progressively increases from north to south. </p><p> <b>Eastern Ghats-: </b> </p><p> The Eastern Ghats stretch from the Mahanadi Valley to the Nilgiris in the south. The Eastern Ghats run from northern Odisha through Andhra Pradesh to Tamil Nadu in the south passing some parts of Karnataka. </p><p> <br/> <br/> </p><p> <b>Mahendragiri (1,501 metres) is the highest peak</b> in the Eastern Ghats. Shevroy Hills and the Javadi Hills are located to the southeast of the Eastern Ghats. </p><p> <br/> <br/> </p><p> The main crop produced in the eastern ghats is <b>Rice,</b> which is also the staple food of the people living in the region</p><p> <br/> <br/> </p><p> <br/> <br/> </p><p> <b>Western Ghats-: </b> </p><p> The Western Ghats are also known as <i>Sahyadri</i> in certain parts of India. </p><p> They run parallel to the western coast of India. </p><p> the western ghats do have passes such as the <b>Bhor ghat, Pal ghat, and Thal ghat</b> which makes it possible to travel through the western ghats despite the fact that they are continuous</p><p> The western ghats consist of evergreen forests too, however, the main crop grown there is the <b>Coffee</b>. </p><p> Important rivers such as the <b>Tungabhadra, the Krishna, the Godavari</b> have their origin point in the western ghats.</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p> Which among the following is not required to be the Vice-President of India?</p><p><br/> </p>",
+      "option1": "<p> He should not hold any office of profit under the Union government or any state government or any local authority or any other public authority. </p>",
+      "option2": "<p> He should be a citizen of India.</p>",
+      "option3": "<p> He should be qualified for election as a member of the Rajya Sabha.</p>",
+      "option4": "<p> He should have completed 40 years of age.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> To become a vice president </p><p> He/she must be a citizen of India, </p><p> have completed more than 35 years of age, </p><p> Not hold any office of profit. </p><p> The vice president of India is elected indirectly, by an electoral college comprising of members (elected and also nominated) of both houses of the Parliament(Rajya Sabha &amp; Lok sabha), in accordance with the system of corresponding representation using the single transferable vote and the voting in such election is by secret ballot.</p><p> Article 63: The Vice-President of India.</p><p> Article 66: Election of Vice-President.</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p> Which among the following is correct about Reverse Repo Rate?</p><p><br/> </p>",
+      "option1": "<p> When the money is borrowed or lent for more than a day up to 14 days it is called Reverse Repo Rate. </p>",
+      "option2": "<p> When RBI provides a loan to the bank for short-term between 1 to 90 days, RBI takes some interest from the bank which is termed as Reverse Repo Rate.</p>",
+      "option3": "<p> Reverse Repo Rate is a state in which the Value of Money is Falling and the Prices are rising, over a period of time.</p>",
+      "option4": "<p> When bank deposit it's excess money in RBI then RBI provides some interest to that bank. This interest is known as Reverse Repo Rate.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> When bank deposit it's excess money in RBI then RBI provides some interest to that bank. This interest is known as Reverse Repo Rate. </p><p> <br/> <br/> </p><p> Reverse repo rate is said to be that rate of interest at which the central bank (RBI in India) borrows money from the commercial banks for a short term. </p><p> <br/> <br/> </p><p> It helps the central bank to have a ready source of liquidity at the time of need. RBI offers great interest rates in return for the amount supplied by the commercial banks. </p><p> <br/> <br/> </p><p> Commercial banks also keep the excess funds that they receive with RBI as it is considered safe. The added benefit is that RBI will also pay interest, which gives the banks an option to earn interest on their idle money. </p><p> <br/> <br/> </p><p> The Reverse Repo Rate is meant for the short term, either for 7 days or 14 days.</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Who amongst the following is the Finance secretary of India as of Aug 2024?</p>",
+      "option1": "<p>T.V. Somanathan</p>",
+      "option2": "<p>Tuhin Kanta Pandey</p>",
+      "option3": "<p>Pradeep Kumar</p>",
+      "option4": "<p>Pankaj Saran</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Tuhin Kanta Pandey. TV Somanathan is the Cabinet Secretary of India.</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p> Mahatma Gandhi abruptly called off the Non-Cooperation Movement when in ______ a crowd of peasants set fire to a police station in Chauri Chaura.</p><p><br/> </p>",
+      "option1": "<p> April 1922</p>",
+      "option2": "<p> February 1922</p>",
+      "option3": "<p> June 1922</p>",
+      "option4": "<p> December 1922</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is February 1922. </p><p> Mahatma Gandhi abruptly called off the Non-Cooperation Movement when it took a violent turn. </p><p> From 1921–1922, the Non-Cooperation Movement grew in popularity. </p><p> Numerous students abandoned government institutions. Lawyers ceased practising. Legislative bodies were disregarded, and British titles were given up. </p><p> But in an unfortunate event, the police's use of force in Chauri Chaura against a peasants' non-violent protest infuriated them. </p><p> In retaliation, the police station in Chauri Chaura was set on fire by the peasants in February 1922. Twenty-two police officers were killed. </p><p> Due to the non-violent turn of events, Gandhi called off the movement.</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p> The 12th edition of the joint military exercise “Ex Ekuverin 2023” between the India and Maldives has commenced in which of the following states?</p><p><br/> </p>",
+      "option1": "<p> Rajasthan</p>",
+      "option2": "<p> Uttarakhand</p>",
+      "option3": "<p> Telangana</p>",
+      "option4": "<p> Tamil Nadu</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690288853330_html_8aea63084cfc29f0.png"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p> In 1757, ______ led the Company’s army against Sirajuddaulah at Plassey. </p>",
+      "option1": "<p> Lord Cornwallis</p>",
+      "option2": "<p> Robert Clive</p>",
+      "option3": "<p> Warren Hastings</p>",
+      "option4": "<p> Lord Minto</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Robert Clive. </p><p> The Battle of Plassey was fought in north-eastern India on 23 June 1757. Troops of the British East India Company, led by Robert Clive, came up against the forces of Siraj-ud-Daulah, the last Nawab of Bengal, and his French allies. </p><p> <b>Robert Clive (1757 – 1760), (1765 – 1767) </b> </p><p> Battle of Plassey, 1757</p><p> Treaty of Allahabad, 1765</p><p> He applied dual governance is Bengal in 1765.</p><p> He prohibited Gov. employees to take gifts.</p><p> He was the only governor who committed suicide</p><p> In 1767, he founded society for trade in Bengal.</p><p> Battle of Buxar, Gov – Vancihart.</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Which of the following rocks may also contain fossils of plants, animals and other microorganisms that once lived on them?</p>",
+      "option1": "<p>Extrusive igneous rocks</p>",
+      "option2": "<p>Sedimentary rocks</p>",
+      "option3": "<p>Intrusive igneous rocks</p>",
+      "option4": "<p>Metamorphic rocks</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Sedimentary rocks.</p><p>It contains fossils of plants, animals, and other microorganisms that once lived on them.</p><p>Sedimentary rocks are formed from pre-existing rocks or pieces of once-living organisms. They form from deposits that accumulate on the Earth's surface.</p><p>Sedimentary rocks often have distinctive layering or bedding.</p><p>There are three types of rocks-:</p><p>Igneous Rocks</p><p>Sedimentary Rocks</p><p>Metamorphic Rocks</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p> Which Indian writer wrote the famous book \"Mansarovar\"?</p><p><br/> </p>",
+      "option1": "<p> Ram Prasad Bismil</p>",
+      "option2": "<p> Gita Sahgal</p>",
+      "option3": "<p> Premchand</p>",
+      "option4": "<p> Yashpal</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Premchand. </p><p> Famous books of Premchand-: </p><p>Godaan, Idgah, Kaphan, Gaban, Bade Ghar Ki Beti, Push Ki Rat, Panch Parmeshwar, Rangbhoomi, Rangbhoomi, etc.</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p> Which of the following statements is/are correct?</p><p> <br/> I. Salts of a strong acid and weak base are acidic with pH value less than 7.</p><p><br/> II. When electricity is passed through an aqueous solution of sodium chloride (called brine), it decomposes to form sodium oxide.</p>",
+      "option1": "<p> Both I and II</p>",
+      "option2": "<p> Only I</p>",
+      "option3": "<p> Only II</p>",
+      "option4": "<p> Neither I nor II</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> When electricity is passed through aqueous sodium chloride, it decomposes to form <b>sodium hydroxide. </b> </p><p> Salts of a strong acid and weak base are acidic with pH value less than 7. </p><p> <b>Basicity of an acid</b></p><p> <b>Number of removable hydrogen ions in an acid. Eg: </b> </p><p> <b>Monobasic acids = HCl, HNO</b><b>3</b></p><p> <b>Dibasic acids = H</b><b>2</b><b>SO</b><b>4</b><b>, H</b><b>2</b><b>CO</b><b>3</b><b>, H</b><b>3</b><b>PO</b><b>3</b><b> etc.</b></p><p> <b>Tribasic acids= H</b><b>3</b><b>PO</b><b>4</b></p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p> The Indira Sagar Dam is built over river Narmada in which of the following states of India? </p><p><br/> </p>",
+      "option1": "<p> Madhya Pradesh</p>",
+      "option2": "<p> Kerala</p>",
+      "option3": "<p> Gujarat</p>",
+      "option4": "<p> Karnataka</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Madhya Pradesh. </p><p> The <b>Indira Sagar Dam</b> is the largest dam in India, in terms of volume of water stored in the reservoir. It is located on the Narmada River at the town of Narmada Nagar, Punasa in the Khandwa district of Madhya Pradesh in India. </p><p> <b>Famous Dams in India-: </b> </p><p> Tungabhadra Dam- Karnataka. </p><p> Rihand Dam- Uttar Pradesh. </p><p> Maithon<u> </u>Dam – Jharkhand. </p><p> Koyna Dam – Maharashtra. </p><p> Bisalpur Dam – Rajasthan. </p><p> Mettur Dam – Rajasthan. </p><p> Indira Sagar Dam – Madhya Pradesh. </p><p>Tehri Dam – Uttarakhand.</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p> Which article of the Indian constitution mentions that it is duty of the Union government to protect States against external aggression and internal disturbance?</p><p><br/> </p>",
+      "option1": "<p> Article 353</p>",
+      "option2": "<p> Article 356</p>",
+      "option3": "<p> Article 358</p>",
+      "option4": "<p> Article 355</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Article 355. </p><p> Article 355: It shall be the duty of the Union to protect every State against external aggression and internal disturbance and to ensure that the government of every State is carried on in accordance with the provisions of this Constitution. </p><p> Article 356: Article 356 of the Constitution empowers the central government to impose its direct rule over any state, known as the President’s Rule. This is also called a ‘State Emergency’. </p><p> Article 352: Article 352 states that the President can proclaim Emergency if he/she believes that a “grave emergency exists whereby the security of India or of any part of the territory thereof is threatened, whether by war or external aggression or armed rebellion”. This is also called a ‘National Emergency’. </p><p> Article 353: It allows the central government to override the seventh schedule of the constitution (dealing with the differentiation of subjects between the central and state government). It also allows the president to prolong the life of the Lok Sabha one year at time. </p><p> Article 358: It suspends Fundamental Rights under Article 19 for the complete duration of Emergency.</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p> Hari Prasad Chaurasia is associated with which of the following instruments?</p>",
+      "option1": "<p> Bansuri</p>",
+      "option2": "<p> Table</p>",
+      "option3": "<p> Drum</p>",
+      "option4": "<p> Veena</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Bansuri. </p><p> Hariprasad Chaurasia (born 1 July 1938) is an Indian music director and classical flautist, who plays the bansuri, in the Hindustani classical tradition.</p><p> Other famous Bansuri Vadak: N Ramani, Pandit Ronu Majmudar, Shashank Subrahmanyam, Debopriya, Sushmita Chatterjee. </p><p> Famous Tabla Vadak: Zakir Hussain, Anindo Chatterjee, Bickram Ghosh, Alla Rakha, Kishan Maharaj, Anokhelal Mishra. </p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p> Which of the following statements is NOT correct regarding the rabi crops?</p><p><br/> </p>",
+      "option1": "<p> Rabi crops are sown in winter from October to December. </p>",
+      "option2": "<p> Southern and southeastern states are important for the production of wheat and other rabi crops.</p>",
+      "option3": "<p> Some of the important rabi crops are wheat, barley, peas, gram and mustard. </p>",
+      "option4": "<p> These crops are harvested in summer from April to June.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Rabi crops are generally produced in the North, and North-Western parts such as Punjab, Haryana, Himachal Pradesh, Jammu and Kashmir, Uttarakhand and Uttar Pradesh. </p><p> <br/> <br/> </p><p> Rabi crops are sown in winter and harvested during the spring season. </p><p> <br/> <br/> </p><p> <br/> <br/> </p><p> These crops do not require as much water as the Kharif crops. A few examples of the rabi crops include wheat, barley, Peas, Mustard, oats(cereals), etc.</p><p> <br/> <br/> </p><p>Its harvesting season is from April - May.</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p> Which of the following pair of \"player – sports\" is correct?</p><p> <br/> I. Lovlina Borgohain – Boxing<br/> II. Nikhat Zareen – Wrestling</p><p><br/> </p>",
+      "option1": "<p> Only I</p>",
+      "option2": "<p> Neither I nor II</p>",
+      "option3": "<p> Both I and II</p>",
+      "option4": "<p> Only II</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Lovlina Borgohain is an Indian woman amateur boxer born on 2nd October 1997 who won a bronze medal for India in the Tokyo Olympics. She hails from Assam's Golaghat district. She represents India in the 69kg Welterweight category internationally. </p><p>Nikhat Zareen is an Indian boxer. She won gold medal at the International Boxing Association Women's Youth &amp; Junior World Championships organised in Antalya in 2011.</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p> Which of the following statements regarding the lenses is/are correct?</p><p> <br/> I. Power of a convex lens is represented as a positive number.<br/> II. Power of a concave lens is represented as a negative number.</p><p><br/> </p>",
+      "option1": "<p> Neither I nor II</p>",
+      "option2": "<p> Both I and II</p>",
+      "option3": "<p> Only II</p>",
+      "option4": "<p> Only I</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Power of a convex lens is represented as a positive number. As a convex lens has a positive focal length, it will have positive power. It is so because we know the relation between power and focal length as P=1/f. Convex lenses, therefore, have positive power. </p><p>Power of a concave lens is represented as a negative number. A concave lens will always have a negative focal length because it is a diverging lens.</p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p> Nashik is also known as ______ capital of India.</p>",
+      "option1": "<p> Gold</p>",
+      "option2": "<p> Orange</p>",
+      "option3": "<p> Wine</p>",
+      "option4": "<p> Cotton</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is “Wine”. Nashik is also known as ‘Wine capital of India’.</p><p> The Nashik valley wine's quality is due to the high altitude at which the grapes are grown and is marked by distinct high acidity with \"specific acid-sugar balance.\"</p><p> Nashik is a holy city in Maharashtra that is celebrated for its abundant production of redolent grapes. </p><p> <b>City and their Nicknames-: </b> </p><p> Jaipur- Pink City.</p><p> Surat – Silk City/Diamond City.</p><p> Jodhpur – Rajasthan. </p><p> Ahmedabad - Manchester of India/ Boston of India/India’s first world heritage city. </p><p> Asansol - Land of Black Diamond</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p> The simultaneous shifts of both the demand curve and the supply curve can happen in which of the following ways? </p><p> <br/> I. Supply curve shifts leftward and demand curve shifts rightward. <br/> II. Both supply and demand curves shift leftwards. <br/> III. Supply curve shifts rightward and demand curve shifts leftward.</p><p><br/> </p>",
+      "option1": "<p> Only I</p>",
+      "option2": "<p> I and II</p>",
+      "option3": "<p> II and III</p>",
+      "option4": "<p> I, II and III</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> The simultaneous shifts of both the demand curve and the supply curve can happen in four possible ways: </p><p> 1. Both supply and demand curves shift rightwards. </p><p> 2. Both supply and demand curves shift leftwards. </p><p> 3. Supply curve shifts leftward and demand curve shifts rightward. </p><p> 4. Supply curve shifts rightward and demand curve shifts leftward. </p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p> ______ administration became the model followed by the great emperor Akbar when he consolidated the Mughal Empire.</p><p><br/> </p>",
+      "option1": "<p> Sher Shah Suri’s </p>",
+      "option2": "<p> Muhammad Tughluq’s </p>",
+      "option3": "<p> Genghis Khan’s </p>",
+      "option4": "<p> Alauddin Khalji’s</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Sher Shah Suri’s. </p><p> Sher Shah's administration became the model followed by the great emperor Akbar (1556-1605) when he consolidated the Mughal Empire. </p><p> Sher Shah Suri was the administrator of a small region in Bihar. He defeated Humayun and established his own dynasty in Delhi. He ruled for just fifteen years. But his administrative model was efficient.</p><p> <b>Akbar-: </b> </p><p> Akbar became independent of the regent Bairam Khan and other members of his domestic staff. Military campaigns were launched against the Suris and other Afghans, against the neighbouring kingdoms of Malwa and Gondwana, and to suppress the revolt of his half-brother Mirza Hakim and the Uzbegs.</p><p> In 1568 the Sisodiya capital of Chittor was seized and in 1569 Ranthambhor. </p><p> <br/> <br/> </p><p> Military campaigns in Gujarat were followed by campaigns in the east in Bihar, Bengal and Orissa. These campaigns were complicated by the 1579-1580 revolt in support of Mirza Hakim.</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>In which of the following articles of the Indian constitution is the procedure for impeachment of the President of India mentioned?</p>",
+      "option1": "<p>60</p>",
+      "option2": "<p>59</p>",
+      "option3": "<p>62</p>",
+      "option4": "<p>61</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Article 61.</p><p>The president is removed for the violation of the constitution and the process of impeachment is discussed in Article 61 of the Indian Constitution. Impeachment of the president can be initiated by either house of the Parliament.<br/> </p><p><strong>Articles related to President-: </strong></p><p>Article 52-: The President of India.</p><p>Article 53-: Executive Power of the Union.</p><p>Article 54-: Election of President.</p><p>Article 55-: Description of the Presidents.</p><p>Article 56-: President Tenure of Office.</p><p>Article 57-: Re-Election Eligibility.</p><p>Article 58-: Qualification for Presidential Election.</p><p>Article 59-: President’s Office Conditions.</p><p>Article 60-: Presidents Affirmation or Oath.</p><p>Article 61-: President’s Impeachment Procedure.</p><p>Article 62-: Election Holding Time To Fill The Office Vacancy Of The President<strong> </strong>And His Tenure Of Office.</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Who is the CEO of NITI Aayog as of Sep 2024?</p>",
+      "option1": "<p>Utpal Kumar Singh</p>",
+      "option2": "<p>B.V.R. Subrahmanyam</p>",
+      "option3": "<p>Suman Kumar Bery</p>",
+      "option4": "<p>Narendra Modi</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is B.V.R. Subrahmanyam.</p><p><strong>Chief Financial Officer of RBI </strong><strong>Sudha Balakrishnan</strong></p><p><strong>Chairman of SBI </strong><strong>Dinesh Kumar Khara</strong></p><p><strong>Chief financial officer of SBI </strong><strong>Charanjit Singh Attra</strong></p><p><strong>CEO and Chairman of Railway Board </strong><strong>Ajay Kumar Lahoti</strong></p><p><strong>General Manager of Central Railway </strong><strong>Naresh Lalwani</strong></p><p><strong>UIDAI CEO </strong><strong>Amit Aggrawal</strong></p><p><strong>CEO of Sansad TV </strong><strong>Utpal Kumar Singh</strong></p><p><strong>NITI Aayog CEO </strong><strong>B.V.R. Subrahmanyam</strong></p><p><strong>Deputy Chairman of NITI Aayog </strong><strong>Suman Kumar Bery</strong></p><p><strong>Leader of the opposition in Lok Sabha </strong><strong>Adhir Ranjan Chowdhary </strong></p><p><strong>Leader of the house in Rajya Sabha </strong><strong>Piyush Goyal</strong></p><p><strong>Deputy leader of the House of Rajya Sabha </strong><strong>Dharmendra Pradhan</strong></p><p><strong>Chairman of PAC </strong><strong>Adhir Ranjan Chowdhary</strong></p><p><strong>Chairman of estimates committee </strong><strong>Girish Bapat</strong></p><p><strong>Chairman of the committee on Public Takings </strong><strong>Santosh Kumar Gangwar</strong></p><p><strong>President of India (15</strong><strong>th</strong><strong>) </strong><strong>Draupadi Murmu </strong></p><p><strong>Second woman and first tribal president </strong></p><p><strong>Opposition candidate was Yashwant Sinha (UPA)</strong></p><p><strong>Vice-president of India(14</strong><strong>th</strong><strong>) </strong><strong>Jagdeep Dhankar</strong></p><p><strong>Lok Sabha speaker (17</strong><strong>th</strong><strong>) </strong><strong>Om Birla</strong><strong> </strong><strong> </strong></p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p> Which of the following is correct regarding the respiration?</p><p> <br/> I. Regular traditional breathing exercise (pranayama) can increase the capacity of lungs to take in more air.<br/> II. During inhalation, ribs move up and outwards and diaphragm moves down.</p>",
+      "option1": "<p> Only I</p>",
+      "option2": "<p> Only II</p>",
+      "option3": "<p> Neither I nor II</p>",
+      "option4": "<p> Both I and II</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Both the statement I and II are correct. </p><p> Controlled breathing (pranayam) is a specific set of respiratory exercises within yoga that has been shown to improve the resting respiratory rate, vital capacity, maximum voluntary ventilation, breath-holding time, and maximal inspiratory and expiratory pressures. </p><p> <br/> <br/> </p><p> During inhalation, the ribs move up and outward and the diaphragm moves in. this movement decrease the space in our chest cavity and the air rushes in. During exhalation, the ribs moves down and inward and the diaphragm moves up.</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p> Which of the following has become the first state to establish a welfare fund for Mahatma Gandhi Rural Employment Guarantee Scheme (MNREGS) workers?</p>",
+      "option1": "<p> Tamil Nadu</p>",
+      "option2": "<p> Kerala</p>",
+      "option3": "<p> Himachal Pradesh</p>",
+      "option4": "<p> Uttarakhand</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Kerala. </p><p> Kerala became the first State to have a welfare fund for Mahatma Gandhi Rural Employment Guarantee Scheme (MGNREGS) workers. </p><p> How It will Be Done: </p><p> The <b>state government</b> and local bodies will give an equal contribution and ₹50 will be deducted from a worker’s salary every month for it.</p><p> Those who are between <b>18 and 55</b> can register for membership and they can submit their contribution every month or on yearly basis. People aged up to 75 are eligible for<b> employment under MGNREGS.</b></p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>Among six people P, Q, R, S, T and V each lives on a different floor of a six storey building having six floors numbered one to six (the ground floor is numbered 1, the floor above it, number 2 and so on and the topmost floor is numbered 6).</p><p>Who lives on the topmost floor?</p><p>(I) There is only one floor between the floors on which R and Q live. P lives on an even numbered floor.</p><p>(II) T does not live on an even numbered floor. Q lives on an even numbered floor. Q does not live on the topmost floor.</p><p>(III) S lives on an odd numbered floor. There are two floors between the floors on which S and P live. T lives on a floor immediately above R’s floor.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image002.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image003.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image004.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image005.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image006.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 103,
+      "question": "<p>Statement: J &lt; B &lt; V = H &gt; W ≥ X ≥ C</p><p>Conclusion:</p><p>I. V &gt; C</p><p>II. H &gt; J</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Given statement: J &lt; B &lt; V = H &gt; W ≥ X ≥ C</p><p>Conclusion:</p><p>I. V &gt; C (True) (as V = H &gt; W ≥ X ≥ C)</p><p>II. H &gt; J (True) (as J &lt; B &lt; V = H)</p><p>Hence, the correct answer is D.</p>"
+    },
+    {
+      "sr_no": 104,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>All except Whale lay eggs.</p>"
+    },
+    {
+      "sr_no": 105,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image007.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image011.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image009.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image010.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image007.png",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image013.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>72 × 4 ÷ 9 – 11 + 15</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image014.png"
+    },
+    {
+      "sr_no": 107,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image015.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image016.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image017.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image018.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image019.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image019.jpeg"
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image020.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image021.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image022.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image023.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image024.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image024.jpeg"
+    },
+    {
+      "sr_no": 109,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image025.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image026.png",
+      "option1": "",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image028.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image029.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image030.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image028.jpeg"
+    },
+    {
+      "sr_no": 111,
+      "question": "<p>M = 1, E = 2, R = 3, N = 4, B = 5, U = 6, S = 7</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The meaningful word is:</p><p>N U M B E R S : 4,6,1,5,2,3,7</p>"
+    },
+    {
+      "sr_no": 112,
+      "question": "<p>Statements:</p><p>Only a few Chocolates are Table</p><p>Only a few Tables are Plants</p><p>Only a few Plants are Fan</p><p>Conclusions:</p><p>I. Some fan is Chocolate is a possibility</p><p>II. All Fans are Tables</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image031.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image032.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image033.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image034.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image035.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image036.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image033.jpeg"
+    },
+    {
+      "sr_no": 114,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image037.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except [a], the first number is a multiple of the second.</p>"
+    },
+    {
+      "sr_no": 116,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image038.jpeg",
+      "option1": "",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image040.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image041.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image042.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image041.jpeg"
+    },
+    {
+      "sr_no": 117,
+      "question": "<p># : EHW :: PFM : %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image043.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "<p>_ T H P U Z _ _ P U Z T J _ _ Z T _ _ U</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Z T H P U/ Z T I P U/ Z T J P U/ Z T K P U.</p><p>Hence, B is correct answer.</p>"
+    },
+    {
+      "sr_no": 119,
+      "question": "<p>(NOTE): Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(7, 58 , 3)</p><p>(5, 29, 2)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image044.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>Q. Five people- M, N, O, P and Q live on five different floors of a building but not necessarily in the same order. The lowermost floor of the building is numbered one, the one above that is numbered two and so on till the topmost floor is numbered five. How many people live between M and Q?</p><p>Statements:</p><p>(I) M Lives on floor number three. Only one person lives between M and P. N lives on an odd numbered floor immediately above Q. </p><p>(II) O lives on an even numbered floor immediately below M. Only one person lives between O and Q. N lives on topmost floor.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image045.png"
+    },
+    {
+      "sr_no": 121,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image009.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image046.png"
+    },
+    {
+      "sr_no": 122,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image047.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image048.png"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>Statement:</p><p>The fare – paying capacity of people who travel on routes connecting to small towns is very low. Most successful airlines which operate in such regions have a large number of seats.</p><p>Inference:</p><p>I. People from cities are increasingly travelling to small towns.</p><p>II. Regional airlines have to change low fares in order to be profitable.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the given statement “The fare – paying capacity of people who travel on routes connecting to small towns is very low. Most successful airlines which operate in such regions have a large number of seats”.</p><p>From the given statement we can conclude only inference II, which is “Regional airlines have to change low fares in order to be profitable”.</p><p>Hence, only II follows.</p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image049.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image050.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image051.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image052.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image053.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 126,
+      "question": "<p>56 * 63 * 15 * 21 * 27 = 74</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image054.png"
+    },
+    {
+      "sr_no": 127,
+      "question": "<p>Statement: Many people have encroached into the government property and built their houses and business establishments.</p><p>Course of action:</p><p>I. The government should take immediate steps to remove all unauthorised constructions on government land.</p><p>II. All the encroachers should immediately be put behind bars and also be slapped with a hefty fine.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the given statement ‘Many people have encroached into the government property and built their houses and business establishments’. According to the given statement Only course of action I is suitable to follow because the government should check all unauthorised construction on government land. II course of action is too harsh to be suitable.</p><p>Hence, Only I course of action the given statement.</p>"
+    },
+    {
+      "sr_no": 128,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image055.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image056.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image057.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image058.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image059.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 129,
+      "question": "<p>0.5, 0.55, 0.65, 0.8, ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523862394_image060.png"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p>I. The university authority has decided to conduct all terminal examinations in March/April every year to enable them to declare results in time.</p><p>II. There has been considerable delay in declaring results in the past due to shortage of teachers evaluating the answer sheets of the examination conducted by the university.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Clearly, each statement is self-sufficient in itself and stands independent of the other. Thus, I and II are independent causes.</p><p>Hence, both I and II are effects of independent causes.</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 10</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

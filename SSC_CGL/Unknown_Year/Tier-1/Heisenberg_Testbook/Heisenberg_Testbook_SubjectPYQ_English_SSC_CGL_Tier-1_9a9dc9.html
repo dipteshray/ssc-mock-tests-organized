@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Average - 02</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">45:00:00</div>
+      <div class="hdr-testname">Average - 02</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Average - 02</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Average - 02</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Average - 02</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">45:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 1, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "The average of x occurring 5 times and y occurring 7 times is 37. Also, the average of x occurring 7 times and y occurring 5 times is 35. The value of y is:", "comp": "", "opts": ["30", "27", "42", "45"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Average of 5x + 7y = 37</p>\n\n<p><span style=\"\">Average of 7x + 5y = 35</span></p>\n\n<p><strong><span style=\"\">Concept used:</span></strong></p>\n\n<p><span style=\"\">Average = Sum of elements/No. of elements</span></p>\n\n<p><strong><span style=\"\">Calculation:</span></strong></p>\n\n<p>5x + 7y = 37&nbsp;&times; 12&nbsp; &nbsp; &nbsp; ----(1)</p>\n\n<p>7x + 5y = 35&nbsp;&times;&nbsp;12<span style=\"\">&nbsp; &nbsp; &nbsp; ----(2)</span></p>\n\n<p><span style=\"\">By subtracting eq (2) from eq (1)</span></p>\n\n<p><span style=\"\">2y - 2x = 12&nbsp;&times; 2</span></p>\n\n<p><span style=\"\">&rArr; y - x = 12</span></p>\n\n<p><span style=\"\">&rArr; 5y - 5x = 60&nbsp; &nbsp; &nbsp;----(3)</span></p>\n\n<p><span style=\"\">Adding eq (3) with eq (1)</span></p>\n\n<p><span style=\"\">So,</span></p>\n\n<p><span style=\"\">5x + 7y + 5y - 5x = 444 + 60</span></p>\n\n<p><span style=\"\">&rArr; 12y = 504</span></p>\n\n<p><span style=\"\">&rArr; y = 42</span></p>\n\n<p><strong><span style=\"\">&there4;&nbsp;The value of y is 42</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "Out of 6 numbers, the sum of the first 5 numbers is 7 times the 6<sup>th</sup> number. If their average is 136, then the 6<sup>th</sup> number is:", "comp": "", "opts": ["96", "102", "84", "116"], "cidx": 1, "sol": "<p>Let the sum of 6<sup>th</sup> number be x</p>\n\n<p>The sum of first 5 numbers = 7x</p>\n\n<p><span style=\"\">\u21d2\u00a0</span>(x + 7x)/6 = 136 \u21d2 8x = 136 \u00d7 6 \u21d2 x = 102</p>\n\u2234 The 6<sup>th</sup> number is 102.", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "The average of 20 numbers is 65, The average of the first 9 numbers is 68 and the average of next 8 numbers is 62. If the 18<sup>th</sup> number is 3 more than 19<sup>th</sup> number and 9 less than 20<sup>th</sup> number, then what is the average of 19<sup>th</sup> and 20<sup>th</sup> number?", "comp": "", "opts": ["65.5", "65", "64.5", "66"], "cidx": 1, "sol": "<p>Average of 20 numbers = 65</p>\n\n<p>Sum of all 18 numbers = 20 &times; 65 = 1300</p>\n\n<p>Average of first 9 numbers = 68</p>\n\n<p>Sum of first 9 numbers = 9 &times; 68 = 612</p>\n\n<p>Average of next 8 numbers = 62</p>\n\n<p>Sum of next 8 numbers = 8 &times; 62 = 496</p>\n\n<p>Let the 18<sup>th</sup> number be x</p>\n\n<p>&there4; 19<sup>th</sup> number will be = x - 3</p>\n\n<p>&there4; 20<sup>th</sup> number will be = x + 9</p>\n\n<p>Sum of 18<sup>th</sup>, 19<sup>th</sup> and 20<sup>th</sup> number = 1300 - 612 - 496 = 192</p>\n\n<p>According to the question</p>\n\n<p>&rArr; x + x - 3 + x + 9 = 192</p>\n\n<p>&rArr; 3x + 6 = 192</p>\n\n<p>&rArr; 3x = 192 - 6 = 186</p>\n\n<p>&rArr; x = 186/3 = 62</p>\n\n<p>&rArr; 18<sup>th</sup> number = 62</p>\n\n<p>&rArr; 19<sup>th</sup> number = x - 3 = 62 - 3 = 59</p>\n\n<p>20<sup>th</sup> number = x + 9 = 62 + 9 = 71</p>\nAverage of 19<sup>th</sup> and 20<sup>th</sup> number = (59 + 71)/2 = 130/2 = 65", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "The average weight of 10 persons is increased by 3.5 kg, when one of them whose weight is 45.5 kg is replaced by a new man. The weight (in kg) of the new man is ___.", "comp": "", "opts": ["75.5", "70.5", "80.5", "85.5"], "cidx": 2, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span>\n<p>In replacement cases, <strong>New weight</strong> = <strong>Old weight</strong> + (<strong>No. of persons</strong> \u00d7 <strong>Average Increase</strong>).</p>\n<p>Here, Old weight = 45.5 kg, No. of persons = 10, Average Increase = 3.5 kg.</p>\n<p>Weight of new man = 45.5 + (10 \u00d7 3.5)</p>\n<p>Weight of new man = 45.5 + 35 = 80.5 kg.</p>\n<p><strong>\u2234 The correct answer is 80.5 kg.</strong></p>\n\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Number of persons = 10</p>\n<p>Weight of replaced person = 45.5 kg</p>\n<p>Average weight increase = 3.5 kg</p>\n<div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_0e465d10.png/1784028763.png\" style=\"max-width: 100%; height: auto;\"></div>\n<p>Since the <strong>average weight</strong> of <strong>10 persons</strong> increases by <strong>3.5 kg</strong>, the <strong>total weight</strong> of the group must increase.</p>\n<p>\u21d2 Total increase in weight = Number of persons \u00d7 Increase in average</p>\n<p>\u21d2 Total increase = 10 \u00d7 3.5 = 35 kg</p>\n<p>The <strong>new man</strong> must weigh 35 kg more than the <strong>replaced person</strong> to cause this increase.</p>\n<p>\u21d2 Weight of new man = Weight of replaced person + Total increase</p>\n<p>\u21d2 Weight of new man = 45.5 + 35</p>\n<p>\u21d2 Weight of new man = 80.5 kg</p>\n<p><strong>\u2234 The correct answer is 80.5 kg.</strong></p>\n\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Average Formula</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Average = Total Sum of Observations \u00f7 Number of Observations.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Replacement Rule</p>\n<p style='margin:0 0 8px 0;color:#444444;'>If the <strong>average increases</strong> after replacement, the incoming person is heavier than the outgoing person. If it <strong>decreases</strong>, the incoming person is lighter.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Inclusion/Exclusion Effect</p>\n<p style='margin:0 0 8px 0;color:#444444;'>New Sum = (Old Average \u00d7 Old Count) \u2212 Outgoing Weight + Incoming Weight.</p>", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "The average weight of 18 boys in a class is 45 kg and that of the remaining 8 boys is 48.75 kg. Find the average weight (in kg) of all the boys in the class. (Correct to two decimal places)", "comp": "", "opts": ["47.5", "44.98", "46.15", "42"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Average of 18 boys,\u00a045 = sum of 18 boys/18\u00a0\u21d2 Sum of 18 boys = ( 45\u00a0\u00d7 18) = 810</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Average of remaining 8 Boys,\u00a048.75 = Sum/8\u00a0= 390.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Sum of all the boys =\u00a0(810 + 390) = 1,200 and number of\u00a0boys = (18 + 8) = 26. Hence, required average = 1200/26\u00a0= 46.15 kg.</p>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "The average monthly expenditure of a man is Rs.2400 during the first three month, Rs 3,500 during the next five months and Rs 4,800 for the remaining four months. If his total saving is Rs.3,500 during the entire year. then what is his average monthly income (in Rs)?", "comp": "", "opts": ["4,550", "4,100", "3,700", "3,950"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Average expenditure for first three months = Rs.2400</p>\n\n<p>Average&nbsp;expenditure for five&nbsp;months = Rs.3500</p>\n\n<p>Average&nbsp;expenditure for four&nbsp;months = Rs.4800</p>\n\n<p><strong>Formula:</strong></p>\n\n<p>Average = (Sum of terms)/Number of terms</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Total&nbsp;expenditure for first three months = 2400&nbsp;&times; 3 = Rs.7200</p>\n\n<p>Total&nbsp;expenditure for five&nbsp;months = 3500 &times; 5 = Rs.17500</p>\n\n<p>Total&nbsp;expenditure for four&nbsp;months = 4800 &times; 4 = Rs.19200</p>\n\n<p>Total expenditure in a year = 7200 + 17500 + 19200 = Rs.43900</p>\n\n<p>Total income in a year = 439000 + 3500 = Rs.47400</p>\n\n<p><strong>&there4; Average monthly income = 47400/12 = Rs.3950</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span>To ease the calculation, let the average expenditure per month be Rs. 3500.</p>\n\n<p>Deflection in the expenditure for first 3 months</p>\n\n<p>&rArr; (2400 - 3500)&nbsp;&times; 3 = -3300</p>\n\n<p>Deflection in the expenditure for the next 5 months be zero.</p>\n\n<p>Deflection in the expenditure for the last four months.</p>\n\n<p>&rArr; (4800 - 3500)&nbsp;&times; 4 = 5200</p>\n\n<p>The total deflection = 5200 - 3300 = 1900</p>\n\n<p>Correct expenditure for 12 months = 3500&nbsp;&times; 12 + 1900</p>\n\n<p>Total income for 12 months = 42000 + 1900 + 3500(savings)</p>\n\n<p>&rArr; 47400</p>\n\n<p>The average salary = 47400/12 = Rs. 3950</p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "The average weight of a class of 30 students is 45 kg. One of the students whose weight is 48.5 kg is replaced by another student and the average weight was increased by 200 g. Find the weight of the new student.", "comp": "", "opts": ["54.5 kg", "50 kg", "55 kg", "51 kg"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">(45\u00a0\u00d7 30 - 48.5 + x)/30 = 45 + (1/5) \u21d2 1350 - 48.5 + x = (226/5)\u00a0\u00d7 30 \u21d2 1301.5 + x = 226\u00a0\u00d7\u00a06 \u21d2 x = 1356 - 1301.5 = 54.5 kg</p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "The average of eighteen numbers is 42. The average of the last ten numbers is 40 and that of the first five numbers is 44. The seventh number is 6 less than the sixth and 7 less that the eight number. The average of the sixth and the eight number is:", "comp": "", "opts": ["45", "48", "47.5", "46.5"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Average of 18 numbers = 42</p>\n\n<p>Average of last 10 = 40</p>\n\n<p>Average of first 5 = 44</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Average = Sum of elements/Number of elements</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Total of 18 numbers = 18 &times; 42 = 756</p>\n\n<p>Total of last 10 numbers = 40 &times; 10 = 400</p>\n\n<p>Total of first 5 numbers = 44 &times; 5 = 220</p>\n\n<p>Total of 6th, 7th and 8th = 756 &ndash; 400 &ndash; 220 = 136</p>\n\n<p>Let 7<sup>th</sup> number be x</p>\n\n<p>So, 6<sup>th</sup> number be x + 6</p>\n\n<p>8<sup>th</sup> number be x + 7</p>\n\n<p>According to the question,</p>\n\n<p>&rArr; x + x + 6 + x + 7 = 136</p>\n\n<p>&rArr; 3x = 123</p>\n\n<p>&rArr; x = 41</p>\n\n<p>6<sup>th</sup> number = 47</p>\n\n<p>8<sup>th</sup> number = 48</p>\n\n<p>Average = (47 + 48)/2 = 47.5</p>\n\n<p><strong>&there4; The required answer is 47.5 &nbsp;</strong></p>\n", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "The average score of a cricketer for 20 matches is 52 runs. His highest score is more than its lowest score by 120 runs. If these two innings are excluded, the average of the remaining 18 matches is 50 runs. The highest score of the player is:", "comp": "", "opts": ["130", "125", "120", "140"], "cidx": 0, "sol": "<p><strong>Given :</strong></p>\n\n<p>The average score of a cricketer for 20 matches is 52 runs. His highest score is more than its lowest score by 120 runs.</p>\n\n<p>If highest and lowest score are excluded than average will be 50.&nbsp;</p>\n\n<p><strong>Concept used :</strong></p>\n\n<p>Average = Sum of all observations/Number of observations</p>\n\n<p><strong>calculations :</strong></p>\n\n<p>Total score of 20 matches = 20&nbsp;&times;&nbsp;52&nbsp;</p>\n\n<p>&rArr; 1040 runs&nbsp;</p>\n\n<p>Total score of 18 matches = 18&nbsp;&times; 50</p>\n\n<p>&rArr; 900 runs&nbsp;</p>\n\n<p>Highest score + lowest score&nbsp;= 1040 - 900&nbsp;</p>\n\n<p>&rArr; 140&nbsp;</p>\n\n<p>Lowest score = 140 - highest score&nbsp;</p>\n\n<p>According to the question&nbsp;</p>\n\n<p>Highest score - lowest score = 120&nbsp;</p>\n\n<p>Highest score - (140 - highest score) = 120&nbsp;</p>\n\n<p>&rArr; 2(Highest score) = 260</p>\n\n<p>&rArr; Highest score = 260/2&nbsp;</p>\n\n<p>&rArr; 130 runs&nbsp;</p>\n\n<p><strong>&there4; His highest score will be 130 runs.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "The average weight of each box in a consignment of 20 boxes of mangoes and 15 boxes of apples is 30 kg. If the average weight of a box of mangoes is 35 kg, then what is the average weight of a box of apples?", "comp": "", "opts": ["<span class=\"math-tex\">\\({{70} \\over 3} \\)</span>&nbsp;kg", "<span class=\"math-tex\">\\({{75} \\over 2} \\)</span>&nbsp;kg", "<span class=\"math-tex\">\\({{70} \\over 5} \\)</span>&nbsp;kg", "<span class=\"math-tex\">\\({{26} \\over 5} \\)</span>&nbsp;kg"], "cidx": 0, "sol": "<span style=\"color: rgb(33, 37, 41);\">The average of Mangoes is increasing by 5 from the common average, i</span><span style=\"color: rgb(33, 37, 41);\">t means that the average of Apple is 5 less than the common average.\u00a0</span><span style=\"color: rgb(33, 37, 41);\">So we can say that a</span>verage weight of the apple box\u00a0<br />\n<br />\n\u21d2 30(avg) - (5(diff)\u00a0\u00d7 20 (box of mango))/15(box of apples) \u21d230 - (100/15) =70/3", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "In a team of seven members, the average age of six of the members is 42 years while the age of the seventh member of the team is 36 years more than the average age of all the seven members taken together. Find the age (in years) of the seventh member of the team.", "comp": "", "opts": ["90", "84", "80", "78"], "cidx": 1, "sol": "<p>6 \u00d7 42 + (x + 36) = 7x,</p>\n\n<p>252 + x + 36 = 7x, 288 = 6x, x = 48,</p>\n\n<p>Age of seventh member = 48 + 36\u00a0= 84</p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "A batsman in his 13<sup>th</sup> inning makes a score of 97 runs, thereby increasing his average score by 5. What is his average score after the 13<sup>th</sup> inning?", "comp": "", "opts": ["77", "67", "37", "57"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p><span style=\"\">A batsman in his 13</span><span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em; font-size:10.5px;\">th</span><span style=\"\">&nbsp;inning makes a score of 97 runs, thereby increasing his average score by 5.&nbsp;</span></p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Old average&nbsp;&times;&nbsp;old number + something = New average&nbsp;&times; new number</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let his old average (i.e. average till 12th innings)&nbsp;be &#39;x&#39;&nbsp;&rArr; New average is &#39;x + 5&#39; [\u2235 Average increased by 5]</p>\n\n<p>&there4; x&nbsp;&times; 12 + 97 = (x + 5)&nbsp;&times; 13</p>\n\n<p>&rArr; 12x + 97 = 13x + 65</p>\n\n<p>&rArr; x = 32</p>\n\n<p>&there4; New Average = x + 5 = 32 + 5 = 37</p>\n", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "The average of 9 consecutive odd numbers is 27. If the previous and next odd numbers to these 9 odd numbers are also included, then what will be the new average?", "comp": "", "opts": ["<span style=\"\">32</span>", "<span style=\"\">28</span>", "<span style=\"\">29</span>", "<span style=\"\">27</span>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">The 9 consecutive odd numbers are,\u00a0<span style=\"color: rgb(33, 37, 41);\">19, 21, 23, 25, 27, 29, 31, 33, 35</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">So, the odd number before 19\u00a0is 17,\u00a0and the next odd number after 35 is 37, \u21d2 average of (17 + 37)/2 = 27</p>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "The average temperature of a city for the first sixteen days of January is 22&ordm;C, and the average temperature for the last sixteen days of the same month is 26&ordm;C. If the average temperature for the entire month is 24&ordm;C, what is the temperature on the sixteenth day?", "comp": "", "opts": ["24&ordm;C", "25&ordm;C", "23&ordm;C", "22&ordm;C"], "cidx": 0, "sol": "<p>Total (1st 16 days) = 22 \u00d7 16 = 352\u00baC</p>\n\n<p>Total (last 16 days) = 26 \u00d7 16 = 416\u00baC</p>\n\n<p>Total (31 days) = 24 \u00d7 31 = 744\u00baC</p>\n\n<p>For 16th day temp (T):</p>\n\n<p>352 + 416 - T = 744,</p>\n\n<p>T = 768 - 744,</p>\n\n<p><strong>T = 24\u00baC</strong></p>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "There are 3 students in a group. If the weight of any student is added to the average weight of the other two the sums received are 48 kg, 52 kg, and 59 kg. The average weight (in kg) of the three students is:", "comp": "", "opts": ["27", "26.5", "27.5", "28"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>The weight of any student is added to the average weight of the other two the sums received are 48 kg, 52 kg, and 59 kg.</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Average&nbsp;= Sum of all the values/Total number value</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let the weight (in kg) of the three students is x, y and z</p>\n\n<p>According to the question:</p>\n\n<p>[x + (y + z)/2] = 48</p>\n\n<p>&rArr; (2x + y + z) = 96&nbsp; &nbsp; &nbsp; ----(1)</p>\n\n<p>Again,</p>\n\n<p>[y&nbsp;+ (x&nbsp;+ z)/2] = 52</p>\n\n<p>&rArr; (2y&nbsp;+ x&nbsp;+ z) = 104&nbsp; &nbsp; &nbsp; ----(2)</p>\n\n<p>Now,&nbsp;</p>\n\n<p>[z&nbsp;+ (x + y)/2] = 59</p>\n\n<p>&rArr; (2z&nbsp;+ x&nbsp;+ y) = 118&nbsp; &nbsp; &nbsp; ----(3)</p>\n\n<p>Multiply by 2 in equation (1);</p>\n\n<p>&rArr;&nbsp;(2x + y + z) &times; 2&nbsp;= 96&nbsp;&times; 2</p>\n\n<p>&rArr;&nbsp;(4x + 2y + 2z)&nbsp;= 192&nbsp; &nbsp; ----(4)</p>\n\n<p>Now, Subtracting from equation(4) to equation(2):</p>\n\n<p>[(4x + 2y + 2z) &ndash;&nbsp;(2y&nbsp;+ x&nbsp;+ z)] = (192&nbsp;&ndash;&nbsp;104)</p>\n\n<p>&rArr; [(4x + 2y + 2z&nbsp;&ndash; 2y&nbsp;&ndash; x&nbsp;&ndash; z)] = 88</p>\n\n<p>&rArr; (3x + z) = 88&nbsp; &nbsp; &nbsp; ----(a)</p>\n\n<p>Multiply by 2 in equation (3):</p>\n\n<p>&rArr;&nbsp;(2z&nbsp;+ x&nbsp;+ y)&nbsp;&times; 2 = 118&nbsp;&times; 2</p>\n\n<p>&rArr; 4z + 2x + 2y = 236&nbsp; &nbsp; &nbsp; ----(5)</p>\n\n<p>Now, Subtracting from equation(5) to equation(2):</p>\n\n<p>[(4z + 2x + 2y)&nbsp;&ndash;&nbsp;(2y&nbsp;+ x&nbsp;+ z)] = 236&nbsp;&ndash; 104</p>\n\n<p>&rArr; x + 3z = 132&nbsp; &nbsp; &nbsp; ----(b)</p>\n\n<p>Multiply by 3&nbsp;in equation (a):</p>\n\n<p>&rArr; (3x + z)&nbsp;&times; 3&nbsp;= 88&nbsp;&times; 3</p>\n\n<p>&rArr; (9x + 3z)&nbsp;= 264&nbsp; &nbsp; &nbsp; ----(c)</p>\n\n<p>Now, Subtracting from equation(c) to equation(b)</p>\n\n<p>&rArr; [(9x + 3z) &ndash; (x + 3z)] = 264&nbsp;&ndash; 132 = 132</p>\n\n<p>&rArr; [9x + 3z&nbsp;&ndash; x &ndash; 3z] = 132</p>\n\n<p>&rArr; 8x&nbsp;= 132</p>\n\n<p>&rArr; x = 132/8 = 16.5</p>\n\n<p>From equation (b):</p>\n\n<p>&rArr; (3x + z) = 88</p>\n\n<p>&rArr; (3&nbsp;&times; 16.5 + z) = 88</p>\n\n<p>&rArr; 49.5 + z = 88</p>\n\n<p>&rArr; z = 88&nbsp;&ndash; 49.5 = 38.5</p>\n\n<p>Putting the value of x and z in equation(1):</p>\n\n<p>(2&nbsp;&times; 16.5 + y + 38.5) = 96</p>\n\n<p>&rArr; 33 + y + 38.5 = 96</p>\n\n<p>&rArr; y = (96&nbsp;&ndash; 71.5) = 24.5</p>\n\n<p>Average = (x + y + z)/3</p>\n\n<p>&rArr; (16.5 + 24.5 + 38.5)/3</p>\n\n<p>&rArr; 79.5/3 = 26.5</p>\n\n<p><strong>&there4;&nbsp;The average weight (in kg) of the three students is 26.5.</strong></p>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></strong></p>\n\n<p><span style=\"font-weight: 700;\">Given:</span></p>\n\n<p>The weight of any student is added to the average weight of the other two the sums received are 48 kg, 52 kg, and 59 kg.</p>\n\n<p><span style=\"font-weight: 700;\">Formula used:</span></p>\n\n<p>Average&nbsp;= Sum of all the values/Total number value</p>\n\n<p><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p>Let the weight (in kg) of the three students is x, y and z</p>\n\n<p>According to the question:</p>\n\n<p>[x + (y + z)/2] = 48</p>\n\n<p>&rArr; (2x + y + z) = 96&nbsp; &nbsp; &nbsp; ----(1)</p>\n\n<p>Again,</p>\n\n<p>[y&nbsp;+ (x&nbsp;+ z)/2] = 52</p>\n\n<p>&rArr; (2y&nbsp;+ x&nbsp;+ z) = 104&nbsp; &nbsp; &nbsp; ----(2)</p>\n\n<p>Now,&nbsp;</p>\n\n<p>[z&nbsp;+ (x + y)/2] = 59</p>\n\n<p>&rArr; (2z&nbsp;+ x&nbsp;+ y) = 118&nbsp; &nbsp; &nbsp; ----(3)</p>\n\n<p>Adding equation(1),equation(2) and equation(3);</p>\n\n<p>&rArr; (2x + y + z) +&nbsp;(2y&nbsp;+ x&nbsp;+ z) +&nbsp;(2z&nbsp;+ x&nbsp;+ y) = (96 + 104 + 118)</p>\n\n<p>&rArr; (4x + 4y + 4z) = 318</p>\n\n<p>&rArr; 4(x + y + z) = 318</p>\n\n<p>&rArr;&nbsp;(x +&nbsp;y +&nbsp;z) = 318/4 = 159/2</p>\n\n<p>Now, Average = (x + y + z)/3</p>\n\n<p>&rArr; [159/(2&nbsp;&times; 3)]</p>\n\n<p>&rArr; 159/6 = 26.5</p>\n\n<p><span style=\"font-weight: 700;\">&there4;&nbsp;The average weight (in kg) of the three students is 26.5.</span></p>\n", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "The average of some numbers is 54.6. If 75% of the numbers are increased by 5.6 each, and the rest are decreased by 8.4 each, then what is the average of the numbers so obtained?", "comp": "", "opts": ["56.3", "55.8", "56.7", "55.6"], "cidx": 2, "sol": "<p>\u00a0</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let us assume there\u00a0are 4 numbers, each value of 54.6</p>\n\n<p>Average of 4 numbers = 54.6</p>\n\n<p>Sum of 4 numbers = 54.6 \u00d7 4 = 218.4</p>\n\n<p>According to the question,</p>\n\n<p>75% of the numbers of total numbers increased\u00a0by 5.6 each</p>\n\n<p>\u21d2\u00a03/4\u00a0\u00d7 4 =\u00a03(54.6 + 5.6)</p>\n\n<p>25% of the numbers of total numbers decreased\u00a0by 8.4\u00a0each</p>\n\n<p>\u21d2 1/4\u00a0\u00d7 4 = 1 (54.6 \u2013 8.4)\u00a0</p>\n\n<p>New average of 4 numbers = 3 (54.6 + 5.6) + 1 (54.6 \u2013 8.4) = 3 \u00d7 60.2 + 46.2 = 180.6 + 46.2 = 226.8</p>\n\n<p>New average of 4 numbers = 226.8/4 \u21d2\u00a056.7</p>\n\n<p><strong>\u2234 The average of the numbers so obtained is 56.7</strong></p>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "A library has an average of 330 visitors on Sundays and 240 on the other days. Find the average of the number of visitors per day in a month of 30 days, beginning with a Saturday.", "comp": "", "opts": ["260", "255", "270", "265"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Starting with Saturday as the first day, number of Sundays in the month is\u00a05.\u00a0So, Number of visitors on Sundays in the month\u00a0\u21d2\u00a0330\u00a0\u00d7 5 = 1650 and</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of visitors on the other days = 25\u00a0\u00d7 240 = 6000.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total visitors in the month\u00a0\u21d2\u00a06000 + 1650 = 7650.\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Then, Average visitors per day =\u00a0<span class=\"math-tex\">\\(\\frac{7650}{30}=255\\)</span></p>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "Rajender is working as a delivery boy in a multinational company. The company is paying him \u20b990 per delivery. In a fortnight comprising 15 consecutive working days, his average earnings per day was \u20b9540. If his average earnings of the first 7 days was \u20b9519 per day and that of the last 7 days was \u20b9546 per day, then what was his earning on the 8th day of the fortnight?", "comp": "", "opts": ["\u20b9571", "\u20b9681", "\u20b9661", "\u20b9645"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Payment per delivery: \u20b990</p>\n\n<p>Average daily earnings for 15 days: \u20b9540</p>\n\n<p>Average earnings for the first 7 days: \u20b9519</p>\n\n<p>Average earnings for the last 7 days: \u20b9546</p>\n\n<p>Total working days: 15.</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Average = sum of observation/total number of observation.</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>Total earnings for 15 days &rArr; \u20b9540 &times; 15 = \u20b98100.</p>\n\n<p>Total earnings for the first 7 days &rArr; \u20b9519 &times; 7 = \u20b93633.</p>\n\n<p>Total earnings for the last 7 days &rArr; \u20b9546 &times; 7 = \u20b93822.</p>\n\n<p>Adding earnings of the first 7 days and last 7 days &rArr; \u20b93633 + \u20b93822 = \u20b97455.</p>\n\n<p>Subtracting this total from the overall total earnings for 15 days to find the 8th day&#39;s earnings: \u20b98100 - \u20b97455 = \u20b9645.</p>\n\n<p><strong>Hence, Rajender&#39;s earning on the 8th day of the fortnight was \u20b9645.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "Three years ago, the average age of a husband, wife, and child was 26 years, and that of the wife and the child, 5 years ago, was 20 years. The present age of the husband is:", "comp": "", "opts": ["39 years", "42&nbsp;years", "37&nbsp;years", "45&nbsp;years"], "cidx": 2, "sol": "<p>\u00a0</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Three years ago, sum of age of husband, wife and child = 3\u00a0\u00d7 26 = 78 years</p>\n\n<p>Present sum of age of husband, wife and child = 78 + 9 = 87 years</p>\n\n<p>Five years ago, sum of age of wife and child = 2\u00a0\u00d7 20 = 40 years</p>\n\n<p>Present sum of age of wife and child = 40 + 10 = 50</p>\n\n<p>\u2234\u00a0Present age of husband = 87 - 50 = 37 years</p>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "The average of 52, 71, 43, 22, a, and b is 55 and the average of 42, 45, 49, 51, 42, c, and d is 53. What is the average of a, b, c, and d?", "comp": "", "opts": ["142", "54.7", "54", "71"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(51, 51, 51); white-space-collapse: preserve;\">Here, (52 + 71 + 43 + 22 + a + b)/6 = 55</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(51, 51, 51); white-space-collapse: preserve;\">\u21d2 188 + a + b = 6 \u00d7 55 = 330</span>\u00a0<span style=\"white-space-collapse: preserve;\">\u21d2 </span>a + b = 142</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Also, (42 + 45 + 49 + 51 + 42 + c + d)/7 = 53</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"white-space-collapse: preserve;\">\u21d2 </span>229 + c + d = 7 \u00d7 53 = 371\u00a0\u21d2 c + d = 142</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The average of a, b, c, and d = (142 + 142)/4 = 71</p>\n", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "The average weight of Rohan and his three friends is 62 kg. If Rohan&rsquo;s weight is 8 kg more than the average weight of his three friends, what is Rohan&rsquo;s weight (in kg)?&nbsp;", "comp": "", "opts": ["60", "65", "68", "72"], "cidx": 2, "sol": "<p>Total weight of Rohan and his three friends = 4 \u00d7 62 =\u00a0248 kg</p>\n\n<p>Weight of Rohan's three friends = 3x,\u00a0Weight of Rohan = x + 8</p>\n\n<p>Total weight = 3x + (x + 8)\u00a0\u21d2 4x + 8 = 248\u00a0\u21d2 4x = 248 - 8\u00a0\u21d2 4x = 240\u00a0\u21d2 x = 60</p>\n\n<p>Rohan's weight = x + 8\u00a0\u21d2 60 + 8 = 68 kg</p>\n", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "The average score in an English exam of a class of 45 students in a coaching centre is 52. A group of 6 boys having an average score of 40 leave the class and another group of eight boys having an average score of 43 join the class. What is the new average score of the class?", "comp": "", "opts": ["48", "53", "49.5", "52"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>The total number of students in the coaching centre is 45</p>\n\n<p>The average score of 45 students is 52.</p>\n\n<p>The number of students leaving the coaching centre is 6.</p>\n\n<p>The average of students leaving class is&nbsp;40.</p>\n\n<p>The number of students joining the coaching centre is 8</p>\n\n<p>The <span style=\"\">average score of</span> 8 boys joining the class is&nbsp; 43.</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Average = Sum of all the scores of the students / No. of students</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Sum of the scores of all the 45 students = Average&nbsp;&times; No. of students = 52&nbsp;<span style=\"\">&times;</span>&nbsp;45 = 2340</p>\n\n<p>A group of 6 boys leaving the class, average score is 40</p>\n\n<p>Sum of the scores of 6 boys = Average&nbsp;<span style=\"\">&times; No. of students = 40&nbsp;&times; 6 = 240</span></p>\n\n<p><span style=\"\">Sum of the scores of 8 boys joining the class = Average&nbsp;&times; No. of students = 43&nbsp;&times; 8 = 344</span></p>\n\n<p><span style=\"\">Average score of the class =&nbsp;<span class=\"math-tex\">\\(\\frac{[Sum \\ of\\ the\\ scores\\ of\\ all \\ the\\ 45\\ students \\ -\\ Sum\\ of\\ the \\ scores \\ of \\ 6\\ boys\\ leaving \\ the \\ class \\ +\\ Sum\\ of \\ the\\ scores\\ of\\ 8\\ boys \\ joining \\ the\\ class] }{[Total \\ number \\ of \\ students\\ \\ - \\ No.\\ of \\ students\\ leaving\\ +\\ No.\\ of\\ students\\ joining\\ the \\ class]}\\)</span></span></p>\n\n<p>Average score of the class =&nbsp;<span class=\"math-tex\">\\(\\frac{[2340 - 240 + 344]}{[45 - 6 + 8]}\\)</span></p>\n\n<p>Average score of the class =&nbsp;<span class=\"math-tex\">\\(\\frac{2444 }{ 47}\\)</span> = 52</p>\n\n<p>Hence, the average score of the class is 52.</p>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "Rakesh runs a coaching institute having 50 faculty members. The average monthly salary of 35 faculty members is Rs. 37,500. What will be the average monthly salary (in Rs.&nbsp;) of the other 15 faculty members, if the average monthly salary of all the 50 faculty members is found to be \u20b9Rs.&nbsp;30,000?&nbsp;&nbsp;", "comp": "", "opts": ["13,000&nbsp;", "13,500&nbsp;", "12,500&nbsp;", "12,000"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total salary of 50 members\u00a0\u21d2 Rs. 30,000 \u00d7 50 = Rs. 1,500,000</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total salary of 35 members \u21d2 Rs. 37,500 \u00d7 35 = Rs. 1,312,500</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total salary of 15 members \u21d2 Rs. 1,500,000 - Rs. 1,312,500 = Rs. 187,500</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Average salary of 15 members \u21d2 Rs. 187,500 / 15 = Rs. 12,500</p>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "The average weight of a group of 3 people A, B and C is 70 kg. When D joins this group, the average becomes 60 kg. E&#39;s weight is 5 kg more than that of D, replaces A and the average weight of B, C, D, and E now becomes 59 kg. What is the average weight (in kg) of A, D and E? (Correct to the nearest integer)", "comp": "", "opts": ["40", "35", "39", "30"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>Average weight of A, B and C = 70 kg</p>\n\n<p>Average weight of A, B, C and D = 60 kg</p>\n\n<p>Weight of E = Weight of D + 5 kg</p>\n\n<p>Average Weight of B, C, D and E = 59 kg</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>Average = (Sum of Values)/(Total Number)&nbsp;</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Sum of weight of A, B and C = 3&nbsp;&times;&nbsp;70 kg = 210 kg</p>\n\n<p>Sum of weight of A, B, C and D = 4&nbsp;&times; 60 kg = 240 kg</p>\n\n<p>Weight of D = (Sum of weight of A, B, C and D) &ndash; (Sum of weight of A, B,&nbsp;and C)</p>\n\n<p>&rArr; Weight of D =&nbsp; (240 &ndash;&nbsp;210) = 30 kg</p>\n\n<p>Weight of E = 30 kg + 5 kg = 35 kg</p>\n\n<p>Sum of weight of B, C, D and E = 4&nbsp;&times; 59 kg = 236 kg</p>\n\n<p>Weight of A = (Sum of weight of A, B, C and D&nbsp;+ Weight of E) &ndash;&nbsp;(Sum of weight of B, C, D and E)</p>\n\n<p>&rArr; Weight of A = 240 kg + 35 kg &ndash;&nbsp;236 kg = 39 kg</p>\n\n<p>Average weight of A, D and E = (Sum of weight of A, D and E)/3 = (39 kg + 30 kg + 35 kg)/3</p>\n\n<p>&rArr; Average weight of A, D and E = (104 kg)/3 = 34.66 kg&nbsp;&asymp; 35 kg</p>\n\n<p><strong>&there4; Average weight of A, D and E is 35 kg.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "What is the product of the average of first ten positive odd numbers and the average of first fifteen positive even numbers?", "comp": "", "opts": ["160", "150", "85.25", "44"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>In an arithmetic progression,</p>\n\n<p>N<sup>th</sup>&nbsp;term = First term + (N - 1)&nbsp;&times; Common difference</p>\n\n<p><span style=\"\">In an arithmetic progression,</span></p>\n\n<p><span style=\"\">Average of a series = (First term + Last term)&nbsp;&divide; 2</span></p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>The first positive odd number = 1</p>\n\n<p>Here, considering the first ten positive odd numbers as an arithmetic progression where 1 is the first term and the common difference is 2.</p>\n\n<p>So, the tenth positive odd number = 1 +&nbsp;(10 - 1)&nbsp;&times; 2 = 19</p>\n\n<p>Now, the average of the first ten positive odd numbers = (19 + 1)&nbsp;&divide; 2 = 10</p>\n\n<p style=\"\">The first positive even number = 2</p>\n\n<p style=\"\"><span style=\"\">Here, considering the first fifteen even numbers as an arithmetic progression where 2&nbsp;is the first term and the common difference is 2.</span></p>\n\n<p style=\"\">So, the fifteenth&nbsp;positive even number = 2&nbsp;+&nbsp;(15&nbsp;- 1)&nbsp;&times; 2 = 30</p>\n\n<p style=\"\">Then, the average of the <span style=\"\">fifteen</span>&nbsp;positive even numbers = (30&nbsp;+ 2)&nbsp;&divide; 2 = 16</p>\n\n<p style=\"\">Now,</p>\n\n<p style=\"\">The product of their average&nbsp;= 10&nbsp;&times; 16&nbsp;= 160</p>\n\n<p style=\"\"><strong>&there4; The&nbsp;<span style=\"\">product of the average of the first ten positive odd numbers and the average of the first fifteen positive even numbers is 160.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "The average weight of 15 athletes and three trainers is 60 kg. When four more athletes of average weight 63 kg are included in the group, what is the average weight (in kg, rounded off to the nearest integer) of the group?", "comp": "", "opts": ["61", "62", "59", "60"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">Sum of\u00a0weights of 18 people = 60\u00a0\u00d7 18 = 1080 kg</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Average of 4 more athletes = 63 and sum of their weights = 63\u00a0\u00d7 4 = 252</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total weight of 19 athletes and 3 trainers = 1080 + 252 = 1332 Kg.\u00a0New average =\u00a0<span class=\"math-tex\">\\(\\frac{1332}{22}\\)</span>\u00a0= 60.54kg\u00a0\u2248\u00a061 kg</p>\n", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "The average of the squares of the first 46 natural numbers is", "comp": "", "opts": ["729.5", "728.5", "727.5", "730.5"], "cidx": 1, "sol": "<p>Average of squares of first 46 natural numbers = (46(46+1)</p>\n\n<p>(2\u00d746+1))/(6\u00d746)</p>\n\n<p>= (46 \u00d7 47 \u00d7 93) / (6 \u00d7 46)</p>\n\n<p>= 4371 / 6 =<strong> 728.5.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "The average of the weights of boys in a class is 69.3 kg and that of girls in the same class is 59.4 kg. If the average of the weight of all the boys and girls in the class is 63.8 kg, then the percentage of the number of girls in the class is:", "comp": "", "opts": ["<span class=\"math-tex\">\\(44 \\dfrac{5}{9}\\%\\)</span>", "<span class=\"math-tex\">\\(45 \\dfrac{5}{9}\\%\\)</span>", "<span class=\"math-tex\">\\(55 \\dfrac{5}{9}\\%\\)</span>", "<span class=\"math-tex\">\\(54 \\dfrac{5}{9}\\%\\)</span>"], "cidx": 2, "sol": "<p><strong>Given: </strong></p>\n\n<p>The average weight of boys = 69.3 kg</p>\n\n<p>The average weight of girls = 59.4 kg</p>\n\n<p>The average weight of the whole class = 63.8 kg</p>\n\n<p><strong>Formula used: </strong></p>\n\n<p>g/b&nbsp;= (P<span style=\"font-size: 10.5px;\">b</span>&nbsp;&ndash; P<span style=\"font-size: 10.5px;\">w</span>)/(P<span style=\"font-size: 10.5px;\">w</span>&nbsp;&ndash; P<span style=\"font-size: 10.5px;\">b</span>)</p>\n\n<p>where, g/b&nbsp;is the ratio of the number of girls to the number of boys</p>\n\n<p>P<span style=\"font-size: 10.5px;\">b</span>, P<span style=\"font-size: 10.5px;\">g</span>&nbsp;and P<span style=\"font-size: 10.5px;\">w</span>&nbsp;are the average weight of the boys, average weight of girls and average weight of whole class&nbsp;respectively</p>\n\n<p><strong>Calculation: </strong></p>\n\n<p>According to the question,</p>\n\n<p>g/b&nbsp;= (69.3&nbsp;&ndash; 63.8)/(63.8&nbsp;&ndash; 59.4)</p>\n\n<p>&rArr; g/b&nbsp;= 5.5/4.4</p>\n\n<p>&rArr; g/b = 5/4&nbsp;&nbsp;</p>\n\n<p>&rArr;&nbsp; Percentage of girls = 5/9 &times; 100&nbsp;</p>\n\n<p>&rArr; Percentage of girls =&nbsp;<span class=\"math-tex\">\\(55 \\dfrac{5}{9}\\%\\)</span></p>\n\n<p><strong>&there4; The percentage of girls is</strong>&nbsp;<span class=\"math-tex\">\\(55 \\dfrac{5}{9}\\%\\)</span></p>\n\n<p><strong><img height=\"46px\" src=\"//cdn.testbook.com/images/production/quesImages/quesImage37.png\" width=\"240px\" />&nbsp;</strong></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/03/123w.PNG\" style=\"width: 305px; height: 205px;\" /></p>\n\n<p>&rArr; Ratio of boys and girls = 4.4/5.5</p>\n\n<p>&rArr; Ratio of boys and girls = 4/5</p>\n\n<p>&rArr; Percentage of girls = 5/9 &times; 100 = <span class=\"math-tex\">\\(55 \\dfrac{5}{9}\\%\\)</span></p>\n\n<p><span style=\"font-weight: 700;\">&there4; The percentage of girls is&nbsp;<span class=\"math-tex\">\\(55 \\dfrac{5}{9}\\%\\)</span></span></p>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "In a class of 45 students, there are 20 girls who scored an average of 42 marks in a test of 50 marks. If the class average is 36, what are the average marks of the boys?", "comp": "", "opts": ["32.50", "32.10", "30.80", "31.20"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Average of class = 36 = (42 \u00d7 20 + 25 \u00d7 a)/45 \u21d21620 \u2013 840 = 25a \u21d2 a = 780/25 = 31.20</p>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "The average of 31 numbers is 78. The average of the first 12 numbers is 75, and the average of the last 14 numbers is 80.5. What is the average of the remaining numbers?", "comp": "", "opts": ["80.4", "78.2", "79.5", "79.2"], "cidx": 1, "sol": "<p style=\"\"><span style=\"font-weight: 700;\">Formula:</span></p>\n\n<p style=\"\">Average = Sum of elements&nbsp;&divide; Total number of elements</p>\n\n<p style=\"\"><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p style=\"\">Sum of elements = 31 &times; 78 = 2418</p>\n\n<p style=\"\">Sum of 1<sup>st</sup> 12 number = 12&nbsp;&times; 75 = 900</p>\n\n<p style=\"\"><span style=\"\">Sum of last 14&nbsp;number = 14&nbsp;&times; 80.5 = 1127</span></p>\n\n<p style=\"\"><span style=\"\">Sum of remaining elements = 2418 - (900 + 1127) = 391</span></p>\n\n<p style=\"\"><span style=\"\">Total remaining elements = 31 - (12 + 14) = 5</span></p>\n\n<p style=\"\"><span style=\"\">Average of remaining elements =&nbsp;<span class=\"math-tex\">\\( 391\\over5\\)</span>&nbsp;= 78.2</span></p>\n\n<p style=\"\"><span style=\"\">&there4; <strong>The average of remaining numbers is 78.2.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "A library has an average of 265 visitors on Sundays and 130 visitors on other days. The average number of visitors per day in a month of 30 days beginning with a Monday is:", "comp": "", "opts": ["135", "165", "148", "129"], "cidx": 2, "sol": "<p>\u00a0</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Average = (M<sub>1</sub> \u00d7 N<sub>1</sub> + M<sub>2</sub> \u00d7 N<sub>2</sub>)/(M<sub>1</sub> + M<sub>2</sub>)</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Since the month begins with a Monday, so\u00a0there will be four Sundays in the month.</p>\n\n<p>M<sub>1</sub> = Number of Sunday</p>\n\n<p>M<sub>1</sub> = 4</p>\n\n<p>M<sub>2</sub> = Remaining days</p>\n\n<p>M<sub>2</sub> = 26</p>\n\n<p>N<sub>1</sub> = Average visitors on Sundays</p>\n\n<p>N<sub>1</sub> = 265</p>\n\n<p>N<sub>2</sub> = Average visitors on Sundays</p>\n\n<p>N<sub>2</sub> = 130</p>\n\n<p>Required average,\u00a0\u00a0\u00a0\u00a0\u00a0</p>\n\n<p>\u21d2 (265 x 4 + 130 x 26)/30</p>\n\n<p>\u21d2 4440/30</p>\n\n<p>\u21d2 148</p>\n\n<p><strong>\u2234 The average number of visitors per day 148</strong></p>\n", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "The average of 16 numbers is 48. The average of the first 7 numbers is 45 and the average of the next 6 numbers is 52. If the 14<sup>th</sup> number is 11 less than the 15<sup>th</sup> number and is 5 more than the 16<sup>th</sup> number, then the average of the 15<sup>th</sup> and 16<sup>th </sup>number is\u2236", "comp": "", "opts": ["47.5", "48.5", "49", "48"], "cidx": 3, "sol": "<p>The sum of 16 numbers = 48 &times; 16 = 768</p>\n\n<p>The sum of first 7 numbers = 45 &times; 7 = 315</p>\n\n<p>The sum of next 6 numbers = 52 &times; 6 = 312</p>\n\n<p>The sum of the last 3 numbers = 768 - 315 - 312 = 141</p>\n\n<p>Let the 16<sup>th</sup> number be x.</p>\n\n<p>14<sup>th</sup> number = x + 5</p>\n\n<p>14<sup>th</sup> number = 15<sup>th</sup> number - 11</p>\n\n<p>&rArr; x + 5 = 15<sup>th</sup> number - 11</p>\n\n<p>&rArr; 15<sup>th</sup> number = x + 16</p>\n\n<p>The sum of the last 3 numbers = 141</p>\n\n<p>&rArr; x + x + 5 + x + 16 = 141</p>\n\n<p>&rArr; x = 40</p>\n\n<p>15<sup>th</sup> number = 40 + 16 = 56</p>\n\n<p>The average of the 15<sup>th</sup> and 16<sup>th </sup>number = (56 + 40)/2 = 48</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span>&nbsp;Deflection of the first seven numbers from average = 7&nbsp;&times; (45 - 48) = -21</p>\n\n<p>Deflection of the next 6 numbers from average = (52 - 48)&nbsp;&times; 6 = +24</p>\n\n<p>Total deflection of 24 - 21 = 3</p>\n\n<p>Deflection of the last three numbers from the average = -3</p>\n\n<p>The sum of last three numbers should = 48&nbsp;&times; 3 - 3 = 141</p>\n\n<p>&rArr;&nbsp;x + x + 5 + x + 16 = 141</p>\n\n<p style=\"\">&rArr; x = 40</p>\n\n<p style=\"\">15<span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">th</span>&nbsp;number = 40 + 16 = 56</p>\n\n<p style=\"\">The average of the 15<span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">th</span>&nbsp;and 16<span style=\" line-height: 0; position: relative; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">th&nbsp;</span>number = (56 + 40)/2 = 48</p>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "The average weight of 3 persons A, B and C is 60 kg. When D joins the group, the average weight becomes 65 kg. When another person E whose weight is 3 kg less than that of D replaces A, the average weight of B, C, D and E becomes 67 kg. What is the weight of A?", "comp": "", "opts": ["60 kg", "72 kg", "65 kg", "69 kg"], "cidx": 3, "sol": "<p style=\"\"><span style=\"font-weight: 700;\">Given:</span></p>\n\n<p style=\"\"><span style=\"\">The average weight of 3 persons A, B, and C is 60 kg. </span></p>\n\n<p style=\"\"><span style=\"\">When D joins the group, the average weight becomes 65 kg. </span></p>\n\n<p style=\"\"><span style=\"\">E whose weight is 3 kg less than that of D replaces A, the average weight of B, C, D, and E becomes 67 kg.</span></p>\n\n<p style=\"\"><span style=\"font-weight: 700;\">Concept used:</span></p>\n\n<p style=\"\">Total = Average&nbsp;&times;&nbsp;Number of entities</p>\n\n<p style=\"\"><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p style=\"\">So, the weight of D&nbsp; = (65 &times; 4) - (60&nbsp;&times; 3) = 80kg</p>\n\n<p style=\"\">Then, the weight of E = 80 - 3 = 77kg</p>\n\n<p style=\"\"><span style=\"\">According to the question,</span></p>\n\n<p style=\"\"><span style=\"\">77 + (60 &times; 3 - A) + 80 = 67&nbsp;&times; 4</span></p>\n\n<p style=\"\"><span style=\"\">&rArr; A = 69</span></p>\n\n<p style=\"\"><strong><span style=\"\">&there4; The weight of A&nbsp; is 69kg.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "The average of A, B and C is 18 and that of C, D and E is 12 and that of E and F is 6.5 and that of E and C is 3.5. What is the average of A, B, C, D, E and F?", "comp": "", "opts": ["24", "16", "18", "22"], "cidx": 1, "sol": "<p><strong>Given&nbsp;</strong></p>\n\n<p>The average of A, B and C = 18 years&nbsp;</p>\n\n<p>The average of C, D and E = 12 years&nbsp;</p>\n\n<p><strong>Formula Used&nbsp;</strong></p>\n\n<p>Average = (sum of observation)/(No. of observation)</p>\n\n<p><strong>Calculation&nbsp;</strong></p>\n\n<p>&rArr;&nbsp;Total age of A, B and C = 18&nbsp;&times; 3 = 54&nbsp; -----(i)</p>\n\n<p>&rArr; Total age of C, D and E = 12&nbsp;&times; 3 = 36&nbsp; ------(ii)</p>\n\n<p>&rArr; E + F = 13 ---(iii)</p>\n\n<p>&rArr; E + C = 7 ----(iv)</p>\n\n<p>&rArr; from iii and iv&nbsp;</p>\n\n<p>&rArr; F - C = 6 -----(v)&nbsp;</p>\n\n<p>&rArr;Adding (i), (ii) and (v)&nbsp;</p>\n\n<p>&rArr; A + B + C + C + D + E + F - C = 54 + 36 + 6&nbsp;</p>\n\n<p>&rArr; A + B + C + D + E + F = 96&nbsp;</p>\n\n<p>&rArr; the average = 96/6 = 16&nbsp;</p>\n\n<p>&there4; the average of A, B, C, D, E and F is 16 years&nbsp;</p>\n\n<p>&nbsp;</p>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "<span style=\"\">The ratio of the number of boys to that of girls in a class is 4&nbsp;\u2236 5. The average score in mathematics of all the boys and girls is 70. If the average score of the girls is 30% more than that of the boys, then what is the average score of the boys?</span>", "comp": "", "opts": ["54", "64", "68", "60"], "cidx": 3, "sol": "<p><strong>Given data:&nbsp;</strong></p>\n\n<p>Boys : Girls = 4 : 5</p>\n\n<p>Average score of boys and girls = 70</p>\n\n<p>Average score of girls = 30% more than boys</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>Let the average score of boys be &quot;a&quot;</p>\n\n<p>&rArr; average score of girls = 1.3a</p>\n\n<p>Let the number of boys and girls be 4 and 5 respectively.</p>\n\n<p>Average score of boys and girls =&nbsp;<span class=\"math-tex\">\\(4a + (1.3a \u00d7 5) \\over 4+5\\)</span></p>\n\n<p>According to the question, average = 70</p>\n\n<p>&there4;&nbsp;<span class=\"math-tex\">\\(4a + (1.3a \u00d7 5) \\over 4+5\\)</span>&nbsp;= 70</p>\n\n<p>&rArr; 4a + 6.5a = 70&nbsp;&times; 9</p>\n\n<p>&rArr; 10.5a = 630</p>\n\n<p>&rArr; a =&nbsp;<span class=\"math-tex\">\\(630\\over 10.5\\)</span>&nbsp;= 60</p>\n\n<p>&there4; <strong>The average score of the boys is 60.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "The average of twelve numbers is 39. The average of the last five numbers is 35, and that of the first four numbers is 40. The fifth number is 6 less than the sixth number and 5 more than the seventh number. The average of the fifth and sixth numbers is:", "comp": "", "opts": ["44", "47", "50", "39"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>The average of twelve numbers = 39.</p>\n\n<p>The average of the last five numbers = 35,</p>\n\n<p>The average of the first four numbers = 40.</p>\n\n<p>The fifth number is 6 less than the sixth number and 5 more than the seventh number.&nbsp;</p>\n\n<p><strong>Concept Used:</strong></p>\n\n<p>Sum = Average&nbsp;&times; total number</p>\n\n<p><strong>Solution:</strong></p>\n\n<p>The Sum of the twelve numbers = 12&nbsp;&times; 39 = 468</p>\n\n<p>The sum of the last&nbsp;five number = 5&nbsp;&times; 35 = 175</p>\n\n<p>The sum of the first four number = 4&nbsp;&times; 40 = 160</p>\n\n<p>The sum of the fifth, sixth and seventh number = (468 &ndash;&nbsp;175 &ndash;&nbsp;160) = 133</p>\n\n<p>Let, the fifth&nbsp;number is x</p>\n\n<p>Then, the sixth&nbsp;number is (x +&nbsp;6) and the seventh number is (x &ndash;&nbsp;5)</p>\n\n<p>x + (x + 6) + (x &ndash;&nbsp;5) = 133</p>\n\n<p>&rArr; 3x + 1 = 133</p>\n\n<p>&rArr; 3x = 132</p>\n\n<p>&rArr; x = 44</p>\n\n<p>The fifth number is 44 and the sixth number is (44 + 6) = 50</p>\n\n<p>Average of fifth and sixth number is (44 + 50)/2 = 47</p>\n\n<p><strong>&there4; The average of fifth and sixth number is 47</strong></p>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "The average age of Abhay, his wife and their child 6 years ago was 42 years and that of his wife and their child 8 years ago was 30 years, Find the present age of Abhay.", "comp": "", "opts": ["<span style=\"\">68 years</span>", "<span style=\"\">63 years</span>", "<span style=\"\">64 years</span>", "<span style=\"\">66 years</span>"], "cidx": 0, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span>\n<p>Present average of <strong>Abhay, wife, and child</strong> = 42 + 6 = 48 years</p>\n<p>Total present age of the three = 48 \u00d7 3 = 144 years</p>\n<p>Present average of <strong>wife and child</strong> = 30 + 8 = 38 years</p>\n<p>Total present age of wife and child = 38 \u00d7 2 = 76 years</p>\n<p>Present age of <strong>Abhay</strong> = 144 \u2212 76 = 68 years</p>\n<p><strong>\u2234 The correct answer is 68 years.</strong></p>\n\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Average age of <strong>Abhay (A), Wife (W), and Child (C)</strong> 6 years ago = 42 years</p>\n<p>Average age of <strong>Wife (W) and Child (C)</strong> 8 years ago = 30 years</p>\n<p><strong>Formula Used:</strong></p>\n<p>Sum of ages = Average age \u00d7 Number of persons</p>\n<div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_92e00765.png/1784028521.png\" style=\"max-width: 100%; height: auto;\"></div>\n<p><strong>Calculations:</strong></p>\n<p>\u21d2 Sum of ages of A, W, and C (6 years ago) = 42 \u00d7 3 = 126 years</p>\n<p>\u21d2 Total <strong>present age</strong> of A, W, and C = 126 + (3 \u00d7 6) = 144 years</p>\n<p>\u21d2 Sum of ages of W and C (8 years ago) = 30 \u00d7 2 = 60 years</p>\n<p>\u21d2 Total <strong>present age</strong> of W and C = 60 + (2 \u00d7 8) = 76 years</p>\n<p>\u21d2 Present age of Abhay = (A + W + C)<sub>present</sub> \u2212 (W + C)<sub>present</sub></p>\n<p>\u21d2 Present age of Abhay = 144 \u2212 76 = 68 years</p>\n<p><strong>\u2234 The correct answer is 68 years.</strong></p>\n\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Average Age Property</p>\n<p style='margin:0 0 8px 0;color:#444444;'>If the average age of 'n' persons is 'X' years, then 'k' years ago, their average age was (X \u2212 k) years, and 'k' years later, it will be (X + k) years.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Total Age Calculation</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Total Age = Average Age \u00d7 Number of Persons. This formula is fundamental for solving any problem involving group averages and individual age changes.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Age Gap Consistency</p>\n<p style='margin:0 0 8px 0;color:#444444;'>The difference between the ages of two people remains constant regardless of the number of years that pass or have passed.</p>", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "The average of the first four numbers is three times the fifth number. If the average of all the five numbers is 85.8, then the fifth number is;", "comp": "", "opts": ["39", "34", "33", "29"], "cidx": 2, "sol": "<p>Let the fifth number be x, then</p>\n\n<p>Average of first four number\u00a0= 3x</p>\n\n<p><span style=\"\">\u21d2\u00a0</span>4 \u00d7 3x + x = 85.8 \u00d7 5 \u21d2 12x + x = 429</p>\n\u2234 x = 33", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "The average age of 7 members of a family is 35 years. If the youngest members are twins and they are 15 years old, then what was the average age (in years) of the family members at the time of the birth of the twins?", "comp": "", "opts": ["25", "28", "30", "27"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p><span style=\"\">The average age of 7 members of family is 35 years</span></p>\n\n<p><span style=\"\">youngest members are twins and they are 15 years old</span></p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Sum = average&nbsp;&times;&nbsp;number</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Total&nbsp;<span style=\"\">age of 7 members of&nbsp;family is 35 years = 35&nbsp;&times; 7 = 245 years</span></p>\n\n<p><span style=\"\">At the time of birth of twins, total age of family of 5 members = 245 - 15&nbsp;&times; 7 = 140</span></p>\n\n<p><span style=\"\">&there4; At the time of birth of twins, Average&nbsp;age of family of 5 members&nbsp; =140/5 = 28 years</span></p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "The average of 8 consecutive even numbers written in ascending order is 17. What is the average of the last three numbers, 36 and 53?", "comp": "", "opts": ["31", "29.8", "31.6", "32.2"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>The average of 8 consecutive even numbers in ascending order = 17</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Sum of the observations/Number of observations</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let the 8 consecutive even numbers be (2a&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>6), (2a&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>4), (2a&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>2), 2a, (2a +2), (2a + 4), (2a + 6) and (2a + 8)</p>\n\n<p>Sum of 8 consecutive even numbers =&nbsp;(2a&nbsp;<span style=\"background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; line-height: 16.1px;\">&ndash;&nbsp;</span>6) +&nbsp;(2a&nbsp;<span style=\"background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; line-height: 16.1px;\">&ndash;&nbsp;</span>4) +&nbsp;(2a&nbsp;<span style=\"background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial; line-height: 16.1px;\">&ndash;&nbsp;</span>2) +&nbsp;2a, (2a +2) +&nbsp;(2a + 4) +&nbsp;(2a + 6) +&nbsp;(2a + 8)</p>\n\n<p>&rArr; 16a + (-12 +20)</p>\n\n<p>&rArr; 16a + 8</p>\n\n<p>Average sum of 8 consecutive even numbers = (16a + 8)/8 = 17</p>\n\n<p>&rArr; 8(2a + 1)/8 = 17</p>\n\n<p>&rArr; 2a + 1 = 17</p>\n\n<p>&rArr; 2a = (17&nbsp;<span style=\" line-height: 115%;  background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;\">&ndash;&nbsp;</span>1)</p>\n\n<p>&rArr; 2a = 16</p>\n\n<p>Now, putting the value in last three three numbers</p>\n\n<p>&rArr; (2a + 4) = (16 + 4) = 20</p>\n\n<p>&rArr; (2a + 6) = (16 + 6) = 22</p>\n\n<p>&rArr; (2a + 8) = (16 + 8) = 24</p>\n\n<p>Again,</p>\n\n<p>Sum of last three numbers,&nbsp;36 and&nbsp;53 = (20 + 22 + 24 + 36 + 53)</p>\n\n<p>&rArr; 155</p>\n\n<p>Average of sum of last three numbers,&nbsp;36 and 53 = (155/5)</p>\n\n<p>&rArr; 31</p>\n\n<p><strong>&there4; The average of the last three numbers, 36 and 53 is 31</strong></p>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></strong></p>\n\n<p><strong>Concept Used:</strong></p>\n\n<p>Average consecutive even,</p>\n\n<p>If the number of terms is&nbsp;Odd then,</p>\n\n<p>Average will be the middle&nbsp;term of it.</p>\n\n<p>If the number of terms is Even then,&nbsp;</p>\n\n<p>Average will be the average of the middle pair.</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>According to the question,&nbsp;</p>\n\n<p>There are&nbsp;<span style=\"\">8 consecutive even numbers, which have 17 as average.&nbsp;</span></p>\n\n<p><span style=\"\">Hence the average of the middle pair is 17,&nbsp;</span></p>\n\n<p><span style=\"\">Sum of middle pair = 17&nbsp;&times; 2 = 34</span></p>\n\n<p><span style=\"\">Now the pair will be,&nbsp;</span></p>\n\n<p><span style=\"\">16 + 18 = 34 (consecutive pair)</span></p>\n\n<p><span style=\"\">As there are 8 numbers and we have middle pair,&nbsp;</span></p>\n\n<p><span style=\"\">Then all 8 numbers will be,&nbsp;</span></p>\n\n<p><span style=\"\">10, 12, 14, 16, 18, 20, 22, 24,&nbsp;</span></p>\n\n<p><span style=\"\">Average of last 3 and 36 &amp; 53</span></p>\n\n<p><span style=\"\">&rArr;&nbsp;(20 + 22 + 24 + 36 + 53)/5&nbsp;= 155/5 = 31&nbsp;</span></p>\n\n<p><span style=\"font-weight: 700; \">&there4; The average of the last three numbers, 36 and 53 is 31</span></p>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "What is the ratio of the average of first eight prime numbers to the average of first ten even natural numbers.", "comp": "", "opts": ["7 : 8", "1 : 7", "8 : 70", "7 : 80"], "cidx": 0, "sol": "<p><strong>Formula:</strong></p>\n\n<p>Average = (sum of terms)/(Number of terms)</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>First 8 prime numbers = 2, 3, 5, 7,11, 13, 17, 19</p>\n\n<p>First 10&nbsp;even natural numbers = 2, 4, 6, 8, 10, 12,&nbsp;14,16,18, 20</p>\n\n<p>Average of first 8 prime numbers = (2 + 3 + 5 + 7 + 11 + 13 + 17 + 19)/8 = 77/8</p>\n\n<p>Average of first 10&nbsp;even natural numbers = (2&nbsp;+ 4&nbsp;+ 6&nbsp;+ 8&nbsp;+ 10&nbsp;+ 12&nbsp;+ 14&nbsp;+ 16&nbsp;+ 18&nbsp;+ 20)/10&nbsp;= 110/10 = 11</p>\n\n<p>Required ratio = (77/8) : 11&nbsp;= 7 : 8</p>\n\n<p><strong>&there4;&nbsp;the ratio of the average of first eight prime numbers to the average of first ten even natural numbers is 7 : 8.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "The average of twelve numbers is 42. The average of the last five numbers is 40, and that of the first four numbers is 44. The sixth number is 6 less than the fifth number and 5 less than the seventh number. The average of the sixth and seventh numbers is:", "comp": "", "opts": ["43.5", "45.5", "44.5", "41.5"], "cidx": 3, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span>\n<p>Net deviation of first 4 numbers = 4 \u00d7 (44 \u2212 42) = +8</p>\n<p>Net deviation of last 5 numbers = 5 \u00d7 (40 \u2212 42) = \u221210</p>\n<p>Sum of 5th, 6th, and 7th numbers = (3 \u00d7 42) \u2212 (8 \u2212 10) = 126 + 2 = 128</p>\n<p>Let 6th number be x, then (x + 6) + x + (x + 5) = 128 \u21d2 3x = 117 \u21d2 x = 39</p>\n<p>Average of 6th (39) and 7th (44) = (39 + 44) \u00f7 2 = 41.5</p>\n<p><strong>\u2234 The correct option is D.</strong></p><p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Average of 12 numbers = 42</p>\n<p>Average of first 4 numbers = 44</p>\n<p>Average of last 5 numbers = 40</p>\n<p>6th number is 6 less than 5th and 5 less than 7th.</p>\n<p><strong>Formula Used:</strong></p>\n<p>Sum = Average \u00d7 Number of observations</p>\n<svg width='420' height='200' viewBox='0 0 420 200' xmlns='http://www.w3.org/2000/svg' style='display:block;margin:12px 0;background:#ffffff;border-radius:10px;border:1px solid #cccccc;'>\n  <rect x='20' y='70' width='120' height='60' fill='#ddeeff' stroke='#2255cc' stroke-width='2' />\n  <rect x='140' y='70' width='100' height='60' fill='#fff0cc' stroke='#cc5500' stroke-width='2' />\n  <rect x='240' y='70' width='160' height='60' fill='#ddeeff' stroke='#2255cc' stroke-width='2' />\n  <text x='80' y='105' text-anchor='middle' fill='#222222' font-family='sans-serif' font-size='13'>First 4 (Avg 44)</text>\n  <text x='190' y='105' text-anchor='middle' fill='#222222' font-family='sans-serif' font-size='13'>5, 6, 7 (Avg ?)</text>\n  <text x='320' y='105' text-anchor='middle' fill='#222222' font-family='sans-serif' font-size='13'>Last 5 (Avg 40)</text>\n  <text x='210' y='45' text-anchor='middle' fill='#2255cc' font-family='sans-serif' font-size='15' font-weight='bold'>Total of 12 Numbers (Avg 42)</text>\n  <line x1='20' y1='150' x2='400' y2='150' stroke='#888888' stroke-dasharray='5,3' stroke-width='1' />\n  <text x='210' y='175' text-anchor='middle' fill='#cc5500' font-family='sans-serif' font-size='13' font-weight='bold'>Remaining Sum (5th+6th+7th) = 128</text>\n</svg>\n<p><strong>Calculations:</strong></p>\n<p>\u21d2 Total sum of 12 numbers = 12 \u00d7 42 = 504</p>\n<p>\u21d2 Sum of first 4 numbers = 4 \u00d7 44 = 176</p>\n<p>\u21d2 Sum of last 5 numbers = 5 \u00d7 40 = 200</p>\n<p>\u21d2 Sum of 5th, 6th, and 7th numbers = 504 \u2212 (176 + 200) = 504 \u2212 376 = 128</p>\n<p>\u21d2 Let 6th number = x</p>\n<p>\u21d2 5th number = x + 6</p>\n<p>\u21d2 7th number = x + 5</p>\n<p>\u21d2 (x + 6) + x + (x + 5) = 128</p>\n<p>\u21d2 3x + 11 = 128 \u21d2 3x = 117 \u21d2 x = 39</p>\n<p>\u21d2 6th number = 39, 7th number = 39 + 5 = 44</p>\n<p>\u21d2 Average of 6th and 7th numbers = (39 + 44) \u00f7 2 = 83 \u00f7 2 = 41.5</p>\n<p><strong>\u2234 The correct option is D.</strong></p><p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Average Concept</p>\n<p style='margin:0 0 8px 0;color:#444444;'>Average = (Sum of all observations) \u00f7 (Total number of observations). It represents the central value of a data set.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Deviation Method</p>\n<p style='margin:0 0 8px 0;color:#444444;'>The sum of deviations of all observations from the actual mean is always zero. This property helps in finding missing values quickly.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Weighted Average</p>\n<p style='margin:0 0 8px 0;color:#444444;'>When two or more groups are combined, the new average A = (n<sub>1</sub>a<sub>1</sub> + n<sub>2</sub>a<sub>2</sub>) \u00f7 (n<sub>1</sub> + n<sub>2</sub>), where n is the count and a is the individual group average.</p>", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "In a class, there are 54 students. <span class=\"math-tex\">\\(33\\frac{1}{3}\\%\\)</span>&nbsp;of the number of students are boys and rest are girls. The average score in mathematic of boys in 50% more than that of the girls. If the average score of all the students is 70, then what is the average score of the boys?", "comp": "", "opts": ["81", "84", "87", "90"], "cidx": 3, "sol": "<p><strong>Given:-</strong></p>\n\n<p>A class of 54 students</p>\n\n<p>Average of mathematic score of boys = 50% more than of girls</p>\n\n<p><strong>Formula used:-</strong></p>\n\n<p>Average = (Sum of values)/No. of values</p>\n\n<p><strong>Calculation:-</strong></p>\n\n<p>Total number of students = 54</p>\n\n<p><span class=\"math-tex\">\\(33\\frac{1}{3}\\%\\)</span>&nbsp;= (100/3)% = 1/3</p>\n\n<p>Number of boys = 54 &times; 1/3 = 18</p>\n\n<p>Number of girls = 54 &ndash; 18 = 36</p>\n\n<p>Average score of girls = 2x</p>\n\n<p>Average score of boys = 2x &times; (3/2) = 3x</p>\n\n<p>According to the question,</p>\n\n<p>18 &times; 3x + 36 &times; 2x = 54 &times; 70</p>\n\n<p>54x + 72x = 3780</p>\n\n<p>126x = 3780</p>\n\n<p>x = 3780/126 = 30</p>\n\n<p>Average score of boys = 30 &times; 3 = 90</p>\n", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "A company employed 700 men and 300 women and the average wage was Rs. 450 per day. If a man got Rs. 50 more than a woman, then the daily wage of the women is:", "comp": "", "opts": ["Rs. 350", "Rs. 375", "Rs. 415", "Rs. 435"], "cidx": 2, "sol": "<span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>Total employees = 700 + 300 = 1000</p>\n<p>Total Wage = 1000 \u00d7 450 = Rs. 4,50,000</p>\n<p>Extra amount given to 700 men = 700 \u00d7 50 = Rs. 35,000</p>\n<p>Total wage if all were women = 4,50,000 \u2212 35,000 = Rs. 4,15,000</p>\n<p>Daily wage of a woman = 4,15,000 \u00f7 1000 = Rs. 415</p>\n<p><strong>\u2234 The correct option is C.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Number of men (n<sub>1</sub>) = 700</p>\n<p>Number of women (n<sub>2</sub>) = 300</p>\n<p>Average wage of all employees = Rs. 450</p>\n<p>Man wage \u2212 Woman wage = Rs. 50</p>\n<p><strong>Formula Used:</strong></p>\n<p>Combined Average = (n<sub>1</sub> \u00d7 x<sub>1</sub> + n<sub>2</sub> \u00d7 x<sub>2</sub>) \u00f7 (n<sub>1</sub> + n<sub>2</sub>)</p>\n\n<svg width=\"420\" height=\"200\" viewBox=\"0 0 420 200\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display:block;margin:12px 0;background:#ffffff;border-radius:10px;border:1px solid #cccccc;\">\n  <rect x=\"50\" y=\"60\" width=\"210\" height=\"60\" fill=\"#ddeeff\" stroke=\"#2255cc\" stroke-width=\"2\" />\n  <rect x=\"260\" y=\"80\" width=\"90\" height=\"40\" fill=\"#fff0cc\" stroke=\"#cc5500\" stroke-width=\"2\" />\n  <text x=\"120\" y=\"95\" fill=\"#222222\" font-size=\"13\" font-weight=\"bold\">700 Men</text>\n  <text x=\"275\" y=\"105\" fill=\"#222222\" font-size=\"13\" font-weight=\"bold\">300 Women</text>\n  <text x=\"125\" y=\"50\" fill=\"#2255cc\" font-size=\"12\">Wage: (x + 50)</text>\n  <text x=\"275\" y=\"70\" fill=\"#cc5500\" font-size=\"12\">Wage: x</text>\n  <line x1=\"50\" y1=\"150\" x2=\"350\" y2=\"150\" stroke=\"#888888\" stroke-dasharray=\"5,3\" />\n  <text x=\"160\" y=\"175\" fill=\"#222222\" font-size=\"14\" font-weight=\"bold\">Combined Avg = Rs. 450</text>\n</svg>\n\n<p>Let the daily wage of a woman be Rs. x.</p>\n<p>Daily wage of a man = Rs. (x + 50)</p>\n<p>\u21d2 Total employees = 700 + 300 = 1000</p>\n<p>\u21d2 Total daily wage = 1000 \u00d7 450 = 4,50,000</p>\n<p>\u21d2 700 \u00d7 (x + 50) + 300 \u00d7 x = 4,50,000</p>\n<p>\u21d2 700x + 35,000 + 300x = 4,50,000</p>\n<p>\u21d2 1000x + 35,000 = 4,50,000</p>\n<p>\u21d2 1000x = 4,50,000 \u2212 35,000</p>\n<p>\u21d2 1000x = 4,15,000</p>\n<p>\u21d2 x = 4,15,000 \u00f7 1000</p>\n<p>\u21d2 x = 415</p>\n<p><strong>\u2234 The correct option is C.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Combined Average Formula</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">When two groups with averages A<sub>1</sub> and A<sub>2</sub> are mixed, the combined average is (n<sub>1</sub>A<sub>1</sub> + n<sub>2</sub>A<sub>2</sub>) \u00f7 (n<sub>1</sub> + n<sub>2</sub>).</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Weighted Average via Deviation</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">If the average is A, the sum of deviations of all observations from A is always zero.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Alligation Method</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The ratio of the quantities is inversely proportional to the differences between their individual values and the mean value: n<sub>1</sub>/n<sub>2</sub> = (Mean \u2212 A<sub>2</sub>) / (A<sub>1</sub> \u2212 Mean).</p>", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "The average of all prime numbers between 32 and 69 is:", "comp": "", "opts": ["52.5", "60", "51", "56.5"], "cidx": 2, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span>\n<p>List all prime numbers between 32 and 69: 37, 41, 43, 47, 53, 59, 61, 67.</p>\n<p>Total count of prime numbers (n) = 8.</p>\n<p>Sum using pairing: (37+67) + (41+61) + (43+59) + (47+53) = 104 + 102 + 102 + 100 = 408.</p>\n<p>Average = Total Sum \u00f7 Count = 408 \u00f7 8 = 51.</p>\n<p><strong>\u2234 The correct answer is 51.</strong></p>\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong> Prime numbers between 32 and 69.</p>\n<p><strong>Formula:</strong> Average = (Sum of all observations) \u00f7 (Total number of observations)</p>\n<img src=\"https://cdn.testbook.com/temp_1aabdd6f01eb49a1a1ff6cf887521660.png/1780114800.png\" style=\"max-width: 450px;\" />\n<p>\u21d2 Prime numbers between 32 and 69 are: 37, 41, 43, 47, 53, 59, 61, 67</p>\n<p>\u21d2 Sum of primes = 37 + 41 + 43 + 47 + 53 + 59 + 61 + 67</p>\n<p>\u21d2 Sum = 408</p>\n<p>\u21d2 Total count of prime numbers = 8</p>\n<p>\u21d2 Average = 408 \u00f7 8</p>\n<p>\u21d2 Average = 51</p>\n<p><strong>\u2234 The correct answer is 51.</strong></p>\n<p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Prime Numbers</p>\n<p style='margin:0 0 8px 0;color:#444444;'>A prime number is a natural number greater than 1 that has exactly two divisors: 1 and itself. The only even prime number is 2.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Arithmetic Mean</p>\n<p style='margin:0 0 8px 0;color:#444444;'>For any set of numbers, Average = (\u03a3x) \u00f7 n, where \u03a3x is the sum of terms and n is the total number of terms.</p>\n<p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Checking for Primes</p>\n<p style='margin:0 0 8px 0;color:#444444;'>To verify if a number N is prime, check its divisibility by prime numbers up to \u221aN. If none divide N, then N is prime.</p>", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "The average of twelve numbers is 45.5. The average of the first four numbers is 41.5 and that of the next five numbers is 48. The 10<sup>th</sup> number is 4 more than the 11<sup>th</sup> number and 9 more than the 12<sup>th</sup> number. What is the average of the 10<sup>th</sup> and 12<sup>th</sup> numbers?", "comp": "", "opts": ["47", "46.5", "46", "47.8"], "cidx": 1, "sol": "<p>Average of 12 numbers in = 45.5</p>\n\n<p>Sum of 12 numbers = 45.5 \u00d7 12 = 546</p>\n\n<p>Average of first 4 numbers = 41.5</p>\n\n<p>Sum of first 4 numbers = 41.5 \u00d7 4 = 166</p>\n\n<p>Average of next 5 numbers = 48</p>\n\n<p>Sum of next 5 numbers = 48 \u00d7 5 = 240</p>\n\n<p>Sum of 10<sup>th</sup>, 11<sup>th</sup> and 12<sup>th</sup> number = 546 \u2013 166 \u2013 240 = 140</p>\n\n<p>Let the 10<sup>th</sup> number be x</p>\n\n<p>11<sup>th</sup> number = x \u2013 4</p>\n\n<p>12<sup>th</sup> number = x \u2013 9</p>\n\n<p>According to the question</p>\n\n<p>x + x \u2013 4 + x \u2013 9 = 140</p>\n\n<p>\u21d2 3x \u2013 13 = 140</p>\n\n<p>\u21d2 3x = 140 + 13</p>\n\n<p>\u21d2 3x = 153</p>\n\n<p>\u2234 x = 153/3 = 51</p>\nAverage of 10<sup>th</sup> and 12<sup>th</sup> number = (51 + 51 \u2013 9)/2 = 93/2 = 46.5", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "The average monthly salary of workers in a factory is Rs. 6,000. The average monthly salary of 100 technicians is Rs. 12,000, and the average monthly salary of non-technicians is Rs. 4,000. Find the total number of workers in the factory", "comp": "", "opts": ["400", "300", "250", "450"], "cidx": 0, "sol": "<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">By Alligation and mixture method</p>\n\n<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">\u00a012000\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 4000</p>\n\n<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a06000</p>\n\n<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">2000\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 :\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 6000</p>\n\n<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">1\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 :\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 3</p>\n\n<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">Total part = 4\u00a0</p>\n\n<p style=\"color: rgb(30, 43, 51);   user-select: text !important; pointer-events: initial !important;\">1 unit = 100 \u21d2 4 unit = 4\u00a0\u00d7 100</p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "The average of eleven numbers is 56. The average of first three numbers is 52 and that of next five numbers is 60. The 9th and 10th number are 3 and 1 more than the 11th number respectively. What is the average of 9th and 11th numbers?", "comp": "", "opts": ["54", "52.5", "52", "53.5"], "cidx": 3, "sol": "<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>Net deviation from the overall average (56) = 3 \u00d7 (52 \u2212 56) + 5 \u00d7 (60 \u2212 56) = \u221212 + 20 = +8.</p>\n<p>To balance the average, the deviation of the last 3 numbers must be \u22128. Thus, their total sum = 3 \u00d7 56 \u2212 8 = 160.</p>\n<p>Let the 11th number be x. Then, 9th number = x + 3 and 10th number = x + 1.</p>\n<p>Sum = x + 3 + x + 1 + x = 160 \u21d2 3x = 156 \u21d2 x = 52.</p>\n<p>The average of the 9th and 11th numbers = (x + 3 + x) \u00f7 2 = x + 1.5 = 52 + 1.5 = 53.5.</p>\n<p><strong>\u2234 The correct answer is 53.5.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Average of 11 numbers = 56</p>\n<p>Average of first 3 numbers = 52</p>\n<p>Average of next 5 numbers = 60</p>\n<p>Let the 11th number = x. Then the 9th number = x + 3 and the 10th number = x + 1.</p>\n\n<svg width=\"420\" height=\"200\" viewBox=\"0 0 420 200\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display:block;margin:12px 0;background:#ffffff;border-radius:10px;border:1px solid #cccccc;\">\n  <rect x=\"20\" y=\"40\" width=\"100\" height=\"40\" fill=\"#ddeeff\" stroke=\"#2255cc\" stroke-width=\"1.5\" />\n  <rect x=\"130\" y=\"40\" width=\"140\" height=\"40\" fill=\"#fff0cc\" stroke=\"#cc5500\" stroke-width=\"1.5\" />\n  <rect x=\"280\" y=\"40\" width=\"120\" height=\"40\" fill=\"#ccffcc\" stroke=\"#007700\" stroke-width=\"1.5\" />\n  \n  <text x=\"70\" y=\"65\" fill=\"#222222\" font-family=\"sans-serif\" font-size=\"13\" text-anchor=\"middle\">First 3</text>\n  <text x=\"200\" y=\"65\" fill=\"#222222\" font-family=\"sans-serif\" font-size=\"13\" text-anchor=\"middle\">Next 5</text>\n  <text x=\"340\" y=\"65\" fill=\"#222222\" font-family=\"sans-serif\" font-size=\"13\" text-anchor=\"middle\">Last 3</text>\n  \n  <text x=\"70\" y=\"105\" fill=\"#2255cc\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Avg = 52</text>\n  <text x=\"200\" y=\"105\" fill=\"#cc5500\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Avg = 60</text>\n  <text x=\"340\" y=\"105\" fill=\"#007700\" font-family=\"sans-serif\" font-size=\"12\" text-anchor=\"middle\">Sum = 160</text>\n\n  <path d=\"M 20 130 L 20 140 L 400 140 L 400 130\" fill=\"none\" stroke=\"#888888\" stroke-width=\"1.5\" stroke-dasharray=\"5,3\"/>\n  <text x=\"210\" y=\"165\" fill=\"#2255cc\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" text-anchor=\"middle\">Total 11 Numbers : Avg = 56, Sum = 616</text>\n</svg>\n\n<p><strong>Calculations:</strong></p>\n<p>\u21d2 Sum of all 11 numbers = 11 \u00d7 56 = 616</p>\n<p>\u21d2 Sum of first 3 numbers = 3 \u00d7 52 = 156</p>\n<p>\u21d2 Sum of next 5 numbers = 5 \u00d7 60 = 300</p>\n<p>\u21d2 Sum of the 9th, 10th, and 11th numbers = Total sum \u2212 (Sum of first 3 + Sum of next 5)</p>\n<p>\u21d2 Sum of the last 3 numbers = 616 \u2212 (156 + 300) = 616 \u2212 456 = 160</p>\n<p>\u21d2 (x + 3) + (x + 1) + x = 160</p>\n<p>\u21d2 3x + 4 = 160</p>\n<p>\u21d2 3x = 156</p>\n<p>\u21d2 x = 52</p>\n<p>\u21d2 11th number = 52</p>\n<p>\u21d2 9th number = 52 + 3 = 55</p>\n<p>\u21d2 Average of 9th and 11th numbers = (55 + 52) \u00f7 2 = 107 \u00f7 2 = 53.5</p>\n<p><strong>\u2234 The correct answer is 53.5.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Sum of Observations</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The total sum of any set of observations is simply the average multiplied by the number of observations (Sum = Average \u00d7 N).</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Net Deviation Method</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The sum of all deviations of the individual values from their arithmetic mean is always zero. This property helps significantly in breaking down complex averages without multiplying large numbers.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Combined Average</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">When multiple groups are combined, their total average is given by (N<sub>1</sub>A<sub>1</sub> + N<sub>2</sub>A<sub>2</sub> + N<sub>3</sub>A<sub>3</sub>) \u00f7 (N<sub>1</sub> + N<sub>2</sub> + N<sub>3</sub>).</p></p>", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "Out of five numbers A, B, C, D and E, the average of the first four numbers A, B, C and D is greater than the average of the last four numbers B, C, D and E by 35. The value of&nbsp;<span class=\"math-tex\">\\( A-E\\over7\\)</span>&nbsp;is:", "comp": "", "opts": ["10", "20", "40", "30"], "cidx": 1, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>According to the question-</p>\n\n<p><span class=\"math-tex\">\\(A + B + C + D\\over 4\\)</span>&nbsp;- <span class=\"math-tex\">\\(B+C+D+E\\over4\\)</span>&nbsp;= 35</p>\n\n<p>&rArr;<span class=\"math-tex\">\\( A+B+C+D-B-C-D-E\\over 4 \\)</span>&nbsp;= 35&nbsp;</p>\n\n<p>&rArr; A - E =&nbsp;<span style=\"\">3</span><span style=\"\">5 &times; 4</span></p>\n\n<p><span style=\"\">&there4;&nbsp;&nbsp;<span class=\"math-tex\">\\( A-E\\over7\\)</span>&nbsp;=&nbsp;<span class=\"math-tex\">\\(35 \u00d7 4\\over7\\)</span>&nbsp;= 20</span></p>\n\n<p><strong><span style=\"\">The value of&nbsp;<span class=\"math-tex\">\\( A-E\\over7\\)</span>&nbsp;is 20.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "The average weight of A, B, and C is 55 kg. The weight of C is 10 kg more than A and 5 kg more than B. The average weight of A, B, C, and D, if D&#39;s weight is 19 kg more than C, is:", "comp": "", "opts": ["62 kg", "61 kg", "60 kg", "58 kg"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>The average weight of A, B, and C = 55kg</p>\n\n<p>C is 10 kg more than A&nbsp;</p>\n\n<p>C is&nbsp;5 kg more than B</p>\n\n<p>D is 19 kg more than C</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>Average = Total sum of subjects/Number of Subjects</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>&there4; A + B + C /3 = 55</p>\n\n<p>&there4; A + B + C = 165&nbsp; &nbsp; &nbsp; ------(1)</p>\n\n<p>We have given&nbsp;</p>\n\n<p>C = A +10&nbsp;</p>\n\n<p>&there4; A = C&nbsp;- 10</p>\n\n<p>and C = B + 5</p>\n\n<p>&there4; B = C &ndash; 5</p>\n\n<p>Putting values of A and B in equation (1)</p>\n\n<p>(C &ndash; 10) + (C&nbsp;&ndash; 5) + C = 165</p>\n\n<p>&rArr; 3C - 15 = 165</p>\n\n<p>&rArr;&nbsp;3C = 180</p>\n\n<p>&rArr;&nbsp;C = 180/3 = 60</p>\n\n<p>D = C + 19 = 60 + 19 = 79</p>\n\n<p>Average of A, B, C, and D = A + B + C + D/4</p>\n\n<p>&rArr;&nbsp;(165 + 79) /4</p>\n\n<p>&rArr; 244/4 = 61kg.</p>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 162000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

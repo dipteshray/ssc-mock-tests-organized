@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Time and Work - Work Efficiency - 02</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">45:00:00</div>
+      <div class="hdr-testname">Time and Work - Work Efficiency - 02</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Time and Work - Work Efficiency - 02</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Time and Work - Work Efficiency - 02</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Time and Work - Work Efficiency - 02</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">45:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 2, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "20 men can finish a work in 30 days. They started working, but 4 men left the work after 10 days. In how many days would the work be completed?", "comp": "", "opts": ["25", "28", "35", "30"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total work days = 20\u00a0\u00d7\u00a030 = 600 man-days</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total work done in 10 days = 20\u00a0\u00d7 10 = 200 man-days</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total work remaining = 600 - 200 = 400 man-days</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total time needed to complete the remaining work = 400\u00a0\u00f7 16 = 25</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total time needed to complete the whole work = 25 + 10 = 35 days</p>\n", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "A,B and C can do a piece of work in 30 days, 40 days and 50 days, respectively. Beginning with A, if A, B and C do the work alternatively then in how many days will the work be finished?", "comp": "", "opts": ["<span class=\"math-tex\">\\(38\\frac{1}{12}\\)</span>", "<span class=\"math-tex\">\\(36\\frac{1}{12}\\)</span>", "36", "<span class=\"math-tex\">\\(39\\frac{1}{12}\\)</span>"], "cidx": 0, "sol": "<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); width: 330px; --darkreader-inline-color: #d1cdc7;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Efficiency</span></td>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Person</span></td>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Time</span></td>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Total work</span></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">20</td>\n\t\t\t<td style=\"text-align: center;\">A</td>\n\t\t\t<td style=\"text-align: center;\">30</td>\n\t\t\t<td colspan=\"1\" rowspan=\"3\" style=\"text-align: center;\">600</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">15</td>\n\t\t\t<td style=\"text-align: center;\">B</td>\n\t\t\t<td style=\"text-align: center;\">40</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">12</td>\n\t\t\t<td style=\"text-align: center;\">C</td>\n\t\t\t<td style=\"text-align: center;\">50</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">\u21d2\u00a0(20 + 15 + 12) = 47 units = 3 days \u21d2\u00a047\u00a0\u00d7 12 = 564 units = 3\u00a0\u00d7 12 = 36 days \u21d2\u00a0(564 + 20 + 15) = 599\u00a0units = 38\u00a0days</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">Total work = 600 units = 38 + (1/12) = 38<span class=\"math-tex\">\\(1\\over12\\)</span>\u00a0days.</p>\n", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "P, Q and R, when working individually, can complete a job in, respectively, 36 days, 48 days and 144 days. P, Q and R start working together. P leaves the job 12 days before completion and Q leaves the job 8 days before completion. R works from the beginning till the end of the job. Determine the total number of days taken to complete the job.&nbsp;&nbsp;", "comp": "", "opts": ["24&nbsp;", "27&nbsp;", "30&nbsp;", "25"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total work = LCM of (36, 48, 144) = 144 units</p>\n\n<table border=\"2\" cellpadding=\"1\" cellspacing=\"1\" style=\"color: rgb(33, 37, 41); width: 500px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>\u00a0</td>\n\t\t\t<td style=\"text-align: center;\">Required time (Days)</td>\n\t\t\t<td style=\"text-align: center;\">Total work<br />\n\t\t\t(units)</td>\n\t\t\t<td style=\"text-align: center;\">Efficierncy</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>P</td>\n\t\t\t<td style=\"text-align: center;\">36</td>\n\t\t\t<td colspan=\"1\" rowspan=\"4\" style=\"text-align: center;\">144</td>\n\t\t\t<td style=\"text-align: center;\">4 units</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Q</td>\n\t\t\t<td style=\"text-align: center;\">48</td>\n\t\t\t<td style=\"text-align: center;\">3 units</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>R</td>\n\t\t\t<td style=\"text-align: center;\">144</td>\n\t\t\t<td style=\"text-align: center;\">1 unit</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>(P + Q +R)</td>\n\t\t\t<td style=\"text-align: center;\">144/8 = 18</td>\n\t\t\t<td style=\"text-align: center;\">8 units</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"  font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Let, the job be completed in X days.</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">4 \u00d7 (X\u00a0- 12) + 3\u00a0\u00d7 (X\u00a0- 8) + 1\u00a0\u00d7 X\u00a0= 144 \u21d2 4X - 48 + 3X - 24 + X = 144 \u21d2 8x = 144 + 48 +\u00a024</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 8x = 216 \u21d2 X = 27</p>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "A can finish 50% of a work in 30 days. He works at it for 15 days and then B alone finishes the remaining work in 30 days. In how many days can A and B working together finish 25% of the whole work?&nbsp;", "comp": "", "opts": ["9", "6", "8", "10"], "cidx": 1, "sol": "<p><b>Given:</b></p>\n\n<p>A completes 50% of work in = 30 days</p>\n\n<p>A worked for = 15 days</p>\n\n<p>B finished the remaining work in = 30 days.</p>\n\n<p><strong>Concept Used:</strong></p>\n\n<p>Efficiency = Total work/Time taken to complete the work</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Time taken by A to complete the whole work = 30&nbsp;&times; 2 = 60 days&nbsp;</p>\n\n<p>Portion of work A finishes in 15 days =&nbsp;15/60&nbsp;=&nbsp;1/4</p>\n\n<p>Remaining work = 1 -&nbsp;1/4&nbsp;=&nbsp;3/4</p>\n\n<p>This 3/4th of the work was completed by B in 30 days</p>\n\n<p>So, the time taken by B to finish the total work = 30&nbsp;&times;&nbsp;4/3&nbsp;= 40 days&nbsp;</p>\n\n<p>Now, LCM of 60 &amp; 40 = 120&nbsp;</p>\n\n<p>Let us assume that the total work is 120 units.</p>\n\n<p>&rArr; 25% of the work = 0.25&nbsp;&times; 120 = 30 units</p>\n\n<p>Efficiency of A = 120/60&nbsp;= 2 units</p>\n\n<p>Efficiency of B =&nbsp;120/40&nbsp;=&nbsp;3 units</p>\n\n<p>Total efficiency of A &amp; B = 2 + 3 = 5 units</p>\n\n<p>Required no. of days = 30/5 =&nbsp;6 days.</p>\n\n<p><strong>Hence,</strong>&nbsp;<strong>A and B require 6 days to complete 25% of the work.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "Sapna is double efficient as compared to Rakesh. If they both work together on a project and complete it in 48 days, then the number of days in which Sapna alone can complete the project is:", "comp": "", "opts": ["68", "72", "52", "<span class=\"math-tex\">\\(69\\frac{1}{2}\\)</span>"], "cidx": 1, "sol": "<span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /> <u style=\"font-size: 21px; font-weight: 700; display: inline !important;\">Shortcut Trick</u></span>\n<p>Efficiency Ratio (<strong>Sapna</strong> : <strong>Rakesh</strong>) = 2 : 1</p>\n<p>Total Efficiency = 2 + 1 = 3 units/day</p>\n<p>Total Work = Total Efficiency \u00d7 Total Days = 3 \u00d7 <strong>48 days</strong> = 144 units</p>\n<p><strong>Sapna</strong>'s alone time = Total Work \u00f7 <strong>Sapna</strong>'s efficiency = 144 \u00f7 2 = <strong>72 days</strong></p>\n<p><strong>\u2234 The correct answer is 72 days.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n<p><strong>Given:</strong></p>\n<p>Efficiency of <strong>Sapna</strong> = 2 \u00d7 Efficiency of <strong>Rakesh</strong></p>\n<p>Time taken together = <strong>48 days</strong></p>\n<p><strong>Formula Used:</strong></p>\n<p>Total Work = Efficiency \u00d7 Time</p>\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse:collapse;text-align:left;\">\n  <tbody>\n    <tr>\n      <td><strong>Person</strong></td>\n      <td><strong>Days</strong></td>\n      <td><strong>Total Work</strong></td>\n      <td><strong>Efficiency</strong></td>\n    </tr>\n    <tr>\n      <td><strong>Sapna</strong></td>\n      <td>72</td>\n      <td rowspan=\"2\">144</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <td><strong>Rakesh</strong></td>\n      <td>144</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n<p><strong>Calculations:</strong></p>\n<p>\u21d2 Let the efficiency of <strong>Rakesh</strong> be 1 unit/day.</p>\n<p>\u21d2 Efficiency of <strong>Sapna</strong> = 2 \u00d7 1 = 2 units/day.</p>\n<p>\u21d2 Combined efficiency of (<strong>Sapna</strong> + <strong>Rakesh</strong>) = 2 + 1 = 3 units/day.</p>\n<p>\u21d2 Total Work = Combined efficiency \u00d7 Combined time = 3 \u00d7 48 = 144 units.</p>\n<p>\u21d2 Time taken by <strong>Sapna</strong> alone = Total Work \u00f7 <strong>Sapna</strong>'s efficiency</p>\n<p>\u21d2 Time = 144 \u00f7 2 = 72 days.</p>\n<p><strong>\u2234 The correct answer is 72 days.</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Efficiency and Time Relationship</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">The time taken to complete a work is <strong>inversely proportional</strong> to the efficiency of the worker (Time \u221d 1/Efficiency).</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Work and Wages</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">Wages are generally distributed in the ratio of the <strong>work done</strong>, which depends on both efficiency and the duration of work.</p>\n<p style=\"margin:8px 0 2px 0;font-weight:700;color:#222222;\">Combined Efficiency Rule</p>\n<p style=\"margin:0 0 8px 0;color:#444444;\">When individuals work together, their <strong>individual efficiencies</strong> are added to find the total rate of work per day.</p>", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "If 3 goats or 5 sheep can graze a field in 54 days, then in how many days can 6 goats and 8 sheep graze the same field?&nbsp;", "comp": "", "opts": ["15&nbsp;", "12", "10&nbsp;", "8"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">3 G = 5 S \u21d2 G/S = 5/3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total work = 5\u00a0\u00d7 3 \u00d7\u00a054 = 810</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 810\u00a0= (6G\u00a0 + 8S)\u00a0\u00d7 D \u21d2 D = 810/54\u00a0= 15</p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "Pawan can do a piece of work in 32 days. He worked for 8 days and left the work. Thereafter Sandeep finished the remaining work in 27 days. In how many days can Pawan and Sandeep together do the whole work?", "comp": "", "opts": ["<span class=\"math-tex\">\\(16\\frac{16}{17}\\)</span>&nbsp;days", "<span class=\"math-tex\">\\(16\\frac{13}{17}\\)</span>&nbsp;<span style=\"\">days</span>", "<span class=\"math-tex\">\\(16\\frac{15}{17}\\)</span>&nbsp;<span style=\"\">days</span>", "<span class=\"math-tex\">\\(16\\frac{14}{17}\\)</span>&nbsp;<span style=\"\">days</span>"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">Pawan\u00a0\u00d7\u00a032 = (Pawan\u00a0\u00d7 8) + (Sandeep\u00a0\u00d7 27) \u21d2\u00a0Pawan\u00a0\u00d7 24 =\u00a0Sandeep\u00a0\u00d7 27 \u21d2\u00a0Pawan/Sandeep = 9/8</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total Work =\u00a0Pawan\u00a0\u00d7\u00a032 = 9\u00a0\u00d7 32 = 288 and their total efficiency (8 + 9) = 17</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of days required to complete the work together = 288/17 = 16<span class=\"math-tex\" style=\"outline: yellow solid 2px; cursor: default; ;;\">\\(16\\over17\\)</span>\u00a0days</p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "A can do a work in&nbsp;<span class=\"math-tex\">\\(7 \\frac{1}{2}\\)</span> hours and B can do the same work in&nbsp;<span class=\"math-tex\">\\(10 \\frac{1}{2}\\)</span> hours. If they work together for&nbsp;<span class=\"math-tex\">\\(3 \\frac{1}{2}\\)</span> hours, then what part of the work will be left out?", "comp": "", "opts": ["1/5", "2/5", "4/5", "3/5"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>A &amp; B can do a work in 7(1/2) &amp; 10(1/2) hours respectively</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>Time of A = 15/2 hours</p>\n\n<p>Time of B = 21/2 hours</p>\n\n<p>Let Total work&nbsp;= 105 units&nbsp; [Multiple of 15 and 21]</p>\n\n<p>A per hour work = 105/(15/2) = 14 units</p>\n\n<p>B per hour work = 105/(21/2) = 10 units</p>\n\n<p>Their total work in 7/2 hours = (24) &times; (7/2) =&nbsp;84 units</p>\n\n<p>Work left out = 105 - 84 = 21 units</p>\n\n<p>Fraction work left = 21/105 = 1/5<sup>th</sup></p>\n\n<p><strong>&there4; The correct choice is option 1.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "Robert takes twice as much time as Tom and thrice as much time as George to complete a work. If working together, they can complete it in 23 hours, then find the time that Tom will take to complete the work.", "comp": "", "opts": ["46 hours", "69 hours", "11 hours", "39 hours"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Let George take\u00a0to complete a work = 2y</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Tom takes to\u00a0complete a work = 3y</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Robert take\u00a0to complete a work = 6y</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Working together they can complete a work = 23 hours</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now Tom will take to complete the work = 23\u00a0\u00d7 3 =\u00a069 hours.</p>\n", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "Amita can build a room in the same amount of time that Bina and Sita working together can build. If Amita and Bina together could do it in 25 days and Sita alone in 35 days, then how many days are required for Bina alone to do the same work?", "comp": "", "opts": ["180 Days", "165 Days", "152 Days", "175 Days"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Amita can build a room in the same amount of time that Bina and Sita working together can build.</p>\n\n<p>Amita and Bina together can do it in 25 days.</p>\n\n<p>Sita alone can do it in 35 days.</p>\n\n<p><strong>Formula Used:</strong></p>\n\n<p>Let A, B, and S be the work rates of Amita, Bina, and Sita respectively.</p>\n\n<p>1/A = 1/B + 1/S&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>\n\n<p>1/A + 1/B = 1/25&nbsp;</p>\n\n<p>1/S = 1/35&nbsp;</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>1/A - 1/B = 1/35</p>\n\n<p>1/A + 1/B = 1/25</p>\n\n<p>Subtracting&nbsp;the first equation from the second,</p>\n\n<p>2/B&nbsp;= 1/25 -&nbsp;1/35&nbsp;</p>\n\n<p>2/B&nbsp;= (7 -5) / 175&nbsp;</p>\n\n<p>2/B&nbsp;= 2/ 175&nbsp;</p>\n\n<p>1/B = 1/175</p>\n\n<p>So, Bina alone can do the work in 175 days.</p>\n\n<p><strong>&there4; The correct answer is option (4).</strong></p>\n", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "A can do a piece of work in 25 days. After working for 5 days, he took help of B and completed the work in 8 days. If both A and B had worked together from the beginning, in how many days would they have completed the work?", "comp": "", "opts": ["12", "14", "10", "15"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>A can do a piece of work in 25 days. After working for 5 days, he took help of B and completed the work in 8 days.&nbsp;</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Work done by A in 1 day = 1/25</p>\n\n<p>Let the work done by B in 1 day = 1/x</p>\n\n<p>Work done by A in 5 days = 5/25 = 1/5</p>\n\n<p>Remaining work = 1 - 1/5 = 4/5</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>A and B together completed the remaining work (4/5) in 8 days</p>\n\n<p>&rArr; Work done by A and B together in 1 day = 4/5 &divide; 8 = 1/10</p>\n\n<p>So, they complete the work in 10 days.</p>\n\n<p><strong>&there4; The correct answer is option (3).</strong></p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "X and Y can do a piece of work in 18 days and 27 days, respectively. Starting with X, they work on alternate days. The whole number of days to complete the work by X and Y is:", "comp": "", "opts": ["20", "21", "24", "22"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>X can do the work in 18 days</p>\n\n<p>Y can do the work in 27 days</p>\n\n<p>They work on alternate days starting with X</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Work done by X in 1 day = 1/18</p>\n\n<p>Work done by Y in 1 day = 1/27</p>\n\n<p>Work done in 2 days = Work done by X in 1 day + Work done by Y in 1 day</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Work done by X in 1 day = 1/18</p>\n\n<p>Work done by Y in 1 day = 1/27</p>\n\n<p>Work done in 2 days = 1/18 + 1/27</p>\n\n<p>&rArr; Work done in 2 days = <span class=\"math-tex\">\\(\\dfrac{3 + 2}{54}\\)</span></p>\n\n<p>&rArr; Work done in 2 days = 5/54</p>\n\n<p>Total work = 1</p>\n\n<p>Number of 2-day cycles to complete the work = 1 / (5/54)</p>\n\n<p>&rArr; Number of 2-day cycles = 54/5 = 10.8 cycles</p>\n\n<p>Since they work on alternate days, we need to calculate the whole number of days:</p>\n\n<p>10 cycles = 10 &times; 2 = 20 days</p>\n\n<p>Remaining work after 10 cycles = 1 - (10 &times; 5/54) = 1 - 50/54 = 4/54</p>\n\n<p>Remaining work = 4/54</p>\n\n<p>On the 21st day, X works and completes 1/18 work</p>\n\n<p>&rArr; Remaining work = 4/54 - 3/54 = 1/54</p>\n\n<p>On the 22nd day, Y works and completes 1/27 work</p>\n\n<p>&rArr; 1/27 = 2/54</p>\n\n<p>&rArr; Remaining work = 1/54 - 2/54 = -1/54 (indicating the work is completed)</p>\n\n<p><strong>&there4; The correct answer is option 4 (22 days).</strong></p>\n", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "A can do a certain piece of work in 1.5 times the number of days in which B and C together can do it. If A and B together can do the same piece of work in 30 days and C alone can do it in 120 days, then how many days will B take to do this piece of work alone?", "comp": "", "opts": ["75", "45", "60", "50"], "cidx": 2, "sol": "<p style=\"color: rgb(30, 43, 51);  \"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/12/F8_Vinanti_SSC_01.12.23_D2.png\" style=\"color: rgb(30, 43, 51); width: 238px; height: 107px;\" /><br />\n<span style=\"color: rgb(30, 43, 51);\">The time taken by B to do this piece of work alone is 60 days.</span></p>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "The ratio of time taken in completing a work by a man and woman is 2 \u2236 3. The man and the woman can complete the work together in 24 days. In how many days can the woman complete the work alone?", "comp": "", "opts": ["20 days", "40 days", "60 days", "30 days"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">Given:</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">The ratio of time taken in completing a work by a man and woman is 2 \u2236 3.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The man and the woman can complete the work together in 24 days.</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">Concepts used:</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Time = Work/Efficiency</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Time is inversely proportional to efficiency.</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">Calculation:</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Time Ratio = 2 : 3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Efficiency Ratio = 3 : 2</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total work = (3&nbsp; + 2)24</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Time take by women = (5&nbsp;&times; 24)/2 = 60</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">&there4; A woman alone can complete the work in 60 days.</span></p>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "Fourteen persons can do a work in 18 days. After 5 days of work, 6 workers left the work, and joined back on the last day of the work. In how many days the work got completed?", "comp": "", "opts": ["27", "21", "24", "12"], "cidx": 0, "sol": "<span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png' width='26px' /> <u style='font-size: 21px; font-weight: 700; display: inline !important;'>Shortcut Trick</u></span><p><strong>Total Work</strong> = 14 \u00d7 18 = 252 units.</p><p>Work done in first <strong>5 days</strong> = 14 \u00d7 5 = 70 units.</p><p>Work done on <strong>last day</strong> (all 14 present) = 14 \u00d7 1 = 14 units.</p><p>Remaining work = 252 \u2212 (70 + 14) = 168 units.</p><p>Days with 8 workers = 168 \u00f7 8 = 21 days.</p><p>Total days = 5 + 21 + 1 = 27 days.</p><p><strong>\u2234 The correct answer is 27 days.</strong></p><p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Alternate Method</u></span></strong></span></p><p><strong>Given:</strong> Initial workers = 14, Initial days = 18. Workers left = 6. Joining back = Last day.</p><p><strong>Formula Used:</strong> Total Work = Number of Persons \u00d7 Number of Days</p><div style=\"text-align: left;\"><img src=\"https://cdn.testbook.com/tb_solImg_bb2aa299.png/1785433862.png\" style=\"max-width: 100%; height: auto; width: 420px; max-height: 200px;\"></div><p>\u21d2 Total Work = 14 \u00d7 18 = 252 units</p><p>\u21d2 Work in first 5 days = 14 \u00d7 5 = 70 units</p><p>\u21d2 Work on the very last day (all returned) = 14 \u00d7 1 = 14 units</p><p>\u21d2 Work remaining for the middle period = 252 \u2212 70 \u2212 14 = 168 units</p><p>\u21d2 Number of workers in middle period = 14 \u2212 6 = 8 workers</p><p>\u21d2 Time for middle period = 168 \u00f7 8 = 21 days</p><p>\u21d2 Total time taken = 5 (initial) + 21 (middle) + 1 (last) = 27 days</p><p><strong>\u2234 The correct answer is 27 days.</strong></p><p><span style='display: flex;gap: 6px;align-items: center;'><img height='26px' src='//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png' width='26px' /><strong><span style='vertical-align: middle;font-size: 21px;'><u>Additional Information</u></span></strong></span></p><p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Man-Days Concept</p><p style='margin:0 0 8px 0;color:#444444;'>The total work is always constant and is calculated as the product of the number of men and the number of days (M<sub>1</sub>D<sub>1</sub> = M<sub>2</sub>D<sub>2</sub>).</p><p style='margin:8px 0 2px 0;font-weight:700;color:#222222;'>Work Equivalence Formula</p><p style='margin:0 0 8px 0;color:#444444;'>For varying number of people over different periods: Total Work = (m<sub>1</sub> \u00d7 d<sub>1</sub>) + (m<sub>2</sub> \u00d7 d<sub>2</sub>) + ... + (m<sub>n</sub> \u00d7 d<sub>n</sub>).</p>", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "Rajan and Rajat can do a work in 64 days and 48 days, respectively. Starting with Rajat, they work on alternate days. In how many days will the work be completed?", "comp": "", "opts": ["55", "<span class=\"math-tex\">\\(54 \\frac{3}{4}\\)</span>", "54", "<span class=\"math-tex\">\\(55\\frac{3}{4}\\)</span>"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>Rajan can complete the work in 64 days.</p>\n\n<p>Rajat can complete the work in 48 days.</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Total units of work = LCM of 64 and 48 = 192 units</p>\n\n<p>Rajan&rsquo;s work rate = 192/64 = 3 units/day</p>\n\n<p>Rajat&rsquo;s work rate = 192/48 = 4 units/day</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Work done in two days = Rajat&rsquo;s work + Rajan&rsquo;s work = 4 + 3 = 7 units</p>\n\n<p>Total work = 192 units, Number of complete 2-day cycles = 192/7 = 27 cycles and remainder 3 units</p>\n\n<p>In 27 cycles, 189 units are completed in 54 days.</p>\n\n<p>Remaining work = 192 - 189 = 3 units, which Rajat&nbsp;completes on the 55th day, 3/4 units.</p>\n\n<p><strong>&there4; The total number of days to complete the work is 54<sup>3</sup>&nbsp;/ <sub>4&nbsp;</sub>days.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "5 men and 8 women can complete a task in 34 days, whereas 4 men and 18 women can complete the same task in 28 days. In how many days can the same task be completed by 3 men and 5 women?", "comp": "", "opts": ["72", "56", "64", "36"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>5 men and 8 women can complete a task = 34 days</p>\n\n<p>4 men and 18 women can complete the same task = 28 days</p>\n\n<p><strong>Formula:</strong></p>\n\n<p>Total work = Efficiency&nbsp;&times; Time</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let efficiency of 1 man and 1 woman be x and y respectively, then</p>\n\n<p>(5x&nbsp;+ 8y) &times; 34 = (4x + 18y)&nbsp;&times; 28</p>\n\n<p>&rArr; (5x + 8y)&nbsp;&times; 17 = (4x + 18y) 14</p>\n\n<p>&rArr; 85x + 136y = 56x + 252y</p>\n\n<p>&rArr; 85x - 56x&nbsp;= 252y - 136y</p>\n\n<p>&rArr; 29x&nbsp;= 116y</p>\n\n<p>&rArr; x/y = 116/29</p>\n\n<p>&rArr; x : y = 4 : 1</p>\n\n<p>Total work = (5&nbsp;&times; 4 + 8&nbsp;&times; 1)&nbsp;&times; 34</p>\n\n<p>Total work = (20 + 8)&nbsp;&times; 34</p>\n\n<p>Total work = 28&nbsp;&times; 34</p>\n\n<p>Efficiency of 3 men and 5 women in 1 day = (3&nbsp;&times; 4 + 5&nbsp;&times; 1) = 12 + 5 = 17</p>\n\n<p>&there4; Time taken by 3 men and 5 women to complete the whole work = (28&nbsp;&times; 34)/17 = 56 days&nbsp;</p>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "A and B can do a certain work in 27 days and 36 days, respectively. A worked for a few days and then B joined him. They together worked till the completion of the work. If the work got completed in a total of 18 days, then for how many days did A and B work together?", "comp": "", "opts": ["10", "15", "18", "12"], "cidx": 3, "sol": "<p style=\"\"><span style=\"font-weight: 700;\">Given:</span></p>\n\n<p style=\"\">Days in which A&nbsp;can complete the work = 27&nbsp;days</p>\n\n<p style=\"\">Days in which B&nbsp;can complete the work = 36&nbsp;days</p>\n\n<p style=\"\">Days after which total work was completed&nbsp;= 18&nbsp;days</p>\n\n<p style=\"\"><span style=\"font-weight: 700;\">Formula:</span></p>\n\n<p style=\"\">Efficiency = Total work / Time taken to complete work individually</p>\n\n<p style=\"\"><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p style=\"\">LCM of 27, 36, 18 = 108</p>\n\n<p style=\"\">Assuming that the total work is 108 units.</p>\n\n<p style=\"\">Efficiency of A-</p>\n\n<p style=\"\">&rArr;&nbsp;<span class=\"math-tex\">\\(108\\over 27\\)</span>&nbsp;= 4&nbsp;units of work/day</p>\n\n<p style=\"\">Efficiency of B-</p>\n\n<p style=\"\">&rArr;&nbsp;<span class=\"math-tex\">\\(108\\over 36\\)</span>&nbsp;= 3&nbsp;unit&nbsp;of work/day</p>\n\n<p style=\"\">Total work done in 18&nbsp;days by A working alone = 4&nbsp;units&nbsp;&times; 18&nbsp;= 72&nbsp;units</p>\n\n<p style=\"\">Remaining work = 108&nbsp;- 72 = 36 units</p>\n\n<p style=\"\">Time taken by B to complete 36 units of work =&nbsp;<span class=\"math-tex\">\\(36\\over 3\\)</span>&nbsp;= 12 days</p>\n\n<p style=\"\">&there4; <strong>A and B&nbsp;<span style=\"font-weight: 700;\">worked for&nbsp;</span>12<span style=\"font-weight: 700;\">&nbsp;days.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "Five men can complete a work in 20 days. Ten women can complete the same work in 15 days. Two men and six women started working together. After 5 days, three women left the work a new man joined the work. The group continued working together till the end of the work. In how many days will they be able to do the remaining work?", "comp": "", "opts": ["19", "<span class=\"math-tex\">\\(16 \\frac{2}{3}\\)</span>", "<span class=\"math-tex\">\\(18 \\frac{1}{3}\\)</span>", "14"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Time taken by 5 men to complete a work = 20 days</p>\n\n<p>Time taken by 10 women to complete a work = 15 days</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Work = Efficiency&nbsp;&times; Time</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p><span style=\"\">Five men can complete a work in 20 days = (20&nbsp;&times; 5) = 100&nbsp;</span></p>\n\n<p><span style=\"\">Ten women can complete the same work = (15&nbsp;&times; 10) = 150&nbsp;</span></p>\n\n<p><span style=\"\">LCM of 100 and 150 is 300</span></p>\n\n<p><span style=\"\">Efficiency of 1 man = (300/100) = 3 units/day</span></p>\n\n<p><span style=\"\">Efficiency of 1 woman = (300/150) = 2 units/day</span></p>\n\n<p>2 men and 6 women worked together for five days</p>\n\n<p>&rArr; (2&nbsp;&times; 3 + 6&nbsp;&times; 2)&nbsp;&times; 5</p>\n\n<p>&rArr; (<span style=\"\">6 + 12)&nbsp;&times; 5</span></p>\n\n<p>&rArr; (18&nbsp;&times; 5) = 90 days</p>\n\n<p>Remaining work = (300&nbsp;&ndash; 90) = 210 units&nbsp;</p>\n\n<p>Now,</p>\n\n<p>After 5 days, 3 women left the work =&nbsp;<span style=\"\">&nbsp;(6women&nbsp;</span><span style=\"\">&ndash; 3women) = 3women</span></p>\n\n<p>And 1 man joined the work = (1man + 2man) = 3man</p>\n\n<p>Time taken to complete the remaining work by 3 women and 3 men is</p>\n\n<p>&rArr; [210/(3 women + 3 men)]</p>\n\n<p>&rArr; [210/(3&nbsp;&times; 2 + 3&nbsp;&times; 3)]&nbsp;</p>\n\n<p>&rArr; [210/(6 + 9)]&nbsp;</p>\n\n<p>&rArr; (210/15) days</p>\n\n<p>&rArr; 14 days</p>\n\n<p><strong>&there4; The required time is 14 days</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span>Here we need to equal number of men and women,</p>\n\n<p><span style=\"\">Ten women can complete the&nbsp;work in 15 days</span></p>\n\n<p><span style=\"\">So, five&nbsp;women can complete the</span><span style=\"\">&nbsp;work in 30&nbsp;days</span></p>\n\n<p><span style=\"\">Now,</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/03/F1_Madhuri_SSC_28.03.2022_D8.png\" style=\"height: 126px; width: 278px;\" /></p>\n\n<p>Total work 60&nbsp;&times; 5 [\u2235 5 men or women are also working]</p>\n\n<p style=\"\">2 men and 6 women&nbsp;together =<span style=\"\">&nbsp;(2&nbsp;&times; 3 + 6&nbsp;&times; 2)&nbsp;&times; 5 = 90 units in</span>&nbsp;five days</p>\n\n<p style=\"\">Remaining = 300 - 90 = 210 units</p>\n\n<p style=\"\">Now,</p>\n\n<p style=\"\">Time taken by 3 men and 3 women to complete the remaining work =&nbsp;<span style=\"\">[210/(3&nbsp;&times; 2 + 3&nbsp;&times; 3)]&nbsp;</span>= 14 days&nbsp;</p>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "In one-sixth of the time that B takes to complete a piece of work, A can complete half of the same work. If working together they take 16 days to complete the work, how much time shall B take to complete it alone?", "comp": "", "opts": ["38 days", "76 days", "44 days", "64 days"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">B\u00a0\u00d7 1/2 = A\u00a0\u00d7 1/6\u00a0 \u21d2 A = 3B\u00a0 \u21d2\u00a0<span class=\"math-tex\">\\(A\\over B\\)</span>\u00a0=\u00a0<span class=\"math-tex\">\\(3 \\over1\\)</span>\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2A's efficiency = 3 unit /day and B's efficiency = 1 unit/day</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">( A+ B) complete in 16 days</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 Total work = ( 3+1)\u00a0\u00d7 16 = 4\u00a0\u00d7 16 = 64. \u21d2 Time taken by B =\u00a0<span class=\"math-tex\">\\(64\\over 1\\)</span>\u00a0 = 64 days\u00a0 \u00a0 \u00a0</p>\n", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "Benny can do a piece of work in 24 days. Chethan and David can do the same work individually in 36 and 48 days, respectively. All of them begin the work together. However, Benny leaves the work 4 days before the completion of work and Chethan leaves the work 10 days before the completion of the work. David worked till the end and completed the work. Find the number of days in which the work was completed.", "comp": "", "opts": ["16", "20", "18", "15"], "cidx": 0, "sol": "<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:80%;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</td>\n\t\t\t<td style=\"text-align: center;\">Time taken (days)</td>\n\t\t\t<td style=\"text-align: center;\">Total work</td>\n\t\t\t<td style=\"text-align: center;\">Efficiency</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">Benny (B)</td>\n\t\t\t<td style=\"text-align: center;\">24</td>\n\t\t\t<td colspan=\"1\" rowspan=\"3\" style=\"text-align: center;\">144</td>\n\t\t\t<td style=\"text-align: center;\">6</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">Chethan (C)</td>\n\t\t\t<td style=\"text-align: center;\">36</td>\n\t\t\t<td style=\"text-align: center;\">4</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">David (D)</td>\n\t\t\t<td style=\"text-align: center;\">48</td>\n\t\t\t<td style=\"text-align: center;\">3</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<p>Let x be the total time to complete the work,</p>\n\n<p>B(x - 4) + C(x - 10) + D x = 144</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;&nbsp;</span>6(x - 4) + 4(x - 10) + 3x = 144</p>\n\n<p>&rArr; 6x - 24 + 4x - 40 + 3x = 144</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;&nbsp;</span>13x = 144 + 40 + 24</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;&nbsp;</span>x = 208/13 = 16</p>\n\n<p><strong>Thus, time taken to complete the work = x =&nbsp;16 days</strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n\n<p><strong>Given:</strong></p>\n\n<p>The Benny can do a piece of work = 24 days</p>\n\n<p>The Chethan can do a piece of work = 36 days</p>\n\n<p>The David can do a piece of work = 48 days</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Work = Efficiency&nbsp;&times; Time</p>\n\n<p><strong>Calculation:</strong><br />\nLet the work was complete in X days.</p>\n\n<p>One day work of Benny =&nbsp;<span class=\"math-tex\">\\({1\\over24}\\)</span></p>\n\n<p>One day work of Chethan =&nbsp;<span class=\"math-tex\">\\({1\\over36}\\)</span></p>\n\n<p>One day work of David =&nbsp;<span class=\"math-tex\">\\({1\\over48}\\)</span></p>\n\n<p>According to the question</p>\n\n<p>&rArr;&nbsp;<span class=\"math-tex\">\\({{X-4\\over24}+{X-10\\over36}+{X\\over 48}}=1\\)</span></p>\n\n<p>&rArr;&nbsp;<span class=\"math-tex\">\\({{6\\ \u00d7 (X-4)}+{4\u00d7 (X-10)+3X}\\over144}=1\\)</span></p>\n\n<p>&rArr; 6X - 24 + 4X - 40 + 3X = 144</p>\n\n<p>&rArr; 13X - 64 = 144</p>\n\n<p>&rArr; 13X = 208</p>\n\n<p>&rArr; X = 16</p>\n\n<p><strong>&there4; The required result will be 16.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "P, Q and R can complete a work alone in 12,15 and 20 days respectively. They started the work together. P left the work 8 days before the work was completed and Q left the work 5 days after P had left. R completed the remaining work alone. How many days will be required to complete the whole work?", "comp": "", "opts": ["<span style=\"\">32/3 days</span>", "<span style=\"\">10 days</span>", "<span style=\"\">28/3 days</span>", "<span style=\"\">25/3 days</span>"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Efficiency of P = 60/12 = 5, Efficiency of Q\u00a0= 60/15\u00a0= 4</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Efficiency of R\u00a0= 60/20 = 3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Let the total work done in t days.</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u21d2 5(t - 8) + 4(t - 3) + 3t = 60\u00a0</span>\u21d2 12t = 112 \u21d2 t = 112/12 = 28/3 days</p>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "A can complete a task in 18 days and B can complete the same task in 32 days. They start working together but B works only for 8 days. Thereafter, the work is completed by A. If they received Rs. 8,800 after completion of the work, then what is A&#39;s share (in Rs.)?", "comp": "", "opts": ["5500", "6600", "6400", "7200"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p><span style=\"\">A can complete a task in 18 days</span></p>\n\n<p><span style=\"\">B can complete the same task in 32 days</span></p>\n\n<p><span style=\"\">They start working together but B works only for 8 days</span></p>\n\n<p><span style=\"\">They received Rs. 8,800 after completion of the work</span></p>\n\n<p><span style=\"\"><strong>Formula Used:</strong></span></p>\n\n<p><span style=\"\">Total Work= Time x Efficiency</span></p>\n\n<p><strong><span style=\"\">Calculations:</span></strong></p>\n\n<p><span style=\"\">Let the total work be x</span></p>\n\n<p><span style=\"\">A can complete a task in 18 days</span></p>\n\n<p><span style=\"\">&rArr; A can-do worn in one day=&nbsp;<span class=\"math-tex\">\\(\\frac{x}{18}\\)</span></span></p>\n\n<p><span style=\"\">similarly,</span></p>\n\n<p style=\"\">B can complete a task in 32 days</p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>B can-do worn in one day=&nbsp;<span class=\"math-tex\">\\(\\frac{x}{32}\\)</span></p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Total efficiency by both=&nbsp;<span class=\"math-tex\">\\(\\frac{x}{18}\\)</span>&nbsp;+&nbsp;<span class=\"math-tex\">\\(\\frac{x}{32}\\)</span>=&nbsp;<span class=\"math-tex\">\\(\\frac{16x+9x}{288}=\\frac{25x}{288}\\)</span></p>\n\n<p style=\"\">According to the questions,</p>\n\n<p style=\"\">They work together for 8 days</p>\n\n<p style=\"\">&rArr;&nbsp;Total work done in 8 days= 8 x&nbsp;<span class=\"math-tex\">\\(\\frac{25x}{288}\\)</span>=&nbsp;<span class=\"math-tex\">\\(\\frac{25x}{36}\\)</span></p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Remaining work= x-&nbsp;<span class=\"math-tex\">\\(\\frac{25x}{36}\\)</span>=&nbsp;<span class=\"math-tex\">\\(\\frac{36x-25x}{36} =\\frac{11x}{36}\\)</span></p>\n\n<p style=\"\">The remaining work is completed by A</p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Time is taken to complete the work=&nbsp;<span class=\"math-tex\">\\(\\frac{Work}{efficiency}=\\frac{\\frac{11x}{36}}{\\frac{x}{18}}=\\frac{11}{2}\\)</span>days</p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Total days A works=&nbsp; 8 + 5.5= 13.5 days</p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Total work done by A=&nbsp;<span class=\"math-tex\">\\(\\frac{x}{18}\\times13.5\\)</span>=&nbsp;<span class=\"math-tex\">\\(\\frac{3x}{4}\\)</span></p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Total Work done by B=&nbsp;<span class=\"math-tex\">\\(\\frac{x}{32}\\times8=\\frac{x}{4}\\)</span></p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>The ratio of work by A and B= A : B=&nbsp;<span class=\"math-tex\">\\(\\frac{3x}{4}:\\frac{x}{4}=\\)</span>3 : 1</p>\n\n<p style=\"\"><span style=\"\">&rArr;&nbsp;</span>Amount received to A=&nbsp;<span class=\"math-tex\">\\(\\frac{8800}{4}\\times 3\\)</span>= Rs. 6600</p>\n\n<p style=\"\"><strong>Hence, The amount received by A is Rs. 6600</strong></p>\n\n<p style=\"\"><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span>&nbsp;</strong></p>\n\n<p>Concept Used:</p>\n\n<p>Ratio of work done by A and B to distribute the total payment.</p>\n\n<p>Calculation:</p>\n\n<p>Efficiency of B = 1/32 units/day</p>\n\n<p>B&#39;s total units of work in 8 days = 8 &times; (1/32) = 1/4 units.</p>\n\n<p>Total work done by A = 1 (full task) - 1/4 (B&#39;s work) = 3/4 units.</p>\n\n<p>As the total task is considered as 1 unit,</p>\n\n<p>A did 3/4 out of 1 unit of the total work.</p>\n\n<p>So, A&#39;s share = (A&#39;s work / Total work) &times; Total payment</p>\n\n<p>&rArr;&nbsp;(3/4) &times; 8800 = Rs. 6600.</p>\n\n<p><strong>Hence, A&#39;s share is Rs. 6600</strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "X, Y and Z can complete a piece of work in 46 days, 92 days and 23 days, respectively. X started the work. Y joined him after 7 days. If Z joined them after 8 days from the beginning, then for how many days did Y work?", "comp": "", "opts": ["<span class=\"math-tex\">\\(12\\frac{5}{7}\\)</span>", "<span class=\"math-tex\">\\(11\\frac{5}{7}\\)</span>", "<span class=\"math-tex\">\\(10\\frac{5}{7}\\)</span>", "<span class=\"math-tex\">\\(9\\frac{5}{7}\\)</span>"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">x = 46 days = 2 units/day, y = 92 days = 1 unit/day, z = 23 days = 4 units/day</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Let the work be completed in Q days.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0<span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">2Q + 1\u00a0\u00d7 (Q - 7) + 4\u00a0\u00d7 (Q - 8) = 92</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 7Q - 39 = 92 \u21d2 Q = 131/7 \u21d2 Q - 7 = 131/7 - 7 (Subtracting 7 from both sides) \u21d2 Q - 7 =\u00a0<span class=\"math-tex\">\\(11\\frac{5}{7}\\)</span></p>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "Raja and Rocky together can complete painting work In 5 days. Together they both start painting, but after 2 days, Rocky falls sick and leaves the work. If Raja completes the remaining painting in 4 days, find the number of days in which Rocky alone can do the work.&nbsp;", "comp": "", "opts": ["12 days", "15 days&nbsp;", "20 days&nbsp;", "10 days&nbsp;"], "cidx": 2, "sol": "<p>(Raja + Rocky)\u00a0\u00d7 2 + Raja\u00a0\u00d7 4 =\u00a0(Raja + Rocky)\u00a0\u00d7 5 \u21d2 Raja\u00a0\u00d7\u00a04 =\u00a0(Raja + Rocky)\u00a0\u00d7 3 \u21d2 Raja\u00a0\u00d7\u00a01 = Rocky\u00a0\u00d7 3 \u21d2 Raja/Rocky = 3/1</p><p>Total work =\u00a0(Raja + Rocky)\u00a0\u00d7 5 \u21d2 (3 + 1)\u00a0\u00d7\u00a05 = 4\u00a0\u00d7 5 \u21d2 20 units</p><p><span>Time taken by Rocky\u00a0</span><span>alone\u00a0</span><span>to complete the painting work\u00a0</span><span>= 20/1 = 20 days</span></p>", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "10 women do half of the total work in 20 days. How many more women will be required to complete the remaining work in 10 days?", "comp": "", "opts": ["40", "20", "30", "10"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">The efficiency of each woman is 200/(10\u00a0\u00d7\u00a020) = 1 unit per day.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">To complete the remaining work in 10 days, we need 200/10 = 20 women.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Therefore, we need 20 - 10 = 10 more women.</p>\n", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "Ram can complete a piece work in 15 days, Rohan in 25 days, and Rohit in 30 days. Rohan and Rohit worked together for 2 days and then Rohit was replaced by Ram. In how many days altogether was the work completed?", "comp": "", "opts": ["10&nbsp;days", "8&nbsp;days", "12&nbsp;days", "7&nbsp;days"], "cidx": 0, "sol": "<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"color: rgb(33, 37, 41);   font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align); width: 330px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Efficiency</span></td>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Person</span></td>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Time</span></td>\n\t\t\t<td style=\"text-align: center;\"><span style=\"font-weight: bolder;\">Total work</span></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">10</td>\n\t\t\t<td style=\"text-align: center;\">Ram</td>\n\t\t\t<td style=\"text-align: center;\">15</td>\n\t\t\t<td colspan=\"1\" rowspan=\"3\" style=\"text-align: center;\">150</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">6</td>\n\t\t\t<td style=\"text-align: center;\">Rohan</td>\n\t\t\t<td style=\"text-align: center;\">25</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">5</td>\n\t\t\t<td style=\"text-align: center;\">Rohit</td>\n\t\t\t<td style=\"text-align: center;\">30</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p style=\"color: rgb(33, 37, 41);\">(Rohan + Rohit)\u00a0\u00d7 2 +\u00a0 (Rohan + Ram)\u00a0\u00d7 D = 150 \u21d2\u200b\u00a0(6\u00a0+ 5)\u00a0\u00d7 2 +\u00a0 (6\u00a0+ 10)\u00a0\u00d7 D = 150 \u21d2 16\u00a0\u00d7\u00a0D = (150 - 22) \u21d2 D = 128/16 = 8 days<br />\n= 2 + 8 = 10 days</p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "A and B together can complete a piece of work in 15 days. B and C together can do it in 24 days. If A is twice as good a workman as C, then in how many days can B alone complete the work ?", "comp": "", "opts": ["60 days", "40 days", "52 days", "45 days"], "cidx": 0, "sol": "<p><strong>Given&nbsp;</strong></p>\n\n<p>A and B&nbsp; together can complete work = 15 days&nbsp;</p>\n\n<p>B and C together can complete work = 24 days&nbsp;</p>\n\n<p><strong>Formula Used&nbsp;</strong></p>\n\n<p>Work = time&nbsp;&times;&nbsp;efficiency&nbsp;</p>\n\n<p><strong>Calculation&nbsp;</strong></p>\n\n<p>Take LCM of (15, 24) = 120&nbsp;</p>\n\n<p>Let the total work be 120&nbsp;</p>\n\n<p>Efficiency of A and B = 120/15 = 8&nbsp; &nbsp; &nbsp; ----(1)</p>\n\n<p>Efficiency of B and C = 120/24 = 5&nbsp; &nbsp; &nbsp; ----(2)</p>\n\n<p>We know , A : C = 2 : 1&nbsp; &nbsp; &nbsp; ----(3)&nbsp;</p>\n\n<p>From (1) and (2)&nbsp;</p>\n\n<p>&rArr; A - C = 3&nbsp;</p>\n\n<p>By using (3) , efficiency of A&nbsp; = 6 , B = 2 and C = 3</p>\n\n<p>&rArr; B alone can complete the work in days = 120/2 = 60 days&nbsp;</p>\n\n<p><strong>&there4;&nbsp;B alone can complete the work in days is 60 days&nbsp;</strong></p>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "A and B, working together, can complete a work in d days. Working alone, A takes (8 + d) days and B takes (18 + d) days to complete the same work. A works for 4 days. The remaining work will be completed by B alone, in:", "comp": "", "opts": ["18 days", "16 days", "24 days", "20 days"], "cidx": 2, "sol": "<p>According to the question</p>\n\n<p>1/(8 + d) + 1/(18 + d) = 1/d</p>\n\n<p>&rArr; (18 + d + 8 + d)/(144 + 26d + d<sup>2</sup>) = 1/d</p>\n\n<p>&rArr; 144 + 26d + d<sup>2</sup> = 26d + 2d<sup>2</sup></p>\n\n<p>&rArr; d<sup>2</sup> = 144</p>\n\n<p>&rArr; d = &radic;144</p>\n\n<p>&rArr; d = 12 days</p>\n\n<p>A and B together, can complete the whole work = 12 days</p>\n\n<p>A alone can complete the whole work in = 12 + 8 = 20 days</p>\n\n<p>B alone can complete the whole work in = 12 + 18 = 30 days.</p>\n\n<p>Let the remaining work B complete in x days, then</p>\n\n<p>According to the question</p>\n\n<p>4/20 + x/30 = 1</p>\n\n<p>&rArr; x/30 = 1 &ndash; 1/5</p>\n\n<p>&rArr; x/30 = 4/5</p>\n\n<p>&rArr; x = 24 days</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></p>\n\n<p>D = &radic;(8 &times; 18)</p>\n\n<p>&rArr; D = 12</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/04/F2_S.G_15.4.20_Pallavi_D2.png\" style=\"width: 147px; height: 72px;\" /></p>\n\n<p>A and B together, can complete the whole work = 12 days</p>\n\n<p>A alone can complete the whole work in = 12 + 8 = 20 days</p>\n\n<p>B alone can complete the whole work in = 12 + 18 = 30 days.</p>\n\n<p>Total work = 60</p>\n\n<p>Work done by A in 4 days = 4 &times; 3 = 12</p>\n\n<p>Remaining work = 60 &ndash; 12 = 48</p>\n\n<p>&there4; Remaining work, B complete in = 48/2 = 24 days</p>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "In an office, 75 employees can finish a project in 60 days. After few days, 15 employees left the job and the project was completed in 65 days. After how many days did the 15 employees leave?", "comp": "", "opts": ["50", "45", "30", "40"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">\u21d2 Total work = 75 employees \u00d7 60 days = 4500 employee-days</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Let (x) days be the time after which 15 employees left.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">For the first (x) days, all 75 employees worked.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">For the remaining (65 - (x)) days, 60 employees worked.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a075 \u00d7 x + 60 \u00d7 (65 - x) = 4500 \u21d2\u00a075x + 60 \u00d7 65 - 60x = 4500 \u21d2\u00a015x + 3900 = 4500 \u21d2\u00a015x = 600 \u21d2\u00a0x = 40\u00a0days</p>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "6 men or 5 women earn Rs. 14,820 in two days. How much will 4 women and 6 men earn in one day?", "comp": "", "opts": ["Rs. 13,338", "Rs. 13,832", "Rs. 26,676", "Rs. 27,664"], "cidx": 0, "sol": "<p>6 men or 5 women earn Rs. 14,820 in two days</p>\n\n<p>6 men earn in two days = 14820</p>\n\n<p>6 men earn in 1 days = 14820/2 = 7410</p>\n\n<p>5 women earn in two days = 14820</p>\n\n<p>5 women earn in 1 days = 14820/2 = 7410</p>\n\n<p>1 woman earn in 1 days = 7410/5 = 1482</p>\n\n<p>4 women earn in 1 days = 1482 &times; 4 = 5928</p>\n4 women and 6 men earn in 1 day = 5928 + 7410 = 13,338", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "A and B together can complete a piece of work in 25 days, B and C together can complete the same piece of work in 36 days, while C and A together can complete it in 30 days. If A, B, C, and D together can complete this piece of work in 18 days, then in how many days can D alone complete this piece of work?", "comp": "", "opts": ["210", "180", "200", "225"], "cidx": 2, "sol": "<p>2(A + B + C) = 36 + 25 + 30 = 91\u00a0<span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0</span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">(A + B + C) = 91 / 2 = 45.5</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Efficiency of D = 50 - 45.5 = 4.5</span><span style=\"color: rgb(33, 37, 41);\">\u00a0\u21d2\u00a0</span><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Time taken by D = 900 / 4.5 = 200</span></p>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "A can complete a certain work in 30 days. He started the work. After 4 days, B joined him and the whole work was completed in 10 days from the beginning. B alone can complete one-third of the same work in:", "comp": "", "opts": ["6 days", "3 days", "2 days", "4 days"], "cidx": 1, "sol": "<p><strong>Given:</strong></p>\n\n<p>Time taken by A to complete the work = 30 days</p>\n\n<p>Time taken by B to complete the work after 4 days = 10 days</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Work = Efficiency&nbsp;&times; Time</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Let B can complete the work in x days</p>\n\n<p><span style=\"\">Time taken by A to complete the work in 1 day = 1/30 units</span></p>\n\n<p><span style=\"\">Time taken by B to complete the work in 1 day = 1/x units</span></p>\n\n<p>According to the question</p>\n\n<p>&rArr; 10&nbsp;&times; 1/30 + (10&nbsp;<span style=\" line-height: 115%;  background: white;\">&ndash;&nbsp;</span>4)&nbsp;&times;&nbsp; 1/x = 1</p>\n\n<p>&rArr; 1/3 + 6/x = 1</p>\n\n<p>&rArr; 6/x = (1&nbsp;<span style=\" line-height: 115%;  background: white;\">&ndash;&nbsp;</span>1/3)</p>\n\n<p>&rArr; 6/x = 2/3</p>\n\n<p>&rArr; 2x = 18</p>\n\n<p>&rArr; x = 9</p>\n\n<p><span style=\"\">B alone can complete one-third of the same work = (1/3&nbsp;&times; 9)</span></p>\n\n<p><span style=\"\">&rArr; 3 days</span></p>\n\n<p><strong><span style=\"\">&there4; The required time is 3 days</span></strong></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></p>\n\n<p><span style=\"\">According to the question,&nbsp;A can complete a work in 30 days, </span></p>\n\n<p><span style=\"\">After 4 days of work B join and completed the remaining work next 6 days,&nbsp;</span></p>\n\n<p><span style=\"\">What A alone can do in 26 days that work A + B can do in 6 days, so</span></p>\n\n<p><span style=\"\">&rArr;&nbsp;A&nbsp;&times; 26 = (A + B)&nbsp;&times; 6</span></p>\n\n<p><span style=\"\">&rArr; 26A = 6A + 6B</span></p>\n\n<p><span style=\"\">&rArr; A/B = 6/20 = 3/10</span></p>\n\n<p><span style=\"\">So, total work is 30&nbsp;&times; 3 = 90 unit</span></p>\n\n<p><span style=\"\">Now, B can do 1/3<sub>rd</sub>&nbsp;of the work in 90&nbsp;&times; 1/3&nbsp;&times; 1/10 = 3 days</span></p>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "A and B can individually complete a piece of work in 18 days and 30 days, respectively. A and B started working together, but A left <span class=\"math-tex\">\\(16\\frac{2}{3}\\)</span> days before the work is completed and B alone completed the rest of the work. For how many days did A work?", "comp": "", "opts": ["4", "5", "6", "3"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Let, after x days work completed</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Let the total work is the 90\u00a0units (LCM of 30 and 18)</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The efficiency of A is 90\u00a0/ 18\u00a0= 5\u00a0units</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Efficiency of B\u00a0is 90 / 30 = 3\u00a0units</p>\n\n<p style=\"color: rgb(33, 37, 41);\">As per the question,</p>\n\n<p style=\"color: rgb(33, 37, 41);\">5\u00a0\u00d7 (x- 50/3) + 3x = 90</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 8x\u00a0\u00a0= 90 + 250 /3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 8x = 520/3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 x = 65/3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">A work for 65 /3 - 50/3 = 5 days.</p>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "A can complete a piece of work alone in 200 days, while B can complete the same piece of work alone in 100 days. In every three-day cycle, both A and B work on day 1, only A works on day 2, and only B works on day 3. This cycle continues till the work is completed. How many days in all does it take the duo to complete the work?", "comp": "", "opts": ["100", "<span class=\"math-tex\">\\(99 \\frac{2}{3} \\)</span>", "<span class=\"math-tex\">\\(100 \\frac{1}{2} \\)</span>", "<span class=\"math-tex\">\\(100 \\frac{1}{3}\\)</span>"], "cidx": 1, "sol": "<p>A: 1/200 days, B: 1/100 days</p>\n\n<p>Day 1: (1/200 + 1/100) = 3/200 \u21d2\u00a0Day 2: 1/200<span style=\"color: rgb(33, 37, 41);\">\u00a0\u21d2</span><span style=\"color: rgb(33, 37, 41);\">\u00a0</span>Day 3: 1/100</p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Total work in 3 days: 3/200 + 1/200 + 2/200 = 3/100</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Total work: 1, Cycles: 100/3, Days: (100/3) \u00d7 3 = 100</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Remaining work: 1 - 99/100 = 1/100, Additional day: 1/200 \u00d7 2 = 1/100</span></p>\n\n<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">Total days: 33 cycles \u00d7 3 + 1 day = 99 + 2/3 =\u00a0<span class=\"math-tex\">\\(99 \\frac{2}{3} \\)</span></span></p>\n<span style=\"background-image: url(\"https://lms.testbook.com/ng1/admin/vendor/ckeditor/plugins/widget/images/handle.png\"); background-position: initial; background-color: rgba(220, 220, 220, 0.5); transition-duration: 0.2s; transition-delay: 0s; left: 0px; color: rgb(33, 37, 41); top: -15px;\"><img draggable=\"true\" height=\"15\" src=\"data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==\" title=\"Click and drag to move\" width=\"15\" /></span>\n\n<div>\u00a0</div>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "Suresh and Anil are working on a special project. Suresh takes 5 hours to type 40 pages and Anil needs 6 hours to type 32 pages on a computer. How much time will it take them to type a 110 - page assignment if they work on two different computers?", "comp": "", "opts": ["8 hours 15 minutes", "8 hours", "7 hours 35 minutes", "8 hours 40 minutes"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Suresh can type 40 pages in 5 hours</p>\n\n<p>Anil can type 32 pages in 6 hours</p>\n\n<p><strong>Concept Used:</strong></p>\n\n<p>Total Work = Efficiency&nbsp;&times; Time Required</p>\n\n<p><strong>Calculations:</strong></p>\n\n<p>Let the total work be of 160 pages (LCM of 40 and 32)</p>\n\n<p>To type 160 pages</p>\n\n<p>Time required by Suresh = 5&nbsp;&times; 4 = 20 hours</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Time required by Anil = 6&nbsp;&times; 5 = 30 hours</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; Efficiency of Suresh = 160/20 = 8 pages/hr</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; Efficiency of Anil = 160/30 = (16/3) pages/hr</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Combines efficiency = 8 + (16/3) = (40/3) pages/hr</span></p>\n\n<p><strong><span style=\"color: rgb(33, 37, 41);\">Time required by Suresh and Anil to type 110 pages</span></strong></p>\n\n<p><strong><span style=\"color: rgb(33, 37, 41);\">&rArr; 110/(40/3) = 33/4 = 8<span class=\"math-tex\">\\(\\frac{1}{4}\\)</span>&nbsp;hours = 8 hours 15 minutes</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "A, B and C can do a piece of work in 20 days, 30 days and 60 days, respectively, working alone. How soon can the work be done if A is assisted by B and C each on every alternate day?", "comp": "", "opts": ["<span class=\"math-tex\">\\(\\frac{40}{3}\\)</span>&nbsp;days", "<span class=\"math-tex\">\\(\\frac{28}{3}\\)</span>&nbsp;<span style=\"color: rgb(33, 37, 41);\">days</span>", "<span class=\"math-tex\">\\(\\frac{37}{4}\\)</span>&nbsp;<span style=\"color: rgb(33, 37, 41);\">days</span>", "<span class=\"math-tex\">\\(\\frac{53}{4}\\)</span>&nbsp;<span style=\"color: rgb(33, 37, 41);\">days</span>"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>A, B, and C can do a piece of work in 20 days, 30 days, and 60 days respectively</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Efficiency = Total Work/Time required</p>\n\n<p><strong><span style=\"color: rgb(33, 37, 41);\">Calculation:</span></strong></p>\n\n<p>Let the total work be 60 units (LCM of 20, 30 and 60)</p>\n\n<p>&rArr; Efficiency of A = 60/20 = 3 units/day</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; Efficiency of B = 60/30 = 2 units/day</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; Efficiency of C = 60/60 = 1 unit/day</span></p>\n\n<p>According to the question, A is assisted by B and C on alternate days</p>\n\n<p>Work done by (A + B) = 5 units</p>\n\n<p>Work done by (A + C) = 4 units</p>\n\n<p>&rArr; In one cycle (2 days), 9 units of work is completed</p>\n\n<p>&rArr; In six cycles (12 days), 54 units of work will be&nbsp;completed</p>\n\n<p>Remaining work = 6 units</p>\n\n<p>Work done on 13th day (A + B) = 5 units</p>\n\n<p>Remaining work = 1 unit</p>\n\n<p>Now, (A + C) will be working</p>\n\n<p>&rArr; Time required by (A + C) for 1 unit = 1/4 days</p>\n\n<p>&rArr; Total time required = 13 + (1/4) = 53/4 days</p>\n", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "When operated separately, pipe A takes 5 hours less than pipe B to fill a cistern, and when both pipes are operated together, the cistern gets filled in 6 hours. In how much time (in hours) will pipe B fill the cistern, if operated separately?", "comp": "", "opts": ["9", "10", "15", "18"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Pipe A takes 5 hours less than pipe B to fill a cistern.</p>\n\n<p>Time to fill the tank by pipe A and B together = 6 hours</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Efficiency = Total work/total time</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Let time to fill the whole tank by pipe B alone be x hours.</p>\n\n<p>So, time to fill the whole tank by pipe A will be (x - 5) hours.</p>\n\n<p>Let capacity of total tank be 6x(x - 5) units.</p>\n\n<p>Efficiency of pipe A = 6x(x - 5)/(x - 5)</p>\n\n<p>&rArr; 6x units/hour</p>\n\n<p>Efficiency of pipe B = 6x(x - 5)/x</p>\n\n<p>&rArr; 6(x - 5) units/hour</p>\n\n<p>Efficiency of A and B&nbsp;together = 6x(x - 5)/6</p>\n\n<p>&rArr; x(x - 5) units/hour</p>\n\n<p>Equating combined efficiency,</p>\n\n<p>6x + 6(x - 5) = x(x - 5)</p>\n\n<p>&rArr; 6x + 6x - 30 = x<sup>2</sup>&nbsp;- 5x</p>\n\n<p>&rArr; 12x - 30 = x<sup>2</sup>&nbsp;- 5x</p>\n\n<p>&rArr; x<sup>2</sup>&nbsp;- 5x - 12x + 30 = 0</p>\n\n<p>&rArr; x<sup>2</sup>&nbsp;- 17x + 30 = 0</p>\n\n<p>&rArr; (x - 15)(x - 2) = 0</p>\n\n<p>Taking (x - 15) = 0</p>\n\n<p>&rArr; x = 15 hours</p>\n\n<p><strong>&there4; Pipe B will fill the cistern in 15 hours.</strong></p>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span>&nbsp;Let total work = x(x-5)</strong></p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:80%;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>&nbsp;</td>\n\t\t\t<td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; A&nbsp; &nbsp; &nbsp;</td>\n\t\t\t<td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; B</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Efficiency&nbsp; &nbsp;</td>\n\t\t\t<td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; x</td>\n\t\t\t<td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;x-5</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<p>Total efficiency = x + x - 5 = 2x - 5</p>\n\n<p><span style=\"\">Time to fill the tank = x(x - 5)/(2x -5) = 6</span></p>\n\n<p><span style=\"\">&rArr; x<sup>2</sup></span>&nbsp;- 5x = 12x - 30</p>\n\n<p>&rArr; x<sup>2</sup>&nbsp;- 17x + 30 =0</p>\n\n<p>&rArr; (x - 15)(x - 2) = 0</p>\n\n<p>&there4; x = 15, 2</p>\n\n<p><span style=\"font-weight: 700; \">&there4; Pipe B will fill the cistern in 15 hours.</span></p>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "Maya completes&nbsp;<span class=\"math-tex\">\\(\\frac{7}{10}\\)</span> of a work in 15 days and then she completes the remaining work with the help of Suresh in 4 days. In how many days can Maya and Suresh complete the whole work?", "comp": "", "opts": ["<span class=\"math-tex\">\\(\\frac{40}{3}\\)</span>", "<span class=\"math-tex\">\\(\\frac{38}{3}\\)</span>", "<span class=\"math-tex\">\\(\\frac{35}{3}\\)</span>", "<span class=\"math-tex\">\\(\\frac{32}{3}\\)</span>"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">Together (Maya + Suresh) complete a work = (4\u00a0\u00d7 10)/3 = 40/3 day</p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "A can do a certain work in 40 days. B is 60% more efficient than A. Both work together for 10 days. C alone completes the remaining work in <span class=\"math-tex\">\\(10\\frac{1}{2}\\)</span> days. Working together, B and C can complete 44% of the original work in:", "comp": "", "opts": ["8 days", "<span style=\"\">6 days</span>", "<span style=\"\">5 days</span>", "<span style=\"\">9 days</span>"], "cidx": 1, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>Work done by A in one day =&nbsp;<span class=\"math-tex\">\\(1\\over 40\\)</span></p>\n\n<p>According to the question, B is 60% more efficient than A</p>\n\n<p><span style=\"\">&there4; Work done by B&nbsp;in one day =&nbsp;<span class=\"math-tex\">\\(1\\over 40\\)</span>&nbsp;&times;&nbsp;<span class=\"math-tex\">\\(160\\over 100\\)</span>&nbsp;=&nbsp;<span class=\"math-tex\">\\(1\\over25\\)</span></span>&nbsp;</p>\n\n<p>Work done by A and B in one day =&nbsp;<span class=\"math-tex\">\\(1\\over 40\\)</span>&nbsp;+&nbsp;<span class=\"math-tex\">\\(1\\over25\\)</span>&nbsp;=&nbsp;<span class=\"math-tex\">\\(13\\over200\\)</span></p>\n\n<p>Work done by A and B in 10 day =&nbsp;<span class=\"math-tex\">\\(13\\over200\\)</span>&nbsp;&times; 10 =&nbsp;<span class=\"math-tex\">\\(130\\over200\\)</span></p>\n\n<p>Work remaining = 1 -&nbsp;<span class=\"math-tex\">\\(130\\over200\\)</span>&nbsp;=&nbsp;<span class=\"math-tex\">\\(70\\over200\\)</span>&nbsp;=&nbsp;<span class=\"math-tex\">\\(7\\over20\\)</span></p>\n\n<p>&rArr; C completes&nbsp;<span class=\"math-tex\">\\(7\\over20\\)</span>&nbsp;work in&nbsp;<span class=\"math-tex\">\\(10\\frac{1}{2}\\)</span>&nbsp;days.&nbsp;</p>\n\n<p>&there4; Time taken by C to complete&nbsp;the whole work =&nbsp;<span class=\"math-tex\">\\(10\\frac{1}{2}\\)</span>&nbsp;&times; <span class=\"math-tex\">\\(20\\over7\\)</span>&nbsp;= 30&nbsp;days</p>\n\n<p>Work done by C in one day =&nbsp;<span class=\"math-tex\">\\(1\\over30\\)</span></p>\n\n<p>Portion of work done by B and C in one day =&nbsp;<span style=\"\">&nbsp;</span><span class=\"math-tex\">\\(1\\over25\\)</span><span style=\"\">&nbsp;+&nbsp;</span><span class=\"math-tex\">\\(1\\over30\\)</span><span style=\"\">&nbsp;=&nbsp;</span><span class=\"math-tex\">\\(11\\over 150\\)</span></p>\n\n<p>Time taken by B and C to complete whole work =&nbsp;<span class=\"math-tex\">\\(150\\over11\\)</span></p>\n\n<p><span style=\"\">&there4; Time taken by B and C to complete 44% of the whole work =&nbsp;<span class=\"math-tex\">\\(44\\over 100\\)</span>&nbsp;&times;&nbsp;<span class=\"math-tex\">\\(150\\over11\\)</span>&nbsp;= 6 days</span></p>\n\n<p><strong><span style=\"\">The answer is 6 days.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "<p>Numan does half the work as Gagan in 4/5 of the time. If together they take 16 days to complete a piece of work, then how long will it take Gagan to complete the work?</p>\n", "comp": "", "opts": ["<span style=\"\">23 day</span>", "<span style=\"\">24 days</span>", "<span style=\"\">25 day</span>", "26 days"], "cidx": 3, "sol": "<p>Numan \u00d7 4/5\u00a0= Gagan\u00a0\u00d7 1/2 \u21d2 Numan/Gagan\u00a0= 5/8\u00a0</p>\n\n<p>Total work = 16 \u00d7 (5 + 8)\u00a0<span style=\"\">\u21d2 16\u00a0\u00d7 13</span>\u00a0so, time taken by Gagan = (<span style=\"\">16\u00a0\u00d7 13)/8 \u21d2</span>\u00a026\u00a0Days</p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "A can do a piece of work in 2 days, and B can do five times the same work in 15 days when they work for ten hours a day. If they work together, then how many hours in addition to a day&#39;s work will they require to complete the work?", "comp": "", "opts": ["0", "2", "1", "3"], "cidx": 1, "sol": "<p><span style=\"\">Work = Efficiency\u00a0\u00d7 Time</span></p>\n\n<p><span style=\"\">B complete the same work as A do = 15/5 = 5days\u00a0</span></p>\n\n<p><span style=\"\">Work of A : Work\u00a0of B = 2 : 3</span></p>\n\n<p><span style=\"\">Efficiency of A\u00a0</span>:\u00a0<span style=\"\">Efficiency of B = 3 : 2\u00a0</span></p>\n\n<p style=\"\">A work for ten hours a day = (2\u00a0\u00d7 10) = 20\u00a0</p>\n\n<p style=\"\">B works for ten hours a day = (3\u00a0\u00d7 10) = 30</p>\n\n<p style=\"\">Total work = LCM of 20 and 30 = 60</p>\n\n<p style=\"\">Time taken by A and B together\u00a0 = [60/(3 + 2)]</p>\n\n<p style=\"\">\u21d2 (60/5)\u00a0<span style=\"\">\u21d2 12 hrs</span></p>\n\n<p style=\"\"><span style=\"\">Hours in addition to a day's work =\u00a0</span>12 - 10 = 2 hrs</p>\n", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "X can complete half of the work in 20 days and Y can do one-fifth of the same work in 10 days. X started the work and left after 8 days. Then Y took over to complete the remaining work. The total number of days taken by them to complete the work is:", "comp": "", "opts": ["50 days", "40 days", "48 days", "60 days"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p><span style=\"\">X can complete half of the work in 20 days and Y can do one-fifth of the same work in 10 days. </span></p>\n\n<p><span style=\"\">X started the work and left after 8 days.</span></p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Work = Efficiency&nbsp;&times;&nbsp;time</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p><span style=\"\">X can complete half of the work in 20 days&nbsp;</span></p>\n\n<p><span style=\"\">&rArr;&nbsp;X can complete the&nbsp;work in 20 &times; 2 days = 40 days</span></p>\n\n<p><span style=\"\">Y can do one-fifth of the same work in 10 days&nbsp;</span></p>\n\n<p><span style=\"\">&rArr; Y can complete the&nbsp;work in 10&nbsp;&times; 5 days = 50 days</span></p>\n\n<p><span style=\"\">Total work = LCM[40, 50] = 200</span></p>\n\n<p><span style=\"\">&rArr; Per day Efficiency of X = 200/40 = 5 and&nbsp;&nbsp;Per day Efficiency of Y&nbsp;= 200/50 = 4</span></p>\n\n<p>Now,&nbsp;<span style=\"\">X started the work and left after 8 days&nbsp;&rArr; Work completed by X in 8 days = 5&nbsp;&times; 8 = 40&nbsp;</span></p>\n\n<p><span style=\"\">&there4; Remaining work = 200 - 40 =160</span></p>\n\n<p><span style=\"\">Remaining work done by Y in 160/4 = 40 days</span></p>\n\n<p><span style=\"\">&there4; Total number of days taken to complete the work = 8 + 40 = 48 days</span></p>\n", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "S does half as much work as T in 1/8 of the time taken by T. If they together complete a work in 60 days, then how many days shall S alone take to complete that work?&nbsp;", "comp": "", "opts": ["80 days", "90 days", "75 days", "100 days"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">S\u2019s 1 day work = 1/x, T\u2019s 1 day work = 1/y</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Now, S does half as much work as T in 1/8\u00a0of the time taken by T</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 S\u2019s 1 day work = 1/2 \u00d7 T\u2019s 9\u00a0days work \u21d2 1/x = 1/2 \u00d7 8/y\u00a0 \u21d2 1/y = 1/4x\u00a0 \u00a0 \u00a0 \u00a0 ----(1)</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Together they complete the work in 60\u00a0days,</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 S\u2019s 1 day work + T\u2019s 1 day work = 1/60 \u21d2 1/x + 1/y = 1/60</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Substituting from (1),</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 1/x + 1/4x = 1/60 \u21d2 5/4x = 1/60 \u21d2 x = 5\u00a0\u00d7 60/4\u00a0= 75</p>\n", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "A contract is to be completed in 75 days and 187 men are to work 15 hours per day. After 65 days, 3/5 of the work is completed. How many additional men may be employed, so that the work may be completed in time each man now working 17 hours per day?", "comp": "", "opts": ["495", "514", "528", "532"], "cidx": 2, "sol": "<p><strong>Formula Used:</strong></p>\n\n<p><span class=\"math-tex\">\\(\\frac{{M1.D1.T1.E1}}{{W1.C1}} = \\;\\frac{{M2.D2.T2.E2}}{{W2.C2}}\\)</span></p>\n\n<p>M is the number of&nbsp;working men</p>\n\n<p>D is the total number of days</p>\n\n<p>T is total hours of working days</p>\n\n<p>E is the efficiency of working men</p>\n\n<p>W is total work</p>\n\n<p>C is the consumption of working men</p>\n\n<p><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p>187 men worked for 65 days working 15 hours per day</p>\n\n<p>And completed 3/5 of the work.</p>\n\n<p>Remaining work,</p>\n\n<p>&rArr; 1&nbsp;&ndash; 3/5 = 2/5</p>\n\n<p>Now using the formula,</p>\n\n<p>Let the total men required to complete the job be x.</p>\n\n<p>M<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;&times; D<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1&nbsp;</span>&times; H<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>/W<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">1</span>&nbsp;= M<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>&nbsp;&times; D<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2&nbsp;</span>&times; H<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span>/W<span style=\"position: relative;  line-height: 0; vertical-align: baseline; bottom: -0.25em;font-size:10.5px;\">2</span></p>\n\n<p>&rArr;(187 &times; 65&nbsp;&times; 15)/(3/5)&nbsp;= (x&nbsp;&times; 10 &times; 17]/(2/5)</p>\n\n<p>&rArr; x&nbsp;= 11&nbsp;&times; 65</p>\n\n<p>&rArr; x = 715</p>\n\n<p>Additional men,</p>\n\n<p>&rArr; 715&nbsp;&ndash; 187 = 528 men</p>\n\n<p><strong>&there4; Additional man to be employed is 528.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "A alone can finish a work in 15 days. A works only for the first two days and last two days. The rest work is done by B and the work is completed in 20 days. In how many days A and B together can finish the work?", "comp": "", "opts": ["<span class=\"math-tex\">\\(\\frac{90}{8}\\)</span>", "<span class=\"math-tex\">\\(\\frac{80}{7}\\)</span>", "<span class=\"math-tex\">\\(\\frac{80}{9}\\)</span>", "<span class=\"math-tex\">\\(\\frac{70}{8}\\)</span>"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Let total work is 60\u00a0units ( Lcm of 20\u00a0and 15)</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The efficiency of A is\u00a0\u00a060 / 15\u00a0= 4\u00a0unit</p>\n\n<p style=\"color: rgb(33, 37, 41);\">A does total 4\u00a0\u00d7 4 = 16 units</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Remainig work , 60 - 16 = 44 units does by B in 16\u00a0days</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Again, the Efficiency of B is,\u00a0\u00a044\u00a0/ 16\u00a0= 11/4\u00a0units\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total efficiency is 4 +11/ 4 = 27/4</p>\n\n<p style=\"color: rgb(33, 37, 41);\">A and B does the work in,</p>\n\n<p style=\"color: rgb(33, 37, 41);\">60\u00d7 4/27\u00a0= 80/9 days</p>\n", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "Eighteen men can complete a work in 14 days. Three women do as much work as two men. Five men and six women started the work and continued for 4 days. Subsequently 3 more men joined the group. In how many total days was the work completed?", "comp": "", "opts": ["18", "<span class=\"math-tex\">\\(17 \\frac{1}{3}\\)</span>", "22", "<span class=\"math-tex\">\\(21 \\frac{1}{3}\\)</span>"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>18 men can complete the work in 14 days.</p>\n\n<p>3 women do as much work as 2 men.</p>\n\n<p>5 men &amp; 6 women started the work and worked for 4 days after that 3 more men joined the group.</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Work = Each unit done a day &times; No. of days taken to finish the work</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p><span style=\"\">Considering the LCM of 18, 27 &amp; 14 as the total units of work.</span></p>\n\n<p>LCM (18, 27, 14) = 378</p>\n\n<p>So, the entire work = 378 units</p>\n\n<p>Then, 18 men do each day = (378&nbsp;&divide; 14) = 27 units work</p>\n\n<p>Now, each man does = (27&nbsp;&divide; 18) = 1.5 units work each day</p>\n\n<p>So, each woman does = (2 &times; 1.5)&nbsp;&divide; 3 = 1 unit work each day</p>\n\n<p>Now,</p>\n\n<p><span style=\"\">Five men and six women do in 4 days</span></p>\n\n<p><span style=\"\">&rArr; (5&nbsp;&times; 1.5 + 6&nbsp;&times; 1)&nbsp;&times; 4 units work</span></p>\n\n<p><span style=\"\">&rArr; 54 units work</span></p>\n\n<p><span style=\"\">After 4 days, remaining work = (378 - 54) = 324 units</span></p>\n\n<p><span style=\"\">After 4 days, number of men working = (5 + 3) = 8</span></p>\n\n<p>Time taken to finish the work</p>\n\n<p>&rArr; 324&nbsp;&divide; {(8&nbsp;&times; 1.5) + (6&nbsp;&times; 1)}</p>\n\n<p><span style=\"\">&rArr; 18 days</span></p>\n\n<p><span style=\"\">Total time taken to finish the work = (18 + 4) = 22 days</span></p>\n\n<p><strong><span style=\"\">&there4;&nbsp;In 22 days&nbsp;total days, the work was completed.</span></strong></p>\n\n<p><strong><span style=\"\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span></span></strong>Total work = Men&nbsp;&times; Efficiency&nbsp;&times; Day</p>\n\n<p><span style=\"\">Three women do as much work as two men.</span></p>\n\n<p><span style=\"\">&rArr; 3 W = 2 M&nbsp;</span></p>\n\n<p><span style=\"\">&rArr; W/M = 2/3 Efficiency&nbsp;</span></p>\n\n<p><span style=\"\">18 men can complete the work in 14 days.</span></p>\n\n<p>Total Work = 18&nbsp;&times; 3&nbsp;&times; 14 = 756</p>\n\n<p>According to the question,</p>\n\n<p><span style=\"\">Five men and six women started the work and continued for 4 days</span></p>\n\n<p><span style=\"\">&rArr; (5&nbsp;&times; 3 + 6&nbsp;&times; 2)&nbsp;&times; 4 = 108 unit</span></p>\n\n<p><span style=\"\">&rArr; Remaining work = 756 - 108 = 648 unit</span></p>\n\n<p><span style=\"\">3 more men joined the group</span></p>\n\n<p><span style=\"\">&rArr; ((5 + 3)&times; 3 +&nbsp;6&nbsp;&times; 2)&nbsp;&nbsp;&times; Days = 648</span></p>\n\n<p><span style=\"\">&rArr; Days = 648/36 = 18 days</span></p>\n\n<p><span style=\"\">Total days work complete in = 18 + 4 = 22 days.</span></p>\n\n<p><span style=\"font-weight: 700; \">&there4;&nbsp;In 22 days&nbsp;total days, the work was completed.</span></p>\n\n<p><span style=\"font-weight: 700; \"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span></span><span style=\"\">Total Work = 18&nbsp;&times; 3&nbsp;&times; 14 = 756</span></p>\n\n<p><span style=\"\">The efficiency of man and woman = 3 and 2</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/03/F1_Madhuri_SSC_28.03.2022_D3.png\" style=\"height: 117px; width: 348px;\" /></p>\n\n<p>So,</p>\n\n<p>36x = 648</p>\n\n<p>x = 18</p>\n\n<p><span style=\"\">Total days work complete in = 18 + 4 = 22 days</span></p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "To do a certain work, Ajay and Bharat work on alternate days, with Bharat starting the work on the first day. Ajay can finish the work alone in 32 days. If the work gets completed in exactly 8 days, then Bharat alone can finish 7 times the same work in ____________ days.", "comp": "", "opts": ["<span class=\"math-tex\">\\(\\frac{28}{8}\\)</span>", "4", "<span class=\"math-tex\">\\(\\frac{32}{7}\\)</span>", "32"], "cidx": 3, "sol": "<p style=\"color: rgb(30, 43, 51);\">A\u2019s one day work = 1/32</p>\n\n<p style=\"color: rgb(30, 43, 51);  \">B will work only 4\u00a0days A will work only: = 8 -\u00a04\u00a0= 4 days</p>\n\n<p style=\"color: rgb(30, 43, 51);  \">If A\u2019s 4-day work = 4/32\u00a0= 1/8</p>\n\n<p style=\"color: rgb(30, 43, 51);  \">Remaining work = 1 \u2013 [1/8] = 7/8</p>\n\n<p style=\"color: rgb(30, 43, 51);  \">B complete 7/8 work in = 4\u00a0days</p>\n\n<p style=\"color: rgb(30, 43, 51);  \">B complete whole work in = 4\u00a0\u00d7 [8/7] = 32/7\u00a0days</p>\n\n<p style=\"color: rgb(30, 43, 51);  \">B alone can finish 7\u00a0times the same work in = [<span style=\"color: rgb(30, 43, 51);\">32</span><span style=\"color: rgb(30, 43, 51);\">/7</span>] \u00d7 7\u00a0= 32\u00a0days</p>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "10 women take 16 days to complete a work which can be completed by 6 men in 8 days. 12 men started working and after 2 days 6 men left, and 5 women joined them. In how many days will the work be completed?", "comp": "", "opts": ["<span class=\"math-tex\">\\(3 \\over 2\\)</span>", "<span class=\"math-tex\">\\(16 \\over 5\\)</span>", "<span class=\"math-tex\">\\(5 \\over 2\\)</span>", "<span class=\"math-tex\">\\(26 \\over 5\\)</span>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">10W\u00a0\u00d7 16 = 6M\u00a0\u00d7 8</p>\n\n<p style=\"color: rgb(33, 37, 41);\">M : W\u00a0= 10 : 3</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total work is 16\u00a0\u00d7 10 \u00d7 3 = 480\u00a0units</p>\n\n<p style=\"color: rgb(33, 37, 41);\">12 men did in\u00a0\u00a02 days,</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0</span>12\u00a0\u00d7 10 \u00d7 2 = 240 units</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The remaining work is 480 - 240 = 240 units. The remaining work did by 6 men and 5\u00a0women.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Let it will be completed in x days.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">As per the question,</p>\n\n<p style=\"color: rgb(33, 37, 41);\">240 = 6\u00a0\u00d7\u00a010\u00a0\u00d7 x + 5\u00a0\u00d7 3\u00a0\u00d7 x</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 x = 240 / 75</p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0</span>x = 16 /5 days</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total time = 16/5 + 2 = 26/5 days.</p>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "A works twice as fast as B and B works twice as fast as C. All three working together can finish a task in 4 days with the help of D. If D alone can finish the same task in 16 days, then in how many days will A alone finish 75% of the same task?", "comp": "", "opts": ["9", "8", "7", "6"], "cidx": 2, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>Let efficiency of C be x</p>\n\n<p>Efficiency of B = 2 &times; x = 2x</p>\n\n<p>Efficiency of A = 2 &times; 2x = 4x</p>\n\n<p>Total work = 16</p>\n\n<p>Efficiency of D = 1 unit</p>\n\n<p>According to the question</p>\n\n<p>(4x + 2x + x + 1) &times; 4 = 16</p>\n\n<p>(7x + 1) &times; 4 = 16</p>\n\n<p>28x + 4 = 16</p>\n\n<p>28x = 16 &ndash; 4 = 12</p>\n\n<p>x = 12/28 = 3/7</p>\n\n<p>Efficiency of A = 4x = 4 &times; (3/7) = 12/7</p>\n\n<p>75% of the total work = 16 &times; (3/4) = 12</p>\n\n<p>75% of the total work A alone can complete in = 12/(12/7) = 7 days</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/alternate-methord-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Alternate Method</u></span></strong></span>&nbsp;Let efficiency of C be 1</p>\n\n<p>Efficiency of B = 2 &times; 1 = 2</p>\n\n<p>Efficiency of A = 2 &times; 2 = 4</p>\n\n<p>As we know,</p>\n\n<p>100% work D complete in = 16 days</p>\n\n<p>25% work D complete in = 4 days</p>\n\n<p>Now, we can say 75% work of the total work = (4 + 2 + 1) &times; 4 = 28 unit</p>\n\n<p>A alone can complete the 75% of the total work in = 28/4 = 7 days.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/shortcut-trick-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Shortcut Trick</u></span></strong></span>A : B : C</p>\n\n<p>4 : 2 : 1</p>\n\n<p>According to the question,</p>\n\n<p>(7 + D) &times; 4 = D&nbsp;&times; 16</p>\n\n<p>&rArr; D =&nbsp;<span class=\"math-tex\">\\(7\\over3\\)</span>&nbsp;(Efficiency)</p>\n\n<p>The total work = 16&nbsp;&times;&nbsp;<span class=\"math-tex\">\\(7\\over3\\)</span></p>\n\n<p><span style=\"\">A alone finish 75% of the same task</span></p>\n\n<p><span style=\"\">&rArr;&nbsp;<span class=\"math-tex\">\\(75\\over100\\)</span>&nbsp;&times;&nbsp;<span class=\"math-tex\">\\(16\\over4\\)</span>&nbsp;&times;&nbsp;<span class=\"math-tex\">\\(7\\over3\\)</span>&nbsp;= 7 days</span></p>\n\n<p><strong>&there4;&nbsp;A alone finish 75% of the same task in 7 days.</strong></p>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 162000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

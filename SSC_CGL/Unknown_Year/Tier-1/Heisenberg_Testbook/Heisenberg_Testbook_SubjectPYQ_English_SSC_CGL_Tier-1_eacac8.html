@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Biology - Cell</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">35:00:00</div>
+      <div class="hdr-testname">Biology - Cell</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Biology - Cell</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Biology - Cell</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Biology - Cell</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">35:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 0, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "There are&nbsp;<u>&nbsp; &nbsp; &nbsp;&nbsp;</u>&nbsp;main types of cell division in humans.", "comp": "", "opts": ["4", "2", "3", "5"], "cidx": 1, "sol": "Cell division is the process by which a parent cell divides into two or more daughter cells. There are two types of cell division: mitosis and meiosis. Mitosis creates new body cells, while meiosis creates egg and sperm cells. Mitosis is seen in somatic cells of animals and produces two genetically identical daughter cells.", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "The transportation mechanism in cells by which food or other useful molecules from the outside are carried inside the cell is known as ____________.", "comp": "", "opts": ["Osmosis", "Fusion", "Endocytosis", "Exocytosis"], "cidx": 2, "sol": "Endocytosis is the process by which cells internalize substances by engulfing them in vesicles formed from the cell membrane. It allows the intake of nutrients and molecules that cannot diffuse through the membrane. Types include phagocytosis for large particles and pinocytosis for fluids and small molecules.", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "________ are a kind of waste disposal system of the cell.", "comp": "", "opts": ["Ribosome", "Lysosome", "Mitochondria", "Vacuole"], "cidx": 1, "sol": "Lysosomes are small, spherical organelles that contain digestive enzymes.\u00a0They are responsible for breaking down a wide variety of cellular waste products, including worn-out organelles, food particles, and bacteria.", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "Which of the following cell organelles help to keep the cell clean by digesting any foreign material as well as worn-out cell organelles?", "comp": "", "opts": ["Mitochondria", "Ribosome", "Lysosome", "<span style=\"\">Vacuole</span>"], "cidx": 2, "sol": "Lysosomes are membrane-bound organelles containing enzymes that break down all types of biological polymers. They help keep the cell clean by digesting foreign materials and worn-out organelles.", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "Which of the following is NOT a feature of Eukaryotic cell?", "comp": "", "opts": ["Nuclear membrane present", "Mitochondria present", "Nucleus well organized", "Chloroplast absent in plant cells"], "cidx": 3, "sol": "<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:400px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\"><strong>Prokaryotes</strong></td>\n\t\t\t<td style=\"text-align: center;\"><strong>Eukaryotes</strong></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Nucleus absent.</td>\n\t\t\t<td>Nucleus present and well organized</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Cell division takes place by fission or budding</td>\n\t\t\t<td>Cell division takes place by mitosis and meiosis.</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>The size of the cell is generally small.</td>\n\t\t\t<td>The size of the cell is generally large.</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>It contains a single chromosome that is circular in shape.</td>\n\t\t\t<td>It contains more than one chromosome.</td>\n\t\t</tr>\n\t</tbody>\n</table>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "Which of the following is known as energy currency of the cell?", "comp": "", "opts": ["Adenosine Triphosphate", "Adenosine Phosphate", "Glycine Triphosphate", "Adenosine Diphosphate"], "cidx": 0, "sol": "<ul>\n\t<li><strong>Adenosine triphosphate (ATP)</strong> is built up of adenosine and three phosphate groups.</li>\n\t<li>It is an <strong>energy-carrying molecule</strong> found in all living cells.</li>\n\t<li>It is known as the <u><strong>energy currency of the cell</strong></u> because all activities inside a living cell need energy which is available in the form of ATP as the immediate source.</li>\n\t<li><strong>Adenosine Diphosphate plus terminal phosphate</strong> is ATP.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "Which membrane-bound cell organelle consisting of a small sac-like structure surrounded by single membranes serves as the cell&#39;s digestive system, allowing material taken from outside the cell to degrade and digest obsolete components of the cell?", "comp": "", "opts": ["Lysosome", "Peroxisome", "Glyoxysomes", "Polysome"], "cidx": 0, "sol": "Lysosomes are small sac-like organelles that act as the cell's digestive system by breaking down unwanted materials.\u00a0Due to their peculiar function, they are also known as the \u201csuicide bags\u201d of the cell. Lysosomes work as the waste-discarding structures of the cell by processing undesirable materials and degrading them, both from the exterior of the cell and waste constituents inside the cell.", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "Which of the following options is NOT correct about plant cells?", "comp": "", "opts": ["Cell wall of a plant cell is made up of cellulose.", "The plant cells cannot divide by mitosis.", "A plant cell usually contains a large vacuole.", "Generally, all plant cells contain chloroplast."], "cidx": 1, "sol": "Mitosis is a type of cell division that occurs in both animal and plant cells. However, plant cells also have the ability to divide by a process called cytoplasmic division, which involves the formation of a cell plate that separates two daughter cells. This process is unique to plant cells and does not occur in animal cells.", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "Which scientist among the following coined the term &lsquo;protoplasm&rsquo; for the fluid substance of the cell?&nbsp;", "comp": "", "opts": ["Leeuwenhoek", "Purkinje", "Virchow", "Schwann&nbsp;"], "cidx": 1, "sol": "<span style=\"color: rgb(33, 37, 41);\">The term\u00a0</span><u style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">'</span></u>Protoplasm<span style=\"color: rgb(33, 37, 41);\">' is given by\u00a0</span>Purkinje\u00a0<span style=\"color: rgb(33, 37, 41);\">in 1839.</span><span style=\"color: rgb(33, 37, 41);\">It is the living content of a cell that is surrounded by a Plasma Membrane.\u00a0</span>", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "______ is the division of the cytoplasm of one eukaryotic cell into two daughter cells.", "comp": "", "opts": ["Cytokinesis", "Sepsis", "Karyokinesis", "Genesis"], "cidx": 0, "sol": "<p>The correct option is \"Cytokinesis\".Cytokinesis is the process by which the cytoplasm of a eukaryotic cell divides into two daughter cells after mitosis or meiosis.\u00a0During cytokinesis, a contractile ring made of actin and myosin filaments forms around the cell, which then contracts and divides the cytoplasm into two parts.</p>\n", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "Select the correct statement.", "comp": "", "opts": ["Mitochondria and nucleus are found in bacteria.", "Ribosomes, mitochondria and lysosomes are found in animal cells.", "Chloroplast, ribosomes and nucleus are present in fungal cell.", "Mitochondria and nucleus is absent in plant cell."], "cidx": 1, "sol": "<p>Ribosomes are found in all cells, including animal cells. Mitochondria are the energy-producing organelles in animal cells. Lysosomes are also found in animal cells and are responsible for breaking down waste materials.</p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "<p>Which of the following statements is correct about endoplasmic reticulum?</p>\n\n<p>I. It is a large network of membrane-bound tubes and sheets.</p>\n\n<p>II. It is similar in structure to the plasma membrane.&nbsp;</p>\n", "comp": "", "opts": ["Only I&nbsp;", "Only II", "Neither I nor II", "Both I and II&nbsp;"], "cidx": 3, "sol": "The endoplasmic reticulum is a membrane network dividing the cell into two compartments, with two types, rough and smooth. The latter performs various functions like lipid synthesis, calcium ion storage, detoxification, and glycogenolysis. Both types are structurally similar to the plasma membrane, composed of lipids, proteins, and carbohydrates.", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "Which of the following cell divisions is known as reduction division?&nbsp;", "comp": "", "opts": ["Telophase", "Meiosis", "Prophase", "Mitosis"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong>Meiosis</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>&nbsp;<strong>Meiosis</strong>:-\n\n\t<ul>\n\t\t<li><strong>It is known as reduction division because it reduces the number of chromosomes in a cell by half, resulting in four haploid daughter cells.</strong></li>\n\t\t<li>This process is essential for sexual reproduction as it allows for the formation of gametes with half the number of chromosomes as the parent cell, which then combine during fertilization to form a zygote with a full set of chromosomes.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Telophase:-</strong>\n\n\t<ul>\n\t\t<li>It is a stage in both mitosis and meiosis where the nuclear membrane reforms around the separated chromosomes, but it is not known as reduction division.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Prophase:-</strong>\n\t<ul>\n\t\t<li>It is the stage in both mitosis and meiosis where the chromatin condenses into visible chromosomes, but it is not known as reduction division.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Mitosis:-</strong>\n\t<ul>\n\t\t<li>It is a type of cell division where a single cell divides into two identical daughter cells, each with the same number of chromosomes as the parent cell.</li>\n\t\t<li>It does not involve a reduction in chromosome number and is not known as reduction division.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "In cell biology, what is a large double-membraned organelle that is sometimes referred to as the &lsquo;central unit&rsquo; of the cell because it contains the chromosomes that bear genetic material?&nbsp;", "comp": "", "opts": ["<span style=\"\">Peroxisome</span>", "<span style=\"\">Nucleus</span>", "<span style=\"\">Mitochondrion</span>", "<span style=\"\">Lysosome</span>"], "cidx": 1, "sol": "<p>The correct answer is<u><strong> Nucleus.</strong></u></p>\n\n<p><u><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></strong></u></p>\n\n<ul>\n\t<li><strong>The nucleus&nbsp;</strong><span style=\"\">is a large double-membraned organelle that is sometimes referred to as the &lsquo;central unit&rsquo; of the cell because it contains the chromosomes that bear genetic material.</span>\n\n\t<ul>\n\t\t<li>It is a<strong> membrane-bound organelle</strong> found in <strong>eukaryotic cells</strong>.</li>\n\t\t<li>The main structures making up the nucleus are the <strong>nuclear envelope, a double membrane that encloses the entire organelle and isolates its contents from the cellular cytoplasm.</strong>&nbsp;</li>\n\t\t<li>The<strong> nuclear matrix </strong>(which includes the nuclear lamina), is a<strong> network within the nucleus that adds mechanical support, much like the cytoskeleton supports the cell as a whole.</strong></li>\n\t\t<li>It contains<strong> DNA arranged in chromosomes.</strong></li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></strong></p>\n\n<ul>\n\t<li><strong>Peroxisome</strong>\n\n\t<ul>\n\t\t<li>Peroxisomes are<strong> small, membrane-enclosed organelles</strong>&nbsp;that contain enzymes involved in a variety of metabolic reactions, including several aspects of <strong>energy metabolism.</strong></li>\n\t</ul>\n\t</li>\n\t<li><strong>Mitochondrion</strong>\n\t<ul>\n\t\t<li>Mitochondria are <strong>membrane-bound cell organelles </strong>that generate most of the chemical energy needed to power the cell&#39;s biochemical reactions.</li>\n\t\t<li>Chemical energy produced by the mitochondria is stored in a small molecule called <strong>adenosine triphosphate (ATP).</strong></li>\n\t</ul>\n\t</li>\n\t<li><strong>Lysosome</strong>\n\t<ul>\n\t\t<li><strong>Membrane-enclosed organelles&nbsp;</strong>contain an<strong> array of enzymes </strong>capable of breaking down all types of<strong> biological polymers&mdash;proteins, nucleic acids, carbohydrates, and lipids.</strong></li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "In 1955, who published a comprehensive study of small particle constituents of the cytoplasm&#39; (ribosomes) and correctly estimated their physiological importance?", "comp": "", "opts": ["Albert Von Kolliker", "George E Palade", "Pierre Joseph Pelletier", "James Thomson"], "cidx": 1, "sol": "George Emil Palade, a cell biologist, made groundbreaking discoveries regarding ribosomes, the small particle constituents of the cytoplasm. His work, published in 1955, was crucial for understanding protein synthesis within cells. Utilizing electron microscopy, Palade was the first to visualize ribosomes, highlighting their physiological importance. His significant contributions to cell biology earned him the Nobel Prize in Physiology or Medicine in 1974. Palade's research advanced the field by providing detailed insights into cell structure and function, solidifying his legacy as a pioneer in cellular biology.", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "<p>Read the given statements and select the most appropriate option.</p>\n\n<p>i) A white blood cell (WBC) in human blood can change its shape.</p>\n\n<p>ii) The shape of amoeba appears irregular.</p>\n", "comp": "", "opts": ["Only statement two is correct.&nbsp;", "Both statements are correct.&nbsp;", "Both statements are incorrect.&nbsp;", "Only statement one is correct."], "cidx": 1, "sol": "<p>The correct answer is <u><strong>Both statements are correct.</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>A white blood cell (WBC) in human blood has the ability to change its shape to move through blood vessels and tissues.</li>\n\t<li>This shape-changing ability helps WBCs to perform their function of defending the body against infections.</li>\n\t<li>The shape of amoeba is irregular and constantly changes as it moves and feeds.</li>\n\t<li>Amoebas move by extending their cell membrane to form pseudopodia (false feet), which helps them to engulf food particles.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>White Blood Cells (WBCs):</strong>\n\n\t<ul>\n\t\t<li>WBCs are a crucial part of the immune system and are also known as leukocytes.</li>\n\t\t<li>They are produced in the bone marrow and circulate in the bloodstream and lymphatic system.</li>\n\t\t<li>There are several types of WBCs, including neutrophils, lymphocytes, monocytes, eosinophils, and basophils, each with specific functions in immune response.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Amoeba:</strong>\n\t<ul>\n\t\t<li>Amoeba is a single-celled organism belonging to the kingdom Protista.</li>\n\t\t<li>It is known for its ability to change shape due to the formation of pseudopodia.</li>\n\t\t<li>Amoebas are found in various habitats, including freshwater, soil, and as parasites in animals.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Pseudopodia:</strong>\n\t<ul>\n\t\t<li>Pseudopodia are temporary projections of the cell membrane and cytoplasm.</li>\n\t\t<li>They are used by amoeboid cells for movement and capturing food through a process called phagocytosis.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Phagocytosis:</strong>\n\t<ul>\n\t\t<li>Phagocytosis is the process by which a cell engulfs particles, such as bacteria, other microorganisms, or cellular debris.</li>\n\t\t<li>This process is essential for the immune response and for amoebas to feed.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "Which cell organelle performs the principal function of packaging materials?", "comp": "", "opts": ["Endoplasmic reticulum", "Golgi apparatus", "<span style=\"\">Lysosome</span>", "Vacuoles"], "cidx": 1, "sol": "The Golgi apparatus is responsible for packaging materials in the cell. It receives proteins from the endoplasmic reticulum and modifies them before packaging them into vesicles for transportation to their destination. The Golgi also creates complex sugars and form lysosomes. Other organelles, such as the endoplasmic reticulum and lysosomes, have different functions in the cell.", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "Which cell organelle is an overlapping membranous sac with ER-like thickness that helps in processing and packaging protein and lipid molecules, especially stable proteins?", "comp": "", "opts": ["Lysosome", "Golgi&nbsp;apparatus", "Mitochondria", "Plastid"], "cidx": 1, "sol": "The Golgi apparatus is a membrane-bound organelle that processes and packages proteins and lipids. It has 5-8 cup-shaped compartments called cisternae, and its main function is packaging and secretion of proteins. It also participates in lipid transport, lysosome formation, and post-translational modification. In plant cells, it synthesizes complex polysaccharides of the cell wall.", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "What are the thin filamentous extensions that the motile bacterial cells have from their cell wall called?", "comp": "", "opts": ["Flagella", "Pili", "Fimbriae", "Lamellae"], "cidx": 0, "sol": "The thin filamentous extensions that motile bacterial cells have from their cell wall are called Flagella. These lash-like appendages provide locomotion, allowing bacteria to move toward favorable environments and away from harmful ones. Flagella are composed of the protein flagellin and powered by a rotary engine at their base. Unlike pili and fimbriae, which are primarily used for attachment and not movement, flagella are essential for bacterial motility. Pili are involved in surface attachment and genetic exchange during conjugation, while fimbriae are shorter, more numerous, and aid in attachment to surfaces and other cells.", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "In animal cells, which of the following are the cell&rsquo;s &lsquo;garbage disposal&rsquo;?", "comp": "", "opts": ["Vacuoles", "<span style=\"\">Endoplasmic reticulum</span>", "<span style=\"\">Vesicles</span>", "<span style=\"\">Lysosomes</span>"], "cidx": 3, "sol": "The question identifies the cell's \"garbage disposal.\" Lysosomes are membrane-bound organelles with digestive enzymes, breaking down cell waste, damaged parts, and invading pathogens. They assist in secretion, apoptosis, and energy metabolism. Unlike lysosomes, vacuoles maintain water balance, the endoplasmic reticulum aids transport and protein folding, and vesicles handle material transport.", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "Select the correct statement", "comp": "", "opts": ["There are only 2 basic components of a cell-cytoplasm and nucleus.&nbsp;", "The cytoplasm and nucleus are enclosed within the cell membrane, also called the plasma membrane.&nbsp;", "The membrane separates ribosomes and mitochondria of a cell.&nbsp;", "The plasma membrane does not allow inward movement of the substance.&nbsp;"], "cidx": 1, "sol": "A cell's cytoplasm and nucleus are enclosed by the plasma membrane, which acts as a barrier against toxic substances while allowing specific molecules to pass through. Bacterial and plant cells have a cell wall outside the plasma membrane. Biological membranes contain channels and receptors for the movement of nutrients, metabolic products, and waste.", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "<p>Match list I of cell organelles with their functions in list II.<br />\nList I:<br />\n(a) Endoplasmic reticulum<br />\n(b) Vacuoles<br />\n(c) Golgi apparatus<br />\n(d) Mitochondria<br />\nList II:<br />\n(i) for packaging of materials synthesised near the ER and dispatching them to various targets.<br />\n(ii) generates ATP.<br />\n(iii) are storage sacs for solid or liquid contents.<br />\n(iv) serve as channels for the transport of proteins.</p>\n", "comp": "", "opts": ["(a) - (iv); (b) - (i); (c) - (ii); (d) - (iii)", "(a) - (iv); (b) - (iii); (c) - (i); (d) - (ii)", "(a) - (iv); (b) - (i); (c) - (iii); (d) - (ii)", "(a) - (i); (b) - (iv); (c) - (iii); (d) - (ii)"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>option 2</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li><strong>Endoplasmic reticulum (a) - (iv)</strong>: It serves as channels for the transport of proteins.</li>\n\t<li><strong>Vacuoles (b) - (iii)</strong>: These are storage sacs for solid or liquid contents.</li>\n\t<li><strong>Golgi apparatus (c) - (i)</strong>: It is involved in the packaging of materials synthesized near the ER and dispatching them to various targets.</li>\n\t<li><strong>Mitochondria (d) - (ii)</strong>: It generates ATP, which is the energy currency of the cell.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Endoplasmic Reticulum (ER)</strong>\n\n\t<ul>\n\t\t<li>It is a network of membranous tubules within the cytoplasm of a eukaryotic cell.</li>\n\t\t<li>There are two types: Rough ER (with ribosomes) and Smooth ER (without ribosomes).</li>\n\t\t<li>Rough ER is involved in protein synthesis, while Smooth ER is involved in lipid synthesis and detoxification processes.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Vacuoles</strong>\n\t<ul>\n\t\t<li>They are membrane-bound organelles found in both plant and animal cells.</li>\n\t\t<li>In plant cells, a large central vacuole maintains turgor pressure, which is crucial for maintaining the plant&#39;s structural integrity.</li>\n\t\t<li>In animal cells, vacuoles are smaller and often involved in storage and transport.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Golgi Apparatus</strong>\n\t<ul>\n\t\t<li>Also known as the Golgi complex or Golgi body.</li>\n\t\t<li>It is responsible for modifying, sorting, and packaging proteins and lipids for secretion or for use within the cell.</li>\n\t\t<li>It consists of a series of flattened, membrane-bound sacs called cisternae.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Mitochondria</strong>\n\t<ul>\n\t\t<li>Known as the powerhouse of the cell because they generate most of the cell&rsquo;s supply of ATP.</li>\n\t\t<li>They are double-membraned organelles with their own DNA, which suggests they were once independent prokaryotic organisms.</li>\n\t\t<li>Mitochondria are involved in other processes like signaling, cellular differentiation, and the control of the cell cycle and cell growth.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "In the context of movement of cells, exocytosis is the process by which:", "comp": "", "opts": ["cells absorb external material by engulfing it with the cell membrane", "cell death is brought about through a heavily regulated sequence of events", "cells move waste materials from within the cell into the extracellular fluid", "a cell takes in the fluids along with dissolved small molecules"], "cidx": 2, "sol": "Exocytosis is a cellular process where materials are moved from within the cell to the extracellular fluid. This involves vesicles fusing with the cell membrane to release their contents outside the cell. Exocytosis is crucial for various functions such as neurotransmitter release, hormone secretion, and waste removal, and requires ATP for energy.", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "The cell wall of spirogyra contains:", "comp": "", "opts": ["lignin", "cellulose", "suberin", "Chitin"], "cidx": 1, "sol": "The cell wall of Spirogyra contains cellulose, a polysaccharide composed of linear chains of several hundred to many thousands of \u03b2(1\u21924) linked D-glucose units. This cellulose is a primary structural component in green algae and plants, constituting about 30% of their cell walls. Unlike lignin, suberin, and chitin, which are found in different organisms or serve other functions, cellulose provides essential structural support and protection. Spirogyra, a filamentous green algae commonly found in freshwater, is named for its helical chloroplasts and plays a significant role in photosynthesis.", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "Under the electron microscope, which cell organelle is visible as either clusters or single, small dots that float freely in the cytoplasm?", "comp": "", "opts": ["Golgi apparatus", "Ribosomes", "Vesicle&nbsp;", "Peroxisomes"], "cidx": 1, "sol": "<p>The correct answer is<em><strong>&nbsp;</strong></em><u><strong>Ribosomes.</strong></u></p>\n\n<p><span style=\"\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></span></p>\n\n<ul>\n\t<li><strong>Ribosomes </strong>are the cellular structures responsible for protein synthesis.</li>\n\t<li><strong>Polyribosomes </strong>are clusters of ribosomes may sit on an mRNA and make proteins, each making a strand of polypeptides.</li>\n\t<li>These clusters are called polyribosomes. When they are free in the cytoplasm, they are called free polyribosomes (linked by the mRNA).&nbsp;</li>\n\t<li><strong>Ribosomes </strong>are the protein factories of the cell.</li>\n\t<li>Ribosomes link amino acids together to form polypeptide chains, which are further modified before becoming functional proteins.</li>\n</ul>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage65e5b2490bef816353340b35.png\" /></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li>The Golgi apparatus is responsible for transporting, modifying, and packaging proteins and lipids into vesicles for delivery to targeted destinations.</li>\n\t<li>Vesicle is an important term used to describe the appearance of many rashes that typically consist of or begin with tiny-to-small fluid-filled blisters.</li>\n\t<li><strong>Pemphigus </strong>is classified as one of the blistering diseases.</li>\n\t<li>Vesicles are small structures within a cell, consisting of fluid enclosed by a lipid <strong>bilayer </strong>involved in transport, buoyancy control, and enzyme storage.</li>\n\t<li>Peroxisomes are organelles that sequester diverse oxidative reactions and play important roles in metabolism, reactive oxygen species detoxification, and signalling.</li>\n\t<li>Oxidative pathways housed in peroxisomes include fatty acid &beta;-oxidation, which contributes to <strong>embryogenesis,</strong> seedling growth, and<strong> stomatal </strong>opening.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "The cytoplasm has ______ such as ribosomes, mitochondria, and Golgi bodies.", "comp": "", "opts": ["<span style=\"\">organelles</span>", "<span style=\"\">cells</span>", "<span style=\"\">organs</span>", "<span style=\"\">tissues</span>"], "cidx": 0, "sol": "<span style=\"color: rgb(33, 37, 41);\">The correct answer is \"organelles\".\u00a0Organelles are specialized structures within a cell that perform specific functions.\u00a0The term \"cytoplasm\" refers to the gel-like substance that fills a cell and surrounds the nucleus. It contains various organelles and provides a medium for cellular processes to occur.</span>", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "Which of the following cell organelles is responsible for the storage, modification and packaging of products in vesicles?", "comp": "", "opts": ["Plastids", "Mitochondria", "Endoplasmic reticulum", "Golgi apparatus"], "cidx": 3, "sol": "<div>The correct answer is <u><strong>Golgi apparatus</strong></u><strong>.</strong></div>\n\n<div><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></div>\n\n<ul>\n\t<li><strong>Golgi Apparatus</strong> is&nbsp;responsible&nbsp;for<strong>&nbsp;storage,&nbsp;modification, and packing of products in vesicles.</strong></li>\n\t<li>\n\t<div>The Golgi apparatus is also known as the<strong> Golgi complex.</strong></div>\n\t</li>\n\t<li>\n\t<div>Golgi Complex was discovered by <strong>Camillo Golgi.</strong></div>\n\t</li>\n\t<li>\n\t<div>It is composed of many<strong> sac-like structures</strong> that are stacked one above another.</div>\n\t</li>\n\t<li>\n\t<div><strong>Function:</strong></div>\n\n\t<ul>\n\t\t<li>\n\t\t<div><strong>\u200b</strong> It packages proteins into membrane-bound vesicles inside the cell before the vesicles are sent to their destination.</div>\n\t\t</li>\n\t\t<li>\n\t\t<div>It is also involved in the storage and modification of contents in the vesicles.</div>\n\t\t</li>\n\t</ul>\n\t</li>\n</ul>\n\n<div><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></div>\n\n<div>\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 350px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>&nbsp;</td>\n\t\t\t<td><strong>Basic</strong></td>\n\t\t\t<td><strong>Function</strong></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td><strong>Plastids</strong></td>\n\t\t\t<td>Plastids are found in plant cells. They are of two types, chromoplast, and leucoplast. Colorful plastids are called chromoplast and colorless plastids are called leucoplast.&nbsp;</td>\n\t\t\t<td>Leucoplasts are responsible for storing food; such as carbohydrates, protein, and lipid. Chromoplasts impart various colors to the plant parts.</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td><strong>Mitochondria</strong></td>\n\t\t\t<td>&nbsp;Mitochondria is a capsule-like structure. It is a double membrane structure. Its inner membrane is projected into numerous finger-like structures; called cristae.</td>\n\t\t\t<td>&nbsp;Cellular respiration; due to this, mitochondria are also known as the &lsquo;powerhouse of the cell&rsquo;.</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td><strong>Endoplasmic reticulum</strong></td>\n\t\t\t<td>The endoplasmic reticulum is a mesh-like structure that is composed of numerous tubes. It extends from the plasma membrane to the nuclear membrane.</td>\n\t\t\t<td>It serves as the transport channel in the cell. Substances are transported from the cell membrane to the cytoplasm and to the nucleus and vice-versa.</td>\n\t\t</tr>\n\t</tbody>\n</table>\n</div>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "Which of the following is the largest, double membrane-bound organelles, which contain all the cell&rsquo;s genetic information?", "comp": "", "opts": ["Ribosome", "Peroxisomes", "Lysosome", "Nucleus"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>Nucleus</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The nucleus is the largest double membrane-bound organelle present in eukaryotic cells.</li>\n\t<li>It contains the cell&#39;s genetic information in the form of DNA (deoxyribonucleic acid).</li>\n\t<li>The double membrane is called the nuclear envelope, which has nuclear pores to allow the exchange of materials between the nucleus and the cytoplasm.</li>\n\t<li>The nucleus plays a crucial role in cell division and controls various cellular activities by regulating gene expression.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Chromatin:</strong> The genetic material in the nucleus exists as chromatin, a complex of DNA and proteins, which condenses to form chromosomes during cell division.</li>\n\t<li><strong>Nucleolus:</strong> A prominent structure within the nucleus, it is the site of ribosomal RNA (rRNA) synthesis and ribosome assembly.</li>\n\t<li><strong>Nuclear Envelope:</strong> The double-layered membrane that encloses the nucleus, separating its contents from the cytoplasm.</li>\n\t<li><strong>Nuclear Pores:</strong> These are large protein complexes that span the nuclear envelope, allowing the transport of molecules between the nucleus and the cytoplasm.</li>\n\t<li><strong>Functions of the Nucleus:</strong> It regulates gene expression, stores genetic information, and coordinates cell activities such as growth, metabolism, and reproduction.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "What cellular structure is responsible for breaking down and recycling cellular components and molecules?", "comp": "", "opts": ["Ribosome", "Mitochondrion", "Lysosome", "Nucleus"], "cidx": 2, "sol": "Lysosomes are membrane-bound organelles containing hydrolytic enzymes that break down biomolecules like proteins, nucleic acids, carbohydrates, and lipids. They maintain cellular homeostasis by recycling components through autophagy. Lysosomal enzymes function in an acidic environment, maintained by proton pumps. They also aid in immune responses by degrading pathogens in phagolysosomes.", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "In the process of cell division, the formation of phragmoplast between the two daughter nuclei occurs during:", "comp": "", "opts": ["the G0 phase", "the cytokinesis", "the S phase", "the karyokinesis"], "cidx": 1, "sol": "The correct answer is <u><strong>cytokinesis</strong></u>\n\n<div>\n<p><span style=\"display: flex; gap: 6px; align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle; font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Cytokinesis</strong> is the process during cell division where the <strong>cytoplasm of a parental cell is divided between two daughter cells</strong>.</li>\n\t<li>The formation of the <strong>phragmoplast</strong> occurs during cytokinesis in plant cells.</li>\n\t<li>The phragmoplast is a structure that serves as a <strong>scaffold for cell plate assembly</strong> and subsequent formation of a new cell wall separating the two daughter cells.</li>\n\t<li>It is essential for the successful completion of cell division in plants, ensuring that each daughter cell receives the necessary cellular components.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Cell division</strong> consists of two main processes: mitosis (karyokinesis) and cytokinesis.</li>\n\t<li><strong>Mitosis</strong> is the division of the nucleus, whereas <strong>cytokinesis</strong> is the division of the cytoplasm.</li>\n\t<li>In animal cells, cytokinesis occurs through the formation of a cleavage furrow that pinches the cell into two.</li>\n\t<li>In plant cells, the <strong>phragmoplast</strong> guides the formation of a cell plate, which eventually develops into a separating cell wall.</li>\n\t<li>The <strong>G0 phase</strong> is a resting phase where the cell is not actively preparing to divide.</li>\n\t<li>The <strong>S phase</strong> is the part of the cell cycle where DNA replication occurs.</li>\n</ul>\n</div>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "When a cell divides by meiosis it produces ______ new cells.&nbsp;", "comp": "", "opts": ["4", "2", "3", "5"], "cidx": 0, "sol": "When a cell undergoes meiosis, it divides twice to produce four cells, each containing half the original amount of genetic information. This process is crucial for the production of gametes or sex cells. Meiosis takes place in the testes and ovaries of humans, and the end result is four haploid cells. It is different from mitosis, which produces two diploid cells. Oscar Hertwig first described the process of meiosis in the mid-1870s.", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "What is the role of ribosomes of a polysome?", "comp": "", "opts": ["Translate the mRNA into proteins", "Help in making DNA", "Help in DNA replication", "Create rRNA"], "cidx": 0, "sol": "<p>The correct answer is&nbsp;<span style=\"\"><u><strong>Translate the mRNA into proteins</strong></u>.</span></p>\n\n<p><span style=\"\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></span></p>\n\n<ul>\n\t<li><strong><span style=\"\">Ribosomes of a Polysome&nbsp;</span></strong>\n\n\t<ul style=\"margin-left: 40px;\">\n\t\t<li>The <strong>cellular organelles</strong> known as<strong> ribosomes</strong> are made up of <strong>proteins and rRNA</strong>.</li>\n\t\t<li>Before they bind to mRNA, they are <strong>present free in the cytoplasm</strong>.</li>\n\t\t<li>Multiple ribosomes that are joined to the<strong> mRNA </strong>and contain developing <strong>polypeptide chains</strong> are known as<strong> polysomes</strong>.</li>\n\t\t<li>A <strong>polysome</strong> is made up of<strong> </strong>all the ribosomes that translate a <strong>single mRNA into many polypeptides (Proteins)</strong> at once.</li>\n\t\t<li>The <strong>coding portion of mRNA</strong>, which is transported by <strong>multiple&nbsp;</strong>ribosomes, forms a <strong>polysome</strong>.</li>\n\t\t<li>The presence of<strong> so much mRNA in cells </strong>is due to the <strong>ability of multiple ribosomes</strong> to participate in an <strong>mRNA&#39;s function</strong>.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Prokaryotic, eukaryotic, and membrane-bound polrsomes</strong> all have different structures of multiple ribosomes also known as <strong>polyribosomes</strong>.</li>\n\t<li><strong>Bacterial polysomes</strong> are found in<strong> double-row formations in prokaryotic cells</strong>, and ribosomes are in touch with one another within smaller subunits.</li>\n\t<li>Planar double row<strong> polysomes and densely packed 3D helices</strong>, which are similar to that of prokaryotic polysomes, are also present in<strong> eukaryotic cells</strong>.</li>\n\t<li><strong>Polysomal profiling</strong> is a method for<strong> </strong>determining the level of gene expression by monitoring polysome activity.&nbsp;</li>\n\t<li>Translation is stopped using polysomal profiling, and <strong>sucrose gradient </strong>is then used to separate the resultant cells so that they may be collected by centrifugation.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "Which of the following statements about the Mitochondria is INCORRECT?&nbsp;", "comp": "", "opts": ["ATP generating chemical reactions get enhanced by the deeply folded surface area of the mitochondria.&nbsp;", "The body uses energy stored in ATP for making new chemical compounds and for mechanical work.&nbsp;", "Mitochondria have two membrane coverings.&nbsp;", "Mitochondria are not capable of making their own proteins.&nbsp;"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>Mitochondria are not capable of making their own proteins</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li><strong>Mitochondria are indeed capable of making their own proteins.</strong> They contain their own DNA and ribosomes which allow them to synthesize certain proteins independently.</li>\n\t<li>The mitochondrial inner membrane is extensively folded into structures known as cristae, which increase the surface area available for ATP-generating chemical reactions.</li>\n\t<li>The energy stored in ATP is used by the body for various processes, including the synthesis of new chemical compounds and mechanical work.</li>\n\t<li><strong>Mitochondria have a double-membrane structure.</strong> The outer membrane is smooth, while the inner membrane is folded into cristae.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Mitochondria</strong>\n\n\t<ul>\n\t\t<li>Mitochondria are known as the powerhouses of the cell because they generate most of the cell&#39;s supply of ATP, used as a source of chemical energy.</li>\n\t\t<li>They are unique in having their own genome, which is similar to bacterial genomes, and they reproduce independently of the cell in which they reside.</li>\n\t\t<li>The double-membrane structure of mitochondria consists of an outer membrane and a highly convoluted inner membrane, the latter being the site of the electron transport chain and ATP synthesis.</li>\n\t\t<li>The inner membrane folds over many times to create layered structures called cristae. The increased surface area of these cristae enhances the mitochondrion&#39;s ability to produce ATP.</li>\n\t</ul>\n\t</li>\n\t<li><strong>ATP (Adenosine Triphosphate)</strong>\n\t<ul>\n\t\t<li>ATP is the energy currency of the cell, providing the energy needed for many biochemical cellular processes including muscle contraction and protein synthesis.</li>\n\t\t<li>It is produced primarily in the mitochondria through a process known as oxidative phosphorylation, which occurs along the inner mitochondrial membrane.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Protein Synthesis in Mitochondria</strong>\n\t<ul>\n\t\t<li>Mitochondria have their own ribosomes and DNA, which enable them to produce some of their own proteins independently of the cell&#39;s nuclear DNA.</li>\n\t\t<li>The mitochondrial DNA encodes for a small number of proteins essential for the organelle&rsquo;s function, particularly those involved in the electron transport chain.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "Which is the major microtubule-organising centre (MTOC) in eukaryotic cells involved in various cellular processes, including sensory reception, locomotion, and embryogenesis?", "comp": "", "opts": ["Lysosomes", "Centrosome", "Plastids", "Vacuoles"], "cidx": 1, "sol": "<p>The correct option is <u><strong>Centrosome.</strong></u></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><span style=\"\"><strong>Centrosome&nbsp;</strong>is the major microtubule-organising centre (MTOC) in eukaryotic cells involved in various cellular processes, including sensory reception, locomotion, and embryogenesis.</span></li>\n\t<li>MTOC is a structure in eukaryotic cells from which microtubules emerge.</li>\n\t<li>Some MTOCs are:\n\t<ul>\n\t\t<li><span style=\"font-weight: 700;\">Centrosomes&nbsp;</span>(in animals)</li>\n\t\t<li><span style=\"font-weight: 700;\">Basal body</span>&nbsp;(in cilium)</li>\n\t\t<li><span style=\"font-weight: 700;\">Spindle pole body&nbsp;</span>(in yeasts)</li>\n\t</ul>\n\t</li>\n\t<li>Cell is the basic unit of life. there are two types of cells:\n\t<ul>\n\t\t<li><strong>Prokaryotic cells</strong> (cells without a nucleus)</li>\n\t\t<li><strong>Eukaryotic cells</strong> (cells with a nucleus)</li>\n\t</ul>\n\t</li>\n\t<li><span style=\"color: rgb(51, 51, 51); \"><strong>Robert Hooke</strong> discovered the cell in 1665. Later <strong>Anton Van Leeuwenhoek</strong> noted that the cells are live.&nbsp;In 1883, <strong>Robert Brown</strong>, a&nbsp;Scottish botanist, described the nucleus inside the cell.</span></li>\n</ul>\n\n<p><span style=\"color: rgb(51, 51, 51); \"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></span></p>\n\n<ul>\n\t<li><span style=\"color: rgb(51, 51, 51); \"><strong>Lysosomes</strong>, also known as the Suicide bags of the cell.</span></li>\n\t<li><span style=\"color: rgb(51, 51, 51); \"><strong>Plastid</strong>&nbsp;is a membrane-bound organelle found in plant cells.</span></li>\n\t<li><span style=\"color: rgb(51, 51, 51); \"><strong>Vacuoles</strong>,&nbsp;store food, water, and other waste materials in the cell.</span></li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "<p>Which of the following statements is correct regarding cell membrane?</p>\n\n<p>I. The membrane is selectively permeable to some molecules present on either side of&nbsp;it.</p>\n\n<p>II. Water may also move across this membrane from lower to higher concentration.</p>\n", "comp": "", "opts": ["Only II", "Only I", "Neither I nor II", "Both I and II"], "cidx": 1, "sol": "<p>The cell membrane is a thin, flexible barrier that separates the inside of a cell from its external environment. It is selectively permeable, meaning that it allows some substances to pass through while preventing others from entering or leaving the cell.</p>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "In animal cells, which membrane-bound cell organelles are generally smaller and help to separate waste products?", "comp": "", "opts": ["Plastids", "Cytosols", "Golgi apparatus", "Vacuoles"], "cidx": 3, "sol": "<p>The correct answer is&nbsp;<u><strong>Vacuoles</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>A vacuole </strong>is a <strong>membrane-bound cell organelle</strong>.</li>\n\t<li>In <strong>animal cells</strong>, <strong>vacuoles </strong>are generally <strong>small </strong>and <strong>help sequester waste products</strong>.</li>\n\t<li>In <strong>plant cells</strong>, vacuoles <strong>help maintain water balance</strong>.</li>\n\t<li><strong>Sometimes </strong>a <strong>single vacuole </strong>can take <strong>up most of the interior space </strong>of the <strong>plant cell</strong>.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><u><strong>Plastids</strong></u>\n\n\t<ul>\n\t\t<li><strong>Plastids </strong>are <strong>double-membrane organelles </strong>that are <strong>found </strong>in the <strong>cells of plants and algae</strong>.</li>\n\t\t<li><strong>Plastids </strong>are responsible for manufacturing and <strong>storing food</strong>.</li>\n\t</ul>\n\t</li>\n\t<li><u><strong>Cytosols</strong></u>\n\t<ul>\n\t\t<li>The <strong>cytosol </strong>is the <strong>liquid medium contained </strong>within a cell.</li>\n\t\t<li>The <strong>cytosol </strong>is a <strong>component of the cytoplasm</strong>.</li>\n\t</ul>\n\t</li>\n\t<li><u><strong>Golgi apparatus</strong></u>\n\t<ul>\n\t\t<li>The <strong>Golgi apparatus</strong>, also known as the <strong>Golgi complex</strong>, <strong>Golgi body</strong>, or simply the <strong>Golgi</strong>, is an <strong>organelle </strong>found in <strong>most eukaryotic cells</strong>.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "Which thin flexible barrier separates the internal environment of the cell from the extracellular fluid?", "comp": "", "opts": ["<span style=\"\">Cytoplasmic membrane</span>", "<span style=\"\">Restriction barrier</span>", "<span style=\"\">Nuclear envelope</span>", "<span style=\"\">Plasma membrane</span>"], "cidx": 3, "sol": "The plasma membrane is a thin, flexible barrier that selectively permits hydrophobic and small polar molecules to diffuse through the lipid layer. It inhibits the passage of ions and large polar molecules, but integral proteins facilitate their transport through passive or active transport. Selective permeability filters molecular transport, and membranes can be permeable, or semi-permeable.", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "Which of the following modes of reproduction is carried out by specialised cells that proliferate to make large number of cells?", "comp": "", "opts": ["Layering", "Fission", "Fragmentation", "Regeneration"], "cidx": 3, "sol": "<p>The correct answer is&nbsp;<u><strong>Regeneration</strong></u>.</p>\n\n<ul>\n\t<li><strong>Regeneration</strong> is carried out by <strong>specialized cells</strong> that proliferate to <strong>make a large number of cells</strong>.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>Later on&nbsp;these cells <strong>differentiate </strong>and form <strong>different cell types and tissues</strong>.</li>\n\t<li><strong>These steps occur in an ordered sequence called development</strong>.</li>\n\t<li>There are<strong> four methods</strong> of <strong>Asexual Reproduction</strong>&nbsp;<strong>fission, fragmentation, regeneration, and spore formation.</strong></li>\n\t<li>In regeneration events like the<strong> repair of damaged cells, replacement of affected body parts</strong> that are <strong>broken and whole organisms can be reconstructed from a small fragment.</strong></li>\n\t<li><strong>Examples of the organism</strong> in which this <strong>process happens are hydra and planaria.</strong></li>\n</ul>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span>&nbsp;</strong></p>\n\n<ul>\n\t<li>Layering: In this method, practiced in plants, a stem attached to the parent plant branches out to form new plants. Specialized cells are not involved in making a large number of cells here.</li>\n\t<li><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage659fca8e31d06b406bf9f39b.png\" /></li>\n\t<li>Fission: This is an asexual mode of reproduction where an organism splits into two or more separate entities. The process does not specifically involve specialised cells proliferating to make many cells.</li>\n\t<li><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage659fca8e31d06b406bf9f39c.png\" /></li>\n\t<li>Fragmentation: In fragmentation, the parent organism breaks into fragments, each capable of growing into a new organism. Although this might sound similar to regeneration, specialised cells specifically proliferating to form many cells is not the primary scenario, unlike in regeneration.</li>\n\t<li><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage659fca8e31d06b406bf9f3bd.png\" /></li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "Which cell organelle is defined as the small round organelle that undergoes oxidation reaction to produce hydrogen<br />\nperoxide?", "comp": "", "opts": ["Centrosome", "Vacuole", "Nucleus", "Peroxisomes"], "cidx": 3, "sol": "Peroxisomes are small, membrane-bound organelles containing enzymes crucial for various metabolic reactions, such as the oxidation of fatty acids and amino acids. They play a significant role in detoxifying harmful substances and in lipid metabolism. During these processes, peroxisomes produce hydrogen peroxide, which is subsequently broken down by the enzyme catalase. In contrast, centrosomes assist in cell division and the formation of cilia and flagella, vacuoles store water and molecules in plant cells, and the nucleus regulates cellular activities and differentiates cells into prokaryotic or eukaryotic based on its presence.", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "Select the INCORRECT statement from the following about mitosis.", "comp": "", "opts": ["Each cell called mother cell divides to form two identical daughter cells.", "It helps in growth and repair of tissues in organisms.", "The daughter cells have half the number of chromosomes as mother cell.", "Cells divide for growth."], "cidx": 2, "sol": "The incorrect statement about mitosis is \"The daughter cells have half the number of chromosomes as the mother cell,\" characteristic of meiosis, not mitosis. Mitosis produces two genetically identical, diploid daughter cells, maintaining chromosome number, essential for growth, tissue repair, and development, unlike meiosis, which forms haploid cells.", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "________ include/s glycogen, poly-&beta;- hydroxybutyrate granules, sulphur granules and gas vesicles.", "comp": "", "opts": ["Mesosomes", "Cytoplasm", "Plasma membrane", "Flagella"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<strong><u>Cytoplasm.</u></strong></p>\n\n<p><strong><u><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></u></strong></p>\n\n<ul>\n\t<li><strong>Cytoplasm&nbsp;</strong>include/s glycogen, poly-&beta;- hydroxybutyrate granules, sulphur granules and gas vesicles.</li>\n\t<li>The cytoplasm consists of material outside the nucleus in the cell.</li>\n\t<li>It consists of the <strong>cytoskeleton, ribosomes, and centrosome.</strong></li>\n\t<li>The cytoplasm is a gelatin-like, semi-transparent fluid.</li>\n\t<li>It contains organelles such as mitochondrion, Golgi apparatus, vacuoles, plastids, cell wall, and the endoplasmic reticulum.</li>\n</ul>\n\n<p>&nbsp;</p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "Which of the following cell organelles possesses their own DNA and can synthesise protein for their functions?", "comp": "", "opts": ["Endoplasmic reticulum", "Chloroplast", "Centrosome", "Golgi complex"], "cidx": 1, "sol": "Chloroplasts possess their own circular DNA and ribosomes, enabling them to synthesize proteins independently for their functions. Found in plant cells and eukaryotic algae, chloroplasts play a role in photosynthesis. Their double membranes and DNA structure support the endosymbiotic theory of their origin.", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "Choose the correct sequence for central dogma.&nbsp;", "comp": "", "opts": ["Protein translation, DNA Replication, m-RNA transcription&nbsp;", "DNA Replication, m-RNA transcription, Protein translation&nbsp;", "m-RNA transcription, Protein translation, DNA Replication&nbsp;", "m-RNA transcription, DNA Replication, Protein translation&nbsp;"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong><span style=\"color: rgb(88, 89, 91);   \">DNA Replication, mRNA transcription, Protein translation .</span></strong></u></p>\n\n<p><u><strong><span style=\"color: rgb(88, 89, 91);   \"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></span></strong></u></p>\n\n<ul>\n\t<li>The <strong>process by which DNA is copied to RNA</strong> is called <strong>transcription</strong>, and that by which <strong>RNA is used to produce proteins</strong> is called <strong>translation</strong>.</li>\n\t<li>The major steps of transcription are&nbsp;<strong>initiation, promoter clearance, elongation, and termination</strong>.</li>\n\t<li>Essentially, what happens during transcription is that&nbsp;<strong>an mRNA &ldquo;copies down&rdquo; the instructions for making a protein</strong> from DNA.</li>\n\t<li>DNA replication is&nbsp;the <strong>process by which the genome&#39;s DNA is copied</strong> in cells.</li>\n\t<li>The process of translation can be seen as&nbsp;the <strong>decoding of instructions for making proteins</strong>, involving mRNA in transcription as well as tRNA.</li>\n</ul>\n\n<p><img alt=\"An Introduction to DNA Transcription\" src=\"https://storage.googleapis.com/tb-img/production/23/07/F2_SSC_Arbaz_19-7-23_Satya_D9.png\" style=\"width: 408px; height: 325px;\" /></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li>Deoxyribonucleic acid (abbreviated DNA) is&nbsp;the <strong>molecule that carries genetic information</strong> for the development and functioning of an organism.</li>\n\t<li>Ribonucleic acid (abbreviated RNA) is&nbsp;a <strong>nucleic acid present in all living cells</strong> that has structural similarities to DNA.</li>\n\t<li><strong>Proteins</strong> are&nbsp;made up of hundreds or thousands of <strong>smaller units called amino acids</strong>, which are <strong>attached to one another in long chains</strong>.</li>\n\t<li>Proteins are <strong>20 different types of amino acids</strong> that can be combined to make a protein.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "A Eukaryotic cell has membrane bound organelles, including a nucleus, which allow cellular processes to be carried out in _________", "comp": "", "opts": ["Bifurcation", "Isolation", "Inclusion", "Cassation"], "cidx": 1, "sol": "The correct answer is Isolation.\u00a0Eukaryotic cells contain collections of proteins that function as a unit called organelles.\u00a0Some of these organelles are\u00a0surrounded by a membrane similar in structure to the cell membrane but with a different composition of protein and phospholipid.", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "Which cytologist demonstrated the role of the endoplasmic reticulum (ER) in protein processing and sorting in a variety of cells in the 1960s?", "comp": "", "opts": ["Ralph M Steinman", "George E Palade", "Nettie Stevens", "Cyril Darlington"], "cidx": 1, "sol": "<p>The correct answer is<u><strong>&nbsp;George E Palade</strong></u>.</p>\n<span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span>&nbsp;\n\n<ul>\n\t<li><strong>George E Palade:-</strong>\n\n\t<ul>\n\t\t<li>He was a Romanian-American cell biologist who demonstrated the role of the endoplasmic reticulum (ER) in protein processing and sorting in the 1960s.</li>\n\t\t<li>Palade&#39;s discovery led to the understanding of how proteins are made, modified, and transported within cells.</li>\n\t\t<li>He was awarded the Nobel Prize in Physiology or Medicine in 1974 for his work on the structure and function of cells.</li>\n\t\t<li>Palade&#39;s research also paved the way for further studies on the mechanisms of protein synthesis and secretion, as well as the development of treatments for diseases related to protein misfolding and trafficking.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "By what name are the flat membrane-enclosed sacs present in the Golgi apparatus known?", "comp": "", "opts": ["Lamellae&nbsp;", "Cisternae", "Cristae", "Stroma"], "cidx": 1, "sol": "The correct answer is <u><strong>Cisternae</strong></u>\n\n<div>\n<p><span style=\"display: flex; gap: 6px; align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle; font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Cisternae</strong> are the flat, membrane-enclosed sacs that are a characteristic feature of the Golgi apparatus.</li>\n\t<li>The Golgi apparatus is an essential cellular organelle involved in the modification, sorting, and packaging of proteins and lipids.</li>\n\t<li>Each stack of cisternae has a distinct polarity with a cis face (receiving side) and a trans face (shipping side).</li>\n\t<li>The cisternae play a crucial role in the transport and processing of cellular materials.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Lamellae</strong> are thin layers, plates, or discs in various structures, but not specific to the Golgi apparatus.</li>\n\t<li><strong>Cristae</strong> are the folds in the inner membrane of mitochondria, increasing the surface area for ATP production.</li>\n\t<li><strong>Stroma</strong> refers to the fluid-filled space in chloroplasts surrounding the thylakoid membranes, involved in the synthesis of organic molecules.</li>\n</ul>\n</div>\n", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "In 1873, who published the first photograph of nerve tissue stained with the black reaction technique, describing a whole nerve cell?", "comp": "", "opts": ["Gunter Blobel&nbsp;", "Camillo Golgi", "William Harvey", "Paul Ehrlich&nbsp;"], "cidx": 1, "sol": "The correct answer is <strong>Camillo Golgi</strong>.\n\n<p><span style=\"display: flex; gap: 6px; align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle; font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Camillo Golgi</strong> developed the black reaction technique (also known as Golgi&#39;s method) in 1873, which was a major advancement in neuroanatomy.</li>\n\t<li>This staining technique made it possible to visualize the detailed structure and organization of nerve cells and their intricate networks.</li>\n\t<li>The black reaction involves using silver chromate to stain a few cells in their entirety, allowing for the observation of individual neurons against a transparent background.</li>\n\t<li>This method was instrumental in establishing the neuron doctrine, which states that the neuron is the basic structural and functional unit of the nervous system.</li>\n\t<li>Golgi shared the Nobel Prize in Physiology or Medicine in 1906 with Santiago Ram&oacute;n y Cajal for their work on the structure of the nervous system.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li>The <strong>Golgi apparatus</strong>, an important cellular organelle involved in modifying, sorting, and packaging proteins and lipids for secretion or delivery to other organelles, was also discovered by Camillo Golgi.</li>\n\t<li>Golgi&#39;s contributions to cell biology and neuroscience are foundational, with the Golgi method continuing to influence neuroscientific research well into the 20th century and beyond.</li>\n\t<li>His work laid the groundwork for understanding the complex connectivity and functions of the nervous system, influencing both basic science and clinical approaches to neurological diseases.</li>\n\t<li>The Golgi method&#39;s ability to selectively stain neurons is still appreciated for its utility in highlighting the intricate details of cell morphology and connectivity.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "Antibiotics are NOT effective on a virus as a virus lacks _____.&nbsp;", "comp": "", "opts": ["cilia", "plasmid", "genetic material", "cell wall"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>cell wall</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>&nbsp;Antibiotics are not effective on a virus as it lacks a cell wall.</li>\n\t<li><strong>How antibiotics work</strong>\n\t<ul>\n\t\t<li>They are used to t<strong>reat infections caused by bacteria</strong>.</li>\n\t\t<li>There ar<strong>e two types</strong> of antibiotics that work to stop bacterial infections.</li>\n\t\t<li>Some slow down the growth of bacteria and damage their ability to reproduce and spread.</li>\n\t\t<li>While others kill the bacteria by destroying the<strong> bacteria cell walls.</strong> The choice of antibiotic depends on the type of bacteria.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Viruses </strong>are different from bacteria; they have a different structure and a different way of surviving. <strong>Viruses don&rsquo;t have cell walls that can be attacked by antibiotics.<strong>\u200b</strong></strong></li>\n</ul>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/important-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Important Points</u></span></strong></span></strong></p>\n\n<ul>\n\t<li>Antibiotics were discovered by <strong>Alexander Fleming in 1928</strong>.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "What is the length of a bacterial cell?", "comp": "", "opts": ["3 to 5 &micro;m", "1 to 40 &micro;m", "30 to 50 &micro;m", "0 to 3 &micro;m"], "cidx": 0, "sol": "Bacteria are diverse, single-celled prokaryotes ranging in size from 3 to 5 \u00b5m. They come in various shapes, including cocci (spherical), bacilli (rod-shaped), and spirilla (spiral-shaped). Bacteria can reproduce rapidly through binary fission and can exchange genetic material via transformation, transduction, and conjugation. They play critical roles in ecosystems, including nutrient cycling, nitrogen fixation, and supporting human health through the gut microbiome.", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "On which of the following component of chloroplast is chlorophyll arranged?", "comp": "", "opts": ["Thylakoids", "Matrix", "Stroma", "Cell Membrane"], "cidx": 0, "sol": "Chlorophyll is primarily arranged in the thylakoids of the chloroplast, which are membrane-bound compartments inside chloroplasts and cyanobacteria. Thylakoids are the site of the light-dependent reactions of photosynthesis and contain chlorophyll and other pigments that capture light energy. The chloroplast is an organelle found in plant cells and eukaryotic algae that conduct photosynthesis. The stroma, which surrounds the thylakoids, is involved in the synthesis of organic molecules from carbon dioxide and water. The matrix refers to the internal structure of mitochondria, and the cell membrane separates the interior of all cells from the outside environment.", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 126000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

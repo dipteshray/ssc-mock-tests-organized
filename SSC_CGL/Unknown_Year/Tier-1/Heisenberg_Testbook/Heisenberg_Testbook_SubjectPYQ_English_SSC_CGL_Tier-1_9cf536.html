@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Puzzle - Seating Arrangement</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">45:00:00</div>
+      <div class="hdr-testname">Puzzle - Seating Arrangement</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Puzzle - Seating Arrangement</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Puzzle - Seating Arrangement</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Puzzle - Seating Arrangement</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">45:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 1, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "<p>6 friends are sitting around a circular table. Vini, Urja and Tanvi are sitting facing the centre and two out of Abhay, Bala and Chan are not sitting facing the centre. Vini is sitting second to the left of Chan. Urja is sitting second to the right of Abhay. Bala is sitting third to the left of Tanvi. Chan is sitting second to the right of Tanvi. Abhay is sitting next to Vini.</p>\n\n<p>Who is sitting fourth to the right of Chan?</p>\n", "comp": "", "opts": ["Tanvi", "Urja", "Vini", "Bala"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/05/F1_SSC_PriyaSs%20_23_5_24_D10.png\" style=\"color: rgb(33, 37, 41); width: 259px; height: 255px;\" /></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Here, in both cases '<span style=\"font-weight: bolder;\">Vini</span>' is sitting fourth to the right of Chan.</p>\n", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "Six friends - A,B, C, D, E and F - are sitting around a circular table, facing towards the centre of the table. D and C are immediate neighbours of A. B is second to the right of A. F is an immediate neighbour of E, and fourth to the left of D. What is the position of E?", "comp": "", "opts": ["Third to the left of A", "Immediate left of C", "Second to the right of A", "Immediate neighbour of D and F"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/09/F3_Savira_SSC_11-9-24_D22.png\" style=\"color: rgb(33, 37, 41); width: 199px; height: 232px;\" /></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Thus, according to the final arrangement, the position of E is:</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Option 2)<span style=\"font-weight: bolder;\">\u00a0Immediate left of C\u00a0\u2192 Correct</span></p>\n", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "P, Q, R, S, T and U are sitting around a circular table facing the centre. Only one person sits between T and R. Only one person sits between R and U. Only two people sit between U and Q. S sits to the immediate left of T. Who sits second to the left of P?", "comp": "", "opts": ["S", "Q", "R", "U"], "cidx": 1, "sol": "<p>The final arrangement is,</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/08/F1_Savita_SSC_16-8-24_D20.png\" style=\"color: rgb(33, 37, 41); width: 203px; height: 239px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Here, we can see that Q sits\u00a0</span><span style=\"color: rgb(33, 37, 41);\">second to the left of P.</span></p>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "J, K, L, M, O and P are sitting around a circular table facing the centre. Both L and M are immediate neighbours of J. Only one person sits between M and P. O sits second to the right of J. O is not an immediate neighbour of L. Who is sitting to the immediate right of K?", "comp": "", "opts": ["L", "J", "P", "O"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\"><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage66ea4b417961cc23689afac2.png\" /><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/25/05/Task%20Id%20685%20Daman%20%28106%29.png\" style=\"color: rgb(33, 37, 41); width: 200px; height: 235px;\" /></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Thus, L\u00a0is sitting to the immediate right of K.</p>\n", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "Five friends P, Q, R, S and T are sitting around a circular table facing the centre of the table. S is sitting to the immediate right of P. T is sitting to the immediate left of Q. P is between S and R. Who is sitting at the second place to the left of T?", "comp": "", "opts": ["R", "Q", "P", "S"], "cidx": 2, "sol": "<p>From the statements:</p>\n\n<p>S is sitting to the immediate right of P.</p>\n\n<p>P is between S and R.\u00a0</p>\n\n<p>T is sitting to the immediate left of Q.\u00a0</p>\n\n<p>Thus, the final arrangement will be:</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/01/F1_Resham_11.1.21_Pallavi_D5.png\" style=\"width: 174px; height: 170px;\" /></p>\n\n<p>P is sitting at the second place to the left of T.</p>\n\n<p>Hence,\u00a0<strong>P\u00a0</strong>is correct answer.</p>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "<p>Six students - P, Q, R, S T and U - are sitting around a circular table, facing the centre.</p>\n\n<p>Q is sitting second to the left of U.</p>\n\n<p>T is sitting third to the right of P.</p>\n\n<p>P is the immediate neighbour of Q and U.</p>\n\n<p>S is not the neighbour of U.</p>\n\n<p>Who among the following is the neighbour of both U and T?</p>\n", "comp": "", "opts": ["P", "S", "R", "Q"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/11/F1_SSC__Priya_30_10_24_D2.png\" style=\"color: rgb(33, 37, 41); width: 213px; height: 236px;\" /></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Thus, according to the final arrangement R\u00a0is the neighbour of both U and T.</p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "<p>Six students Shree, Dayal, Sharda, Tripti, Shrishti and Manju are sitting around a circular table facing the centre (not necessarily in the same order). Shree is an immediate neighbour of both Dayal and Tripti. Manju is sitting second to the right of Dayal. Shrishti is an immediate neighbour of both Manju and Tripti.</p>\n\n<p>Who is an immediate neighbour of Sharda?&nbsp;</p>\n", "comp": "", "opts": ["Dayal", "Shree", "Tripti", "Shrishti"], "cidx": 0, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F1_Savita_SSC_29-3-24_D17.png\" style=\"width: 271px; height: 228px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Here, Manju and Dayal\u00a0</span><span style=\"color: rgb(33, 37, 41);\">immediate neighbour of Sharda but Manju is not given in the option.</span></p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "<p>Bindu, Krunal, Manoj, Nilima, Omkar, Piyush, Renu and Sundar are sitting around a circular table facing the centre, but not necessarily in the same order. Sundar sits second to the right of Piyush. Only two persons sit between Sundar and Krunal. Omkar sits opposite to Bindu, who is not an immediate neighbour of Krunal and Piyush. Nilima is the immediate neighbour of Krunal and Bindu. Manoj sits third to the right of Bindu.&nbsp;&nbsp;</p>\n\n<p>Which of the following statements is/are true?&nbsp;</p>\n", "comp": "", "opts": ["Omkar is the immediate neighbour of Renu and Piyush.", "Sundar sits third to the right of Krunal.", "Nilima sits opposite the one who sits to the immediate left of Renu.&nbsp;", "Manoj is the immediate neighbour of Nilima.&nbsp;"], "cidx": 2, "sol": "<p><strong>Eight person:&nbsp;</strong><span style=\"\">Bindu, Krunal, Manoj, Nilima, Omkar, Piyush, Renu and Sundar are sitting around a circular table facing the centre.</span></p>\n\n<p>1) Sundar sits second to the right of Piyush.</p>\n\n<p><img src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Savita_SSC_1-8-22_D1.png\" /></p>\n\n<p>2) Only two persons sit between Sundar and Krunal.</p>\n\n<p><img src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Savita_SSC_1-8-22_D2.png\" />&nbsp;</p>\n\n<p>3)&nbsp;Omkar sits opposite to Bindu, who is not an immediate neighbour of Krunal and Piyush.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F1_Madhuri_Railways_16.08.2022_D1_V2.png\" style=\"height: 206px; width: 259px;\" /></p>\n\n<p>4) Manoj sits third to the right of Bindu.</p>\n\n<p>5)&nbsp;<span style=\"\">&nbsp;Nilima is the immediate neighbour of Krunal and Bindu.</span></p>\n\n<p>6) Only one position left for Renu.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/09/F3_Savita_SSC_5-9-22_D1_V3.png\" style=\" height: 226px; width: 299px;\" /></p>\n\n<p>Clearly,&nbsp;Nilima sits opposite the one who sits to the immediate left of Renu.<span style=\"\">&nbsp;</span></p>\n\n<p>Hence, the correct answer is&nbsp;<strong>&quot;<span style=\"\">Nilima sits opposite the one who sits to the immediate left of Renu&quot;.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "Eight friends K, L, M, N, O, P, Q and R, are sitting anticlockwise around a circular table facing the center in the same sequence with equal distances between them. If M is sitting in the southwest direction, then in which direction is P sitting?&nbsp;", "comp": "", "opts": ["East", "Southeast", "North-east", "South"], "cidx": 0, "sol": "<p><strong>Eight friends:&nbsp;</strong><span style=\"\">K, L, M, N, O, P, Q and R</span></p>\n\n<p><span style=\"\">1) All are sitting anticlockwise around a circular table facing the center in the same sequence with equal distance. If M is sitting in the southwest direction.</span></p>\n\n<p><span style=\"\">(We have to arrange accordingly so that M is to&nbsp;face toward southwest direction)</span></p>\n\n<p><span id=\"docs-internal-guid-cfff9f2f-7fff-f4b2-5049-4de73877dbc1\"><span style=\"  background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; vertical-align: baseline; white-space: pre-wrap;\"><span style=\"border:none;display:inline-block;overflow:hidden;width:400px;height:298px;\"><img src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Madhuri_SSC_15.07.2022_D10.png\" style=\"margin-left: 0px; margin-top: 0px; width: 342px; height: 277px;\" /></span></span></span></p>\n\n<p><span style=\"\">Clearly, we can see that&nbsp;<strong>P&nbsp;</strong>is sitting in&nbsp;<strong>East&nbsp;</strong>direction.</span></p>\n\n<p><span style=\"\">Hence, the correct answer is&nbsp;<strong>&quot;East&quot;.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "Eight friends A, B, C, D, E, F, G and H are sitting anticlockwise in the same sequence around a circular table at equal distances from each other. All are facing the centre of the table. If G is sitting in the Southeast, then in which direction is A sitting?", "comp": "", "opts": ["South-west", "North-west", "North", "North-east"], "cidx": 3, "sol": "<p>Arranging them according to the given information,</p>\n\n<p>Eight friends A , B, C, D,&nbsp;E, F, G and H are sitting anticlockwise,</p>\n\n<p>1. G is sitting in the Southeast direction,</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/01/F1_Shraddha_Prashant_20.01%20%2841%29.png\" style=\"height: 347px; width: 442px;\" /></p>\n\n<p>2. In the same sequence around a circular table at equal distances,</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/01/F1_Shraddha_Prashant_20.01%20%2842%29.png\" style=\"height: 343px; width: 441px;\" /></p>\n\n<p>So, A is sitting in the North - east direction.</p>\n\n<p>Hence, the correct answer is <strong>&quot;North - east&quot;</strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "Seven friends, Subhi, Prince, Ketan, Vishal, Mahima, Krish and Naitik, are sitting around a circular table with their backs towards the centre. Subhi is sitting to the immediate right of Prince. Naitik and Krish are not sitting to the immediate left or right of Vishal. Vishal is sitting third to the left of Prince. Mahima is sitting to the immediate right of Vishal. Who is sitting third to the right of Prince?", "comp": "", "opts": ["Naitik", "Krish", "Ketan", "Mahima"], "cidx": 2, "sol": "<p style=\"\">The final sitting arrangement is:</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_17-6-22_D13.png\" style=\" width: 306px; height: 220px;\" /></p>\n\n<p>Thus, \u201cKetan\u201d is sitting third to the right of Prince.</p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "Eight friends P, Q, R, S, T, U, V and W are sitting clockwise around a circular table, facing the center in the same sequence at equal distances between them. If W is sitting in the north direction, then in which direction is Q sitting?", "comp": "", "opts": ["West", "South-west", "North-east", "East"], "cidx": 3, "sol": "<p><strong>Eight friends:&nbsp;</strong><span style=\"\">P, Q, R, S, T, U, V and W</span></p>\n\n<p><span style=\"\">Given information: All are&nbsp;sitting clockwise around a circular table, facing the center in the same sequence at equal distances between them. If W is sitting in the north direction.</span></p>\n\n<p><span style=\"\">Sitting arrangement is given according to given data,</span></p>\n\n<p><img src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Savita_SSC_19-7-22_D34.png\" /></p>\n\n<p>Clearly, we can see that&nbsp;<strong>Q is sitting in East direction,</strong></p>\n\n<p>Hence, the correct answer is&nbsp;<strong>&quot;East&quot;.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "A, B, C, D, E, F, G and H are sitting around a circular table facing towards centre. H is on the immediate left of A but is not neighbour of D or E. F is on immediate right of B. C is between E and F, G is neighbour of E. Who is between A and B?", "comp": "", "opts": ["G", "D", "H", "F"], "cidx": 1, "sol": "<p>Arranging them in a circular pattern according to given conditions,</p>\n\n<p>F is on immediate right of B. C is between E and F, G is neighbour of E.</p>\n\n<p>H is on the immediate left of A but is not neighbour of D or E.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/F1_S.Y_04.02.20_Savita_D7.png\" style=\"width: 227px; height: 231px;\" /></p>\n\n<p>\u2018D\u2019 is between A and B.</p>\n\n<p>Hence, \u201cD\u201d is the correct answer.</p>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "Eight friends A, B, C, D, E, F, G and H are sitting clockwise at equal distances from each other in the same sequence around a circular table facing the centre. If D is facing southwest, then who is sitting third to the right of H?", "comp": "", "opts": ["D", "E", "C", "F"], "cidx": 1, "sol": "<p>Given,</p>\n\n<p>Eight friends A, B, C, D, E, F, G and H are sitting clockwise at equal distances from each other in the same sequence around a circular table facing the centre.</p>\n\n<p>If D is facing SouthWest,</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/01/F2_%20Rishabh_05-01-21_Savita_D68.png\" style=\"height: 230px; width: 225px;\" /></p>\n\n<p>Here we see <strong>E&nbsp;</strong>is sitting third to the right of H.</p>\n\n<p><strong>Hence, the correct answer is E.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "<p>Six students Meera, Jigyasa, Tarun, Naina, Shambhavi and Avni are sitting around a circular table facing the centre (not necessarily in the same order). Shambhavi is an immediate neighbour of both Jigyasa and Avni. Tarun is sitting third to the left of Jigyasa. Meera is sitting second to the right of Avni.</p>\n\n<p>Who is sitting second to the left of Jigyasa?</p>\n", "comp": "", "opts": ["Meera", "Naina", "Avni", "Tarun"], "cidx": 0, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F4_Savita_SSC_1-3-24_D181.png\" style=\"color: rgb(33, 37, 41); width: 266px; height: 235px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">So, \"Meera\" is sitting second left of Jigyasa.</span></p>\n", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "Six friends are sitting in a circle. All of them are facing the centre. Kanak sits third to the right of Sona. Kapil is an immediate neighbour of Mani. Goldy sits second to the right of Mani. Sona is an immediate neighbour of Kapil and Suresh. Who sits second to the left of Kanak?", "comp": "", "opts": ["Suresh", "Kapil", "Goldy", "Mani"], "cidx": 1, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F2_SSC_Ishita_14.03.24_D13.png\" style=\"color: rgb(33, 37, 41); width: 256px; height: 227px;\" /></p>\n\n<p>Kapil sits second to the left of Kanak.</p>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "Six friends, David, Bhanu, Minto, Krita, John and Nisan, are sitting in a circle with their backs towards the centre. David and Minto are sitting to the immediate left and right of Bhanu, respectively. John is not sitting to the immediate left of David. Nisan is sitting third to the right of Bhanu. Who is sitting second to the left of Bhanu?", "comp": "", "opts": ["John", "Krita", "Nisan", "Minto"], "cidx": 1, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_27-6-22_D28.png\" style=\"color: rgb(33, 37, 41); width: 242px; height: 232px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">\u00a0Krita is sitting second to the left of Bhanu.</span></p>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "Raghav, Manpreet, Sunaina, Prakrit, Vedika and Arwa are sitting around a circular table facing the centre. Raghav is second to the left of Prakrit. Manpreet is to the immediate left of Sunaina. Arwa is second to the right of Vedika. There are an equal number of persons between Raghav and Manpreet from both the ends. Who is sitting third to the left of Sunanina?", "comp": "", "opts": ["Raghav", "Vedika", "Arwa", "Prakrit&nbsp;"], "cidx": 2, "sol": "<p>Given: Six persons <span style=\"\">Raghav, Manpreet, Sunaina, Prakrit, Vedika and Arwa&nbsp;are sitting around a circular table facing the center.</span></p>\n\n<p><span style=\"\"><strong>1.</strong> Raghav is second to the left of Prakrit.</span></p>\n\n<p style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Madhuri_SSC_04.08.2022_D4.png\" style=\"width: 214px; height: 212px;\" /></p>\n\n<p style=\"\"><strong>2.</strong>&nbsp;<span style=\"\">Manpreet is to the immediate left of Sunaina. So, there are two possibilities for the position of Sunaina and Manpreet.</span></p>\n\n<ul>\n\t<li style=\"\"><strong><span style=\"\">Case(1):</span></strong></li>\n</ul>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Madhuri_SSC_04.08.2022_D5.png\" style=\"width: 273px; height: 214px;\" /></p>\n\n<ul>\n\t<li><strong>Case(2):</strong></li>\n</ul>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Madhuri_SSC_04.08.2022_D6.png\" style=\"width: 275px; height: 233px;\" /></p>\n\n<p style=\"\"><span style=\"font-weight: 700;\">3.</span>&nbsp;There are an equal number of persons between Raghav and Manpreet from both the ends.</p>\n\n<ul style=\"\">\n\t<li><span style=\"font-weight: 700;\">Case(1):&nbsp;There are an equal number of persons i.e two between Raghav and Manpreet from both the ends.</span></li>\n\t<li><span style=\"font-weight: 700;\">Case(2):&nbsp;There are an unequal number of persons between Raghav and Manpreet&nbsp;i.e one and three between Raghav and Manpreet from both the ends respectively.</span></li>\n</ul>\n\n<p><strong>&rArr; Thus </strong><span style=\"font-weight: 700; \">Case(2)</span><strong>&nbsp;will be eliminated.</strong></p>\n\n<p><strong>4.</strong>&nbsp;<span style=\"\">Arwa is second to the right of Vedika.</span></p>\n\n<ul style=\"\">\n\t<li><span style=\"font-weight: 700; \">Case(1):</span></li>\n</ul>\n\n<p style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Madhuri_SSC_04.08.2022_D7.png\" style=\"width: 275px; height: 233px;\" /></p>\n\n<p>Thus, from the final arrangement we can see that &#39;Arwa&#39; is sitting&nbsp;<span style=\"\">third to the left of Sunaina.</span></p>\n\n<p><span style=\"\">Hence, the correct answer is <strong>&quot;Arwa&quot;</strong>.</span></p>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "Eight friends, P, Q, R, S, T, U, V and W, are sitting clockwise in the same order around a circular table at equal distances between them, facing the center of the table. If S is sitting in the west, then who is sitting in the south-west direction?", "comp": "", "opts": ["P", "R", "V", "T"], "cidx": 1, "sol": "<p><strong>Eight friends:&nbsp;</strong><span style=\"\">P, Q, R, S, T, U, V and W.</span></p>\n\n<p><span style=\"\">1) Clockwise in the same order around a circular table at equal distances between them, facing the center of the table. If S is sitting in the west, then who is sitting in the south-west direction.</span><img src=\"https://storage.googleapis.com/tb-img/production/22/09/F1_Madhuri_SSC_30.08.2022_D45.png\" style=\"\" /></p>\n\n<p><span style=\"\">Clearly, R is sitting in South-west direction.</span></p>\n\n<p><span style=\"\">Hence, the correct answer is&nbsp;<strong>&quot;R&quot;.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "Eight friends, P, Q, R, S, T, U, V and W, are sitting in the same order anticlockwise around a circular table at equal distance between them, with all facing centre of the table. If Q is sitting in the south-east, then in which direction is W sitting?", "comp": "", "opts": ["North-east", "North", "South-west", "South"], "cidx": 2, "sol": "<p><span style=\"font-weight: 700; \">Given :&nbsp;</span><span style=\"\">Eight friends, P, Q, R, S, T, U, V and W, are sitting in <strong>the same order anticlockwise</strong> around a circular table at equal distance between them, with all <strong>facing centre </strong>of the table.</span></p>\n\n<ul>\n\t<li><span style=\"\">Q is sitting in the south-east</span></li>\n</ul>\n\n<p><span style=\"\">\u200b</span><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F1_Madhuri_SSC_23.08.2022_D2.png\" style=\"width: 419px; height: 330px;\" /></p>\n\n<p>&rArr; As per the final arrangement &#39;W&#39; is sitting in the south-west direction.</p>\n\n<p>Hence, <strong>&quot;South-west&quot;</strong> is the correct answer.</p>\n", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "<p>Six students Prateek, Sameer, Kabir, Ziya, Joseph, Kiran are sitting around a circular table facing the centre (not necessarily in the same order). Prateek is an immediate neighbour of both Sameer and Kabir. Ziya is sitting second to the right of Sameer. Kiran is sitting third to the left of Kabir. Joseph is an immediate neighbour of both Ziya and Kabir.</p>\n\n<p>Who is sitting to the immediate left of Joseph?</p>\n", "comp": "", "opts": ["Kabir&nbsp;", "Ziya&nbsp;", "Sameer&nbsp;", "Kiran"], "cidx": 1, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F1_ssc_Ishita_11.03.24_D96.png\" style=\"color: rgb(33, 37, 41); width: 269px; height: 230px;\" /></p>\n\n<p>Ziya is sitting to the immediate left of Joseph.</p>\n", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "<p>Six students Meera, Jigyasa, Tarun, Naina, Shambhavi and Avni are sitting around a circular table facing the centre (not necessarily in the same order). Shambhavi is an immediate neighbour of both Jigyasa and Avni. Tarun is sitting third to the left of Jigyasa. Meera is sitting second to the right of Avni.</p>\n\n<p>Who is sitting third to the right of Meera?</p>\n", "comp": "", "opts": ["Avni", "Naina", "Jigyasa", "Shambhavi"], "cidx": 3, "sol": "<p><img src=\"https:https://storage.googleapis.com/tb-img/production/24/03/F4_Savita_SSC_1-3-24_D14.png\" /><br />\n<span style=\"display: none;\">\u00a0</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">So, '<span style=\"font-weight: bolder;\">Shambhavi</span>' is sitting third to the right of Meera.</p>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "Six students are sitting around a circular table facing the centre. A is an immediate neighbour of both E and D. E sits third to the right of C. D sits third to the left of F. E is an immediate neighbour of F. B sits second to the left of E. Who sits to the immediate left of C?&nbsp;", "comp": "", "opts": ["B", "D", "E", "A"], "cidx": 1, "sol": "<p><strong>Given:&nbsp;</strong>Six students are sitting around a circular table facing the centre.</p>\n\n<p>E sits third to the right of C.</p>\n\n<p>B sits second to the left of E.</p>\n\n<p>&nbsp;<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F1_ssc_Ishita_11.03.24_D048.3.png\" style=\"width: 202px; height: 227px;\" /></p>\n\n<p>E is an immediate neighbour of F.</p>\n\n<p>A is an immediate neighbour of both E and D.</p>\n\n<p>D sits third to the left of F.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F1_ssc_Ishita_11.03.24_D49.2.png\" style=\"width: 212px; height: 229px;\" /></p>\n\n<p>Here, D sits to the immediate left of C.</p>\n\n<p>Hence, the correct answer is <em><strong>&#39;Option 2&#39;.</strong></em></p>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "Seven friends, A, B, C, D, E, F and G, are sitting around a circular table facing the centre (not necessarily in the same order). D is an immediate neighbour of B and C. A is sitting third to the right of C. E is an immediate neighbour of A and F. G is sitting immediate left of C. B is sitting third to the right of G. What is the position of G with respect to A when counted from the right side of A?", "comp": "", "opts": ["Third to the right", "Second to the right", "Third to the left", "Second to the left"], "cidx": 0, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F4_Savita_SSC_1-3-24_D61.png\" style=\"color: rgb(33, 37, 41); width: 220px; height: 224px;\" /><br />\n<span style=\"display: none;\">\u00a0</span></p>\n\n<p>So,<strong> G Third to the right of A</strong> when counted from the right side of A.</p>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "<p>Six friends are sitting in a circle. All of them are facing the centre. Kanak sits third to the right of Sona. Kapil is an immediate neighbour of Mani. Goldy sits second to the right of Mani. Sona is an immediate neighbour of Kapil and Suresh.</p>\n\n<p>Who sits to the immediate right of Goldy?&nbsp;&nbsp;</p>\n", "comp": "", "opts": ["Sona&nbsp;", "Kapil&nbsp;", "Kanak&nbsp;", "Suresh"], "cidx": 3, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/02/F3_SSC_Arbaz_26-2-24_D92.png\" style=\"color: rgb(33, 37, 41); width: 297px; height: 213px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Here, we can see that Suresh sits to the immediate right of Goldy.</span></p>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "Six students are sitting around a circular table facing the centre. Van is sitting second to the left of Luke. Luke is an immediate neighbour of both Ruth and Max. Jude is sitting second to the left of Van. Ruth is an immediate neighbour of both Luke and Van. Who is the immediate neighbour of Jude and Luke?", "comp": "", "opts": ["Ruth", "Tess", "Max", "Van"], "cidx": 2, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/12/F1_Sourav_SSC_18_12_24_D38.png\" /></p>\n\n<p>So, 'Max' is the immediate neighbour of Jude and Luke.</p>\n", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "<p>Six students - Aman, Bobby, Chintu, Gita, Pranay and Ram - are sitting around a circular table, facing the centre.</p>\n\n<p>Ram is sitting second to the right of Gita.</p>\n\n<p>Pranay is the immediate neighbour of Gita and Bobby.</p>\n\n<p>Aman is sitting third to the right of Gita. Who among the following is the immediate neighbour of both Ram and Bobby?</p>\n", "comp": "", "opts": ["Pranay", "Chintu", "Aman", "Gita"], "cidx": 2, "sol": "<p>The final arrangement is,</p>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage66abe00174e6613854cfd85b.png\" /><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/25/05/Task%20Id%20685%20Daman%20%28109%29.png\" style=\"color: rgb(33, 37, 41); width: 200px; height: 145px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Here, we can see that Aman\u00a0</span><span style=\"color: rgb(33, 37, 41);\">is the immediate neighbour of both Ram and Bobby.</span></p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "Six students are sitting around a circular table facing the centre. Bobby is an immediate neighbour of both Aryan and Kusum. Simran is an immediate neighbour of both Asviya and Sheethal. Kusum is an immediate neighbour of both Bobby and Asviya. Sheethal is an immediate neighbour of both Aryan and Simran. Who is sitting third to the left of Sheethal?", "comp": "", "opts": ["<span style=\"\">Bobby</span>", "<span style=\"\">Asviya</span>", "<span style=\"\">Aryan</span>", "<span style=\"\">Kusum</span>"], "cidx": 3, "sol": "<p><span style=\"font-weight: 700; \">Explanation:</span></p>\n\n<p>From the given information:<br />\nStep 1:&nbsp;<span style=\"\">Bobby is an immediate neighbour of both Aryan and Kusum.&nbsp;Kusum is an immediate neighbour of both Bobby and Asviya.</span><br />\n<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Madhuri_Avnessh_08.12.2022_D82.png\" style=\"width: 269px; height: 214px;\" />&nbsp;We place Bobby in middle of Aryan and Kusum and then place Asviya next to Kusum.<br />\n<span style=\"\">Step 2:&nbsp;Simran is an immediate neighbour of both Asviya and Sheethal.&nbsp;Sheethal is an immediate neighbour of both Aryan and Simran.</span><br />\n<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Madhuri_Avnessh_08.12.2022_D83.png\" style=\"width: 292px; height: 234px;\" />We place Simran next to Asviya and at last we place Sheethal between Simran and Aryan.<br />\nFrom the arrangement, we can see that <strong>Kusum&nbsp;<span style=\"\">is sitting third to the left of Sheethal.</span></strong></p>\n\n<p><span style=\"\">Hence&nbsp;<strong>the correct answer is option 4.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "Seven students A, B, C, D, E, F and G are sitting around a circular table facing the centre. C is an immediate neighbour of both E and F. D is sitting third to the left of C and to the immediate right of A. A is sitting second to the right of E. B is an immediate neighbour of both E and A. G is to the immediate left of F. Who is the immediate neigbour of both C and G?", "comp": "", "opts": ["E", "F", "A", "D"], "cidx": 1, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/04/F3_SSC_%20PRIYA_1_4_24_D22.png\" style=\"color: rgb(33, 37, 41); width: 219px; height: 211px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Thus, 'F'</span><span style=\"color: rgb(33, 37, 41);\">\u00a0is the immediate neigbour of both C and G.</span></p>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "<p>Six students - A, B, C, D, E and F - are sitting around a circular table, facing the centre.</p>\n\n<p>A is the immediate neighbour of both E and F.</p>\n\n<p>B is sitting second to the right of E.</p>\n\n<p>D is sitting third to the left of F.</p>\n\n<p>C is the immediate neighbour of both B and F.</p>\n\n<p>Who among the following is the immediate neighbour of both A and D?</p>\n", "comp": "", "opts": ["E", "B", "C", "F"], "cidx": 0, "sol": "<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/25/04/Task%20Id%20646%20Daman%20%2811%29.png\" style=\"width: 250px; height: 257px;\" />", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "Seven friends E, F, G, H, I, J and K, are sitting along a circular table facing towards the centre. F and I are sitting to the immediate left and right of G, respectively. H is sitting third to the left of G. E and I are the neighbours of J. Who is sitting to the immediate right of H?", "comp": "", "opts": ["K", "E", "H", "F"], "cidx": 0, "sol": "<p><span style=\"\">Seven friends E, F, G, H, I, J and K, are sitting along a circular table facing towards the centre.</span></p>\n\n<p><span style=\"\">1)&nbsp;H is sitting third to the left of G.</span></p>\n\n<p><span style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_22-6-22_D34.png\" style=\"width: 184px; height: 219px;\" /></span></p>\n\n<p><span style=\"\">2)&nbsp;F and I are sitting to the immediate left and right of G, respectively.</span></p>\n\n<p><span style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_22-6-22_D35.png\" style=\"width: 204px; height: 225px;\" /></span></p>\n\n<p><span style=\"\">3)&nbsp;E and I are the neighbours of J.</span></p>\n\n<p><span style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_22-6-22_D36.png\" style=\"width: 213px; height: 219px;\" /></span></p>\n\n<p><span style=\"\">&there4; Here, &#39;K&#39; is sitting immediate right of H.</span></p>\n\n<p><span style=\"\">Hence, the correct answer is <strong>&quot;K&quot;.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "<p>Six students Prateek, Sameer, Kabir, Ziya, Joseph, Kiran are sitting around a circular table facing the centre (not necessarily in the same order). Prateek is an immediate neighbour of both Sameer and Kabir. Ziya is sitting second to the right of Sameer. Kiran is sitting third to the left of Kabir. Joseph is an immediate neighbour of both Ziya and Kabir.</p>\n\n<p>Who is an immediate neighbour of Ziya?</p>\n", "comp": "", "opts": ["Prateek", "Kabir", "Sameer", "Kiran"], "cidx": 3, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/04/F2_SSC_Ishita_01.04.24_D45.png\" style=\"color: rgb(33, 37, 41); width: 270px; height: 237px;\" /></p>\n\n<p>Immediate neighbour of Ziya is Kiran.</p>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "Five friends A, B, C, D and E are sitting around a circular table facing the centre. C is second to the right of A. Only one person is sitting between D and B. A is to the immediate left of D. A and B are not immediate neighbours. Who is sitting to the immediate left of E?", "comp": "", "opts": ["A", "D", "C", "B"], "cidx": 3, "sol": "<p><strong>Five friends:&nbsp;</strong>A, B, C, D and E</p>\n\n<p>Given information:</p>\n\n<p>1) C is second to the right of A.</p>\n\n<p>2) A is to the immediate left of D.</p>\n\n<p>3) Only one person is sitting between D and B.</p>\n\n<p>4)&nbsp;<span style=\"\">A and B are not immediate neighbours.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Savita_SSC_19-7-22_D31.png\" style=\"width: 206px; height: 200px;\" /></p>\n\n<p>Clearly, we can see that&nbsp;<strong>B is sit immediate left of E.</strong></p>\n\n<p>Hence, the correct answer is&nbsp;<strong>&quot;B&quot;.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "<p>Six friends are sitting in a circle facing the centre. Sumit sits second to the right of Amit. Karan is an immediate neighbour of Param. Tony sits third to the right of Amit. Dharam is an immediate neighbour of Amit and Sumit. Karan sits second to the right of Sumit.</p>\n\n<p>Who sits fourth to the right of Param?&nbsp;</p>\n", "comp": "", "opts": ["Karan&nbsp;", "Sumit&nbsp;", "Dharam&nbsp;", "Tony"], "cidx": 3, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F1_SSC_Ishita_28.03.24_D21.png\" style=\"color: rgb(33, 37, 41); width: 270px; height: 237px;\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Here, Tony</span><span style=\"color: rgb(33, 37, 41);\">\u00a0sits fourth to the right of Param.</span></p>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "Eight friends A, B, C, D, E, F, G and H are sitting clockwise around a circular table facing the centre in the same sequence at equal distances between them. If H is sitting in the North direction, then in which direction is D sitting?", "comp": "", "opts": ["South", "South-west", "South-east", "West"], "cidx": 0, "sol": "<p><span style=\"\">Eight friends<strong> A, B, C, D, E, F, G and H</strong> are sitting clockwise around a circular table facing the centre in the same sequence at equal distances between them.</span></p>\n\n<p><span style=\"display: none;\">&nbsp;</span>&nbsp;<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F4_Savita_SSC_20-7-22_D43.png\" style=\"width: 217px; height: 223px;\" /><span style=\"display: none;\">&nbsp;</span></p>\n\n<p style=\"\">If H is sitting in the North direction, D is sitting in&nbsp;the South direction.</p>\n\n<p style=\"\">Hence, &#39;<strong>South</strong>&#39; is the correct answer.</p>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "Six people are sitting around a circular table facing the centre. P sits second to the left of Q. S is an immediate neighbour of both Q and U. T sits second to the left of R. Who is the immediate neighbour of both P and U?", "comp": "", "opts": ["T", "S", "Q", "R"], "cidx": 0, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/04/F2_SSC_Ishita_01.04.24_D68.png\" style=\"color: rgb(33, 37, 41); width: 231px; height: 230px;\" /></p>\n\n<p>T is immediate neighbour of both\u00a0P and U.\u00a0</p>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "Five friends, Vishnu, Chirag, Raina, Kavya and Surbhi, are sitting around a circular table, facing the center. Vishnu is to the immediate right of Kavya. Chirag is third to the left of Kavya. Surbhi is not adjacent to Chirag. Who is second to the left of Kavya?", "comp": "", "opts": ["Raina", "Surbhi", "Vishnu", "Chirag"], "cidx": 0, "sol": "<p><span style=\"\">Five friends, Vishnu, Chirag, Raina, Kavya and Surbhi, are sitting around a circular table, facing the center.</span></p>\n\n<p><span style=\"\">1)&nbsp;Vishnu is to the immediate right of Kavya.</span></p>\n\n<p><span style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_29-6-22_D17.png\" style=\"width: 236px; height: 185px;\" /></span></p>\n\n<p><span style=\"\">2)&nbsp;Chirag is third to the left of Kavya.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_29-6-22_D18.png\" style=\" width: 238px; height: 203px;\" /></p>\n\n<p><span style=\"\">3)&nbsp;Surbhi is not adjacent to Chirag.</span></p>\n\n<p><span style=\"\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Savita_SSC_29-6-22_D19.png\" style=\"width: 271px; height: 200px;\" /></span></p>\n\n<p><span style=\"\">&there4; Here, &#39;Raina&#39; is second to the left of &#39;Kavya&#39;.</span></p>\n\n<p><span style=\"\">Hence, the correct answer is <strong>&quot;Raina&quot;.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "Six children, G, H, I, J, K, and L, are sitting around a circular table facing towards the centre. J and K are sitting to the immediate left and right of G, respectively. L is sitting to the immediate left of J, but not to the immediate right of H. Who is sitting to the immediate right of K?", "comp": "", "opts": ["J", "I", "H", "L"], "cidx": 2, "sol": "<p><strong>Six Children:&nbsp;</strong><span style=\"\">G, H, I, J, K, and L, are sitting around a circular table facing towards the centre</span></p>\n\n<p>1)&nbsp;J and K are sitting to the immediate left and right of G, respectively. L is sitting to the immediate left of J, but not to the immediate right of H.</p>\n\n<p><img src=\"https://storage.googleapis.com/tb-img/production/22/08/F2_Savita_SSC_8-8-22_D23.png\" /></p>\n\n<p>Clearly, H is sitting immediate right of K.</p>\n\n<p>Hence, the correct answer is<span style=\"\">&nbsp;<strong>&quot;H&quot;.</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "Six students are sitting around a circular table facing the centre. A is an immediate neighbour of both E and D. E sits third to the right of C. D sits third to the left of F. E is an immediate neighbour of F. B sits second to the left of E. Who is the immediate neighbour of both A and C?", "comp": "", "opts": ["E", "D", "F", "B"], "cidx": 1, "sol": "<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage65df5abf9802d8ee16282e6d.png\" style=\"color: rgb(33, 37, 41); height: 197px; width: 200px;\" /></p>\n\n<p>D is the immediate neighbour of both A and C.</p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "Six students are sitting around a circular table facing the centre. Sonal is sitting second to the right of Lavanya. Rana is sitting second to the right of Sonal. Karishma is sitting third to the right of Rana. Mary is an immediate neighbour of both Rana and Sonal. Who is sitting immediate right of Kumari?", "comp": "", "opts": ["Mary", "Karishma", "Rana", "Lavanya"], "cidx": 3, "sol": "<p>According to the given information we have:&nbsp;<span style=\"\">Six students are sitting around a circular table facing the centre.</span></p>\n\n<p>Step 1):&nbsp;<span style=\"\">Sonal (S) is sitting second to the right of Lavanya (L). Rana (R) is sitting second to the right of Sonal. </span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Mrunal_SSC_10.12.2022_D1.png\" style=\"width: 215px; height: 215px;\" /></p>\n\n<p><span style=\"\">Step 2): Karishma (Ka) is sitting third to the right of Rana (R). Mary (M) is an immediate neighbour of both Rana and Sonal. </span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Mrunal_SSC_10.12.2022_D2.png\" /></p>\n\n<p>Step 3): Thus, the final arrangement is as:</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Mrunal_SSC_10.12.2022_D3.png\" style=\"width: 215px; height: 222px;\" /></p>\n\n<p><span style=\"\">Thus, <strong>Lavanya (L)</strong> is&nbsp;sitting immediate right of Kumari (Ku).</span></p>\n\n<p>Hence, the correct answer is &#39;<u><strong>option 4</strong></u>&#39;.</p>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "Six students P, Q, R, S, T and U are sitting around a circular table facing the centre. R is an immediate neighbour of both T and U. P is sitting third to the right of U. Q is sitting to the immediate left of S. S is sitting second to the right of P. Who is the immediate neigbour of both R and S?", "comp": "", "opts": ["T", "Q", "U", "P"], "cidx": 2, "sol": "<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/F4_Savita_SSC_1-3-24_D230.png\" style=\"color: rgb(33, 37, 41);\" /></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">So, 'U' is the immediate neigbour of both R and S.</span></p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "Six students are sitting around a circular table facing the centre. Salman is an immediate neighbour of both Kiran and Shwetha. Bala is sitting second right to Salman. Shwetha is sitting third to the left of Bala. Akshay is an immediate neighbour of both Bala and Nishitha. Who is the immediate neighbour of Nishitha and Salman?", "comp": "", "opts": ["<span style=\"\">Bala</span>", "<span style=\"\">Kiran</span>", "<span style=\"\">Shwetha</span>", "<span style=\"\">Akshay</span>"], "cidx": 2, "sol": "<p><span style=\"\">*-From the given information:/</span></p>\n\n<p><span style=\"\">Step 1:&nbsp;Salman is an immediate neighbour of both Kiran and Shwetha. Bala is sitting second right to Salman.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F1_Mrunal_SSC%20Exams_27.12.2022_D13.png\" style=\"width: 273px; height: 229px;\" />&nbsp;</p>\n\n<p>We place Salman in between Shwetha and Kiran and then place Bala second to the right of Salman.</p>\n\n<p><span style=\"\">Step 2:&nbsp;Shwetha is sitting third to the left of Bala. Akshay is an immediate neighbour of both Bala and Nishitha.</span></p>\n\n<p>-*<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F1_Mrunal_SSC%20Exams_27.12.2022_D14.png\" style=\"width: 273px; height: 231px;\" />&nbsp;</p>\n\n<p>We place Akshay next to Bala and then place Nishitha at the last spot left.</p>\n\n<p>From the arrangement, we can see that <strong>Shwetha&nbsp;<span style=\"\">is the immediate neighbour of Nishitha and Salman.</span></strong></p>\n\n<p><span style=\"\">Hence&nbsp;<strong>the correct answer is option 3).</strong></span></p>\n", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "Six friends P, Q, R, S, T and U are sitting around a circular table, facing the centre of the table. P is the second to right of S. Q is sitting to the immediate right of T. P is sitting between R and U. S is sitting to the immediate left of R. Who is sitting between P and S?", "comp": "", "opts": ["U", "R", "T", "Q"], "cidx": 1, "sol": "<p>Arranging them according to the given information,</p>\n\n<p>Six fiends P, Q, R, S, T and U are sitting around a circular table,</p>\n\n<p>1.&nbsp;P is the second to right of S.</p>\n\n<p>2.&nbsp;S is sitting to the immediate left of R,</p>\n\n<p>3.&nbsp;P is sitting between R &amp;&nbsp;U,</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/01/F1_Shraddha_Prashant_13.01.2021_D39.png\" style=\"width: 206px; height: 200px;\" /></p>\n\n<p>4. Q is sitting to the immediate right of T.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/01/F1_Shraddha_Prashant_13.01.2021_D40.png\" style=\"width: 225px; height: 204px;\" /></p>\n\n<p>So,<strong> &#39;R&#39; is sitting between P and&nbsp;S.</strong></p>\n\n<p>Hence, the correct answer is <strong>&quot;R&quot;</strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "Eight people are sitting in two parallel rows with 4 people each in such a way that there is equal distance between adjacent persons. In Row I -1, 2, 3 and 4 are seated and all of them are facing south. In Row II - 6, 7, 8 and 9 are seated and all of them are facing north. 1 and 2 are not seated at the extreme ends and 1 sits to the immediate left of 2. 9 and 7 sit opposite 1 and 2 and 7 sits exactly opposite 1. 7 is not the immediate neighbour of 6. Who sits at the extreme right corner of Row II facing north?", "comp": "", "opts": ["8", "7", "9", "6"], "cidx": 0, "sol": "<p>Given:<span style=\"\">&nbsp;Row I -1, 2, 3 and 4 are seated and all of them are facing south. In Row II - 6, 7, 8 and 9 are seated and all of them are facing north.</span></p>\n\n<p><span style=\"\">1.</span>&nbsp;<span style=\"\">1 and 2 are not seated at the extreme ends and 1 sits to the immediate left of 2.</span></p>\n\n<p>2.&nbsp;<span style=\"\">9 and 7 sit opposite 1 and 2 and 7 sits exactly opposite 1.</span></p>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage64edd0d05896a9160aac0be7.png\" /></p>\n\n<p>3.&nbsp;<span style=\"\">7 is not the immediate neighbour of 6.&nbsp;</span></p>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage64edd0d05896a9160aac0bea.png\" /></p>\n\n<p><strong><span style=\"\">8 sits at the extreme right corner of Row II facing north&nbsp;</span></strong></p>\n\n<p>Hence, <strong>&quot;Option 1&quot; </strong>is the correct answer.</p>\n", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "Six people are sitting in two parallel rows with 3 people each in such a way that there is equal distance between adjacent persons. S, T and U are seated in the same row facing south. X, Y and Z are seated in the same row facing north. U sits at the extreme right end of their row and is exactly opposite X. T is the immediate neighbour of U and sits exactly opposite Z. Who sits at the extreme right end of the row facing North?", "comp": "", "opts": ["Z", "Y", "U", "X"], "cidx": 1, "sol": "<p>Given:</p>\n\n<p><span style=\"\">Six people are sitting in two parallel rows with 3 people each.</span></p>\n\n<p><span style=\"\">S, T and U are seated in the same row facing south. X, Y, and, Z are seated in the same row facing north.</span></p>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage15232.png\" /></p>\n\n<p><span style=\"\">U sits at the extreme right end of their row and is exactly opposite X.</span></p>\n\n<p><span style=\"\">T is the immediate neighbour of U and sits exactly opposite Z.</span></p>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage15233.png\" /></p>\n\n<p>According to the arrangement, <strong>Y is sitting at the extreme right end of the row facing North</strong>.</p>\n\n<p>Hence, the correct answer is <u>&#39;<strong>option 2&#39;</strong></u>.</p>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "<p>Eight people are sitting in two parallel rows with four people each in such a way that there is equal distance between adjacent persons. 5, 6, 7 and 8 are seated in the same row facing South. 1, 2, 3 and 4 are seated in the same row facing North. 4 and 2 do not sit at the extreme corners of their row. 7 sits at the extreme right end of their row and is exactly opposite 1. 3 sits exactly opposite 8.</p>\n\n<p>Who sits at the extreme left end of the row of people sitting facing South?</p>\n", "comp": "", "opts": ["<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">3</font></font>", "<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">8</font></font>", "<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">5</font></font>", "<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">6</font></font>"], "cidx": 1, "sol": "<p>Given,</p>\n\n<ul>\n\t<li><span style=\"\">Eight people are sitting in two parallel rows with four people each in such a way that there is equal distance between adjacent persons. </span></li>\n\t<li><span style=\"\"><strong>5, 6, 7</strong> <strong>and</strong> <strong>8</strong> are seated in the same row facing <strong>South</strong>.<strong> </strong></span></li>\n\t<li><span style=\"\"><strong><span style=\"\"><strong>1, 2, 3</strong> and<strong> 4</strong> </span></strong><span style=\"\">are seated in the same row facing<strong> North</strong>.</span></span></li>\n</ul>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F3_Vinanti_SSC_19.01.23_D1.png\" style=\"width: 139px; height: 68px;\" /></p>\n\n<ul>\n\t<li><span style=\"\">7 sits at the extreme right end of their row and is exactly opposite 1.</span></li>\n\t<li><span style=\"\">4 and 2 do not sit at the extreme corners of their row.</span></li>\n</ul>\n\n<p>&nbsp;</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F3_Vinanti_SSC_19.01.23_D2.png\" style=\"width: 146px; height: 113px;\" /></p>\n\n<p>According, to the arrangement &#39;8&#39; sits at the extreme left end of the row of people sitting facing South.</p>\n\n<p>Hence, the correct answer is <strong>option 2</strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "<p>Seven people, A, B, C, D, E, F and G, are sitting in a straight row, facing north (not necessarily in the same order). Only 1 person sits to the left of D. A is an immediate neighbour of D. Only 2 people sit between F and D. Only 3 people sit between C and G. B is not an immediate neighbour of G. Only 2 people sit between E and A.</p>\n\n<p>Who sits at the extreme right end of the row?&nbsp;</p>\n", "comp": "", "opts": ["A", "G", "C", "B"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\"><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/02/F3_SSC_Arbaz_26-2-24_D16.png\" style=\"color: rgb(33, 37, 41); width: 252px; height: 70px;\" /></p>\n\n<p style=\"color: rgb(33, 37, 41);\">Here, we can see that C sits at the extreme right end of the row.</p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "Seven people, A, B, C, D, E, F and G, are sitting in a straight row facing the north. Only two people sit to the left of C. Only two people sit between A and B. B sits to the left of A. E is an immediate neighbour of A to the right. Only one person sits to the right of D. F is not an immediate neighbour of B. Who sits to the extreme left?", "comp": "", "opts": ["B", "D", "E", "F"], "cidx": 0, "sol": "<p><span style=\"\">From the given information:</span></p>\n\n<p><span style=\"\">Step 1:&nbsp;Only two people sit to the left of C.&nbsp;Only one person sits to the right of D.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F1_Mrunal_SSC%20Exams_27.12.2022_D89.png\" style=\"width: 249px; height: 46px;\" /></p>\n\n<p>We place C at third place from left and then place D at second from right.</p>\n\n<p><span style=\"\">Step 2:&nbsp;&nbsp;Only two people sit between A and B. B sits to the left of A. E is an immediate neighbour of A to the right.&nbsp;</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F1_Mrunal_SSC%20Exams_27.12.2022_D90.png\" style=\"width: 251px; height: 46px;\" /></p>\n\n<p>Now we place B and A such that there are 2 people between them and B is on the left. Then we place E right next to A.</p>\n\n<p><span style=\"\">Step 3:&nbsp;F is not an immediate neighbour of B.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/01/F1_Mrunal_SSC%20Exams_27.12.2022_D91.png\" style=\"width: 252px; height: 46px;\" /></p>\n\n<p>We place F at extreme right and then place G at the only spot left.</p>\n\n<p>From the arrangement, we can see that <strong>B&nbsp;is at the extreme left.</strong></p>\n\n<p>Hence&nbsp;<strong>the correct answer is option 1)</strong></p>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "<p>Seven people, A, B, C, D, E, F and G, are sitting in a straight row facing the north. Only two people sit to the left of C. Only two people sit between A and B.</p>\n\n<p>B sits to the left of A. E is an immediate neighbour of A to the right. Only one person sits to the right of D. F is not an immediate neighbour of B. Who sits at the centre?</p>\n", "comp": "", "opts": ["C", "E", "D", "A"], "cidx": 3, "sol": "<p>According to the given statement, we have:</p>\n\n<p><span style=\"\">Step 1): Seven people, A, B, C, D, E, F and G, are sitting in a straight row facing the north. Only two people sit to the left of C.&nbsp;Only one person sits to the right of D.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Mrunal_SSC_10.12.2022_D26.png\" style=\"width: 265px; height: 24px;\" /></p>\n\n<p><span style=\"\">Step 2): Only two people sit between A and B. B sits to the left of A. E is an immediate neighbour of A to the right. </span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Mrunal_SSC_10.12.2022_D27.png\" style=\"width: 265px; height: 23px;\" /></p>\n\n<p><span style=\"\">Step 3): F is not an immediate neighbour of B. Thus the final arrangement is:</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Mrunal_SSC_10.12.2022_D28.png\" style=\"width: 265px; height: 25px;\" /></p>\n\n<p><span style=\"\">Thus, <strong>A</strong> sits at the center.</span></p>\n\n<p><span style=\"\">Hence, the correct answer is &#39;<u><strong>option 4</strong></u>&#39;.</span></p>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "Seven people, P, Q, R, S, T, U and V, are sitting in a straight row, facing the north. Only two people sit to the right of U. Only two people sit to the left of R. Only two people sit between U and Q. Only three people sit between R and V. T is not an immediate neighbour of U. S sits to the right of U. Who sits to the immediate right of U?", "comp": "", "opts": ["P", "S", "R", "T"], "cidx": 1, "sol": "<p><span style=\"\">Seven people, P, Q, R, S, T, U, and V, are sitting in a straight row, facing the north</span></p>\n\n<p><span style=\"\">Step 1:&nbsp;Only two people sit to the right of U.</span></p>\n\n<p><span style=\"\">Step 2:&nbsp;Only two people sit to the left of R.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Madhuri_SSC_07.12.2022_D58.png\" style=\"width: 252px; height: 69px;\" /></p>\n\n<p>Step 3:&nbsp;<span style=\"\">Only two people sit between U and Q.&nbsp;</span></p>\n\n<p><span style=\"\">Step 4:&nbsp;Only three people sit between R and V.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Madhuri_SSC_07.12.2022_D59.png\" style=\"width: 252px; height: 69px;\" /></p>\n\n<p>Step 5:&nbsp;<span style=\"\">T is not an immediate neighbour of U. </span></p>\n\n<p><span style=\"\">Step 6:&nbsp;S sits to the right of U.</span></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/F1_Madhuri_SSC_07.12.2022_D60.png\" style=\"width: 252px; height: 69px;\" /></p>\n\n<p>According to the arrangement, <strong>S sits to the immediate right of U.</strong></p>\n\n<p>Hence, <strong>&quot;Option 2&quot;</strong> is the correct answer.</p>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 162000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

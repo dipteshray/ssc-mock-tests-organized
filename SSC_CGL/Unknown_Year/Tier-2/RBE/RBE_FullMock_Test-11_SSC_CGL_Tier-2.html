@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 11</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 11</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> The average of six positive numbers is 19. If the first number is one-eighteenth of the sum of the last five numbers, then 200% of the average of the last five numbers is:</p><p><br/> </p>",
+      "option1": "<p> 33.2</p>",
+      "option2": "<p> 43.2</p>",
+      "option3": "<p> 53.2</p>",
+      "option4": "<p> 36.2</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_78b6f0bd1bec1389.jpg"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> Find the ratio of the area of a square to that of the square drawn on its diagonal is:</p><p><br/> </p>",
+      "option1": "<p> 1:1</p>",
+      "option2": "<p> 1:2</p>",
+      "option3": "<p> 1:3</p>",
+      "option4": "<p> 1:4</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_98ea16f7401565bd.png"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> Two circles having radii r units intersect each other in such a way that each of them passes through the centre of the other. Then, the length of their common chord is:</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_3158c59fd0335f12.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_cdf77090b73007cc.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_560805ae7f4b1e81.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_394521b6c82dc059.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_c952c368c55f83ff.png"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p>If D is the mid-point of side BC of a triangle ABC and AD is perpendicular to AC, where AB = c, AC = b and BC = a, then:</p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_ab9cb2980baf4a86.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_7f51fa4eb7cb4e9.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_d312375b60bd5a84.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_7359d377e8ef9c92.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_98c079d1cfba8d04.gif"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> In a right circular cone, the radius of its base is 7 cm and its height 24 cm. A cross-section is made through the mid-point f the height parallel to the base. The volume of the upper portion is (cm3):</p><p><br/> </p>",
+      "option1": "<p> 169</p>",
+      "option2": "<p> 154</p>",
+      "option3": "<p> 1078</p>",
+      "option4": "<p> 800</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f2c9cedb5659374.gif"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> What is the LCM of 3.6, 1.8 and 0.144?</p><p><br/> </p>",
+      "option1": "<p> 36</p>",
+      "option2": "<p> 360</p>",
+      "option3": "<p> 3.6</p>",
+      "option4": "<p> 3600</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_485e49b640fc4c5f.jpg"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> Find the ratio in which the line segment joining the points (-3,10) and (6, -8) is divided by (-1, 6).</p><p><br/> </p>",
+      "option1": "<p> 7:2</p>",
+      "option2": "<p> 2:7</p>",
+      "option3": "<p> 3:8</p>",
+      "option4": "<p> 4:5</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_a99c188bf2f627af.png"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> Two numbers X and Y are such that the sum of 17% of X and 14% of Y is 2/5 of the sum of 25% of X and 40% of Y. Find the ratio of X and Y.</p><p><br/> </p>",
+      "option1": "<p> 3 : 7 </p>",
+      "option2": "<p> 2 : 7 </p>",
+      "option3": "<p> 3 : 11 </p>",
+      "option4": "<p> 8 : 3</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_bfaeecb2ce1bef60.jpg"
+    },
+    {
+      "sr_no": 9,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_65b1c8c717766749.gif",
+      "option1": "<p> A, Rs. 56 </p>",
+      "option2": "<p> B, Rs. 6 </p>",
+      "option3": "<p> C, Rs. 50 </p>",
+      "option4": "<p> A, Rs. 50</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_1d89f60bdc9059a2.jpg"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_ad094ce627be7d0b.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_11663c5d341ce821.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_e19d8e3a3d05a6bc.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f02fb8e48303efb3.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_ee82c9bee2474325.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_29124403dfba3641.gif"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p> Ram and Shyam can complete one third a task in 5 days and 6 days, respectively. They work together for 2 days, and then Ram leaves. In how many days after Ram leaves, will Shyam complete the remaining task alone.</p><p><br/> </p>",
+      "option1": "<p> 12 days</p>",
+      "option2": "<p> 13.6 days</p>",
+      "option3": "<p> 14.2 days</p>",
+      "option4": "<p> 15.6 days</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_eaaae57ca1ffdeef.gif"
+    },
+    {
+      "sr_no": 12,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f24edbad5291003d.png",
+      "option1": "<p> 48.55</p>",
+      "option2": "<p> 53.75</p>",
+      "option3": "<p> 55.75</p>",
+      "option4": "<p> 63.25</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_2953c3c0b961b40e.gif"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> If 120 litres of milk solution has 55% milk in it, then how much milk should be added to make milk 75% in the solution?</p><p><br/> </p>",
+      "option1": "<p> 116</p>",
+      "option2": "<p> 110</p>",
+      "option3": "<p> 120</p>",
+      "option4": "<p> 96</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_58da43da81c700d4.png"
+    },
+    {
+      "sr_no": 14,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_26c937c553664419.gif",
+      "option1": "<p> 16/35</p>",
+      "option2": "<p> 16/25</p>",
+      "option3": "<p> 25/36</p>",
+      "option4": "<p> 16/37</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_3299e24b641858f4.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_8e2b0b45f3692406.gif",
+      "option1": "<p>-13</p>",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_af5af0a6cb5a20db.gif",
+      "option3": "<p>13</p>",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_a7ec4d133458364f.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_447f2a486a9082c5.png"
+    },
+    {
+      "sr_no": 16,
+      "question": "<p> 20% of x=y, then y% of 50 is the same as ____</p><p><br/> </p>",
+      "option1": "<p> 100% of x </p>",
+      "option2": "<p> 10% of x/10 </p>",
+      "option3": "<p> 50% of x </p>",
+      "option4": "<p> 10% of x</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f50ccae7a0dad1f8.jpg"
+    },
+    {
+      "sr_no": 17,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f1b000f7d61aa490.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_26ff45bb6f568760.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_c04ef995f31bc20b.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_2d96e3d133a2dbad.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_c4f0a274141df62c.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f016f6bceb4489dd.png"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> From a circular sheet of paper with a radius of 20 cm, four circles of radius 5 cm each are cut out. What is the ratio of the area of uncut to the cut portion?</p><p><br/> </p>",
+      "option1": "<p> 1:3</p>",
+      "option2": "<p> 4:1</p>",
+      "option3": "<p> 3:1</p>",
+      "option4": "<p> 4:3</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_1cd458ac81603470.png"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> A man sells his article at 11.11% loss on selling price. Find the loss %. </p><p><br/> </p>",
+      "option1": "<p> 28 2/7%</p>",
+      "option2": "<p> 10%</p>",
+      "option3": "<p> 14 2/7%</p>",
+      "option4": "<p> 14%</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_bf1bc72064f736b4.png"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p> The amount (in Rs) received at 30% per annum compound interest after 3 yrs is Rs.8,78,800. What was the principal (in lakhs)</p><p><br/> </p>",
+      "option1": "<p> 200,000</p>",
+      "option2": "<p> 300,000</p>",
+      "option3": "<p> 400,000 </p>",
+      "option4": "<p> 500,000</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_f6e83dfbd90bd05f.png"
+    },
+    {
+      "sr_no": 21,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_46736cd4324715cd.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_a9769edb752971ce.gif",
+      "option2": "<p> 0</p>",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_a0fa21055e8c6bac.gif",
+      "option4": "<p> 1</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_80208f93c5e80d26.png"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> The product of the two numbers is 45 and their difference is 4. The sum of squares of the two numbers is:</p><p><br/> </p>",
+      "option1": "<p> 135</p>",
+      "option2": "<p> 240</p>",
+      "option3": "<p> 73</p>",
+      "option4": "<p> 106</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_e7e4390ff7dd68d9.png"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p> A borrows a sum of Rs 3000 from his friend B on 31 December 2011 on the condition that he will return the same after one year with simple interest at 20%. However, A gets into a position of returning the money on 31 August 2012. How much amount he has to return to B?</p><p><br/> </p>",
+      "option1": "<p> Rs. 3100 </p>",
+      "option2": "<p> Rs. 3200</p>",
+      "option3": "<p> Rs. 3300</p>",
+      "option4": "<p> Rs. 3400</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_85126a8e9330abd4.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p> Find the mode of the following marks (out of 10) obtained by 20 students:</p><p> 4, 6, 5, 9, 3, 2, 7, 7, 6, 5, 4, 9, 10, 10, 3, 4, 7, 6, 9, 9</p><p><br/> </p>",
+      "option1": "<p> 7</p>",
+      "option2": "<p> 9</p>",
+      "option3": "<p> 6</p>",
+      "option4": "<p> 4</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_b0574cc0a8ef35b3.png"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> A student takes 1.93 hours to travel form home to school at a speed of 5.5 Km/h. By what percentage should he increase his speed to reduce the time by 9 (1/11) % to cover the same distance from school to home?</p><p><br/> </p>",
+      "option1": "<p> 10%</p>",
+      "option2": "<p> 11 (1/9) %</p>",
+      "option3": "<p> 16 (2/3) %</p>",
+      "option4": "<p> 33 1/3 % </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_26a4017f9fcf7710.png"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> If ‘a’ and ‘b’ are the lengths of the side of a right triangle whose hypotenuse is 10 and whose area is 20, then the value of (a+b)2 is:</p><p><br/> </p>",
+      "option1": "<p> 140</p>",
+      "option2": "<p> 180</p>",
+      "option3": "<p> 120</p>",
+      "option4": "<p> 160</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_287fa1278f31a389.png"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> 4 years ago, the ratio of the age of father to that of his son was 7:3. After 4 years, their ages will be in the ratio 9:5. What is the present age of the father?</p><p><br/> </p>",
+      "option1": "<p> 32 </p>",
+      "option2": "<p> 40 </p>",
+      "option3": "<p> 36 </p>",
+      "option4": "<p> 44</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_96c779dc1405fd9e.jpg"
+    },
+    {
+      "sr_no": 28,
+      "question": "<p> A man 6 ft tall casts a shadow 4 ft long, at the same time when a flag pole casts a shadow 50 ft long. The height of the flag pole is:</p><p><br/> </p>",
+      "option1": "<p> 60</p>",
+      "option2": "<p> 80</p>",
+      "option3": "<p> 75</p>",
+      "option4": "<p> 70</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_51768e7dd52f7dd.gif"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> The numbers of revolutions, a wheel of diameter 40 cm makes in travelling a distance of 176 m, is:</p><p><br/> </p>",
+      "option1": "<p> 140</p>",
+      "option2": "<p> 150</p>",
+      "option3": "<p> 160</p>",
+      "option4": "<p> 166</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_6a170525a6324de8.gif"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> A retailer selling mangoes offered a flat discount of 20% on its marked price. Further owing to persistent bargaining by a customer, he offered ‘n’ mangoes free for every 18 mangoes purchased by the customer and still made an overall profit of 8% in the transactions. Find the value of ‘n’ if it was marked at 50 % more than the cost price.</p><p><br/> </p>",
+      "option1": "<p> 2</p>",
+      "option2": "<p> 4</p>",
+      "option3": "<p> 6</p>",
+      "option4": "<p> 3</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692619014671_html_1972fb4fe6dafc0e.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Select the option that expresses the given sentence in passive voice. </p><p> Naman won’t receive any better choice than this from anywhere.</p>",
+      "option1": "<p> Any better choice shouldn’t be received by Naman than this from anywhere.</p>",
+      "option2": "<p> Any better choice won’t be received by Naman than this from anywhere.</p>",
+      "option3": "<p> Any better choice wouldn’t have received by Naman than this from anywhere.</p>",
+      "option4": "<p> Any better choice won’t have been be received by Naman than this from anywhere.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> Active to Passive rule: -</p><p> Sub + won’t (Modal verb) + v1 + Obj ------ Obj + won’t + be + V3 + by + Sub.</p><p> So,</p><p> Nanam won’t receive any better choice than this from anywhere --- Any better choice won’t be received by Naman than this from anywhere. </p><p> The correct answer is - Any better choice won’t be received by Naman than this from anywhere.</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the option that expresses the given sentence in active/passive voice.</p><p> Himanshi made a cup of tea in the evening.</p>",
+      "option1": "<p> A cup of tea was being made by Himanshi in the evening.</p>",
+      "option2": "<p> In the evening a cup of tea have been made by Himanshi.</p>",
+      "option3": "<p> A cup of tea was made by Himanshi in the evening.</p>",
+      "option4": "<p> A cup of tea has been made since evening.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> Rule:</p><p> Active to Passive: </p><p> Subject + V2 + Object ----- Object + was/were + V3 + by + Subject.</p><p> Himanshi made a cup of tea in the evening. ---- A cup of tea was made by Himanshi in the evening.</p><p> Hence the correct answer is : A cup of tea was made by Himanshi in the evening.</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> The following sentence has been divided into parts. One of them may contain an error. Select the part that contains the error from the given options. If you don’t find any error, mark ‘No error’ as your answer.</p><p> Because Anita is intelligent, / therefore she gets good / marks in all the examinations.</p>",
+      "option1": "<p> Because Anita is intelligent,</p>",
+      "option2": "<p> therefore she gets good</p>",
+      "option3": "<p> marks in all the examinations</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> In the given sentence the error is in part b: </p><p> ‘Because’/ ‘as’ / ‘since’ are not followed by ‘therefore’.</p><p> So, therefore is not correct in the given sentence.</p><p> To rectify the sentence, we will use remove ‘Therefore’.</p><p> So, the correct sentence:</p><p> Because Anita is intelligent, she gets good marks in all the examinations.</p><p> Hence, b is the correct answer.</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Choose the ANTONYM of the word <b>‘disenfranchise’</b> in the given sentence.</p><p> The parliament of Tonoco authorised the king to take over the reins of the government and disabled the power of the council of ministers.</p>",
+      "option1": "<p> Authorised</p>",
+      "option2": "<p> Powers</p>",
+      "option3": "<p> Disabled</p>",
+      "option4": "<p> Reins</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> <b>Disenfranchise</b>: deprive (someone) of the right to vote.</p><p> <b>Authorised</b>: give official permission for or approval to (an undertaking or agent).</p><p> <b>Power</b>: the ability or capacity to do something or act in a particular way.</p><p> <b>Disabled</b>: having a condition that makes it difficult for you to do some things that most other people can do.</p><p> <b>Rein</b>: A long thin piece of leather that is held by the rider and used to control a horse’s movements.</p><p> Hence, the correct answer is ‘Authorised’.</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> “Kritika received <i><b>PLAUDITS</b></i> for her work with homeless people”.</p>",
+      "option1": "<p> Condemn</p>",
+      "option2": "<p> Acclaim</p>",
+      "option3": "<p> Compliment</p>",
+      "option4": "<p> Kudos</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> The meaning of the following words:</p><p> <b>Plaudit</b> : An expression of praise or approval.</p><p> <b>Condemn</b> : Express complete disapproval of; Censure.</p><p> <b>Acclaim</b> : Praise enthusiastically and publicly.</p><p> <b>Compliment</b> : a polite expression of praise or admiration.</p><p> <b>Kudos</b> : Praise and honour received for an achievement.</p><p> So, Condemn is the correct antonym of the given word.</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> Choose the most appropriate option to change the voice (active/passive) form of the given sentence.</p><p> Please give me three more days to complete the assignments.</p>",
+      "option1": "<p> I may please be given three more days to complete the assignments.</p>",
+      "option2": "<p> You may please give me three more days to complete the assignments.</p>",
+      "option3": "<p> I am requesting you to give me three more days to complete the assignments.</p>",
+      "option4": "<p> Three more days will be given to me to complete the assignments.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> Rule: (Active voice --- Passive voice) </p><p> Subject + verb + object ---- object + be + V2 + subject.</p><p> So, the sentence will change into: I may please be given three more days to complete the assignments.</p><p> Hence, A is the correct answer.</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the option that can be used as a one – word substitute for the given group of words.</p><p> Enclosed area where aircraft are kept and repaired.</p>",
+      "option1": "<p> Hangar</p>",
+      "option2": "<p> Hanger</p>",
+      "option3": "<p> Dockyard</p>",
+      "option4": "<p> Cockpit</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option A is the correct answer.</p><p> <b>Hangar</b>: A building with an extensive floor area, typically for housing aircraft.</p><p> <b>Hanger</b>: A shaped piece of wood, plastic, or metal with a hook at the top, from which clothes may be hung in order to keep them in shape.</p><p> <b>Dockyard</b>: A place where ships are built and repaired.</p><p> <b>Cockpit</b>: A compartment for the pilot, and sometimes also the crew, in an aircraft or spacecraft.</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the correct homonym from the given options to fill in the blank.</p><p> The manager of the company helps the staff even in their _______ problems.</p>",
+      "option1": "<p> Persona</p>",
+      "option2": "<p> Personnel</p>",
+      "option3": "<p> Personal</p>",
+      "option4": "<p> Personel</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> Meaning of the given words:</p><p> Persona: the aspect of someone’s character that is presented to or perceived by others.</p><p> Personnel: People employed in an organization or engaged in an organized undertaking such as military service.</p><p> Personal: of or belonging to one particular person.</p><p> Hence, c is the correct answer.</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> The four sentences labelled (P, Q, R, S) given below, when properly sequenced would yield a coherent paragraph. Decide on the proper sequence of the order of the sentences</p><p> P. The inauguration ceremony took place in the Union Buildings amphitheatre in Pretoria today, attended by politicians and dignitaries from more than 140 countries around the world.</p><p> Q. Nelson Mandela has become South Africa’s first Black President after more than three centuries of White rule.</p><p> R. “Never, never again will this beautiful land experience the oppression of one by another,” said Nelson Mandela in his address.</p><p> S. Mr Mandela’s African National Congress (ANC) party won 252 of the 400 seats in the first democratic elections of South Africa’s history.</p>",
+      "option1": "<p> SPRQ</p>",
+      "option2": "<p> QSPR</p>",
+      "option3": "<p> QRPS</p>",
+      "option4": "<p> SPQR</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> The correct sequence is:</p><p> Q. Nelson Mandela has become South Africa’s first Black President after more than three centuries of White rule.</p><p> S. Mr Mandela’s African National Congress (ANC) party won 252 of the 400 seats in the first democratic elections of South Africa’s history.</p><p> P. The inauguration ceremony took place in the Union Buildings amphitheatre in Pretoria today, attended by politicians and dignitaries from more than 140 countries around the world.</p><p> R. “Never, never again will this beautiful land experience the oppression of one by another,” said Nelson Mandela in his address.</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Sudhir ______ his work when manager _______ him.</p>",
+      "option1": "<p> had finished, called</p>",
+      "option2": "<p> had finished, had called</p>",
+      "option3": "<p> finished, called</p>",
+      "option4": "<p> finished, had called</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> If in a sentence “When” is used. The first clause should be in simple past form while the second clause should be in past perfect form.</p><p> Example: When I reached railway station the train had left.</p><p> So, the correct answer is “had finished, called”.</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the most appropriate meaning of the underlined phrase.</p><p> Though Richa is very rich, she always <u><b>saves for a rainy day</b></u>.</p>",
+      "option1": "<p> Lives like a miser</p>",
+      "option2": "<p> Spends too much</p>",
+      "option3": "<p> Saves money for later</p>",
+      "option4": "<p> Accumulates less wealth</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Meaning of the underline word is:</p><p> Saves for the rainy day: to save some of your money in case there are serious problems in the future.</p><p> Hence, saves money for later is correct answer.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> <b>The four sentences (labelled A, B, C, and D) given in this question, when properly sequenced, form a coherent paragraph. Decide on the proper order for the sentences.</b></p><p> A. After two years in hiding, the group was betrayed and transported to the concentration camp system where Anne died of typhus in Bergen-Belsen</p><p> B. ‘Anne’ Frank was a German born Jewish girl who wrote while in hiding with her family and four friends in Amsterdam during the German occupation of the Netherlands in World War II.</p><p> C. Her father, Otto, the only survivor of the group, returned to Amsterdam after the war ended, to find that her diary had been saved.</p><p> D. Her family had moved to Amsterdam after the Nazis gained power in Germany but were trapped when the Nazi occupation extended into the Netherlands.</p>",
+      "option1": "<p> BCAD</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> BDAC</p>",
+      "option4": "<p> BADC</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> It is very clear that sentence will start with B. during war her family shifted to the new place so, D comes after B. In the new place they are hiding for two years then group betrayed and Annie died So, A comes after D. and at last C comes.</p><p> Hence, the correct sequence is: BDAC</p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Select the option that expresses the given sentence in direct/indirect speech.</p><p> Shalini said, “I am going to finish your work now before I start a new work tomorrow.”</p>",
+      "option1": "<p> Shalini told that she was going to finish your work then before she started a new work the next day.</p>",
+      "option2": "<p> Shalini said that she is going to finish your work then before she started a new work the next day.</p>",
+      "option3": "<p> Shalini said that she was going to finish your work then before she started a new work the next day.</p>",
+      "option4": "<p> Shalini told me that she was going to finish your that work then before she started a new work the next day.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> Rule to change Direct Speech into Indirect Speech in present continuous tense:</p><p> Present continuous tense -------- past continuous tense.</p><p> ‘Tomorrow’ change into ‘the next day’.</p><p> To remove inverted comma use ‘that’.</p><p> Hence, the correct indirect speech is: Shalini said that she was going to finish your work then before she started a new work the next day.</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> P. At the post office, he placed a stamp on the letter and dropped it into the mailbox.</p><p> Q. I need a hundred pesos in order to sow my field again and to live until the crop comes, because of hailstorm.</p><p> R. “God,” he wrote, “if you don’t help me, my family and I will go hungry this year.</p><p> S. He wrote ‘To God’ on the envelope, put the letter inside and, went to town.</p>",
+      "option1": "<p> RQSP</p>",
+      "option2": "<p> SQPR</p>",
+      "option3": "<p> QRSP</p>",
+      "option4": "<p> PRQS</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> According to given options only option A meaningful. </p><p> Hence, A is the correct answer.</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the CORRECTLY spelt word in the given sentence.</p>",
+      "option1": "<p> But after that, the rise of Mary Kom as a boxer seemed Irrecistible.</p>",
+      "option2": "<p> But after that, the rise of Mary Kom as a boxer seemed Irresistible.</p>",
+      "option3": "<p> But after that, the rise of Mary Kom as a boxer seemed Iresistible.</p>",
+      "option4": "<p> But after that, the rise of Mary Kom as a boxer seemed Irressistible.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> Irresistible is the correct word.</p><p> Irresistible: Too powerful or convincing to be resisted. (Synonym: Uncontrollable, Overpowering)</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the most appropriate option to substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required.’</p><p> <br/> All shops and restaurants <i><b>have been closed</b></i> during the protest last Monday.</p>",
+      "option1": "<p> Were closed</p>",
+      "option2": "<p> Had closed</p>",
+      "option3": "<p> No substitution required</p>",
+      "option4": "<p> Has been closed</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is correct answer.</p><p> The given sentence is grammatically incorrect.</p><p> In the given sentence ‘All shops and restaurants’ is a plural subject so plural verb will be used.</p><p> The given context of the sentence is demanding past indefinite tense (as it is talking about past incident).</p><p> The use of ‘Have been closed’ is showing that the given sentence is in present prefect continuous, which is not correct. Because in the sentence it is mentioned that the incident happened on last Monday. </p><p> Hence, the correct sentence should be:</p><p> All shops and restaurants were closed during the protest last Monday.</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> P. ‘I was looking forward to meeting Prof Dewey.’ Ambedkar’s letter then revealed what Dewey had meant to him: ‘I am so sorry. I owe all my intellectual life to him. He was a wonderful man.’</p><p> Q. In his later years, Ambedkar remembered Dewey and his pragmatism stood out.</p><p> R. Distraught, Ambedkar wrote to his wife Savita from New York lamenting the fact that he missed the chance to see his beloved teacher.</p><p> S. While Ambedkar was making his way back to Columbia in 1952 to receive an honorary degree, Dewey died of pneumonia.</p>",
+      "option1": "<p> QSRP</p>",
+      "option2": "<p> SRQP</p>",
+      "option3": "<p> PQSR</p>",
+      "option4": "<p> QRSP</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> The correct sequence of the para jumble should be:</p><p> Q. In his later years, Ambedkar remembered Dewey and his pragmatism stood out.</p><p> S. While Ambedkar was making his way back to Columbia in 1952 to receive an honorary degree, Dewey died of pneumonia.</p><p> R. Distraught, Ambedkar wrote to his wife Savita from New York lamenting the fact that he missed the chance to see his beloved teacher.</p><p> P. ‘I was looking forward to meeting Prof Dewey.’ Ambedkar’s letter then revealed what Dewey had meant to him: ‘I am so sorry. I owe all my intellectual life to him. He was a wonderful man.’</p><p> Hence, a is the correct sequence.</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. The Dutch filmmaker, photographer, and artist Michiel de Boer focuses his lens on scenic sunsets of the Netherlands, searching for the visual phenomenon known as the 'green flash'.</p><p> B. Featuring a compilation of 'green flashes' captured by De Boer, the piece presents a captivating display of colorful sunset scenes.</p><p> C. Explaining the rarity of this fleeting spectacle, De Boer highlights the specific conditions necessary for observing the 'green flash', which conveniently occur frequently over the ocean horizons of his homeland.</p><p> D. Through his work, De Boer not only treats viewers to delightful sunset visuals but also offers an intriguing insight into the human perception of colour and its unique experiences.</p>",
+      "option1": "<p> CADB</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> ACBD</p>",
+      "option4": "<p> DABC</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> The correct sequence is:</p><p> A. The Dutch filmmaker, photographer, and artist Michiel de Boer focuses his lens on scenic sunsets of the Netherlands, searching for the visual phenomenon known as the 'green flash'.</p><p> C. Explaining the rarity of this fleeting spectacle, De Boer highlights the specific conditions necessary for observing the 'green flash', which conveniently occur frequently over the ocean horizons of his homeland.</p><p> B. Featuring a compilation of 'green flashes' captured by De Boer, the piece presents a captivating display of colorful sunset scenes.</p><p> D. Through his work, De Boer not only treats viewers to delightful sunset visuals but also offers an intriguing insight into the human perception of colour and its unique experiences.</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.<br/> Paras hardly knows/ nothing about/ the new project/ No error.</p>",
+      "option1": "<p> the new project</p>",
+      "option2": "<p> Paras hardly knows</p>",
+      "option3": "<p> No error</p>",
+      "option4": "<p> nothing about</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer.</p><p> The given sentence is grammatically incorrect.</p><p> Rule: Hardly, Scarcely, Barely, Seldom, Never, etc are negative in meaning. Therefore, negative words like Nothing, Never, and Not should not be used with them.</p><p> Hardly is an adverb which is used to emphasise a minimal amount.</p><p> So, ‘nothing’ should be replaced with ‘anything’.</p><p> Hence, the correct sentence should be</p><p> Paras hardly knows anything about the new project.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.</p><p> Each of the <i><b>swimmers pay their</b></i> swimming fee at the beginning of the month.</p>",
+      "option1": "<p> swimmer pay their</p>",
+      "option2": "<p> swimmers pays their</p>",
+      "option3": "<p> No substitution required</p>",
+      "option4": "<p> swimmers pays his</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> There is a subject verb agreement error.</p><p> The rule is: If ‘OF’ is used after each, every, one etc, then the noun or pronoun that comes immediately after ‘OF’ will be plural in form. However, the verb, pronoun, adjective etc that comes in the latter part of the sentence will be singular in form.</p><p> Example: each of the students is doing his work.</p><p> Thus, the correct sentence will be: Each of the swimmers pays his swimming fee at the beginning of the month.</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Given below are four jumbled sentences. Select the option that gives their correct logical sequence.</p><p> P. Others might recognise him as the indefatigable leader of India’s untouchables.</p><p> Q. Some might recognise Ambedkar (1891-1956) as a chief architect of the Indian constitution in the 1940s.</p><p> R. Now denoted by the self-chosen label ‘Dalit’ given his constant advocacy for the rights of those oppressed by the complex and long-rooted caste system.</p><p> S. Bhimrao Ambedkar, a student of Dewey’s at Columbia University in New York.</p>",
+      "option1": "<p> QPRS</p>",
+      "option2": "<p> SQRP</p>",
+      "option3": "<p> SPQR</p>",
+      "option4": "<p> SQPR</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer.</p><p> Sentence start with Bhimrao Ambedkar. So, option a is eliminated. S is followed by Q and Q is followed by P and P is followed by R</p><p> Hence, the correct sequence should be:</p><p> S. Bhimrao Ambedkar, a student of Dewey’s at Columbia University in New York.</p><p> Q. Some might recognise Ambedkar (1891-1956) as a chief architect of the Indian constitution in the 1940s</p><p> P. Others might recognise him as the indefatigable leader of India’s untouchables.</p><p> R. now denoted by the self-chosen label ‘Dalit’ given his constant advocacy for the rights of those oppressed by the complex and long-rooted caste system.</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> There are _____ errors in the presentation of Varun.</p>",
+      "option1": "<p> Sufficient</p>",
+      "option2": "<p> Abudndant</p>",
+      "option3": "<p> Numerous</p>",
+      "option4": "<p> Enormous</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> Numerous: great in number; many.</p><p> Sufficient: adequate, enough</p><p> Abundant: existing or available in large quantities; plentiful.</p><p> Enormous: very large in size, quantity, or extent.</p><p> Hence, the correct answer is Numerous.</p><p> There are<b> </b><i><b>numerous</b></i> errors in the presentation of Varun.</p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the option that gives the most idiom of the underlined phrase.</p><p> Siya’s career in the field of acting is now <b>completely obsolete</b>.</p>",
+      "option1": "<p> be fed up with</p>",
+      "option2": "<p> as dead as a doornail</p>",
+      "option3": "<p> close the door on</p>",
+      "option4": "<p> drag one’s feet</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> Meaning of the idioms:</p><p> As dead as a doornail: completely dead</p><p> Be Fed up with: annoyed, unhappy, or bored, especially with a situation that has existed for a long time.</p><p> Close the book on: exclude the opportunity for.</p><p> Drag one’s feet: to do something slowly or not start it because you do not want to do it.</p><p> Hence, the correct answer is ‘as dead as a doornail’.</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the most appropriate SYNONYM of the given word.</p><p> INUNDATION</p>",
+      "option1": "<p> Inception</p>",
+      "option2": "<p> Drowning</p>",
+      "option3": "<p> Drought</p>",
+      "option4": "<p> Torrent</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer.</p><p> <b>Inundation</b>: an overwhelming abundance of people or things. (Synonym: flood, overflow, deluge, torrent etc)</p><p> <b>Drowning</b>: Die through submersion in and inhalation of water.</p><p> <b>Drought</b>: a prolonged period of abnormally low rainfall, leading to a shortage of water.</p><p> <b>Torrent</b>: a strong and fast-moving stream of water or other liquid.</p><p> Hence, the correct answer is d.</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.<br/> Rahul’s friend was delighted <i><b>on the idea of</b></i> going to goa.</p>",
+      "option1": "<p> No substitution required</p>",
+      "option2": "<p> at an idea of</p>",
+      "option3": "<p> on an idea of </p>",
+      "option4": "<p> at the idea of </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> The given sentence is grammatically incorrect and to rectify it, ‘at the idea of’ should be used instead of ‘on the idea of’.</p><p> There is error of preposition</p><p> On is used to express the contact or the surface or something.</p><p> At is used to indicate an activity.</p><p> Hence, the correct sentence is:</p><p> Rahul’s friend was delighted <i><b>at the idea of</b></i> going to goa.</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate option to substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.<br/> Sunita owns a big and soft bed <i><b>to sleep.</b></i></p>",
+      "option1": "<p> for sleep</p>",
+      "option2": "<p> No substitution required</p>",
+      "option3": "<p> to sleep in</p>",
+      "option4": "<p> to have sleep</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> Infinitive is a form of verb which follows the structure: to + Verb(1)</p><p> In a sentence, if a noun is followed by an infinitive, then the infinitive is followed by a suitable preposition. So, here ‘ to + sleep + in’ is used.</p><p> Hence, the correct sentence is: <i>Sunita owns a big and soft bed to sleep in</i>.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Select the correct indirect speech form of the given sentence.<br/> Gauri said to Gaurav, “Please help me with my homework.”</p>",
+      "option1": "<p> Gaurav requested to Gauri to help him with his homework.</p>",
+      "option2": "<p> Gauri requested to Gaurav to help her in her homework.</p>",
+      "option3": "<p> Gaurav requested to Gauri to help her homework</p>",
+      "option4": "<p> Gauri requested to Gaurav to help with her homework</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> Rule to change Direct speech into Indirect speech:</p><p> If the reporting verb (sentence outside the inverted comma) is in the past tense and Reported speech (inside the inverted comma) is in the present tense, then the following transformation will occur:</p><p> Simple present ---- Simple Past.</p><p> Present Continuous ---- Past Continuous.</p><p> Present Perfect ---- Past Perfect.</p><p> Present Perfect Continuous ---- Past Perfect Continuous.</p><p> Thus, the correct Indirect form of the given sentence is:</p><p> Gauri requested to Gaurav to help her in her homework.</p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the option that expresses the given sentence in reported speech.</p><p> Kavya said, “How well Puneet dances!”</p>",
+      "option1": "<p> Kavya told us that Puneet dances very well.</p>",
+      "option2": "<p> Kavya exclaimed that Puneet dances very well.</p>",
+      "option3": "<p> Kavya exclaimed that Puneet danced very well.</p>",
+      "option4": "<p> Kavya told Puneet that how Puneet danced very well</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> Rule to change Direct speech into Indirect speech-: </p><p> If the reporting verb (sentence outside the inverted comma) is in the past tense and Reported speech (inside the inverted comma) is in the present tense, then the following transformation will occur: </p><p> Simple Present ----- Simple Past.</p><p> Present Continuous ------ Past Continuous. </p><p> Present Perfect ------- Past Perfect. </p><p> Present Perfect Continuous ----- Past Perfect Continuous. </p><p> The given sentence is an exclamatory sentence hence exclaimed will be used instead of ‘said’. </p><p> The correct sentence is-: Kavya exclaimed that Puneet danced very well.</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Identify the CORRECTLY spelt word.</p>",
+      "option1": "<p> Bouquette</p>",
+      "option2": "<p> Retalaite</p>",
+      "option3": "<p> Creater</p>",
+      "option4": "<p> Flamboyant</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> Flamboyant: tending to attract attention because of their exuberance confidence, and stylishness.</p><p> Bouquet: an attractively arranged bunch of flowers, especially one presented as a gift or carried at a ceremony.</p><p> Retaliate: make an attack in return for a similar attack.</p><p> Creator: a person or thing that brings something into existence.</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> TENTH May dawned bright and clear. For the past few days, I had been pleasantly besieged by dignitaries and world leaders who were coming to pay their (1) ____ before the inauguration. The inauguration would be the largest (2) ____ ever of international leaders on South African soil. The ceremonies took place in the lovely sandstone (3) _____ formed by the Union Buildings in Pretoria. For decades this (4)<i><b> </b></i>____ the seat of white supremacy, and now it was the site of a rainbow gathering of different colours and nations for the installation of South Africa’s first democratic, non-racial government.</p><p> Select the most appropriate option to fill in blank number 1.</p>",
+      "option1": "<p> respects</p>",
+      "option2": "<p> tributing</p>",
+      "option3": "<p> accolades</p>",
+      "option4": "<p> condolences</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> The phrase \"pay their ____ before the inauguration\" suggests that dignitaries and world leaders are coming to show their respect, honour, or admiration. The word that best fits this context is \"respects,\" as it refers to expressions of admiration or respect.</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> TENTH May dawned bright and clear. For the past few days, I had been pleasantly besieged by dignitaries and world leaders who were coming to pay their (1) ____ before the inauguration. The inauguration would be the largest (2) ____ ever of international leaders on South African soil. The ceremonies took place in the lovely sandstone (3) _____ formed by the Union Buildings in Pretoria. For decades this (4)<i><b> </b></i>____ the seat of white supremacy, and now it was the site of a rainbow gathering of different colours and nations for the installation of South Africa’s first democratic, non-racial government.</p><p> Select the most appropriate option to fill in blank number 2.</p>",
+      "option1": "<p> Gathering</p>",
+      "option2": "<p> Assemblage</p>",
+      "option3": "<p> Congregation</p>",
+      "option4": "<p> Accumulation</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> The context suggests that the ceremonies would involve a significant number of international leaders coming together. The word \"gathering\" is most suitable in this context, as it refers to a collection of people or things in one place.</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> TENTH May dawned bright and clear. For the past few days, I had been pleasantly besieged by dignitaries and world leaders who were coming to pay their (1) ____ before the inauguration. The inauguration would be the largest (2) ____ ever of international leaders on South African soil. The ceremonies took place in the lovely sandstone (3) _____ formed by the Union Buildings in Pretoria. For decades this (4)<i><b> </b></i>____ the seat of white supremacy, and now it was the site of a rainbow gathering of different colours and nations for the installation of South Africa’s first democratic, non-racial government.</p><p> Select the most appropriate option to fill in blank number 3.</p>",
+      "option1": "<p> Edifice</p>",
+      "option2": "<p> Monument</p>",
+      "option3": "<p> Amphitheatre</p>",
+      "option4": "<p> Composition</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> The phrase \"sandstone _____ formed by the Union Buildings\" describes the type of construction or architectural feature. The word \"amphitheatre\" is the most appropriate choice here, as it refers to a building or framework of interconnected parts.</p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> TENTH May dawned bright and clear. For the past few days, I had been pleasantly besieged by dignitaries and world leaders who were coming to pay their (1) ____ before the inauguration. The inauguration would be the largest (2) ____ ever of international leaders on South African soil. The ceremonies took place in the lovely sandstone (3) _____ formed by the Union Buildings in Pretoria. For decades this (4)<i><b> </b></i>____ the seat of white supremacy, and now it was the site of a rainbow gathering of different colours and nations for the installation of South Africa’s first democratic, non-racial government.</p><p> Select the most appropriate option to fill in blank number 4.</p>",
+      "option1": "<p> had been</p>",
+      "option2": "<p> was</p>",
+      "option3": "<p> are being</p>",
+      "option4": "<p> have been</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is correct answer.</p><p> The sentence is discussing the historical significance of the location. The phrase \"For decades this ____ the seat of white supremacy\" requires the Past perfect continuous tense \"had been,\" as it emphasizes a past action.</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Lencho was an ox of a man, working like an animal in the fields, but still he knew how to write. The following Sunday, at daybreak, he began to write a letter which he himself would carry to town and place in the mail. It was a letter to God. he wrote, “God,” “if you don’t help me, my family and I will go hungry this year. I need a hundred pesos in order to sow my field again and to live until the crop comes, because the hailstorm.” He wrote ‘To God’ on the envelope, put the letter inside and, went to town. At the post office, he placed a stamp on the letter and dropped it into the mailbox. One of the employees, who was a postman and also helped at the post office, went to his boss laughing heartily and showed him the letter to God. Never in his career as a postman had he known that address. The postmaster also broke out laughing, but almost immediately he turned serious and, tapping the letter on his desk, So, in order not to shake the writer’s faith in God, the postmaster came up with an idea: answer the letter. But when he opened it, it was evident that to answer it he needed something more than goodwill, ink and paper. But he stuck to his resolution: he asked for money from his employees, he himself gave part of his salary, and several friends of his were obliged to give something ‘for an act of charity’. It was impossible for him to gather the hundred pesos, so he was able to send the farmer only a little more than half. He put the money in an envelope addressed to Lencho and with it a letter containing only a single word as a signature: God. The following Sunday Lencho came a bit earlier than usual to ask if there was a letter for him. It was the postman himself who handed the letter to him while the postmaster, experiencing the contentment of a man who has performed a good deed, looked on from his office. Lencho became angry when he counted the money. God could not have made a mistake, nor could he have denied what he had requested. Immediately, he went up to the window to ask for paper and ink. On the public writing-table, he started to write, with much wrinkling of his brow, caused by the effort he had to make to express his ideas. he went to the window to buy a stamp which he licked and then affixed to the envelope with a blow of his fist. The moment the letter fell into the mailbox the postmaster went to open it. It said: “God: the money that I asked for, only seventy pesos reached me. Send me the rest, since I need it very much. But don’t send it to me through the mail because the post office employees are a bunch of crooks. Lencho.”</p><p> <br/> <br/> </p><p> Why did Lencho decide to write a letter to God?</p>",
+      "option1": "<p> He wanted to complain about the post office employees.</p>",
+      "option2": "<p> He needed financial help after a hailstorm affected his crops.</p>",
+      "option3": "<p> He wanted to ask God for better weather next year.</p>",
+      "option4": "<p> He wanted to thank God for a bountiful harvest.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> Lencho decided to write a letter to God because Lencho was an ox of a man, working like an animal in the fields, but still he knew how to write. The following Sunday, at daybreak, he began to write a letter which he himself would carry to town and place in the mail. It was a letter to God. he wrote, “God,” “if you don’t help me, my family and I will go hungry this year. I need a hundred pesos in order to sow my field again and to live until the crop comes, because the hailstorm.</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Lencho was an ox of a man, working like an animal in the fields, but still he knew how to write. The following Sunday, at daybreak, he began to write a letter which he himself would carry to town and place in the mail. It was a letter to God. he wrote, “God,” “if you don’t help me, my family and I will go hungry this year. I need a hundred pesos in order to sow my field again and to live until the crop comes, because the hailstorm.” He wrote ‘To God’ on the envelope, put the letter inside and, went to town. At the post office, he placed a stamp on the letter and dropped it into the mailbox. One of the employees, who was a postman and also helped at the post office, went to his boss laughing heartily and showed him the letter to God. Never in his career as a postman had he known that address. The postmaster also broke out laughing, but almost immediately he turned serious and, tapping the letter on his desk, So, in order not to shake the writer’s faith in God, the postmaster came up with an idea: answer the letter. But when he opened it, it was evident that to answer it he needed something more than goodwill, ink and paper. But he stuck to his resolution: he asked for money from his employees, he himself gave part of his salary, and several friends of his were obliged to give something ‘for an act of charity’. It was impossible for him to gather the hundred pesos, so he was able to send the farmer only a little more than half. He put the money in an envelope addressed to Lencho and with it a letter containing only a single word as a signature: God. The following Sunday Lencho came a bit earlier than usual to ask if there was a letter for him. It was the postman himself who handed the letter to him while the postmaster, experiencing the contentment of a man who has performed a good deed, looked on from his office. Lencho became angry when he counted the money. God could not have made a mistake, nor could he have denied what he had requested. Immediately, he went up to the window to ask for paper and ink. On the public writing-table, he started to write, with much wrinkling of his brow, caused by the effort he had to make to express his ideas. he went to the window to buy a stamp which he licked and then affixed to the envelope with a blow of his fist. The moment the letter fell into the mailbox the postmaster went to open it. It said: “God: the money that I asked for, only seventy pesos reached me. Send me the rest, since I need it very much. But don’t send it to me through the mail because the post office employees are a bunch of crooks. Lencho.”</p><p> What did Lencho write on the envelope of his letter?</p>",
+      "option1": "<p>To Whom It May Concern”</p>",
+      "option2": "<p>God, Help Me”</p>",
+      "option3": "<p>To the Postmaster”</p>",
+      "option4": "<p>To God”</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer.</p><p> Lencho wrote \"To God\" on the envelope of his letter. This is mentioned in the passage where it states, \"He wrote ‘To God’ on the envelope, put the letter inside and went to town.\" Lencho's letter was addressed directly to God, expressing his plea for help in his time of need.</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Lencho was an ox of a man, working like an animal in the fields, but still he knew how to write. The following Sunday, at daybreak, he began to write a letter which he himself would carry to town and place in the mail. It was a letter to God. he wrote, “God,” “if you don’t help me, my family and I will go hungry this year. I need a hundred pesos in order to sow my field again and to live until the crop comes, because the hailstorm.” He wrote ‘To God’ on the envelope, put the letter inside and, went to town. At the post office, he placed a stamp on the letter and dropped it into the mailbox. One of the employees, who was a postman and also helped at the post office, went to his boss laughing heartily and showed him the letter to God. Never in his career as a postman had he known that address. The postmaster also broke out laughing, but almost immediately he turned serious and, tapping the letter on his desk, So, in order not to shake the writer’s faith in God, the postmaster came up with an idea: answer the letter. But when he opened it, it was evident that to answer it he needed something more than goodwill, ink and paper. But he stuck to his resolution: he asked for money from his employees, he himself gave part of his salary, and several friends of his were obliged to give something ‘for an act of charity’. It was impossible for him to gather the hundred pesos, so he was able to send the farmer only a little more than half. He put the money in an envelope addressed to Lencho and with it a letter containing only a single word as a signature: God. The following Sunday Lencho came a bit earlier than usual to ask if there was a letter for him. It was the postman himself who handed the letter to him while the postmaster, experiencing the contentment of a man who has performed a good deed, looked on from his office. Lencho became angry when he counted the money. God could not have made a mistake, nor could he have denied what he had requested. Immediately, he went up to the window to ask for paper and ink. On the public writing-table, he started to write, with much wrinkling of his brow, caused by the effort he had to make to express his ideas. he went to the window to buy a stamp which he licked and then affixed to the envelope with a blow of his fist. The moment the letter fell into the mailbox the postmaster went to open it. It said: “God: the money that I asked for, only seventy pesos reached me. Send me the rest, since I need it very much. But don’t send it to me through the mail because the post office employees are a bunch of crooks. Lencho.”</p><p> <br/> <br/> </p><p> Why did the postmaster decide to answer Lencho's letter?</p>",
+      "option1": "<p> He wanted to prove that God exists.</p>",
+      "option2": "<p> He was impressed by Lencho’s faith in God.</p>",
+      "option3": "<p> He wanted to play a prank on Lencho.</p>",
+      "option4": "<p> He wanted to mock Lencho’s request.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> The postmaster decided to answer Lencho's letter because he was impressed by Lencho's strong faith in God. When the postmaster read the letter that Lencho had written to God, he realized that Lencho's faith was unwavering and that he truly believed God would provide for him. The postmaster's decision to answer the letter was motivated by his desire to not shake Lencho's faith and to uphold the belief that God would help him. This is evident in the passage where the postmaster came up with the idea to answer the letter, and despite the practical challenges, he attempted to fulfill Lencho's request by gathering money from his employees and friends.</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Lencho was an ox of a man, working like an animal in the fields, but still he knew how to write. The following Sunday, at daybreak, he began to write a letter which he himself would carry to town and place in the mail. It was a letter to God. he wrote, “God,” “if you don’t help me, my family and I will go hungry this year. I need a hundred pesos in order to sow my field again and to live until the crop comes, because the hailstorm.” He wrote ‘To God’ on the envelope, put the letter inside and, went to town. At the post office, he placed a stamp on the letter and dropped it into the mailbox. One of the employees, who was a postman and also helped at the post office, went to his boss laughing heartily and showed him the letter to God. Never in his career as a postman had he known that address. The postmaster also broke out laughing, but almost immediately he turned serious and, tapping the letter on his desk, So, in order not to shake the writer’s faith in God, the postmaster came up with an idea: answer the letter. But when he opened it, it was evident that to answer it he needed something more than goodwill, ink and paper. But he stuck to his resolution: he asked for money from his employees, he himself gave part of his salary, and several friends of his were obliged to give something ‘for an act of charity’. It was impossible for him to gather the hundred pesos, so he was able to send the farmer only a little more than half. He put the money in an envelope addressed to Lencho and with it a letter containing only a single word as a signature: God. The following Sunday Lencho came a bit earlier than usual to ask if there was a letter for him. It was the postman himself who handed the letter to him while the postmaster, experiencing the contentment of a man who has performed a good deed, looked on from his office. Lencho became angry when he counted the money. God could not have made a mistake, nor could he have denied what he had requested. Immediately, he went up to the window to ask for paper and ink. On the public writing-table, he started to write, with much wrinkling of his brow, caused by the effort he had to make to express his ideas. he went to the window to buy a stamp which he licked and then affixed to the envelope with a blow of his fist. The moment the letter fell into the mailbox the postmaster went to open it. It said: “God: the money that I asked for, only seventy pesos reached me. Send me the rest, since I need it very much. But don’t send it to me through the mail because the post office employees are a bunch of crooks. Lencho.”</p><p> <br/> <br/> </p><p> What was Lencho's reaction when he received the money from the post office?</p>",
+      "option1": "<p> He was satisfied and thanked God for the help.</p>",
+      "option2": "<p> He was disappointed and mistrusted the post office employees.</p>",
+      "option3": "<p> He was surprised and decided to share the money with his neighbours.</p>",
+      "option4": "<p> He was grateful and immediately went to church to pray.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> In the passage, it's mentioned that when Lencho received the money from the post office, he became angry and counted the money. He believed that God could not have made a mistake or denied his request. Lencho's reaction implies that he was disappointed with the amount of money he received, and he mistrusted the post office employees because he believed they had taken some of the money. This is further supported by the contents of the letter he wrote after receiving the money, where he mentioned that only seventy pesos reached him and accused the post office employees of being \"a bunch of crooks.\"</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Large financing needs must be addressed to lower greenhouse gas emissions and invest in climate-resilient development. An estimated $1.7 trillion per year will need to be invested in infrastructure in Asia and the Pacific between 2016-2030 to meet both climate and development goals. Investment in adaptation is estimated to cost an annual $160 billion to $340 billion in developing countries by 2030 and $315-$565 billion by 2050. This is much higher than the current $49 billion invested in adaptation globally. Finance ministers are driving financial and fiscal reforms to scale up and align finance with climate action, but barriers to investment persist. Governments face challenges in planning and developing bankable and fiscally sustainable projects. The lack of data on climate costs and benefits further complicates public investment decisions. In addition, climate adaptation targets are often insufficiently detailed to integrate into medium-term expenditure processes. These hurdles underscore the importance of addressing governance issues and integrating climate change considerations into public financial management and project implementation management processes for effective green investments. Governance and its intersection with climate change is fundamental to green investment projects achieving their objectives. The performance of public investment needs to improve for governments to maximize climate benefits. Data analysis reveals that a significant percentage of major investment projects worldwide experience budget overruns, delays, and fail to achieve their intended benefits. Both advanced and developing countries are affected by these shortcomings. Governments are initiating project implementation management reforms by integrating climate costs and benefits into strategic planning and fiscal frameworks. Developing countries as well as advanced economies are drawing up national adaptation plans.</p><p> <br/> <br/> </p><p> What does the term \"bankable\" mean in the context of the passage?</p>",
+      "option1": "<p> Capable of generating high profits</p>",
+      "option2": "<p> Able to secure funding from financial institutions</p>",
+      "option3": "<p> Sustainable and eco-friendly</p>",
+      "option4": "<p> Financially stable and secure</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> In the context of the passage, the term \"bankable\" refers to projects or initiatives that are considered suitable and attractive for securing funding from financial institutions such as banks or investment firms. A \"bankable\" project is one that is perceived as having the necessary feasibility, potential returns, and risk profile to attract investment from these financial entities. This term is commonly used to describe projects that are well-structured, financially viable, and have a high likelihood of achieving their intended goals, making them appealing to investors looking for reliable opportunities. In the context of the passage, governments and organizations are faced with the challenge of developing projects that meet these criteria in order to obtain the necessary funding for climate-related initiatives and sustainable development projects.</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Large financing needs must be addressed to lower greenhouse gas emissions and invest in climate-resilient development. An estimated $1.7 trillion per year will need to be invested in infrastructure in Asia and the Pacific between 2016-2030 to meet both climate and development goals. Investment in adaptation is estimated to cost an annual $160 billion to $340 billion in developing countries by 2030 and $315-$565 billion by 2050. This is much higher than the current $49 billion invested in adaptation globally. Finance ministers are driving financial and fiscal reforms to scale up and align finance with climate action, but barriers to investment persist. Governments face challenges in planning and developing bankable and fiscally sustainable projects. The lack of data on climate costs and benefits further complicates public investment decisions. In addition, climate adaptation targets are often insufficiently detailed to integrate into medium-term expenditure processes. These hurdles underscore the importance of addressing governance issues and integrating climate change considerations into public financial management and project implementation management processes for effective green investments. Governance and its intersection with climate change is fundamental to green investment projects achieving their objectives. The performance of public investment needs to improve for governments to maximize climate benefits. Data analysis reveals that a significant percentage of major investment projects worldwide experience budget overruns, delays, and fail to achieve their intended benefits. Both advanced and developing countries are affected by these shortcomings. Governments are initiating project implementation management reforms by integrating climate costs and benefits into strategic planning and fiscal frameworks. Developing countries as well as advanced economies are drawing up national adaptation plans.</p><p> <br/> <br/> </p><p> What is the primary challenge governments face when integrating climate adaptation targets into expenditure processes?</p>",
+      "option1": "<p> Lack of detailed targets for climate adaptation</p>",
+      "option2": "<p> Excessive focus on short-term fiscal goals</p>",
+      "option3": "<p> Insufficient investment in green technologies</p>",
+      "option4": "<p> Overemphasis on data analysis</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> In the context of the passage, the primary challenge governments face when integrating climate adaptation targets into expenditure processes is the \"lack of detailed targets for climate adaptation.\" This refers to the fact that governments often struggle to define and establish specific, actionable goals and objectives related to adapting to the impacts of climate change.</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Large financing needs must be addressed to lower greenhouse gas emissions and invest in climate-resilient development. An estimated $1.7 trillion per year will need to be invested in infrastructure in Asia and the Pacific between 2016-2030 to meet both climate and development goals. Investment in adaptation is estimated to cost an annual $160 billion to $340 billion in developing countries by 2030 and $315-$565 billion by 2050. This is much higher than the current $49 billion invested in adaptation globally. Finance ministers are driving financial and fiscal reforms to scale up and align finance with climate action, but barriers to investment persist. Governments face challenges in planning and developing bankable and fiscally sustainable projects. The lack of data on climate costs and benefits further complicates public investment decisions. In addition, climate adaptation targets are often insufficiently detailed to integrate into medium-term expenditure processes. These hurdles underscore the importance of addressing governance issues and integrating climate change considerations into public financial management and project implementation management processes for effective green investments. Governance and its intersection with climate change is fundamental to green investment projects achieving their objectives. The performance of public investment needs to improve for governments to maximize climate benefits. Data analysis reveals that a significant percentage of major investment projects worldwide experience budget overruns, delays, and fail to achieve their intended benefits. Both advanced and developing countries are affected by these shortcomings. Governments are initiating project implementation management reforms by integrating climate costs and benefits into strategic planning and fiscal frameworks. Developing countries as well as advanced economies are drawing up national adaptation plans.</p><p> <br/> <br/> </p><p> Q. What is the estimated annual cost of adaptation in developing countries by 2030?</p>",
+      "option1": "<p> $160 billion to $340 billion</p>",
+      "option2": "<p> $315 billion to $565 billion</p>",
+      "option3": "<p> $49 billion</p>",
+      "option4": "<p> $1.7 trillion</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> The estimated annual cost of adaptation in developing countries by 2030 is in the range of $160 billion to $340 billion. This means that, according to the information in the passage, developing countries are projected to require this amount of funding every year from 2030 to implement measures and projects that help them adapt to the effects of climate change. These adaptation efforts could include things like building infrastructure to withstand extreme weather events, implementing water management systems, developing early warning systems, and other initiatives to increase resilience against climate-related challenges.</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Large financing needs must be addressed to lower greenhouse gas emissions and invest in climate-resilient development. An estimated $1.7 trillion per year will need to be invested in infrastructure in Asia and the Pacific between 2016-2030 to meet both climate and development goals. Investment in adaptation is estimated to cost an annual $160 billion to $340 billion in developing countries by 2030 and $315-$565 billion by 2050. This is much higher than the current $49 billion invested in adaptation globally. Finance ministers are driving financial and fiscal reforms to scale up and align finance with climate action, but barriers to investment persist. Governments face challenges in planning and developing bankable and fiscally sustainable projects. The lack of data on climate costs and benefits further complicates public investment decisions. In addition, climate adaptation targets are often insufficiently detailed to integrate into medium-term expenditure processes. These hurdles underscore the importance of addressing governance issues and integrating climate change considerations into public financial management and project implementation management processes for effective green investments. Governance and its intersection with climate change is fundamental to green investment projects achieving their objectives. The performance of public investment needs to improve for governments to maximize climate benefits. Data analysis reveals that a significant percentage of major investment projects worldwide experience budget overruns, delays, and fail to achieve their intended benefits. Both advanced and developing countries are affected by these shortcomings. Governments are initiating project implementation management reforms by integrating climate costs and benefits into strategic planning and fiscal frameworks. Developing countries as well as advanced economies are drawing up national adaptation plans.</p><p> <br/> <br/> </p><p> What is the significance of integrating climate costs and benefits into strategic planning and fiscal frameworks?</p>",
+      "option1": "<p> It ensures immediate implementation of climate projects.</p>",
+      "option2": "<p> It improves the performance of public investment.</p>",
+      "option3": "<p> It eliminates the need for financial reforms.</p>",
+      "option4": "<p> It reduces the overall investment required.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> Integrating climate costs and benefits into strategic planning and fiscal frameworks means considering the financial implications of climate-related projects and initiatives when making decisions about resource allocation and budgeting. This integration is important because it helps governments and organizations make informed decisions about which climate-related projects to prioritize and fund. By assessing the costs and potential benefits of these projects within the context of strategic planning and fiscal frameworks, it becomes possible to allocate resources more effectively and efficiently.</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Physical dimension is related to our body. It means that all organs and systems of our body should be properly developed and function. It implies a healthy body without any disease. Yogic practices like asana, pranayama, and bandha play a beneficial role in physical development of children. There is a series of asanas and pranayama’s which help to improve the functioning of the body. Yogic practices are effective for development of emotional dimension related to our feelings, attitudes and emotions. There are two kinds of emotions: positive and negative. For example, love, kindness are positive emotions, while anger and fear (exam phobia) are negative emotions. Similarly, our feelings and attitudes may be positive and negative. For emotional development, positive feelings, attitudes and emotions should be developed and negative ones should be controlled, as the negative attitudes and emotions work as a mental block for the development of personality. Yoga plays a critical role in development of positive emotions. It brings emotional stability. It helps to control negative emotions. Yogic practices such as yama, niyama, asana, pranayama, pratyahara and meditation help in emotional management. For example, the principle of non-violence will protect us from negative emotions and develop positive feelings of love and kindness. Similarly, other principles of yama and niyama will help to develop positive emotions and attitudes in our personal and social life and therefore help in the management of emotions. Intellectual development is related to the development of our mental abilities and processes such as critical thinking, memory, perception, decision making, imagination, creativity, etc. Development of this dimension is very important as it enables us to learn new things and acquire knowledge and skills. Yogic practices such as asana, pranayama, dharana, dhyana (meditation) help to develop concentration, memory and thereby help in intellectual development. This dimension is related to the development of values. It is also concerned with self-actualisation which is related to recognising one’s potential and developing them to the maximum. Proper development of this dimension helps the person to realise one’s true identity. For spiritual development, yama, niyama, pratyahara and dhyana (meditation) are helpful. Yama and niyama help to develop our moral values while pranayama, and meditation help us to realise our true self. Introspection is very effective for the development of ‘self’.</p><p> <br/> <br/> </p><p> How is the concept of \"self-actualization\" described in the passage?</p>",
+      "option1": "<p> Recognizing and developing one's potential to the fullest</p>",
+      "option2": "<p> Gaining spiritual enlightenment through meditation</p>",
+      "option3": "<p> Achieving physical well-being through yogic practices</p>",
+      "option4": "<p> Acquiring knowledge and skills for personal growth</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> In the context of the passage, the concept of \"self-actualization\" refers to the process of recognizing and fully developing one's own potential, talents, and abilities. It involves striving to become the best version of oneself and achieving personal growth and fulfilment in various aspects of life. Self-actualization is about reaching one's highest level of functioning and realizing one's true identity. It goes beyond acquiring specific skills or knowledge; it's a holistic journey of becoming the best version of oneself in terms of physical, emotional, intellectual, and spiritual dimensions.</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Physical dimension is related to our body. It means that all organs and systems of our body should be properly developed and function. It implies a healthy body without any disease. Yogic practices like asana, pranayama, and bandha play a beneficial role in physical development of children. There is a series of asanas and pranayama’s which help to improve the functioning of the body. Yogic practices are effective for development of emotional dimension related to our feelings, attitudes and emotions. There are two kinds of emotions: positive and negative. For example, love, kindness are positive emotions, while anger and fear (exam phobia) are negative emotions. Similarly, our feelings and attitudes may be positive and negative. For emotional development, positive feelings, attitudes and emotions should be developed and negative ones should be controlled, as the negative attitudes and emotions work as a mental block for the development of personality. Yoga plays a critical role in development of positive emotions. It brings emotional stability. It helps to control negative emotions. Yogic practices such as yama, niyama, asana, pranayama, pratyahara and meditation help in emotional management. For example, the principle of non-violence will protect us from negative emotions and develop positive feelings of love and kindness. Similarly, other principles of yama and niyama will help to develop positive emotions and attitudes in our personal and social life and therefore help in the management of emotions. Intellectual development is related to the development of our mental abilities and processes such as critical thinking, memory, perception, decision making, imagination, creativity, etc. Development of this dimension is very important as it enables us to learn new things and acquire knowledge and skills. Yogic practices such as asana, pranayama, dharana, dhyana (meditation) help to develop concentration, memory and thereby help in intellectual development. This dimension is related to the development of values. It is also concerned with self-actualisation which is related to recognising one’s potential and developing them to the maximum. Proper development of this dimension helps the person to realise one’s true identity. For spiritual development, yama, niyama, pratyahara and dhyana (meditation) are helpful. Yama and niyama help to develop our moral values while pranayama, and meditation help us to realise our true self. Introspection is very effective for the development of ‘self’.</p><p> <br/> <br/> </p><p> Which yogic practice is specifically not mentioned in controlling negative emotions?</p>",
+      "option1": "<p> Dharana</p>",
+      "option2": "<p> Pranayama</p>",
+      "option3": "<p> Pratyahara</p>",
+      "option4": "<p> Niyama</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> \"Dharana\" is mentioned in the passage as a yogic practice that contributes to the development of intellectual dimension. Dharana refers to the practice of concentration and focusing the mind on a single point or object. It is a technique in which an individual directs their attention and awareness to a specific point, thought, or object while excluding other distractions. In the context of the passage, dharana is highlighted as a yogic practice that helps develop concentration and memory. It is a part of the intellectual dimension because it enhances the ability to focus the mind, which in turn can improve critical thinking, decision making, and other cognitive processes. Overall, dharana is a practice that assists in cultivating mental focus and control, contributing to the enhancement of intellectual abilities.</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Physical dimension is related to our body. It means that all organs and systems of our body should be properly developed and function. It implies a healthy body without any disease. Yogic practices like asana, pranayama, and bandha play a beneficial role in physical development of children. There is a series of asanas and pranayama’s which help to improve the functioning of the body. Yogic practices are effective for development of emotional dimension related to our feelings, attitudes and emotions. There are two kinds of emotions: positive and negative. For example, love, kindness are positive emotions, while anger and fear (exam phobia) are negative emotions. Similarly, our feelings and attitudes may be positive and negative. For emotional development, positive feelings, attitudes and emotions should be developed and negative ones should be controlled, as the negative attitudes and emotions work as a mental block for the development of personality. Yoga plays a critical role in development of positive emotions. It brings emotional stability. It helps to control negative emotions. Yogic practices such as yama, niyama, asana, pranayama, pratyahara and meditation help in emotional management. For example, the principle of non-violence will protect us from negative emotions and develop positive feelings of love and kindness. Similarly, other principles of yama and niyama will help to develop positive emotions and attitudes in our personal and social life and therefore help in the management of emotions. Intellectual development is related to the development of our mental abilities and processes such as critical thinking, memory, perception, decision making, imagination, creativity, etc. Development of this dimension is very important as it enables us to learn new things and acquire knowledge and skills. Yogic practices such as asana, pranayama, dharana, dhyana (meditation) help to develop concentration, memory and thereby help in intellectual development. This dimension is related to the development of values. It is also concerned with self-actualisation which is related to recognising one’s potential and developing them to the maximum. Proper development of this dimension helps the person to realise one’s true identity. For spiritual development, yama, niyama, pratyahara and dhyana (meditation) are helpful. Yama and niyama help to develop our moral values while pranayama, and meditation help us to realise our true self. Introspection is very effective for the development of ‘self’.</p><p> What is the role of \"pratyahara\" in emotional management, as mentioned in the passage?</p>",
+      "option1": "<p> It promotes emotional stability</p>",
+      "option2": "<p> It eliminates negative emotions entirely</p>",
+      "option3": "<p> It intensifies emotional experiences</p>",
+      "option4": "<p> It enhances emotional expression</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer. </p><p> In the passage, \"pratyahara\" is mentioned as a yogic practice that helps in emotional management. Pratyahara refers to the withdrawal of the senses from external stimuli. By practicing pratyahara, individuals can detach themselves from external sensory distractions and develop inner focus and self-awareness. The act of withdrawing from sensory inputs can contribute to emotional stability by reducing the impact of external triggers that might lead to impulsive emotional reactions. By practicing pratyahara, individuals can gain better control over their emotional responses, leading to a calmer and more stable emotional state. This practice helps individuals become less reactive to external stimuli and more grounded in their emotional experiences.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Physical dimension is related to our body. It means that all organs and systems of our body should be properly developed and function. It implies a healthy body without any disease. Yogic practices like asana, pranayama, and bandha play a beneficial role in physical development of children. There is a series of asanas and pranayama’s which help to improve the functioning of the body. Yogic practices are effective for development of emotional dimension related to our feelings, attitudes and emotions. There are two kinds of emotions: positive and negative. For example, love, kindness are positive emotions, while anger and fear (exam phobia) are negative emotions. Similarly, our feelings and attitudes may be positive and negative. For emotional development, positive feelings, attitudes and emotions should be developed and negative ones should be controlled, as the negative attitudes and emotions work as a mental block for the development of personality. Yoga plays a critical role in development of positive emotions. It brings emotional stability. It helps to control negative emotions. Yogic practices such as yama, niyama, asana, pranayama, pratyahara and meditation help in emotional management. For example, the principle of non-violence will protect us from negative emotions and develop positive feelings of love and kindness. Similarly, other principles of yama and niyama will help to develop positive emotions and attitudes in our personal and social life and therefore help in the management of emotions. Intellectual development is related to the development of our mental abilities and processes such as critical thinking, memory, perception, decision making, imagination, creativity, etc. Development of this dimension is very important as it enables us to learn new things and acquire knowledge and skills. Yogic practices such as asana, pranayama, dharana, dhyana (meditation) help to develop concentration, memory and thereby help in intellectual development. This dimension is related to the development of values. It is also concerned with self-actualisation which is related to recognising one’s potential and developing them to the maximum. Proper development of this dimension helps the person to realise one’s true identity. For spiritual development, yama, niyama, pratyahara and dhyana (meditation) are helpful. Yama and niyama help to develop our moral values while pranayama, and meditation help us to realise our true self. Introspection is very effective for the development of ‘self’.</p><p> What is the primary purpose of integrating yogic practices with different dimensions of development?</p>",
+      "option1": "<p> Achieving instant results</p>",
+      "option2": "<p> Balancing the mind and body</p>",
+      "option3": "<p> Becoming an expert yogi</p>",
+      "option4": "<p> Mastering all dimensions simultaneously</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> The primary purpose of integrating yogic practices with different dimensions of development, as indicated in the passage, is to achieve a balance between various aspects of an individual's well-being. Yoga is considered a holistic approach that encompasses physical, emotional, intellectual, and spiritual dimensions. By integrating yogic practices into these dimensions, individuals aim to harmonize and balance their physical health, emotional well-being, cognitive abilities, and spiritual growth. The practice of yoga is not solely about achieving instant results or becoming an expert yogi, but rather about achieving overall balance and wellness across different dimensions of life. This balance contributes to a healthier and more fulfilling lifestyle.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>What is SI unit of magnetic flux density?</p>",
+      "option1": "<p>Farad</p>",
+      "option2": "<p>Weber</p>",
+      "option3": "<p>Tesla</p>",
+      "option4": "<p>Siemens</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Tesla. </p><p><strong>Magnetic flux density: </strong>It is defined as the <strong>force acting per unit current per unit length on a wire placed at right angles to the magnetic field</strong>. <strong>CGS unit</strong> of Magnetic flux Density is ‘<strong>Gauss</strong>’. </p><p><strong>Magnetic Flux</strong>: It is defined as the number of <strong>magnetic field lines passing through a given closed surface</strong>. It provides the measurement of the total magnetic field that passes through a given surface area.</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>What is the rank of India in the Global Fire Power Index 2023?</p>",
+      "option1": "<p>1st</p>",
+      "option2": "<p>3rd</p>",
+      "option3": "<p>4th</p>",
+      "option4": "<p>9th</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 4th. </p><p>The <strong>Global Firepower Index</strong> ranks the countries based on their potential <strong>military strength</strong>. <strong>India</strong> is ranked <strong>fourth</strong> in the index. The Global Firepower Index ranked <strong>145 countries</strong>. The countries were evaluated based on prolonged offensive and defensive military campaigns. </p><p>The Global Firepower Index, 2023, puts the US at the top, Russia at the second spot, China at No. 3, and India at No. 4. </p><p>The Global Firepower Index is calculated using <strong>fifty individual factors</strong> from geography to logistical capability. It also includes <strong>manpower, land forces, airpower, natural resources, naval forces, logistics and financials. </strong></p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Shipki La pass is located in which state?</p>",
+      "option1": "<p>Himachal Pradesh</p>",
+      "option2": "<p>Uttarakhand</p>",
+      "option3": "<p>Sikkim</p>",
+      "option4": "<p>Arunachal Pradesh</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Himachal Pradesh. </p><p><strong>Shipki La Pass</strong> is located through Sutlej Gorge. It connects <strong>Himachal Pradesh with Tibet</strong>. It is India’s third border post for trade with China after Lipu Lekh and Nathula Pass. </p><p><strong>Other Passes in Himachal Pradesh: </strong></p><p><strong>Rohtang Pass</strong>: This is located in the state of Himachal Pradesh. It has excellent road transportation. This pass <strong>connects Kullu, Spiti and Lahul</strong>. </p><p><strong>Debsa Pass</strong>: It <strong>joins Spiti Valley and Parvati Valley</strong>. It is a high mountain pass in between the Kullu and Spiti of Himachal Pradesh. It is a bypass route of <strong>Pin-Parvati Pass</strong>.</p><p><strong>Passes in Uttarakhand: </strong></p><p><strong>Lipu Lekh: </strong>It is located in Uttarakhand. It connects Uttarakhand with Tibet. This pass is an important border post for trade with China. The pilgrims for Manasarovar travel through this pass. </p><p><strong>Mana Pass:</strong> It is located in the Greater Himalayas and connects Tibet with Uttarakhand. It remains under snow for six months during winter. </p><p><strong>Muling La:</strong> It is situated in the north of Gangotri, at an elevation of 5669 m in the Great Himalayas. This seasonal pass that connects Uttarakhand with Tibet remains snow-covered during the winter season.</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Which of the following statements are correct according to the Preamble of India?<br/> <br/> A. It provides three types of Justice- Social, Economic and Political.<br/> B. It provides Liberty of thought, expression, belief, faith and worship.<br/> C. The term ‘Socialist’, ‘Secular’, and ‘Integrity’ were added to the preamble through 42nd Amendment Act, 1976.<br/> </p>",
+      "option1": "<p>A and B only</p>",
+      "option2": "<p>A, B and C</p>",
+      "option3": "<p>B and C only</p>",
+      "option4": "<p>A and C only</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option b is the correct answer. </p><p>All the above statements are correct. </p><p><strong>Preamble of India:</strong></p><p><strong>Berubari Case</strong> and <strong>Kesavananda Bharti</strong> Case is related to the Preamble of India.</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>Which of the given statements about the Union Budget is/are true?<br/> <br/> 1. Vote on Account deals only with the expenditure side of the government budget.<br/> 2. Vote on Account and Interim Budget are not the same.<br/> 3. An Interim Budget gives a complete financial statement, similar to a full budget.<br/> 4. Article 113 talks about Annual Financial Statement.</p>",
+      "option1": "<p>Only 1, 2 and 4</p>",
+      "option2": "<p>Only 1,2 and 3</p>",
+      "option3": "<p>All 1, 2, 3 and 4</p>",
+      "option4": "<p>Only 2 and 4<br/> </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option b is the correct answer. </p><p>Article 112 deals with the<strong> Annual financial statement</strong>. It says that the President shall in respect of every financial year cause to be laid before both the Houses of Parliament a statement of the estimated receipts and expenditure of the Government of India for that year, in this Part referred to as the <strong>annual financial statement.</strong></p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Intensified Mission Indradhanush 4.0 is related to which ministry?</p>",
+      "option1": "<p>Ministry of Health &amp; Family Welfare</p>",
+      "option2": "<p>Ministry of Education</p>",
+      "option3": "<p>Ministry of Skill Development &amp; Entrepreneurship</p>",
+      "option4": "<p>Ministry of Women and Child Development.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option a is the correct answer. </p><p><strong>Mission Indradhanush </strong>Provides <strong>vaccination against 12 Vaccine-Preventable Diseases (VPD)</strong> i.e., diphtheria, Whooping cough, tetanus, polio, tuberculosis, hepatitis B, meningitis and pneumonia, Haemophilus influenzae type B infections, Japanese encephalitis (JE), rotavirus vaccine, pneumococcal conjugate vaccine (PCV) and measles-rubella (MR).</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>Which of the following articles states that “The State shall take steps to improve public health and prohibit consumption of intoxicating drinks and drugs that are injurious to health”</p>",
+      "option1": "<p>Article 40</p>",
+      "option2": "<p>Article 46</p>",
+      "option3": "<p>Article 47</p>",
+      "option4": "<p>Article 48</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Article 47. </p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Kuki tribes belongs to which state?</p>",
+      "option1": "<p>Madhya Pradesh</p>",
+      "option2": "<p>Manipur</p>",
+      "option3": "<p>Nagaland</p>",
+      "option4": "<p>Sikkim</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Manipur. </p><p>The Kukis are a multi-tribal ethnic group that live in India’s north-eastern regions of Manipur, Mizoram, and Assam, as well as parts of Bangladesh and Myanmar. </p><p><strong>‘Mim Kut’</strong> is the main festival of the Kuki tribe. </p><p>Kuki tribe is <strong>majorly found in Manipur</strong> with other states of North Eastern India.</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Which of the following is/are correct about Jainism?</p>",
+      "option1": "<p>Only 1 and 3</p>",
+      "option2": "<p>Only 1, 2 and 4</p>",
+      "option3": "<p>Only 1, 3 and 4</p>",
+      "option4": "<p>All 1, 2, 3 and 4</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>Only Option 2 is incorrect about Jainism. Lord Mahavir was the last i.e. 24th teacher of Jainism. </p><p><strong>Five Doctrines of Jainism. </strong></p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Which of the following does not belong to class insecta?<br/> </p>",
+      "option1": "<p>Cockroach</p>",
+      "option2": "<p>Mosquito</p>",
+      "option3": "<p>Scorpion</p>",
+      "option4": "<p>Silverfish<br/> </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Scorpion’.</p><p>Spiders belong to class Arachnida and they are not included in insects. The insects have antennae and wings. The spiders are arachnids and do not have antenna or wing for flying. The other examples, mosquito, housefly and butterfly possess these characters and so they are included in Insecta. </p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>Which of the following statement is Incorrect about the characteristic features of the Indian Desert?<br/> </p>",
+      "option1": "<p>It has sand dunes</p>",
+      "option2": "<p>It lies northwest of the Aravalli hills</p>",
+      "option3": "<p>It receives 250 mm rainfall per year.</p>",
+      "option4": "<p>It is also known as Marusthali</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Which water-soluble vitamin found in various foods, including liver, milk, eggs and fish, helps to keep your body’s blood and nerve cells healthy?</p>",
+      "option1": "<p>Vitamin A</p>",
+      "option2": "<p>Vitamin E</p>",
+      "option3": "<p>Vitamin C</p>",
+      "option4": "<p>Vitamin B12</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Vitamin B12. </p><p>Vitamin B12, also known as <strong>cobalamin</strong>, is a <strong>water-soluble vitamin</strong> that is found naturally in certain foods. It is primarily obtained from animal-based sources like liver, milk, eggs, and fish. Vitamin B12 is crucial for maintaining the health of your body's blood and nerve cells.</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>The Kandariya Mahadeva temple, which is dedicated to Shiva and was constructed in 999 by the Chandela dynasty, is an example of which of the following styles of architecture?</p>",
+      "option1": "<p>Nagara Style</p>",
+      "option2": "<p>Ahom Style</p>",
+      "option3": "<p>Dravida Style</p>",
+      "option4": "<p>Pagoda Style</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Nagara Style. </p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>Rajya Sabha has to return the money bill to Lok Sabha with or without the recommendation within ___________.</p>",
+      "option1": "<p>10 days</p>",
+      "option2": "<p>30 days</p>",
+      "option3": "<p>14 days</p>",
+      "option4": "<p>21 days</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 14 days. </p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Which of the following pair of dances belongs to Kerala?</p>",
+      "option1": "<p>Sattriya and Bharatnatyam</p>",
+      "option2": "<p>Kathakali and Kuchipudi</p>",
+      "option3": "<p>Mohiniyattam and Kathak</p>",
+      "option4": "<p>Kathakali and Mohiniyattam</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Kathakali and Mohiniyattam are the dance forms that belong to Kerala.</p><p>The other options:</p><p>(A) Sattriya is a classical dance form from Assam, while Bharatnatyam is a classical dance form from Tamil Nadu.</p><p>(B) Kuchipudi is a classical dance form from Andhra Pradesh.</p><p>(C) Mohiniyattam, as mentioned earlier, belongs to Kerala, while Kathak is a classical dance form from North India.</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Zakir Hussain is renowned for playing the ____________.<br/> </p>",
+      "option1": "<p>Tabla</p>",
+      "option2": "<p>Shehnai</p>",
+      "option3": "<p>Santoor</p>",
+      "option4": "<p>Sitar</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Tabla. </p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>What does the “Green Revolution” refer to in Indian Agriculture?</p>",
+      "option1": "<p>Increase in forest cover</p>",
+      "option2": "<p>Increase in land under grassland</p>",
+      "option3": "<p>Increase in Agro based industries</p>",
+      "option4": "<p>Spectacular increase in production of food grains<br/> </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>What is another name for centre-seeking force?<br/> </p>",
+      "option1": "<p>Centrifugal</p>",
+      "option2": "<p>Van der Waals</p>",
+      "option3": "<p>Gravitational</p>",
+      "option4": "<p>Centripetal</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Another name for center-seeking force is \"centripetal force.\" </p><p><strong>Centripetal Force</strong>: This force acts towards the center of rotation or the axis of circular motion, keeping an object moving in a circular path. </p><p><strong>Centrifugal Force</strong>: Centrifugal force is the apparent <strong>outward force on a mass when it is rotated. </strong></p><p><strong>Vanderwalls force: </strong>Van der Waals forces are weak intermolecular forces that are dependent on the distance between atoms or molecules. These forces arise from the interactions between uncharged atoms/molecules.<strong> </strong></p><p><strong>Gravitational force: </strong>Gravitation or gravity is the force of attraction between any two bodies.</p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Peeling, cutting or crushing onion tissue releases which enzyme that makes our eyes water?</p>",
+      "option1": "<p>Alliinases</p>",
+      "option2": "<p>Bordelaises</p>",
+      "option3": "<p>Pectinases</p>",
+      "option4": "<p>Xylanases<br/> </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Peeling, cutting, or crushing onion tissue releases an enzyme called alliinase. </p><p><strong>Pectinases</strong>: Pectinase is used in the extraction, clarification, filtration, and depectinization of fruit juices and wines by enzymatically breaking down the cell wall, and for the maceration of fruits and vegetables and removal of the inner wall of lotus seed, garlic, almond, and peanut. </p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>Which of the following women personalities has the honour of being a ‘Double Medalist’ at the Olympics?</p>",
+      "option1": "<p>Saina Nehwal</p>",
+      "option2": "<p>P V Sindhu</p>",
+      "option3": "<p>Sakshi Malik</p>",
+      "option4": "<p>Karnam Malleswari</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is P V Sindhu. </p><p>Indian badminton ace <strong>PV Sindhu</strong> is the only Indian woman to have won multiple medals at the Olympics - a <strong>silver medal</strong> in women's singles at <strong>Rio 2016</strong> and a <strong>bronze</strong> at <strong>Tokyo 2020</strong>. </p><p><strong>Karnam Malleswari</strong> is an Indian weightlifter who won a bronze medal at the 2000 Sydney Olympics in the 69 kg weight category, becoming the <strong>first Indian woman to win an Olympic medal. </strong></p><p><strong>Saina Nehwal</strong> is the <strong>first-ever badminton</strong> player from India to clinch an Olympic medal. The Indian shuttler created history when she won the <strong>bronze medal at the London 2012 Games.</strong></p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>Who among the following founded the Asiatic Society in 1784 in Calcutta?</p>",
+      "option1": "<p>Warren Hastings</p>",
+      "option2": "<p>Charles Eyre</p>",
+      "option3": "<p>Jonathan Duncan</p>",
+      "option4": "<p>William Jones</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is William Jones. </p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Which of the following Articles of the Constitution of India lays down the maximum strength of the Rajya Sabha as 250?</p>",
+      "option1": "<p>Article 83</p>",
+      "option2": "<p>Article 81</p>",
+      "option3": "<p>Article 85</p>",
+      "option4": "<p>Article 80</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Article 80. </p><p><strong>Article 83</strong>: It states that the term of the Lok Sabha will be five years from the date of its first sitting. </p><p><strong>Article 81</strong>: Article 81 of the Indian Constitution defines the makeup of the House of The people, Lok Sabha. The House of Representatives shall have no more over 550 members elected, with little than 20 from Territories. </p><p><strong>Article 80</strong>: Article 80 of the Indian Constitution specifies the Composition of the Council of States. According to Article 80, the Council of States shall consist of: Twelve members are to be nominated by the President. </p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Which of the following is NOT a Constitutional Body in India?</p>",
+      "option1": "<p>Election Commission of India</p>",
+      "option2": "<p>State Human Rights Commission</p>",
+      "option3": "<p>Union Public Service Commission of India</p>",
+      "option4": "<p>State Public Service Commission</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option b is the correct answer. </p><p>State Human Rights Commission is NOT a Constitutional Body in India. It is a <strong>statutory body, not mentioned in the Constitution.</strong> </p><p>The State Human Rights Commissions are established under the Protection of Human Rights Act, 1993, at the state level <strong>to promote and protect human rights within their respective states. </strong></p><p>On the other hand, all the other options mentioned, such as the <strong>Election Commission of India, Union Public Service Commission, and State Public Service Commission</strong>, are Constitutional Bodies as they are <strong>explicitly mentioned in the Constitution of India and derive their powers and functions directly from it.</strong></p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>Who among the following founded the Depressed Classes Association, in 1930?</p>",
+      "option1": "<p>Jaiprakash Narayan</p>",
+      "option2": "<p>Mahatma Gandhi</p>",
+      "option3": "<p>Dr. BR Ambedkar</p>",
+      "option4": "<p>Swami Sahajanand Saraswati</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Dr. BR Ambedkar. </p><p>Dr. BR Ambedkar founded the Depressed Classes Association in 1930. </p><p>The organization was formed to advocate for the rights and upliftment of the socially and economically marginalized sections of society, who were referred to as the \"Depressed Classes\" during that time. </p><p><strong>Important information about Dr. Bhimrao Ambedkar: </strong></p><p><strong>He advocated separate electorates for the ‘Depressed Classes’</strong>, the term with which Dalits were called at that time. He was in disagreement with <strong>Mahatma Gandhi at that time since Gandhi was against any sort of reservation in the electorates.</strong> When the British government announced the ‘Communal Award’ in 1932, Gandhi went on a fast in Yerwada Jail. <strong>An agreement was signed between</strong> <strong>Gandhi and Ambedkar in the jail</strong> <strong>whereby it was agreed to give reserved seats to the depressed classes within the general electorate.</strong> <strong>This was called the</strong> <strong>Poona Pact. </strong></p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>Who is the author of book titled “Freedom in Exile”?</p>",
+      "option1": "<p>Salman Rushdie</p>",
+      "option2": "<p>Dalai Lama</p>",
+      "option3": "<p>Ruskin Bond</p>",
+      "option4": "<p>L.K Advani</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Dalai Lama. </p><p>\"<strong>Freedom in Exile</strong>\" is a book written by the <strong>14th Dalai Lama, Tenzin Gyatso</strong>. The book is his autobiography and provides insights into his life, his struggles, and his experiences in exile after he fled from Tibet in 1959. It delves into the Dalai Lama's spiritual journey, his leadership of the Tibetan people, and his efforts to promote peace and compassion worldwide. </p><p><strong>Salman Rushdie books</strong><strong>: </strong></p><p>The Satanic City, Midnight Children, Victory City, Quichotte, The Golden House. </p><p><strong>Ruskin Bond books: </strong></p><p>The Blue Umbrella, The Room on the Roof, The Golden years, Angry River, etc. </p><p><strong>L.K. Advani Book—My Country My Life. </strong></p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>16, 20, 36, 72, ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except (d) “159”. All are divisible by 9.</p>"
+    },
+    {
+      "sr_no": 103,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image002.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image003.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image004.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image005.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image006.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image006.jpeg"
+    },
+    {
+      "sr_no": 104,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image007.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image008.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image009.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image010.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image011.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image008.jpeg"
+    },
+    {
+      "sr_no": 105,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image012.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image013.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image013.png"
+    },
+    {
+      "sr_no": 107,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image014.png"
+    },
+    {
+      "sr_no": 108,
+      "question": "<p>The bell rings a harsh EALP and the girls stop in their tracks.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>PEAL is the correct answer.</p>"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>1. Peremptory</p><p>2. Perfect</p><p>3. Perform</p><p>4. Performance</p><p>5. Performer</p><p>6. Perfume</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Correct arrangement is 1,2,3,4,5,6.</p>"
+    },
+    {
+      "sr_no": 110,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image015.png",
+      "option1": "https://appxcontent.kaxa.in/paperimages/1727349657_1727349657979846_thump.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image017.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image018.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image019.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image016.jpeg"
+    },
+    {
+      "sr_no": 111,
+      "question": "<p>Statements:</p><p>(A) All towns are cities.</p><p>(B) Some towns are villages.</p><p>Conclusions:</p><p>I. All villages are cities.</p><p>II. No village is a city.</p><p>III. Some villages are cities.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image020.png"
+    },
+    {
+      "sr_no": 112,
+      "question": "<p>Statement: Q &gt; A ≥ K ≤ J; M ≥ R ≥ C = Q &lt; O</p><p>Conclusions: </p><p>I. C &gt; K</p><p>II. A &gt; R</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Only conclusion I follow.</p><p>Conclusions:</p><p>I. C &gt; K (True) (C = Q &gt; A ≥ K)</p><p>II. A &gt; R (False) (R ≥ C = Q &gt; A)</p>"
+    },
+    {
+      "sr_no": 113,
+      "question": "<p>Statement: A large number of people in ward P of the city are diagnosed to be suffering from a fatal malaria type.</p><p>Courses of Action:</p><p>I. The city municipal authority should take immediate steps to carry out extensive fumigation in ward P.</p><p>II. The people in the area should be advised to take steps to avoid mosquito bites.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Clearly, prevention from mosquitoes and elimination of mosquitoes are two ways to prevent malaria. So, both the courses follow.</p>"
+    },
+    {
+      "sr_no": 114,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image021.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image022.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image023.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image024.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image025.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image026.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image026.jpeg"
+    },
+    {
+      "sr_no": 116,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image027.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image028.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image029.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image030.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image031.png",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image032.png"
+    },
+    {
+      "sr_no": 117,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image033.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "<p>AKM, GGO, MCQ, ? , YUU</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image034.png"
+    },
+    {
+      "sr_no": 119,
+      "question": "<p>JEG, NIK, RMO, ? , WUW</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image035.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image036.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image037.png"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>Statement: In a T-20 cricket match, the total runs made by a team were 300. Out of these 240 runs were made by spinners.</p><p>Conclusions: </p><p>I. 80% of the team consists of spinners.</p><p>II. The opening batsmen were spinners.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to the statement, 80% of the total runs were made by spinners. So, Conclusion I do not follow. Nothing about the opening batsmen is mentioned in the statement. So, II also does not follow.</p><p>Hence, neither conclusion I nor II follows.</p>"
+    },
+    {
+      "sr_no": 122,
+      "question": "<p>letters of that word, written in capital letters, to form the correct word.</p><p>Pushpa is not UMDB enough to believe that.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>DUMB is correct answer.</p>"
+    },
+    {
+      "sr_no": 123,
+      "question": "<p>one is different. Select the one that is different.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image038.png"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>is related to the first word.</p><p>Pythagoras: Geometry :: Kepler : ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Pythagoras is related to geometry exactly like Kepler law is related Astronomy.</p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image039.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image040.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image041.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image042.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image043.png",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image043.png"
+    },
+    {
+      "sr_no": 126,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Assam’s capital is Dispur.</p><p>Himanchal Pradesh’s capital is Shimla</p><p>Manipur’s capital is Shillong.</p><p>Andhra Pradesh’s capital is Amaravati.</p><p>Hence, option C is correct answer.</p>"
+    },
+    {
+      "sr_no": 127,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530821589_image044.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>number is related to the first number and the fourth number is related to the third</p><p>number.</p><p>8:528 :: 9:747 :: 6: </p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 129,
+      "question": "<p>Statements: The distance of 800 km by road between Delhi and Jharkhand be reduced to 280 km by Railways. This will lead to a saving of Rs. 6.65 crores per annum on fuel.</p><p>Conclusions:</p><p>I. Transportation by Highway is cheaper than by Railways.</p><p>II Fuel must be saved to the greatest extent.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to the statement, railways transport is cheaper than road transport in the case of route from Delhi to Jharkhand, not in all the cases. So, conclusion I does not follow. The statement stresses on the saving of fuel. So, conclusion II follows.</p>"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p>I. Standard of living among the middle-class society is constantly going up since past five years.</p><p>II. Indian Economy is observing remarkable growth.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Since the standard of living among the middle-class society is constantly going up so Indian economy is observing remarkable growth.</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 11</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

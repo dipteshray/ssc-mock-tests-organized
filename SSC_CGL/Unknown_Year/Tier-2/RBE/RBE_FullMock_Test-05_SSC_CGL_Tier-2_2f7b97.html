@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 5</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 5</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> A, B and C became partners in a business by investing money in the ratio of 5 : 4 : 9. If their investments is increased by 6%, 18% and 16%, respectively, then what will be the ratio of their profits for one year?</p><p><br/> </p>",
+      "option1": "<p> 236:265:522</p>",
+      "option2": "<p> 522:236:265</p>",
+      "option3": "<p> 265:236:522</p>",
+      "option4": "<p> 522:265:236</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_2cee9ef14a9b740c.jpg"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> What is the ratio of the simple interest earned on a certain amount at the rate of 17% per annum for 13 years to that earned on the same sum at the same rate for 17 years?</p><p><br/> </p>",
+      "option1": "<p> 13:21</p>",
+      "option2": "<p> 17:21</p>",
+      "option3": "<p> 17:13</p>",
+      "option4": "<p> 13:17</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_3021e67d5c1dc274.jpg"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> There are two inlets A and B connected to a tank. A and B can fill the tank in 42 h and 64 h, respectively. If both the pipes are opened alternately for 1 h, starting with A, then in how much time (in hours) will the tank be filled?</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_267eb54a638903ed.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_75cc5b808624d320.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_47572d7cf65da439.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_14e5c3b613f074f4.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_8e3be521c71fd190.jpg"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> If the external angle of a regular polygon is 36°, then the number of diagonals in this polygon is:</p><p><br/> </p>",
+      "option1": "<p> 45</p>",
+      "option2": "<p> 35</p>",
+      "option3": "<p> 36</p>",
+      "option4": "<p> 38</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_115cbb4f20ac68e1.jpg"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> The cost of 6 kg of rice is ₹342. The cost of 12 kg of rice is equal to that of 4 kg of pulse. The cost of 8 kg of pulses is equal to that of 18 kg of tea. The cost of 5 kg of tea is equal to that of 2.5 kg of walnuts. What is the cost (in ₹) of 18 kg of walnuts?</p><p><br/> </p>",
+      "option1": "<p> 2736</p>",
+      "option2": "<p> 152</p>",
+      "option3": "<p> 1771</p>",
+      "option4": "<p> 2636</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_f9b78b2d22e7dd10.jpg"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p>Products pass successively through the hands of three traders and each of them sells his goods at a profit of 22.22% of his cost price. If the last trader sold the products for Rs.8385.3, then how much did the first trader pay for them?</p>",
+      "option1": "<p>4925.7</p>",
+      "option2": "<p>6300</p>",
+      "option3": "<p>4592.7</p>",
+      "option4": "<p>6529.7</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_a7b033805ec7cf6b.jpg"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> Find the standard deviation of the following data (rounded off to two decimal places). </p><p> 6, 5, 9, 4</p><p><br/> </p>",
+      "option1": "<p> 1.87</p>",
+      "option2": "<p> 7</p>",
+      "option3": "<p> 0</p>",
+      "option4": "<p> 1.32</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_2ca068bcaec39277.jpg"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> Find the smallest 4 digit number which when divided by 7, 18, 14 and 27 leaves remainder 2 in each case?</p><p><br/> </p>",
+      "option1": "<p> 1136</p>",
+      "option2": "<p> 1116</p>",
+      "option3": "<p> 1126</p>",
+      "option4": "<p> 1006</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_bcbe00ce7c6dc59c.jpg"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> A hemispherical bowl of internal diameter 30 cm is full of liquid. This liquid is to be filled in cylindrical bottles each of height 20 cm. 2 bottles are required to empty the bowl, then find the diameter of each cylindrical bottle.</p><p><br/> </p>",
+      "option1": "<p> 7.5 cm</p>",
+      "option2": "<p> 15 cm</p>",
+      "option3": "<p> 30 cm</p>",
+      "option4": "<p> 4.5 cm</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_9db44e2ba0d92d24.jpg"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_e0452f8d97bf5e31.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_f6cf8076d9dcd892.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_7c95f07a52ed95fa.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_657496bfa16fdfc0.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_f97913aa3d4a3c96.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_aee17354aa2ccfa6.jpg"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p>The distance between the lines 5x+12y+13=0 and 5x+12y=10 is:</p>",
+      "option1": "<p>23/17</p>",
+      "option2": "<p>11/13</p>",
+      "option3": "<p>23/13</p>",
+      "option4": "<p>13/23</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in/test_s3_migration/2023-12-26/1703586314951bd29c-1703586314.png"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p> The LCM of x² − 11x + 28 and x² − 4x − 32 is:</p><p><br/> </p>",
+      "option1": "<p> (x − 16)² (x - 7) (x − 8)</p>",
+      "option2": "<p> (x2 + 16) (x - 7) (x − 8)</p>",
+      "option3": "<p> (x2 - 16) (x - 8) (x − 7)</p>",
+      "option4": "<p> (x − 7) (x - 4) (x − 8)</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_251661f8646abaaf.jpg"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> Find the amount (integral value only) if a sum of ₹3,20,000 is being borrowed at 10% interest per annum for 2 years if interest is compounded half-yearly.</p><p><br/> </p>",
+      "option1": "<p> 388961</p>",
+      "option2": "<p> 389699</p>",
+      "option3": "<p> 488966</p>",
+      "option4": "<p> 388962</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_530ce55a9630dafa.jpg"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> Reshma covers 45 km at a speed of 20 km/h by bicycle, 320 km at a speed of 256/3 km/h by car, and another 5 km at a speed of 10 km/h on foot. Find her average speed for the whole journey in km/hr (correct to 2 decimal places).</p><p><br/> </p>",
+      "option1": "<p> 56.92</p>",
+      "option2": "<p> 55.82</p>",
+      "option3": "<p> 54.26</p>",
+      "option4": "<p> 55.20</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_516d840cc379e9c3.jpg"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>Find the mean deviation about the mean for the data given below:</p><p>4, 7, 8, 9, 10, 12, 13, 17</p>",
+      "option1": "<p>1</p>",
+      "option2": "<p>4</p>",
+      "option3": "<p>6</p>",
+      "option4": "<p>3</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in/test_s3_migration/2023-12-26/17035863143f5a106d-1703586314.png"
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_bda1b0cad586ad8b.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_a8787806752a402.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_a5d404412661812.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_357305682fcd6ba1.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_a496da9d3ee1214e.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_8b64796c54248455.jpg"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> The average of 30 numbers is 52. If two numbers are 49 and 51, then what is the average of the remaining numbers (correct up to two decimals)?</p><p><br/> </p>",
+      "option1": "<p> 365/7</p>",
+      "option2": "<p> 1460/7</p>",
+      "option3": "<p> 364/7</p>",
+      "option4": "<p> 51</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_ce0a10dd65cd30dc.jpg"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> A boat covers 46 km downstream in 4 h and covers the same distance upstream in 8 h. Find the speed (in km/h) of the boat in still water.</p><p><br/> </p>",
+      "option1": "<p> 6.625</p>",
+      "option2": "<p> 8.625</p>",
+      "option3": "<p> 7.625</p>",
+      "option4": "<p> 5.625</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_b1df02fa57bea9e3.jpg"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> Two candidates contested an election. One of them got 59% of the votes and won by 594 votes. What was the total number of votes polled?</p><p><br/> </p>",
+      "option1": "<p> 3300</p>",
+      "option2": "<p> 6600</p>",
+      "option3": "<p> 3200</p>",
+      "option4": "<p> 3500</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_afc8183c5d8ea68d.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_4c84661406b5d9e1.png",
+      "option1": "<p> 110.92</p>",
+      "option2": "<p> 64.48</p>",
+      "option3": "<p> 124.62</p>",
+      "option4": "<p> 76.19</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_4ecf32c9a4ff559e.gif"
+    },
+    {
+      "sr_no": 21,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_b9a0312e1589b9c4.gif",
+      "option1": "<p> 12</p>",
+      "option2": "<p> 13</p>",
+      "option3": "<p> 9</p>",
+      "option4": "<p> 10</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_14fa2a8c264830e3.jpg"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> After working for 6 days, Manish finds that only one-third of the work has been completed. He now employs Nisha, who is 40% less efficient than him, and works together till the work is completed. In how many (total) days is the entire work completed?</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_66cbd2ad015b6765.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_8239b003b97414ee.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_53674426a639697a.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_e47ee661a801213b.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_31b8f27548368bcc.jpg"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p> Let x be the greatest number which when divides 2871, 4627 and 7700, the remainder in each case is y. The value of (x-y)/2 is:</p><p><br/> </p>",
+      "option1": "<p> 202</p>",
+      "option2": "<p> 105</p>",
+      "option3": "<p> 101</p>",
+      "option4": "<p> 210</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_f559a4cfdc96ad4.jpg"
+    },
+    {
+      "sr_no": 24,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_f60262beb46ec7f.gif",
+      "option1": "<p> 1/5</p>",
+      "option2": "<p> 1</p>",
+      "option3": "<p> 25</p>",
+      "option4": "<p> 1/25</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_3d2b2219cede1a1e.jpg"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> Three unbiased coins are tossed. What is the probability of getting at most two heads?</p><p><br/> </p>",
+      "option1": "<p> 1/8</p>",
+      "option2": "<p> 1/4</p>",
+      "option3": "<p> 3/4</p>",
+      "option4": "<p> 7/8</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_3702d22129312bb6.jpg"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> If 4x² + y² = 136 and xy = 30, then find the value of 2x + y.</p><p><br/> </p>",
+      "option1": "<p> 15</p>",
+      "option2": "<p> 16</p>",
+      "option3": "<p> 17</p>",
+      "option4": "<p> 18</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_dfc678b0ec935694.gif"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p>If the curved surface area of a cylinder is 588π cm² and its height is 21 cm, What is the volume of the cylinder?</p>",
+      "option1": "<p>4116 π</p>",
+      "option2": "<p>2023π</p>",
+      "option3": "<p>1011π</p>",
+      "option4": "<p>4510π</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_f2ad33de51d6976e.jpg"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_6818db0f53d5fef2.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_b2cb43a510170f53.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_6a93b5d7a8019dc7.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_bdd5331ff86f145e.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_c5d7e99dfed0f799.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_b8f8724d19845eac.jpg"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p>If the length and perimeter of a rectangle are in the ratio 5:16, then its length and breadth will be in the ratio:</p>",
+      "option1": "<p>5:11</p>",
+      "option2": "<p>5:8</p>",
+      "option3": "<p>5:4</p>",
+      "option4": "<p>5:3</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in/test_s3_migration/2023-12-26/17035863152364b831-1703586314.png"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> A dishonest dealer marks up his goods by 60% and then gives a discount of 25% on the marked price. Apart from this, he uses a faulty balance which reads 1kg for 960 gm. What is his net profit percentage (rounded off to the nearest integer)?</p><p><br/> </p>",
+      "option1": "<p> 30</p>",
+      "option2": "<p> 20</p>",
+      "option3": "<p> 25</p>",
+      "option4": "<p> 35</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179264000_html_11d27c1aaf8cf0f7.jpg"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Select the correct active voice form of the given sentence.</p><p> All the inmates were rescued from the building by the firemen.</p>",
+      "option1": "<p> The firemen rescued all the inmates from the building.</p>",
+      "option2": "<p> The firemen have been rescuing all the inmates from the building.</p>",
+      "option3": "<p> The firemen are rescuing all the inmates from the building.</p>",
+      "option4": "<p> The firemen have rescued all the inmates from the building.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rule: </b> </p><p> <b>Sub + v2 + Obj ------- Obj + was/were + v3 + by + Sub. </b> </p><p> Thus, the correct passive form is: <b>The firemen rescued all the inmates from the building.</b></p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Rajesh was playing cricket for his state team.</p>",
+      "option1": "<p> Cricket was played by Rajesh for his state team.</p>",
+      "option2": "<p> Cricket was been played by Rajesh for his state team.</p>",
+      "option3": "<p> Cricket was being played by Rajesh for his state team.</p>",
+      "option4": "<p> Cricket has been played by Rajesh for his state team.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rule: </b> </p><p> <b>Sub + was/were + v1 + ing + obj ---- Obj + was/were + being + v3 + by + Sub. </b> </p><p> Thus, the correct passive form of the given active form is:</p><p><b>Cricket was being played by Rajesh for his state team.</b></p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> The following sentence has been divided into parts. One of them may contain an error. Select the part that contains the error from the given options. If you don’t find any error, mark ‘No error’ as your answer.</p><p> Children should always/ listen the advice of their elders/ and well-wishers.</p><p><br/> </p>",
+      "option1": "<p> Children should always</p>",
+      "option2": "<p> listen the advice of their elders</p>",
+      "option3": "<p> and well-wishers</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically incorrect. </p><p> ‘Listen’ is followed by ‘to’. </p><p>The correct sentence is: Children should always <b>listen to</b> the advice of their elders and well-wishers.</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.</p><p> Industrious</p><p><br/> </p>",
+      "option1": "<p> Zealous</p>",
+      "option2": "<p> Diligent</p>",
+      "option3": "<p> Indolent</p>",
+      "option4": "<p> Persistent</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Industrious: characterized by hard work and perseverance. </p><p> Indolent: Indolent is an adjective meaning slow or lazy. </p><p> Zealous: marked by active interest and enthusiasm. </p><p> Diligent: marked by active interest and enthusiasm. </p><p> Persistent: stubbornly unyielding.</p><p>Thus, the correct antonym of the given word ‘Industrious’ is ‘Indolent’.</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.</p><p> Astound</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Clarify</p>",
+      "option2": "<p> Stun</p>",
+      "option3": "<p> Shock</p>",
+      "option4": "<p> Confuse</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Astound: affect with wonder. </p><p> Clarify: make clear by removing impurities or solids, as by heating. </p><p> Stun: make senseless or dizzy by or as if by a blow. </p><p> Shock: an unpleasant or disappointing surprise. </p><p> Confuse: mistake one thing for another. </p><p>Thus, the most appropriate antonym of the word ‘Astound’ is ‘Clarify’.</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p>Select the option that expresses the given sentence in Passive voice.</p><p>They say he can teach almost anything in this world.</p>",
+      "option1": "<p>It is said that almost anything in this world can be taught by him.</p>",
+      "option2": "<p>It was said that almost anything could be taught by him.</p>",
+      "option3": "<p>They say almost anything could be taught by him.</p>",
+      "option4": "<p>They say anything almost will be taught by him.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option a is the correct answer.</p><p><strong>Active Voice to Passive Voice transformation rules: </strong></p><p><strong>Sub + may/can(modal) + v1 + Obj ------ Obj + modal + be + v3 + by + Sub. </strong></p><p>Thus, the correct answer is: <strong>It is said that almost anything in this world can be taught by him.</strong></p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> An emolument over and above fixed income and salary.</p><p><br/> </p>",
+      "option1": "<p> Honorarium</p>",
+      "option2": "<p> Sinecure</p>",
+      "option3": "<p> Perquisite</p>",
+      "option4": "<p> Prerogative</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Perquisite: perk, fringe benefit; an incidental benefit awarded for certain types of employment. </p><p> Honorarium: An honorarium is a small fee paid for a service that is usually done for free. It's more of a thank you than a real, substantial paycheck. </p><p> Sinecure: an office that involves minimal duties. </p><p> Prerogative: a right reserved exclusively by a particular person or group (especially a hereditary or official right).</p><p>Thus, Perquisite is the correct answer.</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.</p><p> As it was getting late Arpita <b>leave the party</b> midway.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> is left the party</p>",
+      "option2": "<p> leaving the party</p>",
+      "option3": "<p> left the party</p>",
+      "option4": "<p> No substitution required</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The underline part of the given sentence is grammatically incorrect. </p><p> So, ‘Left the party’ should be used instead of ‘Leave the party’. </p><p> The given sentence is in the past tense so past form of leave will be used. </p><p>Thus, the correct sentence is: As it was getting late Arpita <b>leave the party</b> midway.</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> There are four sentences given below. Arrange them in correct order. </p><p> P. Demography is the systematic study of population. </p><p> Q. Demography studies the trends processes associated with population including -changes in population including – changes in population size; patterns of births, deaths, and migration; and the structure and composition of the Population. </p><p> R. Such as the relative proportions of women, men and different age groups. </p><p> S. The term is of Greek origin and is composed of the two words, demos(people) and graphein (describe) implying the description of people.</p><p><br/> </p>",
+      "option1": "<p> PSRQ</p>",
+      "option2": "<p> PSQR</p>",
+      "option3": "<p> QRPS</p>",
+      "option4": "<p> PQRS</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p>The correct arrangement is: PSQR: Demography is the systematic study of population. The term is of Greek origin and is composed of the two words, demos(people) and graphein (describe) implying the description of people. Demography studies the trends processes associated with population including -changes in population including – changes in population size; patterns of births, deaths, and migration; and the structure and composition of the Population. Such as the relative proportions of women, men and different age groups.</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> More than one man __________ present there. </p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> was</p>",
+      "option2": "<p> were</p>",
+      "option3": "<p> have</p>",
+      "option4": "<p> None of these</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Each, Every, Everyone, Someone, Somebody, Nobody, None, One, Any, Many a, More than one, are singular. Hence, they will take singular verb, singular noun and singular pronoun. </p><p> Example: Each boy and each girl has come. </p><p>Thus, the complete sentence is: <b>More than one man was present there.</b></p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the most appropriate meaning of the given idiom.</p><p> Cat’s paw</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> A person used as tool by another</p>",
+      "option2": "<p> To attack someone</p>",
+      "option3": "<p> The most important attribute</p>",
+      "option4": "<p> Move at a fast pace</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Cat’s paw: a person who is used by another to carry out an unpleasant or dangerous task.</p><p>Example: \"he was merely a cat's paw of older and cleverer men\".</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. When her mother was expecting Santosh, a travelling ‘holy man’, giving her his blessing, assumed that she wanted a son.</p><p> B. But, to everyone’s surprise, the unborn child’s grandmother, who was standing close by, told him that they did not want a son.</p><p> C. and a daughter, though not considered a curse, was not generally welcome.</p><p> D. The only woman in the world who has scaled Mt Everest twice was born in a society where the birth of a son was regarded as a blessing.</p><p><br/> </p>",
+      "option1": "<p> DCAB</p>",
+      "option2": "<p> DACB</p>",
+      "option3": "<p> ACDB</p>",
+      "option4": "<p> DABC</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct arrangement is: DCAB: The only woman in the world who has scaled Mt Everest twice was born in a society where the birth of a son was regarded as a blessing, and a daughter, though not considered a curse, was not generally welcome. When her mother was expecting Santosh, a travelling ‘holy man’, giving her his blessing, assumed that she wanted a son. But, to everyone’s surprise, the unborn child’s grandmother, who was standing close by, told him that they did not want a son.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Select the option that expresses the given sentence in reported speech. </p><p> The teacher said, “Netaji Subhash Chandra Bose was born in Cuttack, India.”</p><p><br/> </p>",
+      "option1": "<p> The teacher said that Netaji Subhash Chandra Bose had been born in Cuttack, India.</p>",
+      "option2": "<p> The teacher says that Netaji Subhash Chandra Bose was born in Cuttack, India.</p>",
+      "option3": "<p> The teacher said that Netaji Subhash Chandra Bose had born in Cuttack, India.</p>",
+      "option4": "<p> The teacher said that Netaji Subhash Chandra Bose was born in Cuttack, India.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> <b>Rule to change Direct Speech into indirect speech: </b> </p><p> When reporting verb is in <b>past tense</b> and reported speech(sentence in inverted comm(a) is also in <b>past tense</b> then following transformation occurs: </p><p> Simple Past tense -------- Past Perfect Tense. </p><p> Past Continuous tense ----- Past Perfect Continuous Tense. </p><p> <b>But in the case of universal fact no tense is changed. </b> </p><p><b>Thus, the correct indirect speech of the given sentence is: </b>The teacher said that Netaji Subhash Chandra Bose was born in India.</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Sentences of a paragraph are given below. While the first and the last sentences are in correct order, the sentences in between are jumbled up. Arrange the sentences in the right order to form a meaningful and coherent paragraph.</p><p> S1. Ram Mohan was a lover of his country.</p><p> P. David said that it would be a good plan to have an English school and college.</p><p> Q. He was talking with David about uplifting the mind of IndiAns:</p><p> R. So, he also thought that this subject was very interesting.</p><p> S. David also had a strong bond with India.</p><p> S6. Indians and Europeans met next year to put this idea into shape.</p><p><br/> </p>",
+      "option1": "<p> RPQS</p>",
+      "option2": "<p> SRPQ</p>",
+      "option3": "<p> RSPQ</p>",
+      "option4": "<p> QSRP</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> The correct arrangement is: QSRP: Ram Mohan was a lover of his country. He was talking with David about uplifting the mind of IndiAns: david also had a strong bond with India. So, he also thought that this subject was very interesting. David said that it would be a good plan to have an English school and college.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p>Select the INCORRECTLY spelt word.</p>",
+      "option1": "<p>Vicious</p>",
+      "option2": "<p>Withhold</p>",
+      "option3": "<p>Tommorow</p>",
+      "option4": "<p>Supersede</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p><p>Tomorrow is correctly spelt.</p><p>Others three words are correctly spelt.</p><p>Vicious: cruel; done in order to hurt somebody/something.</p><p>Withhold: to refuse to give something to somebody.</p><p>Supersede: to take the place of somebody/something which existed or was used before and which has become old-fashioned.</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the option that will improve the underlined part of the given sentence. In case no improvement is needed, select 'No improvement'.</p><p> We had to undergo <b>a great many difficulties. </b> </p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Great many difficulties</p>",
+      "option2": "<p> No improvement</p>",
+      "option3": "<p> a great many difficulty</p>",
+      "option4": "<p> much great difficulties</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically correct. </p><p> We use a great many + plural noun to mean a large number of something. </p><p> Example: There have been a great many books written about sports injuries.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. In 1676, the Qing navy engaged a fleet of the Zheng kingdom, a trading empire based in Taiwan that controlled sea lanes from Japan to Southeast Asia.</p><p> B. Despite regarding the Zheng state as little more than a pirate organisation, a Qing captain had to respect the size of its fleet, describing its ships as ‘uncountable, we saw only masts like a forest.’</p><p> C. Others have written at length and in detail on the political and military aspects of the Qing-Zheng war.</p><p> D. To me, the sheer scale of this naval battle requires us to pay attention to other places far from the coast and, indeed, to other species entirely.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> ACBD</p>",
+      "option2": "<p> CDBA</p>",
+      "option3": "<p> ABCD</p>",
+      "option4": "<p> ADBC</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option C is the correct answer. </p><p>The correct arrangement is: ABCD: <b>In 1676, the Qing navy engaged a fleet of the Zheng kingdom, a trading empire based in Taiwan that controlled sea lanes from Japan to Southeast Asia. Despite regarding the Zheng state as little more than a pirate organisation, a Qing captain had to respect the size of its fleet, describing its ships as ‘uncountable, we saw only masts like a forest.’ Others have written at length and in detail on the political and military aspects of the Qing-Zheng war. To me, the sheer scale of this naval battle requires us to pay attention to other places far from the coast and, indeed, to other species entirely.</b></p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) For half the day we are slaves to necessities which we cannot shirk, whether we are monarchs with a thousand slaves or humble labourers with no servants but their wives.</p><p> (B) What is a perfectly free person? Evidently a person who can do what he likes, when he likes, and where he likes, or do nothing at all if he prefers it.</p><p> (C) Whether we like it or not, we must all sleep for one third of our lifetime—wash and dress and undress—we must spend a couple of hours eating and drinking—we must spend nearly as much in getting about from place to place.</p><p> (D) Well, there is no such person, and there never can be any such person.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> BDCA</p>",
+      "option2": "<p> ABCD</p>",
+      "option3": "<p> DBAC</p>",
+      "option4": "<p> CDAB</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct arrangement is: BDCA: <b>What is a perfectly free person? Evidently a person who can do what he likes, when he likes, and where he likes, or do nothing at all if he prefers it. Well, there is no such person, and there never can be any such person. Whether we like it or not, we must all sleep for one third of our lifetime—wash and dress and undress—we must spend a couple of hours eating and drinking—we must spend nearly as much in getting about from place to place. For half the day we are slaves to necessities which we cannot shirk, whether we are monarchs with a thousand slaves or humble labourers with no servants but their wives. </b> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> The following sentence has been split into three segments. Identify the segment that contains a grammatical error or choose the no error. </p><p> I was surprised and pleased/ when I was informed of me/ winning the contest.</p><p><br/> </p>",
+      "option1": "<p> I was surprised and pleased</p>",
+      "option2": "<p> when I was informed of me</p>",
+      "option3": "<p> winning the contest</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically incorrect. </p><p> To rectify the sentence- Change ‘me’ into ‘my’. A possessive adjective comes before a gerund(winning). </p><p> The correct sentence is: <b>I was surprised and pleased when I was informed of my winning the contest. </b> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Can you arrange for the consignment ______ delivered on Monday?</p>",
+      "option1": "<p> is</p>",
+      "option2": "<p> for being</p>",
+      "option3": "<p> to be</p>",
+      "option4": "<p> being</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The most appropriate option to fill in the blank is ‘to be’. </p><p> The complete sentence is: Can you arrange for the consignment <b>to be</b> delivered on Monday. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Given below are four jumbled sentences. Select the option that gives their correct logical sequence.</p><p> A. Then the wax was heated and the molten wax was drained out through a tiny hole made in the clay cover</p><p> B. The art of bronze-casting was practised on a wide scale by the HarappAns:</p><p> C. The hollow mould thus created was filled with molten metal which took the original shape of the object.</p><p> D. Their bronze statues were made using the ‘lost wax’ technique in which the wax figures were first covered with a coating of clay and allowed to dry.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> BDAC</p>",
+      "option2": "<p> DACB</p>",
+      "option3": "<p> BACD</p>",
+      "option4": "<p> ACBD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The correct arrangement is: BDAC: <b>The art of bronze-casting was practised on a wide scale by the HarappAns: Their bronze statues were made using the ‘lost wax’ technique in which the wax figures were first covered with a coating of clay and allowed to dry. Then the wax was heated and the molten wax was drained out through a tiny hole made in the clay cover. The hollow mould thus created was filled with molten metal which took the original shape of the object.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.</p><p> I <b>am preparing</b> for competitive exams now-a-days.</p><p><br/> </p>",
+      "option1": "<p> was preparing</p>",
+      "option2": "<p> No substitution required</p>",
+      "option3": "<p> have prepared</p>",
+      "option4": "<p> have preparing</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Rule: An action that is going on at the time of speaking comes in Present Continuous Tense. </p><p> If the statement deals with a routine action, Simple Present Tense is used and not Present Continuous Tense. But if the work is just a temporary routine action, Present Continuous Tense is used. </p><p>The given sentence is grammatically correct.</p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> A person who collects or studies stamps</p>",
+      "option1": "<p> Philatelist</p>",
+      "option2": "<p> Hoarder</p>",
+      "option3": "<p> Collector</p>",
+      "option4": "<p> Numismatist</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Philatelist: A Person who studies or collects postage stamps. </p><p> Hoarder: a person who hoards things. </p><p> Collector: a person who collects things as a hobby or as part of his/her job. </p><p> Numismatist: a person who collects or studies coins and medals. </p><p>He was a prominent philatelist and published a book on the subject.</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the most appropriate synonym of the given word.</p><p> Imbue</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Clear</p>",
+      "option2": "<p> Remove</p>",
+      "option3": "<p> Deprive</p>",
+      "option4": "<p> Instil</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Imbue: to fill somebody/something with deep feelings, strong opinions or ideas, or a particular sense of value or quality. </p><p> Instil: to make somebody think or feel something. </p><p> Clear: easy to see, hear or understand. </p><p> Remove: to take somebody/something off or away. </p><p> Deprive: to prevent somebody/something from having something; to take away something from somebody. </p><p>Thus, the correct synonym of the given word ‘Imbue’ is ‘Instil’.</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> It is important to __________ new vocabulary words to ensure long-term retention.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Memorize</p>",
+      "option2": "<p> Pronounce</p>",
+      "option3": "<p> Contextualize</p>",
+      "option4": "<p> Analyze</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Contextualize. </p><p> Contextualizing new vocabulary words means understanding and using them in meaningful sentences or situations. Simply memorizing words without understanding their usage in context may result in limited retention. Pronouncing words correctly is important, but it does not directly contribute to long-term retention. Analyzing words can be helpful for understanding their components and meanings, but contextualizing provides a deeper understanding.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> The team's failure to meet the deadline was primarily due to a lack of __________ planning.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> meticulous</p>",
+      "option2": "<p> haphazard</p>",
+      "option3": "<p> ridiculous</p>",
+      "option4": "<p> spontaneous</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is (A) meticulous. </p><p> The word \"meticulous\" means careful, thorough, and precise. </p><p> In this context, it suggests that the team did not plan their work with great attention to detail, leading to the failure to meet the deadline. </p><p> The other options, haphazard, ridiculous, and spontaneous, do not convey the same sense of careful planning and attention to detail.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p>Select the option that expresses the given sentence in indirect speech.</p><p>\"I will visit my grandmother tomorrow,\" he said.</p>",
+      "option1": "<p>He said that he will visit his grandmother the next day.</p>",
+      "option2": "<p>He said that he would visit his grandmother the next day.</p>",
+      "option3": "<p>He said that he visits his grandmother the next day.</p>",
+      "option4": "<p>He said that he visited his grandmother the next day.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option B.</p><p>In indirect speech, we change the tense of the reporting verb (\"said\") and the verb in the reported speech (\"will\" becomes \"would\").</p><p>and rest of the transformation occurs according to the basic rule of naration.</p><p>So, \"Tomorrow\" will convert into \"The next day\"</p><p>So the correct indirect speech is \"He said that he would visit his grandmother the next day.\"</p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the option that expresses the given sentence in reported speech.</p><p> \"I have been working on this project for months,\" he said.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> He said that he had been working on this project for months.</p>",
+      "option2": "<p> He said that he had been working on this project from months.</p>",
+      "option3": "<p> He said that he was working on this project for months.</p>",
+      "option4": "<p> He said that he has been working on this project for months.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is (A) He said that he had been working on this project for months. </p><p> When changing direct speech to indirect speech, the present perfect tense \"have been working\" changes to past perfect tense \"had been working.\"</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Identify the INCORRECTLY spelt amongst the following.</p><p><br/> </p>",
+      "option1": "<p> Reference</p>",
+      "option2": "<p> Rhyme</p>",
+      "option3": "<p> Systematic</p>",
+      "option4": "<p> Supercede</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Supersede is the correctly spelt word which means to take the place of somebody/something which existed or was used before and which has become old-fashioned. </p><p> Reference: a written or spoken comment that mentions somebody/something. </p><p> Rhyme: a word that has the same sound as another. </p><p>Systematic: done using a fixed plan or method.</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank. </b> </p><p> One morning at nine o’clock, while we 1. _________________ breakfast on the terrace of the Havana Riviera Hotel under a bright sun, a huge wave picked up several cars that were driving down the avenue along the seawall or parked on the 2. ________________, and embedded one of them in the side of the hotel. It was like an explosion of dynamite that sowed panic on all twenty floors of the building and turned the great entrance window to dust. 3. ________________ tourists in the lobby were thrown into the air along with the furniture, and some were cut by the hailstorm of glass. The wave must have been immense, because it 4. _________________ over the wide two-way street between the seawall and the hotel and still had enough force to shatter the window.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 1.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> was taking</p>",
+      "option2": "<p> were taking</p>",
+      "option3": "<p> were having</p>",
+      "option4": "<p> had eating</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Were having is the most appropriate option to fill in the blank. </p><p> We will take plural helping verb. So were is the correct helping verb. </p><p> Now for breakfast we use ‘eat breakfast or have breakfast’. </p><p> So, the correct answer is ‘were having’.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> One morning at nine o’clock, while we 1. _________________ breakfast on the terrace of the Havana Riviera Hotel under a bright sun, a huge wave picked up several cars that were driving down the avenue along the seawall or parked on the 2. ________________, and embedded one of them in the side of the hotel. It was like an explosion of dynamite that sowed panic on all twenty floors of the building and turned the great entrance window to dust. 3. ________________ tourists in the lobby were thrown into the air along with the furniture, and some were cut by the hailstorm of glass. The wave must have been immense, because it 4. _________________ over the wide two-way street between the seawall and the hotel and still had enough force to shatter the window.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 2.</p><p><br/> </p>",
+      "option1": "<p> terrace</p>",
+      "option2": "<p> pavement</p>",
+      "option3": "<p> bay</p>",
+      "option4": "<p> beach</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Pavement: a hard flat area at the side of a road for people to walk on. </p><p> Terrace: a flat area of stone next to a restaurant or large house where people can have meals, sit in the sun, etc. </p><p> Bay: a part of the coast where the land goes in to form a curve. </p><p> Beach: an area of sand or small stones beside the sea. </p><p> Thus, the most appropriate option to fill in the blank is ‘Pavement’. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> One morning at nine o’clock, while we 1. _________________ breakfast on the terrace of the Havana Riviera Hotel under a bright sun, a huge wave picked up several cars that were driving down the avenue along the seawall or parked on the 2. ________________, and embedded one of them in the side of the hotel. It was like an explosion of dynamite that sowed panic on all twenty floors of the building and turned the great entrance window to dust. 3. ________________ tourists in the lobby were thrown into the air along with the furniture, and some were cut by the hailstorm of glass. The wave must have been immense, because it 4. _________________ over the wide two-way street between the seawall and the hotel and still had enough force to shatter the window.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 3.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> much</p>",
+      "option2": "<p> many</p>",
+      "option3": "<p> lot of</p>",
+      "option4": "<p> very</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Use of much: The word much is used to refer to large quantities of things that are uncountable in nature.</p><p> Use of many: The word many is used to represent large quantities of things that are countable in nature. </p><p> Lot of and very are incorrect in the given context. </p><p> Thus, the most appropriated option to fill in the blank is “Many”. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> One morning at nine o’clock, while we 1. _________________ breakfast on the terrace of the Havana Riviera Hotel under a bright sun, a huge wave picked up several cars that were driving down the avenue along the seawall or parked on the 2. ________________, and embedded one of them in the side of the hotel. It was like an explosion of dynamite that sowed panic on all twenty floors of the building and turned the great entrance window to dust. 3. ________________ tourists in the lobby were thrown into the air along with the furniture, and some were cut by the hailstorm of glass. The wave must have been immense, because it 4. _________________ over the wide two-way street between the seawall and the hotel and still had enough force to shatter the window.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 4.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> leaped</p>",
+      "option2": "<p> swiped</p>",
+      "option3": "<p> muffled</p>",
+      "option4": "<p> bound</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Leap: to jump high or a long way. </p><p> Swipe: to hit or try to hit somebody/something by moving your arm in a curve/to steal something. </p><p> Muffled: being or made softer or less loud or clear/wrapped up especially for protection or secrecy. </p><p> Bound: secured with a cover or binding; often used as a combining form.</p><p> In the given context, leaped over is most appropriate. </p><p> <br/> <br/> </p><p> The complete paragraph is: </p><p> One morning at nine o’clock, while we were having breakfast on the <b>1.</b> <b>terrace</b> of the Havana Riviera Hotel under a bright sun, a huge wave picked up several cars that were driving down the avenue along the seawall or parked on the <b>2. pavement</b>, and embedded one of them in the side of the hotel. It was like an explosion of dynamite that sowed panic on all twenty floors of the building and turned the great entrance window to dust. <b>3. Many</b> tourists in the lobby were thrown into the air along with the furniture, and some were cut by the hailstorm of glass. The wave must have been immense, because it <b>4. leaped over</b> the wide two-way street between the seawall and the hotel and still had enough force to shatter the window.</p><p> <br/> <br/> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> A constitution is a body of fundamental principles according to which a state is constituted or governed. But what should these fundamental rules be? And what makes them fundamental? Well, the first question you will have to decide is who gets to decide what the laws governing the society should be? You may want rule X, but others may want rule Y. How do we decide whose rules or preferences should govern us? You may think the rules you want everyone to live by are the best; but others think that their rules are the best. How do we resolve this dispute? So even before you decide what rules should govern this group you have to decide: Who gets to decide? The constitution has to provide an answer to this question. It specifies the basic allocation of power in a society. It decides who gets to decide what the laws will be. In principle, this question, who gets to decide, can be answered in many ways: in a monarchical constitution, a monarch decides; in some constitutions like the old Soviet Union, one single party was given the power to decide. But in democratic constitutions, broadly speaking, the people get to decide. But this matter is not so simple. Because even if you answer that the people should decide, it will not answer the question: how should the people decide? For something to be law, should everyone agree to it? Should the people directly vote on each matter as the ancient Greeks did? Or should the people express their preferences by electing representatives? But if the people act through their representatives, how should these representatives be elected? How many should there be?</p><p> In the Indian Constitution for example, it is specified that in most instances, Parliament gets to decide laws and policies, and that Parliament itself be organised in a particular manner. Before identifying what the law in any given society is, you have to identify who has the authority to enact it. If Parliament has the authority to enact laws, there must be a law that bestows this authority on Parliament in the first place. This is the function of the constitution. It is an authority that constitutes government in the first place. The second function of a constitution is to specify who has the power to make decisions in a society. It decides how the government will be constituted.</p><p> <br/> <br/> </p><p> Which word best describes the tone of the passage?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Enthusiastic</p>",
+      "option2": "<p> Critical</p>",
+      "option3": "<p> Indifferent</p>",
+      "option4": "<p> Analytical</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage can be described as analytical because it presents a logical and systematic examination of the fundamental principles and functions of a constitution. It objectively discusses the questions and considerations involved in determining who gets to decide the laws, resolving disputes, and allocating power in a society. The passage presents different perspectives and options without expressing strong emotions or biases. It aims to analyze and explain the topic in a thoughtful and objective manner.</p><p> Therefore, the correct answer is (D) Analytical.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> A constitution is a body of fundamental principles according to which a state is constituted or governed. But what should these fundamental rules be? And what makes them fundamental? Well, the first question you will have to decide is who gets to decide what the laws governing the society should be? You may want rule X, but others may want rule Y. How do we decide whose rules or preferences should govern us? You may think the rules you want everyone to live by are the best; but others think that their rules are the best. How do we resolve this dispute? So even before you decide what rules should govern this group you have to decide: Who gets to decide? The constitution has to provide an answer to this question. It specifies the basic allocation of power in a society. It decides who gets to decide what the laws will be. In principle, this question, who gets to decide, can be answered in many ways: in a monarchical constitution, a monarch decides; in some constitutions like the old Soviet Union, one single party was given the power to decide. But in democratic constitutions, broadly speaking, the people get to decide. But this matter is not so simple. Because even if you answer that the people should decide, it will not answer the question: how should the people decide? For something to be law, should everyone agree to it? Should the people directly vote on each matter as the ancient Greeks did? Or should the people express their preferences by electing representatives? But if the people act through their representatives, how should these representatives be elected? How many should there be?</p><p> In the Indian Constitution for example, it is specified that in most instances, Parliament gets to decide laws and policies, and that Parliament itself be organised in a particular manner. Before identifying what the law in any given society is, you have to identify who has the authority to enact it. If Parliament has the authority to enact laws, there must be a law that bestows this authority on Parliament in the first place. This is the function of the constitution. It is an authority that constitutes government in the first place. The second function of a constitution is to specify who has the power to make decisions in a society. It decides how the government will be constituted.</p><p> <br/> <br/> </p><p> What is the meaning of the term \"allocation\" as used in the passage?</p><p><br/> </p>",
+      "option1": "<p> Establishment of laws</p>",
+      "option2": "<p> Resolution of disputes</p>",
+      "option3": "<p> Distribution or assignment</p>",
+      "option4": "<p> Exercise of authority</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> In the context of the passage, the term \"allocation\" refers to the distribution or assignment of power in a society. It pertains to how power is divided and assigned to different entities or individuals within the framework of a constitution. The passage discusses the allocation of power as a fundamental aspect that the constitution specifies, deciding who gets to make decisions and establish laws. It addresses questions of how the government will be constituted and how the decision-making authority will be distributed.</p><p> Therefore, the correct answer is (C) Distribution or assignment, as it accurately captures the meaning of \"allocation\" as used in the passage.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> A constitution is a body of fundamental principles according to which a state is constituted or governed. But what should these fundamental rules be? And what makes them fundamental? Well, the first question you will have to decide is who gets to decide what the laws governing the society should be? You may want rule X, but others may want rule Y. How do we decide whose rules or preferences should govern us? You may think the rules you want everyone to live by are the best; but others think that their rules are the best. How do we resolve this dispute? So even before you decide what rules should govern this group you have to decide: Who gets to decide? The constitution has to provide an answer to this question. It specifies the basic allocation of power in a society. It decides who gets to decide what the laws will be. In principle, this question, who gets to decide, can be answered in many ways: in a monarchical constitution, a monarch decides; in some constitutions like the old Soviet Union, one single party was given the power to decide. But in democratic constitutions, broadly speaking, the people get to decide. But this matter is not so simple. Because even if you answer that the people should decide, it will not answer the question: how should the people decide? For something to be law, should everyone agree to it? Should the people directly vote on each matter as the ancient Greeks did? Or should the people express their preferences by electing representatives? But if the people act through their representatives, how should these representatives be elected? How many should there be?</p><p> In the Indian Constitution for example, it is specified that in most instances, Parliament gets to decide laws and policies, and that Parliament itself be organised in a particular manner. Before identifying what the law in any given society is, you have to identify who has the authority to enact it. If Parliament has the authority to enact laws, there must be a law that bestows this authority on Parliament in the first place. This is the function of the constitution. It is an authority that constitutes government in the first place. The second function of a constitution is to specify who has the power to make decisions in a society. It decides how the government will be constituted.</p><p> <br/> <br/> </p><p> What is the role of Parliament in the Indian Constitution, as mentioned in the passage?</p><p><br/> </p>",
+      "option1": "<p> Enacting laws and policies</p>",
+      "option2": "<p> Resolving disputes</p>",
+      "option3": "<p> Electing representatives</p>",
+      "option4": "<p> Allocating power</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> According to the passage, the role of Parliament in the Indian Constitution is mentioned as being responsible for enacting laws and policies. The passage states that in most instances, Parliament gets to decide laws and policies in the Indian context. It specifies that the Indian Constitution organizes Parliament in a particular manner to carry out this role.</p><p> Therefore, the correct answer is (A) Enacting laws and policies, as it accurately reflects the role of Parliament as mentioned in the passage.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> A constitution is a body of fundamental principles according to which a state is constituted or governed. But what should these fundamental rules be? And what makes them fundamental? Well, the first question you will have to decide is who gets to decide what the laws governing the society should be? You may want rule X, but others may want rule Y. How do we decide whose rules or preferences should govern us? You may think the rules you want everyone to live by are the best; but others think that their rules are the best. How do we resolve this dispute? So even before you decide what rules should govern this group you have to decide: Who gets to decide? The constitution has to provide an answer to this question. It specifies the basic allocation of power in a society. It decides who gets to decide what the laws will be. In principle, this question, who gets to decide, can be answered in many ways: in a monarchical constitution, a monarch decides; in some constitutions like the old Soviet Union, one single party was given the power to decide. But in democratic constitutions, broadly speaking, the people get to decide. But this matter is not so simple. Because even if you answer that the people should decide, it will not answer the question: how should the people decide? For something to be law, should everyone agree to it? Should the people directly vote on each matter as the ancient Greeks did? Or should the people express their preferences by electing representatives? But if the people act through their representatives, how should these representatives be elected? How many should there be?</p><p> In the Indian Constitution for example, it is specified that in most instances, Parliament gets to decide laws and policies, and that Parliament itself be organised in a particular manner. Before identifying what the law in any given society is, you have to identify who has the authority to enact it. If Parliament has the authority to enact laws, there must be a law that bestows this authority on Parliament in the first place. This is the function of the constitution. It is an authority that constitutes government in the first place. The second function of a constitution is to specify who has the power to make decisions in a society. It decides how the government will be constituted.</p><p> <br/> <br/> </p><p> How does the passage describe the decision-making process in ancient Greek society?</p><p><br/> </p>",
+      "option1": "<p> Direct voting by the people</p>",
+      "option2": "<p> Monarchial rule</p>",
+      "option3": "<p> Single-party rule</p>",
+      "option4": "<p> Election of representatives</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage describes the decision-making process in ancient Greek society as being characterized by direct voting by the people. It mentions the ancient Greeks as an example of a society where the people directly voted on each matter. This implies that individuals themselves had the opportunity to directly participate in decision-making and express their preferences through voting.</p><p> Therefore, the correct answer is (A) Direct voting by the people, as it accurately reflects the description of the decision-making process in ancient Greek society as mentioned in the passage.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> A managerial principle is a broad and general guideline for decision making and behaviour. For example while deciding about promotion of an employee one manager may consider seniority, whereas the other may follow the principle of merit. One may distinguish principles of management from those of pure science. Management principles are not as rigid as principles of pure science. They deal with human behaviour and, thus, are to be applied creatively given the demands of the situation. Human behaviour is never static and so also technology, which affects business. Hence all the principles have to keep pace with these changes. For example, in the absence of Information and Communications Technology (ICT), a manager could oversee only a small work force that too within a narrow geographical space. </p><p> The advent of ICT has expanded the capability of the managers to preside over large business empires spread across the globe. Infosys headquarters in Bangalore boast of the Asia’s largest flat screen in their conference room from where their managers can interact with their employees and customers in all parts of the world. In developing an understanding of the meaning of principles of management, it is also useful to know what these are not. The principles of management should be distinguished from techniques of management. Techniques are procedures or methods, which involve a series of steps to be taken to accomplish desired goals. Principles are guidelines to take decisions or actions while practicing techniques. Likewise, principles should also be understood as being distinct from values. Values are something, which are acceptable or desirable. They have moral connotations. Principles are basic truths or guidelines for behaviour. Values are general rules for behaviour of individuals in society formed through common practice whereas principles of management are formed after research in work situations, which are technical in nature. However, while practicing principles of management values cannot be neglected, as businesses have to fulfil social and ethical responsibilities towards society.</p><p> <br/> <br/> </p><p> How should principles of management and values be understood?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Principles are based on common practice, while values are formed through research.</p>",
+      "option2": "<p> Principles and values are interchangeable terms.</p>",
+      "option3": "<p> Principles are general rules for behavior, while values have moral connotations.</p>",
+      "option4": "<p> Principles are moral guidelines, while values are technical in nature.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage explains that principles of management are basic truths or guidelines for behavior in a managerial context. They provide guidance for decision-making and actions in managerial situations. On the other hand, values are described as something that is acceptable or desirable and have moral connotations. They are societal norms and standards that influence behavior. Based on the information provided in the passage, principles of management and values are distinct concepts. Principles are general rules that guide behavior in managerial contexts, while values have moral connotations and represent acceptable or desirable behavior in society.</p><p> Therefore, the correct answer is (C) Principles are general rules for behavior, while values have moral connotations.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> A managerial principle is a broad and general guideline for decision making and behaviour. For example while deciding about promotion of an employee one manager may consider seniority, whereas the other may follow the principle of merit. One may distinguish principles of management from those of pure science. Management principles are not as rigid as principles of pure science. They deal with human behaviour and, thus, are to be applied creatively given the demands of the situation. Human behaviour is never static and so also technology, which affects business. Hence all the principles have to keep pace with these changes. For example, in the absence of Information and Communications Technology (ICT), a manager could oversee only a small work force that too within a narrow geographical space. </p><p> The advent of ICT has expanded the capability of the managers to preside over large business empires spread across the globe. Infosys headquarters in Bangalore boast of the Asia’s largest flat screen in their conference room from where their managers can interact with their employees and customers in all parts of the world. In developing an understanding of the meaning of principles of management, it is also useful to know what these are not. The principles of management should be distinguished from techniques of management. Techniques are procedures or methods, which involve a series of steps to be taken to accomplish desired goals. Principles are guidelines to take decisions or actions while practicing techniques. Likewise, principles should also be understood as being distinct from values. Values are something, which are acceptable or desirable. They have moral connotations. Principles are basic truths or guidelines for behaviour. Values are general rules for behaviour of individuals in society formed through common practice whereas principles of management are formed after research in work situations, which are technical in nature. However, while practicing principles of management values cannot be neglected, as businesses have to fulfil social and ethical responsibilities towards society.</p><p> <br/> <br/> </p><p> According to the passage, how are managerial principles different from principles of pure science?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Managerial principles are more rigid.</p>",
+      "option2": "<p> Managerial principles are applied to human behavior.</p>",
+      "option3": "<p> Managerial principles are based on moral connotations.</p>",
+      "option4": "<p> Managerial principles are not applicable in the business context.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage explains that managerial principles are broad and general guidelines for decision making and behavior in a managerial context. They are different from principles of pure science because they deal with human behavior, which is dynamic and subject to change. Managerial principles need to be applied creatively, taking into account the demands of the situation. They are not as rigid as principles of pure science. While principles of pure science are based on scientific laws and theories, managerial principles are specifically focused on guiding decision-making and behavior in the context of managing people and organizations. They address the complexities of human behavior and the dynamic nature of businesses.</p><p> Therefore, the correct answer is (B) Managerial principles are applied to human behavior.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> A managerial principle is a broad and general guideline for decision making and behaviour. For example while deciding about promotion of an employee one manager may consider seniority, whereas the other may follow the principle of merit. One may distinguish principles of management from those of pure science. Management principles are not as rigid as principles of pure science. They deal with human behaviour and, thus, are to be applied creatively given the demands of the situation. Human behaviour is never static and so also technology, which affects business. Hence all the principles have to keep pace with these changes. For example, in the absence of Information and Communications Technology (ICT), a manager could oversee only a small work force that too within a narrow geographical space. </p><p> The advent of ICT has expanded the capability of the managers to preside over large business empires spread across the globe. Infosys headquarters in Bangalore boast of the Asia’s largest flat screen in their conference room from where their managers can interact with their employees and customers in all parts of the world. In developing an understanding of the meaning of principles of management, it is also useful to know what these are not. The principles of management should be distinguished from techniques of management. Techniques are procedures or methods, which involve a series of steps to be taken to accomplish desired goals. Principles are guidelines to take decisions or actions while practicing techniques. Likewise, principles should also be understood as being distinct from values. Values are something, which are acceptable or desirable. They have moral connotations. Principles are basic truths or guidelines for behaviour. Values are general rules for behaviour of individuals in society formed through common practice whereas principles of management are formed after research in work situations, which are technical in nature. However, while practicing principles of management values cannot be neglected, as businesses have to fulfil social and ethical responsibilities towards society.</p><p> <br/> <br/> </p><p> What is the distinction between principles of management and techniques of management?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Principles are technical guidelines, while techniques involve moral considerations.</p>",
+      "option2": "<p> Principles involve a series of steps, while techniques provide general guidelines.</p>",
+      "option3": "<p> Principles are rigid, while techniques are flexible.</p>",
+      "option4": "<p> Principles guide decision-making, while techniques are step-by-step methods.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> Principles of management provide broad guidelines for decision-making and behavior, while techniques of management offer specific step-by-step methods for implementation and achieving goals. In essence, principles guide decision-making, while techniques provide practical approaches to execute decisions effectively.</p><p> <br/> <br/> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> A managerial principle is a broad and general guideline for decision making and behaviour. For example while deciding about promotion of an employee one manager may consider seniority, whereas the other may follow the principle of merit. One may distinguish principles of management from those of pure science. Management principles are not as rigid as principles of pure science. They deal with human behaviour and, thus, are to be applied creatively given the demands of the situation. Human behaviour is never static and so also technology, which affects business. Hence all the principles have to keep pace with these changes. For example, in the absence of Information and Communications Technology (ICT), a manager could oversee only a small work force that too within a narrow geographical space. </p><p> The advent of ICT has expanded the capability of the managers to preside over large business empires spread across the globe. Infosys headquarters in Bangalore boast of the Asia’s largest flat screen in their conference room from where their managers can interact with their employees and customers in all parts of the world. In developing an understanding of the meaning of principles of management, it is also useful to know what these are not. The principles of management should be distinguished from techniques of management. Techniques are procedures or methods, which involve a series of steps to be taken to accomplish desired goals. Principles are guidelines to take decisions or actions while practicing techniques. Likewise, principles should also be understood as being distinct from values. Values are something, which are acceptable or desirable. They have moral connotations. Principles are basic truths or guidelines for behaviour. Values are general rules for behaviour of individuals in society formed through common practice whereas principles of management are formed after research in work situations, which are technical in nature. However, while practicing principles of management values cannot be neglected, as businesses have to fulfil social and ethical responsibilities towards society.</p><p> <br/> <br/> </p><p> How does the passage describe the nature of human behavior and technology?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Static and unchanging</p>",
+      "option2": "<p> Dynamic and constantly evolving</p>",
+      "option3": "<p> Irrelevant to managerial principles</p>",
+      "option4": "<p> Separate from the principles of pure science</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage suggests that both human behavior and technology are dynamic and constantly evolving. It states that human behavior is never static, implying that it can change over time. Similarly, it mentions that technology, which affects business, is also subject to change. The passage acknowledges that the principles of management need to keep pace with these changes in human behavior and technology.</p><p> Therefore, the correct answer is (B) Dynamic and constantly evolving, as it accurately reflects the description provided in the passage about the nature of human behavior and technology.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In recent years, technology has been advancing at an unprecedented pace, revolutionizing various aspects of our lives. From artificial intelligence to blockchain, from virtual reality to the Internet of Things, there have been remarkable technological trends that are reshaping industries and transforming the way we live, work, and interact.</p><p> One prominent trend is the rise of artificial intelligence (AI) and machine learning. AI is being integrated into numerous applications, from voice assistants like Siri and Alexa to autonomous vehicles and predictive analytics. Machine learning algorithms are constantly learning and adapting, enabling systems to make intelligent decisions and automate tasks, leading to increased efficiency and productivity across sectors.</p><p> Another significant trend is the expansion of the Internet of Things (IoT), connecting everyday objects to the internet and enabling them to communicate and share data. This has paved the way for smart homes, smart cities, and connected industries. IoT devices, such as wearable fitness trackers, smart thermostats, and industrial sensors, are collecting vast amounts of data, offering insights for better decision-making and enhancing overall convenience and sustainability.</p><p> Blockchain technology has also gained attention, providing a secure and transparent way to record and verify transactions. Originally known as the technology behind cryptocurrencies like Bitcoin, blockchain has now found applications beyond finance. It is being used in supply chain management, healthcare, and even voting systems, offering increased security, efficiency, and trust in digital interactions.</p><p> Additionally, virtual and augmented reality (VR/AR) have emerged as transformative technologies, blurring the line between the physical and digital worlds. VR immerses users in virtual environments, while AR overlays digital information onto the real world. These technologies have found applications in entertainment, education, healthcare, and training, providing engaging and immersive experiences.</p><p> Furthermore, the advancement of 5G wireless technology has the potential to revolutionize connectivity. With faster speeds, lower latency, and increased capacity, 5G networks will enable the seamless integration of various technologies. It will empower innovations like autonomous vehicles, smart cities, and the Internet of Things on a larger scale.</p><p> Data privacy and cybersecurity have also become major concerns as technology continues to evolve. With the increased connectivity and collection of personal data, safeguarding privacy and ensuring robust security measures are of utmost importance.</p><p> In conclusion, recent technology trends have brought significant advancements in AI, IoT, blockchain, VR/AR, and 5G. These technologies are reshaping industries, improving efficiency, and enhancing user experiences. However, along with the benefits, it is essential to address the challenges related to data privacy and cybersecurity. As we embrace these technological innovations, it is crucial to ensure their responsible and ethical use for the betterment of society as a whole.</p><p> <br/> <br/> </p><p> Which technology trend allows everyday objects to connect and share data through the internet?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Artificial intelligence</p>",
+      "option2": "<p> Virtual reality</p>",
+      "option3": "<p> Blockchain</p>",
+      "option4": "<p> Internet of things</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage mentions the Internet of Things (IoT) as a technology trend that enables everyday objects to connect and share data through the internet. IoT refers to the network of physical devices embedded with sensors, software, and connectivity capabilities that enable them to collect and exchange data. These objects can include anything from household appliances to industrial equipment, creating a network of interconnected devices. Through IoT, objects can communicate, share information, and provide valuable insights for improved efficiency, automation, and convenience.</p><p> Therefore, the correct answer is (D) Internet of Things, as it accurately reflects the technology trend described in the passage.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In recent years, technology has been advancing at an unprecedented pace, revolutionizing various aspects of our lives. From artificial intelligence to blockchain, from virtual reality to the Internet of Things, there have been remarkable technological trends that are reshaping industries and transforming the way we live, work, and interact.</p><p> One prominent trend is the rise of artificial intelligence (AI) and machine learning. AI is being integrated into numerous applications, from voice assistants like Siri and Alexa to autonomous vehicles and predictive analytics. Machine learning algorithms are constantly learning and adapting, enabling systems to make intelligent decisions and automate tasks, leading to increased efficiency and productivity across sectors.</p><p> Another significant trend is the expansion of the Internet of Things (IoT), connecting everyday objects to the internet and enabling them to communicate and share data. This has paved the way for smart homes, smart cities, and connected industries. IoT devices, such as wearable fitness trackers, smart thermostats, and industrial sensors, are collecting vast amounts of data, offering insights for better decision-making and enhancing overall convenience and sustainability.</p><p> Blockchain technology has also gained attention, providing a secure and transparent way to record and verify transactions. Originally known as the technology behind cryptocurrencies like Bitcoin, blockchain has now found applications beyond finance. It is being used in supply chain management, healthcare, and even voting systems, offering increased security, efficiency, and trust in digital interactions.</p><p> Additionally, virtual and augmented reality (VR/AR) have emerged as transformative technologies, blurring the line between the physical and digital worlds. VR immerses users in virtual environments, while AR overlays digital information onto the real world. These technologies have found applications in entertainment, education, healthcare, and training, providing engaging and immersive experiences.</p><p> Furthermore, the advancement of 5G wireless technology has the potential to revolutionize connectivity. With faster speeds, lower latency, and increased capacity, 5G networks will enable the seamless integration of various technologies. It will empower innovations like autonomous vehicles, smart cities, and the Internet of Things on a larger scale.</p><p> Data privacy and cybersecurity have also become major concerns as technology continues to evolve. With the increased connectivity and collection of personal data, safeguarding privacy and ensuring robust security measures are of utmost importance.</p><p> In conclusion, recent technology trends have brought significant advancements in AI, IoT, blockchain, VR/AR, and 5G. These technologies are reshaping industries, improving efficiency, and enhancing user experiences. However, along with the benefits, it is essential to address the challenges related to data privacy and cybersecurity. As we embrace these technological innovations, it is crucial to ensure their responsible and ethical use for the betterment of society as a whole.</p><p> <br/> <br/> </p><p> What area of concern is highlighted in the passage regarding technology trends?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> The need for more fossil fuel consumption</p>",
+      "option2": "<p> Lack of data collection and analysis</p>",
+      "option3": "<p> Ethical use of technology</p>",
+      "option4": "<p> Negligible impact on industries</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage emphasizes the need to address the ethical use of technology as an area of concern regarding technology trends. While the passage discusses various advancements and benefits brought about by technology, it also acknowledges the importance of responsible and ethical use of these technologies. It suggests that businesses and individuals should consider the social and ethical responsibilities associated with the use of technology and ensure that it is used in a way that benefits society as a whole.</p><p> Therefore, the correct answer is (C) Ethical use of technology, as it accurately reflects the area of concern highlighted in the passage regarding technology trends.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In recent years, technology has been advancing at an unprecedented pace, revolutionizing various aspects of our lives. From artificial intelligence to blockchain, from virtual reality to the Internet of Things, there have been remarkable technological trends that are reshaping industries and transforming the way we live, work, and interact.</p><p> One prominent trend is the rise of artificial intelligence (AI) and machine learning. AI is being integrated into numerous applications, from voice assistants like Siri and Alexa to autonomous vehicles and predictive analytics. Machine learning algorithms are constantly learning and adapting, enabling systems to make intelligent decisions and automate tasks, leading to increased efficiency and productivity across sectors.</p><p> Another significant trend is the expansion of the Internet of Things (IoT), connecting everyday objects to the internet and enabling them to communicate and share data. This has paved the way for smart homes, smart cities, and connected industries. IoT devices, such as wearable fitness trackers, smart thermostats, and industrial sensors, are collecting vast amounts of data, offering insights for better decision-making and enhancing overall convenience and sustainability.</p><p> Blockchain technology has also gained attention, providing a secure and transparent way to record and verify transactions. Originally known as the technology behind cryptocurrencies like Bitcoin, blockchain has now found applications beyond finance. It is being used in supply chain management, healthcare, and even voting systems, offering increased security, efficiency, and trust in digital interactions.</p><p> Additionally, virtual and augmented reality (VR/AR) have emerged as transformative technologies, blurring the line between the physical and digital worlds. VR immerses users in virtual environments, while AR overlays digital information onto the real world. These technologies have found applications in entertainment, education, healthcare, and training, providing engaging and immersive experiences.</p><p> Furthermore, the advancement of 5G wireless technology has the potential to revolutionize connectivity. With faster speeds, lower latency, and increased capacity, 5G networks will enable the seamless integration of various technologies. It will empower innovations like autonomous vehicles, smart cities, and the Internet of Things on a larger scale.</p><p> Data privacy and cybersecurity have also become major concerns as technology continues to evolve. With the increased connectivity and collection of personal data, safeguarding privacy and ensuring robust security measures are of utmost importance.</p><p> In conclusion, recent technology trends have brought significant advancements in AI, IoT, blockchain, VR/AR, and 5G. These technologies are reshaping industries, improving efficiency, and enhancing user experiences. However, along with the benefits, it is essential to address the challenges related to data privacy and cybersecurity. As we embrace these technological innovations, it is crucial to ensure their responsible and ethical use for the betterment of society as a whole.</p><p> <br/> <br/> </p><p> Which technology trend provides a secure and transparent way to record and verify transactions?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Artificial intelligence</p>",
+      "option2": "<p> Virtual reality</p>",
+      "option3": "<p> Blockchain</p>",
+      "option4": "<p> Internet of things</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Blockchain technology provides a secure and transparent way to record and verify transactions. It is a decentralized and distributed digital ledger that ensures transparency, immutability, and security in transactions. Each transaction is recorded in a block, forming a chain of blocks, making it difficult to alter or tamper with the recorded information. This technology has applications beyond cryptocurrencies, as it is used in various industries for secure data exchanges and transaction verification.</p><p> Therefore, the precise answer is (C) Blockchain.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> In recent years, technology has been advancing at an unprecedented pace, revolutionizing various aspects of our lives. From artificial intelligence to blockchain, from virtual reality to the Internet of Things, there have been remarkable technological trends that are reshaping industries and transforming the way we live, work, and interact.</p><p> One prominent trend is the rise of artificial intelligence (AI) and machine learning. AI is being integrated into numerous applications, from voice assistants like Siri and Alexa to autonomous vehicles and predictive analytics. Machine learning algorithms are constantly learning and adapting, enabling systems to make intelligent decisions and automate tasks, leading to increased efficiency and productivity across sectors.</p><p> Another significant trend is the expansion of the Internet of Things (IoT), connecting everyday objects to the internet and enabling them to communicate and share data. This has paved the way for smart homes, smart cities, and connected industries. IoT devices, such as wearable fitness trackers, smart thermostats, and industrial sensors, are collecting vast amounts of data, offering insights for better decision-making and enhancing overall convenience and sustainability.</p><p> Blockchain technology has also gained attention, providing a secure and transparent way to record and verify transactions. Originally known as the technology behind cryptocurrencies like Bitcoin, blockchain has now found applications beyond finance. It is being used in supply chain management, healthcare, and even voting systems, offering increased security, efficiency, and trust in digital interactions.</p><p> Additionally, virtual and augmented reality (VR/AR) have emerged as transformative technologies, blurring the line between the physical and digital worlds. VR immerses users in virtual environments, while AR overlays digital information onto the real world. These technologies have found applications in entertainment, education, healthcare, and training, providing engaging and immersive experiences.</p><p> Furthermore, the advancement of 5G wireless technology has the potential to revolutionize connectivity. With faster speeds, lower latency, and increased capacity, 5G networks will enable the seamless integration of various technologies. It will empower innovations like autonomous vehicles, smart cities, and the Internet of Things on a larger scale.</p><p> Data privacy and cybersecurity have also become major concerns as technology continues to evolve. With the increased connectivity and collection of personal data, safeguarding privacy and ensuring robust security measures are of utmost importance.</p><p> In conclusion, recent technology trends have brought significant advancements in AI, IoT, blockchain, VR/AR, and 5G. These technologies are reshaping industries, improving efficiency, and enhancing user experiences. However, along with the benefits, it is essential to address the challenges related to data privacy and cybersecurity. As we embrace these technological innovations, it is crucial to ensure their responsible and ethical use for the betterment of society as a whole.</p><p> <br/> <br/> </p><p> Which technology blurs the line between the physical and digital worlds?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Artificial intelligence</p>",
+      "option2": "<p> Virtual reality</p>",
+      "option3": "<p> Blockchain</p>",
+      "option4": "<p> Internet of things</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Virtual reality (VR) is the technology that blurs the line between the physical and digital worlds. It creates immersive, computer-generated environments that simulate the real world or an imagined reality. By using specialized headsets and devices, users can experience and interact with these digital environments as if they were physically present. Virtual reality finds applications in gaming, entertainment, education, healthcare, and various other industries where users can engage with simulated experiences.</p><p> Therefore, the precise answer is (B) Virtual reality.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>Among of the following given options is the 3rd most literate state/ union territory in India?</p>",
+      "option1": "<p>Kerala</p>",
+      "option2": "<p>Lakshadweep</p>",
+      "option3": "<p>Goa</p>",
+      "option4": "<p>Mizoram</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Mizoram. It is 3rd most literate state in India with 91.33% of literacy. Kerala is at the top position with 94% literacy, Lakshadweep is at the 2nd position with 91.85% literacy and Goa is at 4th position with 88.70% literacy. Tripura is at 5th Position.</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p> The intervention of the government whether to expand demand or reduce it constitutes the ___________.</p><p><br/> </p>",
+      "option1": "<p> transaction function</p>",
+      "option2": "<p> stabilisation function</p>",
+      "option3": "<p> speculative function</p>",
+      "option4": "<p> redistribution function</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Stabilisation function. </p><p> The intervention of the government whether to expand demand or reduce it constitutes the stabilisation function.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p> _________________ is the highest peak of Satpura Hills? </p><p><br/> </p>",
+      "option1": "<p> Dhupgarh</p>",
+      "option2": "<p> Anamudi</p>",
+      "option3": "<p> Doddabetta Peak</p>",
+      "option4": "<p> Cardamom Hills</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Dhupgarh. It is highest point of Satpura Hills. </p><p> Anamudi is the highest peak of Annamalai, Doddabetta is the highest peak of Nilgiri Hills range. </p><p> Cardamom hills is the highest peak of Western Ghats. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p> Sher Khan defeated ______________ at Chausa(1539) and Kannauj (1540), forcing him to flee to Iran.</p><p><br/> </p>",
+      "option1": "<p> Humayun</p>",
+      "option2": "<p> Babar</p>",
+      "option3": "<p> Balaji Baji Rao</p>",
+      "option4": "<p> None of the above</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Humayun. He was defeated by Sher Khan in the battle of Chausa in 1539. The tomb of Sher Shah Suri is located in Sasaram, Bihar.</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p> What is the PH value of milk of magnesia?</p><p><br/> </p>",
+      "option1": "<p> 2.5</p>",
+      "option2": "<p> 4.8</p>",
+      "option3": "<p> 8.5</p>",
+      "option4": "<p> 10.5</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 10.5. The magnesium substance that functions as an antacid is called milk of magnesium. Some Important substances and their PH Value:-</p><p> Lemon Juice-2.5, Vinegar-2.8, Tomatoes- 4.5, Human Saliva – 6.4, Rain Water- 6.5, Milk – 6.8, Pure Water – 7.0, Human blood – 7.4, Tears – 7.4, Egg – 7.8, Milk of Magnesia – 10.5, Ammonia – 11.0, Lime – 12.4 Sodium Hydroxide – 14.0.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690179543249_html_f5ee20b983e19909.jpg",
+      "option1": "<p> i-a, ii-c, iii-b, iv-d</p>",
+      "option2": "<p> i-b, ii-a, iii-c, iv-d</p>",
+      "option3": "<p> i-d, ii-c, iii-b, iv-a</p>",
+      "option4": "<p> i-a, ii-b, iii-c, iv-d</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <br/> </p><p>The SI unit of Electric Current is Ampere, SI unit of Potential difference is volt, and SI unit of Capacitance is Farad, SI unit of Inductance is Henry. </p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p> Who is the author of the book titled “Ringside: Up, Close, &amp; personal on India and Beyond”?</p><p><br/> </p>",
+      "option1": "<p> Amitabh Kant</p>",
+      "option2": "<p> Ram Madhav</p>",
+      "option3": "<p> Dr. Vijay Darda</p>",
+      "option4": "<p> Ajay Chowdhary</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Dr. Vijay Darda. He is the author of the book titled <b>“</b>Ringside: Up, Close, &amp; personal on India and Beyond<b>”. </b> </p><p> Amitabh Kant new book name is Made in India: 75 years of Business &amp; Enterprise. </p><p> Ram Madhav new book name is: Partitioned Freedom. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p> Which of the following is not a folk dance of Maharashtra?</p><p><br/> </p>",
+      "option1": "<p> Lavani</p>",
+      "option2": "<p> Jhumar</p>",
+      "option3": "<p> Koli</p>",
+      "option4": "<p> Tamasha</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Jhumar. It is a folk dance from the Indian states of Jharkhand, Odisha, Chhattisgarh, Assam, Bihar and West Bengal. </p><p> Lavani, Koli and Tamasha are folk dance of Maharashtra. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p> Who found an empirical relationship between the half-life of alpha decay and the energy of the emitted alpha particles in 1911?</p><p><br/> </p>",
+      "option1": "<p> Soddy and Aston</p>",
+      "option2": "<p> Geiger and Nuttall</p>",
+      "option3": "<p> Fermi and Meitner</p>",
+      "option4": "<p> Chadwick and Lawrence</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Geiger and Nuttall. The Geiger–Nuttall law or Geiger–Nuttall rule relates the decay constant of a radioactive isotope with the energy of the alpha particles emitted. Roughly speaking, it states that short-lived isotopes emit more energetic alpha particles than long-lived ones.</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p> In India, who appoints the Advocate General of a State?</p><p><br/> </p>",
+      "option1": "<p> Chief Minister of the State</p>",
+      "option2": "<p> Governor of the State</p>",
+      "option3": "<p> Prime Minister of India</p>",
+      "option4": "<p> President of India</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Governor of the State. Article 165: The Governor of each State shall appoint a person who is qualified to be appointed a Judge of a High Court to be Advocate-General for the State.</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p> Which of the following enzyme is not related to the Pancreatic Juice?</p><p><br/> </p>",
+      "option1": "<p> Trypsin</p>",
+      "option2": "<p> Amylase</p>",
+      "option3": "<p> Lipase</p>",
+      "option4": "<p> Pepsin</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Pepsin. Pepsin is an enzyme related to Gastric Juice. Trypsin, Amylase and Lipase are enzymes of Pancreatic Juice. </p><p> Trypsin: It converts Proteins into Polypeptides. </p><p> Amylase: It converts Starch into Sugar. </p><p> Lipase: It converts Fat into Fatty acid and glycerol. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p> Identify the correct statement.</p><p><br/> </p>",
+      "option1": "<p> Joule is a unit of power.</p>",
+      "option2": "<p> Newton is a unit of force.</p>",
+      "option3": "<p> Newton is a unit of power.</p>",
+      "option4": "<p> Joule is a unit of force.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. Joule is the unit of energy. And Newton is unit of Force.</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p> Which of the following state doesn’t share its border with Bangladesh?</p><p><br/> </p>",
+      "option1": "<p> Assam</p>",
+      "option2": "<p> Mizoram</p>",
+      "option3": "<p> Manipur</p>",
+      "option4": "<p> Tripura</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Manipur. Indian states that share borders with Bangladesh are Assam, West Bengal, Mizoram, Meghalaya, and Tripura. </p><p>Capital of Bangladesh is Dhaka and currency of Bangladesh is Taka. </p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>What is the rank of India in World Bank’s Logistics Performance Index (LPI) 2023?</p>",
+      "option1": "<p>44th</p>",
+      "option2": "<p>36th</p>",
+      "option3": "<p>38th</p>",
+      "option4": "<p>42nd</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 38th. India’s rank increased by 6 places to 38 in the index, from 44 in 2018. It was released on April 21, 2023.</p><p>Singapore is at top position, Finland is at 2nd Position and Denmark is at 3rd.</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p> The Western-most site of Indus Civilization is:<b> </b> </p><p><br/> </p>",
+      "option1": "<p> Ropar</p>",
+      "option2": "<p> Daimabad</p>",
+      "option3": "<p> Alamgirpur</p>",
+      "option4": "<p> Sutkagendor</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Sutkagendor. It is the Western-most site of Indus Civilization. It is situated on Makran Coast(Pakistan- Iran Border). </p><p> Ropar: The Northern most point. </p><p> Daimabad- The southernmost point </p><p> Alamgirpur- Eastern-most point. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p> Who was appointed as the State Icon for Bihar by the Election Commission of India (ECI)?</p><p><br/> </p>",
+      "option1": "<p> Manoj Tiwari</p>",
+      "option2": "<p> Maithili Thakur</p>",
+      "option3": "<p> Ravi Kishan</p>",
+      "option4": "<p> Udit Narayan</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Maithili Thakur. Folk singer Maithili Thakur has been appointed the State Icon for Bihar by the Election Commission of India. She was recently selected for the Ustad Bismillah Khan Yuva Puraskar of the Sangeet Natak Akademi for her contribution to the folk music of Bihar and made brand ambassador of Bihar Khadi, handicraft of the state.</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p> Which of the following is/are one of the United Nations Sustainable Development Goals? </p><p> (A) Zero Hunger</p><p> (B) Climate Action</p><p> (C) Life Below Water</p><p> (D) Quality Education</p><p><br/> </p>",
+      "option1": "<p> A and B</p>",
+      "option2": "<p> A, B, C and D</p>",
+      "option3": "<p> A, C and D</p>",
+      "option4": "<p> B and C</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> There are 17 sustainable development goals (SDGs) to transform our world:</p><p> GOAL 1: No Poverty</p><p> GOAL 2: Zero Hunger</p><p> GOAL 3: Good Health and Well-being</p><p> GOAL 4: Quality Education</p><p> GOAL 5: Gender Equality</p><p> GOAL 6: Clean Water and Sanitation</p><p> GOAL 7: Affordable and Clean Energy</p><p> GOAL 8: Decent Work and Economic Growth</p><p> GOAL 9: Industry, Innovation and Infrastructure</p><p> GOAL 10: Reduced Inequality</p><p> GOAL 11: Sustainable Cities and Communities</p><p> GOAL 12: Responsible Consumption and Production</p><p> GOAL 13: Climate Action</p><p> GOAL 14: Life Below Water</p><p> GOAL 15: Life on Land</p><p> GOAL 16: Peace and Justice Strong Institutions</p><p> GOAL 17: Partnerships to achieve the Goal</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p> Who made ‘Buland Darwaja’?</p><p><br/> </p>",
+      "option1": "<p> Sher Sah Shuri</p>",
+      "option2": "<p> Akbar</p>",
+      "option3": "<p> Humayun</p>",
+      "option4": "<p> Alaudin Khilji</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Akbar. </p><p> <b>Buland Darwaza</b> (lit. 'High Gate'), or the \"Door of Victory\", was built in 1575 by Mughal emperor Akbar to commemorate his victory over Gujarat. It is the main entrance to the Jama Masjid at Fatehpur Sikri, which is 43 km from Agra, India.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p> Assume that exchange rate between the US Dollar and Indian Rupee is $1= ₹65. Now if this exchange rate increases to $1 = ₹80, then in this case the Indian Rupee has ____ in comparison to the US dollar.</p><p><br/> </p>",
+      "option1": "<p> overvalued</p>",
+      "option2": "<p> depreciated</p>",
+      "option3": "<p> appreciated</p>",
+      "option4": "<p> Demonetised</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is depreciated. </p><p> Currency depreciation is a fall in the value of a currency in terms of its exchange rate versus other currencies. Currency depreciation can occur due to factors such as economic fundamentals, interest rate differentials, political instability, or risk aversion among investors.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p> Which of the following rights is not related to the rights given under Article 19?</p><p><br/> </p>",
+      "option1": "<p> Right to assemble peaceably and without arms.</p>",
+      "option2": "<p> Right to form associations or unions or co-operative societies.</p>",
+      "option3": "<p> Right to freedom of speech and expression </p>",
+      "option4": "<p> Right to move freely throughout the territory of World.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d. Article 19 gives Right to move freely throughout the territory of India not world. </p><p> Article 19 guarantee to all citizens the six rights of freedom including: </p><p> Right to freedom of speech and expression</p><p> Right to assemble peaceably and without arms.</p><p> Right to form associations or unions or co-operative societies.</p><p> Right to move freely throughout the territory of India.</p><p> Right to reside and settle in any part of the territory of India.</p><p>Right to practice any profession or to carry on any occupation, trade or business.</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p> Which of the following state government has launched a new initiative called “Shashan Aplya Dari”(government at your desktop)?</p><p><br/> </p>",
+      "option1": "<p> West Bengal</p>",
+      "option2": "<p> Maharashtra</p>",
+      "option3": "<p> Jharkhand</p>",
+      "option4": "<p> Karnataka</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Maharashtra. </p><p> The <b>Maharashtra</b> government, under the leadership of Chief Minister <b>Eknath Shinde</b>, has launched a new initiative called <b>‘Shasan Aplya Dari’</b> (government at your doorstep). The primary objective of this initiative is to provide citizens with easy access to government schemes and documents, all in one place.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Who amongst the following has been appointed as the Central Vigilance Commissioner (CVC) as of Aug 2024?</p>",
+      "option1": "<p>TS Sivagnanam</p>",
+      "option2": "<p>R Dinesh</p>",
+      "option3": "<p>Aadgav Arjuna</p>",
+      "option4": "<p>Praveen Kumar Srivastava</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The current CVC of India is Praveen Kumar Srivastava. </p><p><strong>Central Vigilance Commission</strong> (<strong>CVC</strong>) is an apex Indian governmental body created in 1964 to address governmental corruption. It has the status of an autonomous body, free of control from any executive authority, charged with monitoring all vigilance activity under the Central Government of India, advising various authorities in central Government organizations in planning, executing, reviewing and reforming their vigilance work. </p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Achanakmar tiger reserve is located in which state?</p>",
+      "option1": "<p>Chhattisgarh</p>",
+      "option2": "<p>Madhya Pradesh</p>",
+      "option3": "<p>Karnataka</p>",
+      "option4": "<p>Odisha</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Chhattisgarh. There are total three tiger reserves in Chhattisgarh- 1. Achanakmar Tiger Reserve, 2. Indravati Tiger Reserve, 3. Udanti-Sitanadi Tiger Reserve.</p><p>Tiger Reserve in M.P.- 1. Bandhavgarh Tiger Reserve, 2. Kanha Tiger Reserve, 3. Panna Tiger Reserve, 4. Pench Tiger Reserve, 5. Sanjay-Dubri Tiger Reserve, 6. Satpura Tiger Reserve.</p><p>Tiger Reserve in Karnataka: 1. Bandipur Tiger Reserve, 2. Bhadra Tiger Reserve, 3. Bilgiri Ranganatha Temple Tiger Reserve, 4. Dandeli-Anshi Tiger Reserve, 5. Nagarhole Tiger Reserve.</p><p>Tiger Reserve in Odisha: 1. Satkosia Tiger Reserve, 2. Similipal Tiger Reserve.</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p> Swaraj Party was established by who amongst the following? </p><p> Motilal Nehru </p><p> C.R. Das </p><p> N.C Kelkar</p><p>Lala Lajpat Rai </p>",
+      "option1": "<p> B and C only</p>",
+      "option2": "<p> A and B only</p>",
+      "option3": "<p> A, B and C</p>",
+      "option4": "<p> B, C and D only</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option C is the correct answer. Swaraj Party was organized by Motilal Nehru, C.R. Das and N.C Kelkar. The foundation of the Swaraj Party was laid on Jan. 1, 1923, as the ‘Congress Khilafat-Swaraj Party’.</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p> Who is the author of the book titled “My Journey: Transforming Dreams into Actions”?</p><p><br/> </p>",
+      "option1": "<p> Abraham Lincoln</p>",
+      "option2": "<p> A.P.J. Abdul Kalam</p>",
+      "option3": "<p> Sachin Tendulkar</p>",
+      "option4": "<p> Ratan Ji Tata</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is A.P.J. Abdul Kalam. </p><p> A.P.J. Abdul Kalam books: Wings of Fire: An Autobiography, India 2020: A Vision for the New Millenium, Ignited Minds: Unleashing the Power within India, The Luminous Sparks: A Biography in Verse and Colours, Guiding Souls: Dialogues on the Purpose of Life, Mission of India: A Vision of Indian Youth, My Journey: Transforming Dreams into Actions. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>Q. Six people sit in two parallel rows. In Row 1 - J, K and L sit facing towards north, and in Row 2 - F, G and H sit facing towards south. Each person in a row faces a person in the other row. Who faces G?</p><p>Statements:</p><p>(I) H faces K; L faces an immediate neighbor of H.</p><p>(II) G sits at one of the extreme ends of the row; J sits to the immediate left of L.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image002.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image003.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image004.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image005.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image006.png",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image004.png"
+    },
+    {
+      "sr_no": 103,
+      "question": "<p>Statement: M &lt; K &gt; I &lt; J &gt; H = G ≤ F</p><p>Conclusions: I. H = F</p><p>II. J &gt; G</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Conclusions: I. H = F</p><p>We can see that there is H = G ≤ F. So, there is possibility of either H = F or H &lt; F. but there is no surety that H = F, therefore conclusion I is false.</p><p>Conclusion II. J &gt; G</p><p>We can see that there is J &gt; H and H= G. So, J &gt; G also, therefore Only conclusion II is true</p><p>Hence, Option D is correct.</p><p>Conclusions I: From the given statement we conclude that H can be either equal to or less than F. So, conclusion I is false.</p><p>Conclusion II: From the given statement we conclude that H = G, and J &gt; H. So, J is also greater than G. that’s why this conclusion is true.</p><p>Hence: Only conclusion II is true</p>"
+    },
+    {
+      "sr_no": 104,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image007.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image008.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image009.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image010.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image011.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 105,
+      "question": "<p>21 * 3 * 36 * 2 * 23 = 68</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image012.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>Statement: A large number of the people of the city are diagnosed to be suffering from Malaria disease.</p><p>Course of Action:</p><p>I. The city municipal authorities should take immediate steps to carry out extensive fumigation in the city.</p><p>II. The patient of Malaria should be shooted so that there should be no spread of Malaria.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the given statement the people are diagnosed from the malaria disease. This simply indicates that malaria is spreading in the city. </p><p>According to first course of action- The city municipal authorities should take immediate steps to carry out extensive fumigation in the city. This is the responsibility of the city municipal authority to eradicate the malaria disease from the city. Thus, this course of action logically follows.</p><p>According to second course of action- The patient of Malaria should be shooted so that there should be no spread of Malaria. This is harsh action and not appropriate action to be taken. </p><p>Hence, option a is correct.</p>"
+    },
+    {
+      "sr_no": 107,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image015.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image016.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image017.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image018.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image019.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image018.jpeg"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>If D @ N @ H &amp; Y @ F % V, then how is N related to F?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image020.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "<p>E = 1, Z = 2, L = 3, P = 4, U = 5, Z = 6</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 111,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image021.png"
+    },
+    {
+      "sr_no": 112,
+      "question": "<p>5 ÷ 5 + 5 – 10 × 10 = ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image022.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "<p>(NOTE: Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(11, 33, 17), (18, 44, 21)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Pattern follows:</p><p> (First number + third number) + 5 = middle number.</p><p>In (11, 33, 17) = (11+17) + 5 = 33 </p><p>(18, 44, 21) = (18 + 21) + 5 = 44</p><p>Now use this pattern in the given option.</p><p>(16, 43, 22) = (16 + 22) + 5 = 43</p><p>Hence, option a is correct.</p>"
+    },
+    {
+      "sr_no": 114,
+      "question": "<p>58, 179, ?, 492, 688</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image025.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>If W % D # G @ B &amp; M @ I, then how is D related to M?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image026.png"
+    },
+    {
+      "sr_no": 116,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image027.png"
+    },
+    {
+      "sr_no": 117,
+      "question": "<p>Statements:</p><p>All P are G.</p><p>Some G are B.</p><p>All B are C.</p><p>Conclusions:</p><p>1) All P being C is a possibility.</p><p>2) Some P are B.</p><p>3) Some C are G.</p><p>4) Some G are P.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image028.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Operation which are used in this question is:</p><p>First number: (first number)3 + 3 </p><p>5: (5)3 + 3 = 5: 128</p><p>1: (1)3 + 3 = 1: 4</p><p>3: (3)3 + 3 =3: 30 </p><p>7: (7)3 + 3 = 7: 346</p><p>Therefore, (A) is the correct answer.</p>"
+    },
+    {
+      "sr_no": 119,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image029.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image030.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image031.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image032.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image033.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image034.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>Statement:</p><p>National Expressway-A is the widest expressway and is used by few people. When people find an empty and wide road, people drive at high speed, which leads to accidents.</p><p>Inference:</p><p>I. All acccidents happen due to over speeding.</p><p>II. High speed increases the risk of accident.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to the statement national expressway-A is the widest expressway and is used by few people. When people find an empty and wide road, people drive at high speed, which leads to accidents.</p><p>Inference 1: in the given statement we cannot say that all accident happens due to over speeding. Therefore inference 1 doesn’t follow.</p><p>Inference 2: in the given statement we can say that high speed increases the risk of accidents. Therefore inference 2 follow.</p><p>Hence, option d is correct.</p>"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>Six people - K, M, N, P, Q and R are sitting around a circular table facing the centre. Who sits to the immediate right of K?</p><p>(I) K sits third to the left of M. Only one person sits between K and N. R sits to the immediate left of N.</p><p>(II) K sits second to the right of Q. Only two people sit between K and M. P sits second to the left of R.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image035.png"
+    },
+    {
+      "sr_no": 122,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image036.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image037.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image038.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image039.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image040.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image041.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image042.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image043.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image044.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image045.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image046.png",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image046.png"
+    },
+    {
+      "sr_no": 124,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image047.png"
+    },
+    {
+      "sr_no": 125,
+      "question": "<p>I. This year College X reduced the cut-off marks to 50 from 60 for the entrance exam.</p><p>II. In the last two years, the Students Union in College X has been actively negotiating with the college administration regarding the Quality of food and Health and Hygiene standards at the College Canteen.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>While statement II is talk about the last two years, the students Union in College X has been actively negotiating with the college administration regarding the Quality of food and Health and Hygiene standards at the College Canteen. </p><p>Both I and II are effects of independent causes.</p><p>Hence option c is correct. </p><p>Both I and II are effects of independent causes.</p>"
+    },
+    {
+      "sr_no": 126,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image048.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image049.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image050.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image051.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image052.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image051.jpeg"
+    },
+    {
+      "sr_no": 127,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image053.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image054.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image055.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image056.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image057.png",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image054.png"
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>Q W _ R T Q _ F R _ Q W _ _ T _ _ H R T</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image058.png"
+    },
+    {
+      "sr_no": 129,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image059.png"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p># : DKR :: PCL: %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519681299_image061.png"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 5</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

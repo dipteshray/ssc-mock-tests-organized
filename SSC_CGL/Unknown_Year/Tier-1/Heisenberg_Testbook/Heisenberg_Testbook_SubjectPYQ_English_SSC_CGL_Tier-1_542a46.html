@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Economy - National Income Accounting</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">35:00:00</div>
+      <div class="hdr-testname">Economy - National Income Accounting</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Economy - National Income Accounting</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Economy - National Income Accounting</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Economy - National Income Accounting</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">35:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 2, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "<!-- x-tinymce/html -->If there is a fall in the demand of a good, the equilibrium price is expected to:", "comp": "", "opts": ["fall", "neither fall nor rise", "first rise, and then fall sharply", "Rise"], "cidx": 0, "sol": "When there is a fall in demand for a good, the equilibrium price is expected to fall. This occurs because the equilibrium price is determined by the intersection of the demand and supply curves. A decrease in demand shifts the demand curve to the left, resulting in a new equilibrium with a lower quantity demanded and supplied, leading to a lower price. Other factors being constant, a fall in demand reduces competition for the good, prompting sellers to lower prices to attract buyers.", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "Which of the following is NOT one of the methods of national income estimation?", "comp": "", "opts": ["Banking method", "Expenditure method", "Product method", "Income method"], "cidx": 0, "sol": "National income can be estimated through three methods: Income, Production, and Expenditure. Income method measures payments made to primary factors, Production method measures value-added by firms, and Expenditure method estimates national income through private and govt expenditure. Banking method is not a method of national income estimation.", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "If GNP is 16% higher than the last year and the rate of inflation is 9%, production in the economy has grown by:", "comp": "", "opts": ["4%", "6%", "5%", "7%"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>0.07</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The Gross National Product (GNP) is a broad measure of a nation&#39;s total economic activity.</li>\n\t<li>The GNP is 16% higher than the last year, indicating overall economic growth.</li>\n\t<li>Inflation rate is 9%, which represents the rate at which the general level of prices for goods and services is rising.</li>\n\t<li>The production growth rate can be determined by adjusting the GNP growth rate for inflation.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Gross National Product (GNP)</strong>\n\n\t<ul>\n\t\t<li>GNP measures the market value of all the products and services produced in one year by labor and property supplied by the residents of a country.</li>\n\t\t<li>It includes the value of goods and services produced by a country&#39;s residents, regardless of the location of the actual production.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Inflation</strong>\n\t<ul>\n\t\t<li>Inflation is the rate at which the general level of prices for goods and services is rising and subsequently eroding purchasing power.</li>\n\t\t<li>Central banks attempt to limit inflation, and avoid deflation, in order to keep the economy running smoothly.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Economic Growth</strong>\n\t<ul>\n\t\t<li>Economic growth is an increase in the production of economic goods and services, compared from one period of time to another.</li>\n\t\t<li>It can be measured in nominal or real terms, the latter of which is adjusted for inflation.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Calculation of Production Growth Rate</strong>\n\t<ul>\n\t\t<li>To find the production growth rate, we adjust the GNP growth rate for inflation.</li>\n\t\t<li>Formula: Production Growth Rate = (1 + GNP Growth Rate) / (1 + Inflation Rate) - 1</li>\n\t\t<li>Using the given values: GNP Growth Rate = 16% or 0.16, Inflation Rate = 9% or 0.09</li>\n\t\t<li>Production Growth Rate = (1 + 0.16) / (1 + 0.09) - 1 = 1.16 / 1.09 - 1 = 1.0642 - 1 &asymp; 0.07</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "When a person seems to be working, but their work is not contributing to the output, it is known as ________.&nbsp;", "comp": "", "opts": ["Cyclical unemployment", "<span style=\"color: rgb(33, 37, 41);\">Disguised unemployment</span>", "Frictional unemployment", "Seasonal unemployment"], "cidx": 1, "sol": "Disguised unemployment occurs when individuals appear to be working but their labor does not increase output. It's common in agriculture, where family members work on small farms with minimal impact on productivity. Removing some workers does not affect overall output. This type of unemployment is also known as hidden unemployment.", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "In national income accounting, GVA stands for ___________.", "comp": "", "opts": ["General vesting added", "General visited account", "Gross value accounting", "Gross value added"], "cidx": 3, "sol": "GVA, or Gross Value Added, measures economic productivity and output of a region, sector, or industry. It represents the value of goods and services produced, excluding raw material costs. GVA connects to GDP via net taxes and reflects gross contribution to the economy, aiding in the calculation of national income.", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "Rapid integration between countries is known as:", "comp": "", "opts": ["Globalisation", "Liberalization", "Modernisation", "Privatisation"], "cidx": 0, "sol": "<p><span style=\"font-weight: 700;\">Globalisation</span>\u00a0as a concept fundamentally deals with flows.\u00a0These flows could be of various kinds: Ideas moving from one part of the world to another, Capital shunted between two or more places, Commodities being traded across borders, People moving in search of better livelihoods to different parts of the world.</p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "<span style=\"\">Total value of final goods and services produced _______ domestic territory during an accounting year is domestic income.</span>", "comp": "", "opts": ["within", "away from&nbsp;", "other than", "outside"], "cidx": 0, "sol": "<p>The term\u00a0\"domestic territory\"\u00a0refers to the\u00a0geographical area within a country's borders.The total value of final goods and services produced within the domestic territory is known as Gross Domestic Product (GDP).</p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "<p>Which of the following are included in &#39;revenue receipts&#39;?</p>\n\n<p>(a) Tax Revenue</p>\n\n<p>(b) Non-tax Revenue</p>\n", "comp": "", "opts": ["Only (b)", "Neither (a) nor (b)", "Only (a)", "Both (a) and (b)"], "cidx": 3, "sol": "Revenue receipts are regular and do not affect a government's liabilities or assets. Tax and non-tax revenues are the main sources of income, including levies, interest, dividends, and fees for services. Both types of revenue are included in receipts without impacting the government's assets.", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "The money value of all the final goods and services produced within the country during a particular year is called _________.", "comp": "", "opts": ["per capita income", "net domestic product", "national Income", "gross domestic product"], "cidx": 3, "sol": "Gross domestic product (GDP) refers to the money value of all final goods and services produced within a country's borders during a specific year. It measures the economic activity and production, excluding intermediate goods to avoid double counting, providing a comprehensive overview of a nation's economic health.", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "Which of the following is correct regarding net national product?&nbsp;", "comp": "", "opts": ["<span style=\"\">NNP &equiv; GNP &ndash; Depreciation&nbsp;</span>", "<span style=\"\">NNP &equiv; GNP &times; Depreciation&nbsp;</span>", "<span style=\"\">NNP &equiv; GNP &divide; Depreciation&nbsp;</span>", "<span style=\"\">NNP &equiv; GNP + Depreciation</span>"], "cidx": 0, "sol": "Net national product is calculated by subtracting depreciation from gross national product. Hence, option 1 stating that NNP \u2261 GNP - Depreciation is the correct answer. This formula helps in measuring the actual output of an economy after accounting for the wear and tear of its capital goods.", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "What was the primary outcome of the liberalisation and privatisation initiatives under the New Economic Policy (NEP) in 1991, followed by the Indian government?&nbsp;&nbsp;", "comp": "", "opts": ["Fiscal policy reforms", "Globalisation&nbsp;", "Centralization&nbsp;", "Monetary policy reforms"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong>Globalisation</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul style=\"color: rgb(33, 37, 41);\">\n\t<li><span style=\"color: rgb(33, 37, 41);\">The primary outcome of the liberalization and privatization initiatives under the New Economic Policy (NEP) in 1991 was</span><span style=\"font-weight: bolder;\">&nbsp;Globalization.</span></li>\n\t<li><span style=\"font-weight: bolder;\">India&#39;s New Economic Policy (NEP) -</span></li>\n\t<li>It was signed on J<span style=\"font-weight: bolder;\">uly 24, 1991</span>&nbsp;by the then Union Finance Minister<span style=\"font-weight: bolder;\">&nbsp;Dr. Manmohan Singh and Prime Minister P.V. Narasimha Rao&nbsp;</span>started it.</li>\n\t<li>The&nbsp;<span style=\"font-weight: bolder;\">main objective&nbsp;</span>of this policy was<span style=\"font-weight: bolder;\">&nbsp;to globalize the Indian economy.</span></li>\n\t<li>So that the Indian economy can take advantage of the opportunities available in the global economy.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul style=\"color: rgb(33, 37, 41);\">\n\t<li>At present, there are only<span style=\"font-weight: bolder;\">&nbsp;5 sectors</span>&nbsp;in the country (related to security, strategic and environmental concerns) in which the private sector will&nbsp;<span style=\"font-weight: bolder;\">need to get a license to enter.</span></li>\n\t<li>To capitalize on the benefits of&nbsp;<span style=\"font-weight: bolder;\">liberalization and globalization -</span>\n\t<ul>\n\t\t<li>The number of industries reserved for the public sector has been reduced.</li>\n\t\t<li>During the year 2014&nbsp;-<span style=\"font-weight: bolder;\">Private investment&nbsp;</span>in rail infrastructure has also been allowed.</li>\n\t\t<li>At present, only<span style=\"font-weight: bolder;\">&nbsp;2 industrial areas</span>&nbsp;are reserved for the public sector and all other sectors have been opened to the private sector.</li>\n\t\t<li>The areas reserved for the public sector are -\n\t\t<ul>\n\t\t\t<li><span style=\"font-weight: bolder;\">Nuclear Energy</span></li>\n\t\t\t<li><span style=\"font-weight: bolder;\">railway operations</span></li>\n\t\t</ul>\n\t\t</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "Which of the followings is NOT an example of factor payment?", "comp": "", "opts": ["Interest", "Wages", "Rent", "Pension"], "cidx": 3, "sol": "<span style=\"color: rgb(33, 37, 41);\">Pension is not a factor payment as it is paid to retired labor and not to active labor. Factor payment is made to the factors of production that are actively involved in the production process.</span>", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "Which of the following is used to measure the total output of goods and services in an economy including depreciation during a specific period within country?&nbsp;", "comp": "", "opts": ["Net Domestic Product (NDP)", "Gross National Product (GNP)", "Net National Product (NNP)", "Gross Domestic Product (GDP)"], "cidx": 3, "sol": "GDP measures the total market value of all final goods and services produced within a country during a specific period, including depreciation. Depreciation accounts for the wear and tear on capital goods, making GDP a comprehensive indicator of economic activity, widely used by economists and policymakers to assess economic performance.", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "<p>Which of the following is a transfer payment?</p>\n\n<p>a) Unemployment allowances</p>\n\n<p>b) Scholarships</p>\n\n<p>c) Retirement pension</p>\n", "comp": "", "opts": ["Only a", "All of a, b and c", "Only a and b", "only c"], "cidx": 1, "sol": "A transfer payment is a redistribution of wealth and income that occurs when the government pays for something without expecting anything in return, such as products or services. Since these payments don't directly use resources or produce output, they are regarded as non-exhaustive.", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "National development council (NDC) was set up in ________ in India.&nbsp;", "comp": "", "opts": ["1949", "1960", "1952", "1947"], "cidx": 2, "sol": "The establishment of National Development Council (NDC)\u00a0formed on 6 August 1952 in India. . The NDC was established to promote and coordinate the development of the country. It plays a vital role in formulating and implementing economic and social policies and programs in India. The council is headed by the Prime Minister and includes Union Cabinet Ministers, Chief Ministers of States, and members of the Planning Commission.", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "According to Malthusian theory which of the following grows in geometric progression?", "comp": "", "opts": ["Population", "Employment", "Food supply", "Poverty"], "cidx": 0, "sol": "According to Malthusian theory, population grows in geometric progression. Thomas Robert Malthus proposed that while population increases exponentially (e.g., 2, 4, 8, 16), food supply grows only arithmetically (e.g., 2, 4, 6, 8). This imbalance leads to inevitable checks like famines and diseases.", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "High growth rate with use of modern technology and self-reliance of the economy could be achieved only if:", "comp": "", "opts": ["benefits of economic prosperity reach the poor people", "benefits of economic prosperity reach the rich people", "the economy participates in international trade", "it is a capitalist economy"], "cidx": 0, "sol": "Economic growth is crucial for reducing poverty and improving living standards. Income distribution affects this relationship, and greater inequality may hinder poverty reduction. Four main economic theories can be studied to understand this better: supply-side economics, new classical economics, monetarism, and Keynesian economics.", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "<p>Consider the following statements with respect to the purpose of privatisation:</p>\n\n<p>(i) It improves financial discipline.</p>\n\n<p>(ii) It facilitates modernization.</p>\n\n<p>(iii) It helps in improving performance of the PSUs.</p>\n\n<p>Choose the correct answer.&nbsp;&nbsp;</p>\n", "comp": "", "opts": ["All (i), (ii) and (iii) are true&nbsp;", "Only (ii) is true", "Only (iii) is true", "Only (i) is true"], "cidx": 0, "sol": "<p>The correct answer is&nbsp;<u><strong><span style=\"color: rgb(33, 37, 41);\">All (i), (ii) and (iii) are true&nbsp;</span></strong></u><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>It improves financial discipline:</li>\n\t<li>Privatization often introduces greater financial accountability and efficiency because private companies are driven by profit motives.</li>\n\t<li>They must ensure that their operations are cost-effective and financially viable, which leads to improved financial discipline compared to public sector enterprises (PSUs), which may be less profit-focused.</li>\n\t<li>It facilitates modernization:</li>\n\t<li>When a public sector unit is privatized, there is often an influx of new technology, better management practices, and capital investment, which facilitates modernization.</li>\n\t<li>Private sector companies generally have a greater ability to innovate and modernize to stay competitive in the market.</li>\n\t<li>It helps in improving the performance of PSUs:</li>\n\t<li>Privatization can lead to improved performance by introducing better management, reducing bureaucratic inefficiencies, and motivating the company to compete effectively in the market.</li>\n\t<li>It generally leads to better management practices, more effective decision-making, and a focus on profitability and customer satisfaction.</li>\n\t<li>Thus, all three purposes of privatization contribute to the overall goal of making businesses more efficient, competitive, and financially sound.\u200b</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "Net Investment plus Depreciation gives an estimate of which of the following?&nbsp;", "comp": "", "opts": ["Gross Domestic Product&nbsp;", "Personal income&nbsp;&nbsp;", "Gross investment&nbsp;", "Private investment&nbsp;&nbsp;"], "cidx": 2, "sol": "<p><span style=\"color: rgb(33, 37, 41);\">The correct answer is <u><strong>Gross investment&nbsp;</strong></u></span></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Gross investment:-</strong>\n\n\t<ul>\n\t\t<li><strong>It is the total expenditure on new capital goods during a period of time. </strong></li>\n\t\t<li>It includes investment in both fixed assets, such as machinery and equipment, and inventory.</li>\n\t\t<li><strong>Gross investment is an important component of economic growth, as it increases the productive capacity of the economy.</strong></li>\n\t\t<li><strong>Net Investment plus Depreciation gives an estimate of&nbsp;<span style=\"color: rgb(33, 37, 41);\">Gross i</span><span style=\"color: rgb(33, 37, 41);\">nvestment.</span></strong></li>\n\t\t<li>Gross investment can be divided into two categories: public investment and private investment.\n\t\t<ul>\n\t\t\t<li>Public investment is an investment made by the government, such as on infrastructure projects.</li>\n\t\t\t<li>Private investment is investment made by businesses, such as on new factories and equipment.</li>\n\t\t</ul>\n\t\t</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Personal income:-</strong>\n\n\t<ul>\n\t\t<li><strong>It is the total amount of money that an individual or household receives in a given period of time, typically a year. </strong></li>\n\t\t<li>It includes all forms of income, such as wages, salaries, bonuses, commissions, investment income, rental income, and government benefits.</li>\n\t\t<li>Personal income is often used as a measure of an individual&#39;s or household&#39;s financial well-being.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Gross domestic product:-</strong>\n\t<ul>\n\t\t<li><strong>GDP&nbsp;is the total monetary or market value of all the finished goods and services made within a country during a specific period. </strong></li>\n\t\t<li>As a broad measure of overall domestic production, it functions as a comprehensive scorecard of a given country&#39;s economic health.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "The product method which is used to calculate the aggregate annual value of goods and services produced is also called ______.", "comp": "", "opts": ["income method", "depreciation method", "expenditure method", "value added method"], "cidx": 3, "sol": "The product method which is used to calculate the aggregate annual value of goods and services produced is also called the value-added method.\u00a0This method includes the total of all gross value added by all resident producer units in the economy.", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "Who was professor Prasanta Chandra Mahalanobis?", "comp": "", "opts": ["Economist who won a Nobel Prize", "An artist who painted the painting of Bharat Mata", "Indian Scientist and Statistician", "A doctor who invented a new surgical method"], "cidx": 2, "sol": "Professor Prasanta Chandra Mahalanobis was an Indian scientist and statistician who played a crucial role in formulating India's strategy for industrialization in the Second Five-Year Plan. He proposed the Mahalanobis Plan, which gave priority to investment goods and explored the allocation of investment between different sectors of the economy. Economic planning in India began after independence, and the idea of five-year economic planning was borrowed from the Soviet Union under the socialist influence of the first Prime Minister Pt. Jawahar Lal Nehru.", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "Gross national product is the total market value of all final goods and services produced by _________.", "comp": "", "opts": ["nationals and NRIs of a country during a period of five years", "Country&rsquo;s residents over a period of time", "national and foreigners during a period of two years", "nationals of a country during a period of five year"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong><span style=\"color:  (33, 37, 41);\">Country&rsquo;s residents over a period of time</span></strong></u><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul style=\"color:  (33, 37, 41);\">\n\t<li><span style=\"font-weight: bolder;\">GNP - Gross National Product</span>\n\n\t<ul>\n\t\t<li>It is the <strong>total value of all the final products and services in a given period in terms</strong> of production by a country&#39;s residents.</li>\n\t\t<li>It is <strong>considered an important economic indicator by economists.</strong></li>\n\t\t<li>It is used for finding solutions to economic issues such as poverty and inflation.</li>\n\t\t<li>It is&nbsp;<strong><span style=\"color:  (33, 37, 41);\">Country&rsquo;s residents over a period of time</span></strong></li>\n\t\t<li>The basic distinction between GDP and GNP is the difference in estimating the production output by foreigners in a country and by nationals outside of a country.</li>\n\t</ul>\n\t</li>\n\t<li>Gross National Product includes&nbsp;<span style=\"font-weight: bolder;\">government expenditure, personal consumption expenditure, private domestic investments, net exports, and income earned by nationals overseas, and eliminates the income of foreign residents within the domestic economy</span>.&nbsp;</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span>&nbsp;Other concepts related to it</p>\n\n<ul style=\"color:  (33, 37, 41);\">\n\t<li><span style=\"font-weight: bolder;\">Gross Domestic Product</span>\n\n\t<ul>\n\t\t<li><span style=\"font-weight: bolder;\">It is the value of all final goods and services produced by the normal residents as well as non-residents in the domestic territory of the country but does not include Net Factor Income from Abroad.</span></li>\n\t\t<li>The important point to remember is whatever is produced in India, whether by an Indian or foreign national is part of Indian GDP.</li>\n\t</ul>\n\t</li>\n\t<li><span style=\"font-weight: bolder;\">Net National Product</span>\n\t<ul>\n\t\t<li>In the production of GNP of a year, <strong>a country uses some fixed assets or capital goods like Machinery, Equipment, and technology, etc.</strong></li>\n\t\t<li>The capital goods like machinery, building, and equipment undergo regular wear and tear during the production process, which reduces their value. This fall in the value of capital assets due to regular wear and tear is called depreciation.</li>\n\t\t<li>When the <strong>Depreciation is deducted from the Gross National Product, then we get Net National Product</strong>.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "<p>Match the items is List I with those in List II.</p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width:330px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">&nbsp;</td>\n\t\t\t<td style=\"text-align: center;\"><strong>Measure of National Income</strong></td>\n\t\t\t<td style=\"text-align: center;\">&nbsp;</td>\n\t\t\t<td style=\"text-align: center;\"><strong>Formula</strong></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>i.</td>\n\t\t\t<td>GNP</td>\n\t\t\t<td>a.</td>\n\t\t\t<td>GNP - Depreciation</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>ii.</td>\n\t\t\t<td>NNP</td>\n\t\t\t<td>b.</td>\n\t\t\t<td>C + I + G +&nbsp;Net exports</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>iii.</td>\n\t\t\t<td>GDP</td>\n\t\t\t<td>c.</td>\n\t\t\t<td>GDP - Depreciation</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>iv.</td>\n\t\t\t<td>NDP</td>\n\t\t\t<td>d.</td>\n\t\t\t<td>GDP + Net factor income from abroad</td>\n\t\t</tr>\n\t</tbody>\n</table>\n", "comp": "", "opts": ["i - b, ii - d, iii - a, iv - c", "i - a, ii - c, iii - d, iv - b", "i - d, ii - a, iii - b, iv - c", "i - c, ii - b, iii - d, iv - a"], "cidx": 2, "sol": "The correct answer is \"i - d, ii - a, iii - b, iv - c.\" GNP includes GDP plus net factor income from abroad. NNP is GNP minus depreciation. GDP is calculated as C + I + G + net exports. NDP is GDP minus depreciation.", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "<span style=\"\">The GDP estimation method measuring the aggregate value of goods and services produced by the firms is called _______.</span>", "comp": "", "opts": ["expenditure method", "consumption method", "income method", "product method"], "cidx": 3, "sol": "Estimating GDP involves using the product method, which adds value at every stage of production, the expenditure method, which combines various spending categories, and the income method, which measures national income.", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "PAN is a (an) ______ digit unique alphanumeric number issued by the Income Tax Department.", "comp": "", "opts": ["8", "12", "11", "10"], "cidx": 3, "sol": "PAN stands for Permanent Account Number and is a unique alphanumeric identifier issued by the Income Tax Department of India. It is a 10-digit code, with the first three characters as letters, the fourth representing the status of the cardholder, the fifth the first letter of the cardholder's surname, and the remaining four as sequential numbers.", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "The intervention of the government whether to expand demand or reduce it constitutes the __________ function.&nbsp;", "comp": "", "opts": ["customisation", "initiation", "stabilisation", "creation"], "cidx": 2, "sol": "The government can intervene in the economy to stabilize demand by either expanding it or reducing it. This is done to maintain a steady and healthy economy. By stabilizing demand, the government can control inflation, reduce unemployment, and promote economic growth.", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "________ capital refers to the variety of raw material and money in hand during the production.", "comp": "", "opts": ["Fixed", "Working", "Human", "Physical"], "cidx": 1, "sol": "<p><span style=\"font-weight: 700;\">Working capital</span>\u00a0refers to the variety of raw materials and money in hand during production. Working capital is\u00a0calculated using the equation:\u00a0Working Capital = Current Assets - Current Liabilities.</p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "<p>Macroeconomics deals with which of the following studies?</p>\n\n<p>I. Reasons behind the unemployment of resources</p>\n\n<p>II. Determination of total output</p>\n", "comp": "", "opts": ["Only I", "Only II", "Neither I nor II", "Both I and II"], "cidx": 3, "sol": "Macroeconomics deals with the reasons behind unemployment and the determination of a country's total output or national income. It analyzes factors such as inflation, economic growth rate, price levels, and government policies that affect employment levels and economic performance. John Maynard Keynes is known as the founding father of Macroeconomics.", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "Which method of calculating the national income is also known as &lsquo;Industrial Origin Method&rsquo;?", "comp": "", "opts": ["Expenditure Method", "Income Method", "Value Added Method&nbsp;", "Monetary Measures Method"], "cidx": 2, "sol": "<p>The correct answer is<strong>&nbsp;</strong><span style=\"\"><u><strong>Value Added Method</strong></u>.</span></p>\n\n<p><span style=\"\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></span></p>\n\n<ul>\n\t<li><strong><span style=\"\">Value Added Method&nbsp;</span></strong>\n\n\t<ul>\n\t\t<li>There are <strong>three</strong> methods for calculating national income namely <strong>Income Method</strong>, <strong>Expenditure method</strong>, and <strong>Value Added Method</strong>.</li>\n\t\t<li>In this article, we will understand the <strong>value-added</strong> <strong>method</strong> for calculating national income.</li>\n\t\t<li>The value-added method is used to calculate the<strong> national income</strong> in different stages of production in the circular flow.</li>\n\t\t<li>It represents the contribution for each producing unit in the <strong>production</strong> <strong>process</strong>.<span style=\"\">&nbsp;</span></li>\n\t\t<li><strong>Value-added</strong> refers to the additional value to the raw material by an organization, using its production activities.</li>\n\t\t<li>It is calculated as the <strong>difference</strong> between the value of output and the value of intermediate goods.</li>\n\t\t<li>The <strong>value-added method</strong> is a widely used method for calculating national income as it avoids double counting, which is quite a serious error while estimating national income.&nbsp;</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><span style=\"font-weight: 700; \">Expenditure</span><span style=\"\">&nbsp;</span>\n\n\t<ul>\n\t\t<li>The <strong>expenditure</strong> method is a system for calculating gross domestic product (GDP) that combines consumption, investment, government spending, and net exports.</li>\n\t\t<li>It is the most common way to estimate GDP.</li>\n\t</ul>\n\t</li>\n\t<li><span style=\"\">&nbsp;I</span><span style=\"font-weight: 700; \">ncome</span>\n\t<ul>\n\t\t<li>The <strong>income</strong> approach is an evaluation methodology used for real estate estimation, which is computed by dividing the capitalisation tariff or price by the net operating income of the rental payments.</li>\n\t</ul>\n\t</li>\n\t<li><span style=\"font-weight: 700; \">Monetary</span>\n\t<ul>\n\t\t<li>The <strong>monetary</strong> method is a widely used approach to measure the size of the shadow economy.</li>\n\t\t<li>It is based on the hypothesis that cash is used to make transactions that agents want to keep hidden from official records.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "When the &lsquo;trans-boundary economic activities&rsquo; of an economy and depreciation are included into account, the aggregate measure is known as ________.", "comp": "", "opts": ["GNP", "NNP", "PCI", "GDP"], "cidx": 0, "sol": "The question focuses on the aggregate measure considering trans-boundary economic activities and depreciation. GNP (Gross National Product) includes the value of goods and services produced by a nation's residents, including overseas income, excluding foreign residents\u2019 domestic income. Depreciation deducted from GNP gives NNP. GDP measures domestic production within borders.", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "National income received by the households is called ______.", "comp": "", "opts": ["domestic income", "professional income", "personal income", "disposable income"], "cidx": 2, "sol": "<span style=\"color: rgb(33, 37, 41);\">Personal income is the national income received by the households. It includes all the income earned by individuals from various sources such as wages, salaries, rent, interest, and profit.</span>", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "<p>While using the income method to compute national income, which of the following is NOT to be included?</p>\n\n<p>A) Income from lottery</p>\n\n<p>B) Brokerage on sale and purchase of shares</p>\n\n<p>C) Income from illegal activities like gambling</p>\n", "comp": "", "opts": ["A, B and C", "B and C", "A and B", "A and C"], "cidx": 3, "sol": "<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">The correct answer is <u><strong>A and C.</strong></u></span></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Income method:-</strong>\n\n\t<ul>\n\t\t<li><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">It is one of the methods used to calculate national income.</span></li>\n\t\t<li>It involves adding up all the incomes earned by individuals and businesses in the economy.&nbsp;</li>\n\t</ul>\n\t</li>\n\t<li><strong>Lottery income:-</strong>\n\t<ul>\n\t\t<li>It is considered a windfall gain and is not a regular source of income.</li>\n\t\t<li>It is not a productive activity and does not contribute to the production of goods and services in the economy.</li>\n\t\t<li>Therefore, income from lottery is not included while calculating national income using the income method.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Brokerage on sale and purchase of shares:-</strong>\n\t<ul>\n\t\t<li>Brokerage income is earned by individuals or firms that facilitate the buying and selling of shares in the stock market.</li>\n\t\t<li>This income is a result of productive activity and is included while calculating national income using the income method.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Income from illegal activities like gambling:-</strong>\n\t<ul>\n\t\t<li>Income earned from illegal activities like gambling is not included in the calculation of national income.</li>\n\t\t<li>Such activities are not recognized by the government and are not considered productive activities that contribute to the economy</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "_____ is calculated by dividing the nominal GDP in a given year by the real GDP for the same year and multiplying it by 100.", "comp": "", "opts": ["Disposable Income", "GDP Deflator", "Real Income", "Per Capita Income"], "cidx": 1, "sol": "The correct answer is GDP Deflator. The GDP deflator measures inflation by comparing nominal GDP to real GDP adjusted for inflation. It helps compare economic output by adjusting for changes in price levels. Disposable income is not related to GDP or inflation, while real income reflects purchasing power. Per capita income measures average income per person but is not related to inflation or GDP.", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "Identify the true statement among the following.", "comp": "", "opts": ["Income Tax is an Indirect Tax", "Goods and Services Tax is a direct tax", "Fees and Fines collected is a non-tax receipt", "Borrowings from the public is a revenue receipt"], "cidx": 2, "sol": "<p>Fees and fines collected are considered as non-tax receipts because they are not imposed as a result of any legislative power or authority.</p>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "Which tax slab is applied in India if Individual taxpayer&rsquo;s annual taxable income is more than \u20b915 lakh?", "comp": "", "opts": ["20%", "30%", "10%", "40%"], "cidx": 1, "sol": "Individuals with taxable income exceeding \u20b915 lakh fall under the 30% tax slab. Any Indian citizen below 60 years must pay income tax if their income exceeds \u20b92.5 lakhs, with rates varying based on income slabs.", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "Which of the following is true?", "comp": "", "opts": ["Gross Domestic Product + Depreciation = Gross National Product", "Gross Domestic Product + Depreciation = Net Domestic Product", "Gross Domestic Product &ndash; Depreciation = Gross National Product", "Gross Domestic Product &ndash; Depreciation = Net Domestic Product"], "cidx": 3, "sol": "<p>The correct answer is<u><strong>&nbsp;</strong></u><span style=\"color: rgb(88, 89, 91);   \"><u><strong>Gross Domestic Product &ndash; Depreciation = Net Domestic Product</strong></u>.</span></p>\n\n<p><span style=\"color: rgb(88, 89, 91);   \"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></span></p>\n\n<ul>\n\t<li><b style=\"color: rgb(32, 33, 36);   \">The net domestic product (NDP) equals the gross domestic product (GDP) minus depreciation on a country&#39;s capital goods</b><span style=\"color: rgb(32, 33, 36);   \">.</span></li>\n\t<li><span style=\"color: rgb(32, 33, 36);   \">Net domestic product accounts for capital that has been consumed over the year in the<strong> form of housing, vehicle, or machinery deterioration.</strong></span></li>\n\t<li><span style=\"color: rgb(32, 33, 36);   \">Depreciation =&nbsp;</span><b style=\"color: rgb(32, 33, 36);   \">Depreciation of capital assets such as equipment, vehicles, housing, and more</b><span style=\"color: rgb(32, 33, 36);   \">.&nbsp;</span></li>\n\t<li><span style=\"color: rgb(32, 33, 36);   \">As the NDP takes into <strong>account the depreciation of capital assets, it is considered to be superior to the GDP as a measure of the well-being of a nation.</strong></span></li>\n</ul>\n\n<p><span style=\"color: rgb(32, 33, 36);   \"><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></strong></span></p>\n\n<ul>\n\t<li><span style=\"color: rgb(32, 33, 36);   \">GDP&nbsp;</span><b style=\"color: rgb(32, 33, 36);   \">measures the monetary value of final goods and services&mdash;that is, those that are bought by the final user&mdash;produced in a country in a given period of time.</b></li>\n\t<li><span style=\"color: rgb(32, 33, 36);   \">It counts all of the output generated <strong>within the borders of a country.</strong></span></li>\n\t<li><b style=\"color: rgb(32, 33, 36);   \">Rising GDP means more jobs are likely to be created, and workers are more likely to get better pay rises</b><span style=\"color: rgb(32, 33, 36);   \">.</span></li>\n\t<li><span style=\"color: rgb(32, 33, 36);   \"><strong>If GDP is falling</strong>, then the economy is shrinking - <strong>bad news for businesses and workers</strong>.</span></li>\n\t<li><span style=\"color: rgb(32, 33, 36);   \">If GDP falls for two quarters in a row, that is known as a <strong>recession, which can mean pay freezes and lost jobs.</strong></span></li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "The intervention of the government whether to expand demand or reduce it constitutes the____________.", "comp": "", "opts": ["redistribution function", "expenditure function", "stabilisation function", "transition function"], "cidx": 2, "sol": "Government intervention to expand or reduce demand is termed the stabilization function. It prevents recessions or high inflation through fiscal policies like altering spending/taxation and monetary policies like adjusting interest rates. Stabilization ensures economic balance, with debates on the extent of government involvement versus allowing market self-regulation.", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "The _________ refers to the excess of government&rsquo;s revenue expenditure over revenue receipts.", "comp": "", "opts": ["revenue surplus", "revenue deficit", "capital deficit", "fiscal deficit"], "cidx": 1, "sol": "- Revenue deficit refers to a situation where the government&#39;s expenditure on revenue items such as salaries, subsidies, and interest payments exceeds its revenue receipts from sources such as taxes and dividends.<br />\n- This means that the government is spending more than it is earning, which can lead to a budget deficit and borrowing to meet its expenses.<br />\n- Revenue deficits can be caused by various factors such as a slowdown in economic growth, lower tax revenues, and higher expenditure on social welfare programs.<br />\n- It is important for the government to address revenue deficits by implementing measures to increase revenue receipts and reduce expenditure on non-essential items.<br />\n- The other options mentioned in the question are not relevant to the concept of revenue deficit. Capital deficit refers to a situation where the government&#39;s capital expenditure exceeds its capital receipts, while fiscal deficit refers to the excess of government&#39;s total expenditure over its total revenue. Revenue surplus, on the other hand, refers to a situation where the government&#39;s revenue receipts exceed its revenue expenditure.<br />\n<br />\nHence, the statement &quot;The correct answer is option 2, revenue deficit refers to the excess of government&#39;s revenue expenditure over revenue receipts&quot; is correct.", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "What is the main criterion used by the World Bank in classifying different countries?", "comp": "", "opts": ["Gross National Income", "Gross National Product", "Per Capita Income", "Gross Domestic Product"], "cidx": 2, "sol": "<p>The main criterion used by the World Bank in classifying different countries is the\u00a0per capita income or average income of a person in a country.\u00a0This criterion is used by the World Bank in its\u00a0World Development Reports. Per capita income\u00a0(PCI) or total income measures the average income earned per person in a given area in a specified year.</p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "In which year did the Government of India introduce value-added tax (VAT) as an indirect tax in the Indian taxation system to replace the existing general sales tax?", "comp": "", "opts": ["2007", "2005", "2013", "2011"], "cidx": 1, "sol": "The question identifies the year of VAT introduction in India, replacing sales tax. VAT was implemented on 1st April 2005 as an indirect consumption tax levied at each value addition stage in the supply chain. By 2014, it was adopted across all states and union territories except Andaman & Nicobar and Lakshadweep Islands.", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "Which of the following taxes is proportional in nature?", "comp": "", "opts": ["Capital Gains Tax&nbsp;", "Income Tax&nbsp;", "Corporation Tax&nbsp;", "Goods and Services Tax"], "cidx": 3, "sol": "The Goods and Services Tax (GST) is often considered proportional in nature due to its uniform rate applied to all goods and services.", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "In a capitalist society the goods produced are distributed among people ______.", "comp": "", "opts": ["only on the basis of what people need&nbsp;", "on the basis of what people need and on the basis of Purchasing Power&nbsp;", "not on the basis of Purchasing Power&nbsp;", "not on the basis of what people need but on the basis of Purchasing Power&nbsp;"], "cidx": 3, "sol": "In a capitalist society, goods are distributed based on purchasing power rather than need. Purchasing power is the financial ability to buy goods and services, leading to inequalities where wealthier individuals can afford more, while others may struggle with basic needs.", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "<p>Which of the following is correct regarding the National Income?</p>\n\n<p>I. Intermediate goods are not included in the calculation of national income.</p>\n\n<p>II. Final goods are included in the calculation of national income.</p>\n", "comp": "", "opts": ["<span style=\"\">Only II</span>", "<span style=\"\">Neither I nor II</span>", "<span style=\"\">Only I</span>", "<span style=\"\">Both I and II</span>"], "cidx": 3, "sol": "Both I and II. Intermediate goods are not included in National Income calculations to avoid double accounting, while final goods are included. Dadabhai Naoroji made the first attempt to calculate National Income in India, and the Central Statistical Organization is responsible for its calculation.", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "In the product method for measurement of national income, we need to deduct the value of intermediate goods to _________.", "comp": "", "opts": ["analyse factors of production", "avoid over consumption", "avoid double counting", "estimate aggregate value of expenditure"], "cidx": 2, "sol": "The question addresses the exclusion of intermediate goods in national income calculation to prevent double counting. National income measures the monetary value of final goods/services over time, considering net factor income from abroad. In India, its calculation evolved from efforts by Dadabhai Naoroji to the National Income Committee led by Prof. P.C. Mahalanobis.", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "GNP at MP less _____ gives us GDP at MP.", "comp": "", "opts": ["depreciation", "indirect taxes", "net factor income from abroad", "subsidies"], "cidx": 2, "sol": "<p>The correct answer is&nbsp;<u><strong><span style=\"color: rgb(33, 37, 41);\">net factor income from abroad</span></strong></u></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>&nbsp;Gross National Product at Market Price:-</strong>\n\n\t<ul>\n\t\t<li>It is the total market value of all final goods and services produced by a country&#39;s residents in a given period, regardless of where they are located.</li>\n\t\t<li>GNP at MP less net factor income from abroad gives us GDP.</li>\n\t\t<li>Formula for&nbsp;it is&nbsp;<strong>GNP at MP = GDP at MP + Net factor income from abroad</strong></li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></strong></p>\n\n<ul>\n\t<li><strong>GDP</strong>:-\n\n\t<ul>\n\t\t<li>It stands for Gross Domestic Product.</li>\n\t\t<li><strong>It is the total monetary value of all the finished goods and services produced within a country&#39;s borders in a specific time period. </strong></li>\n\t\t<li>It is one of the most important indicators of a country&#39;s economic health.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Subsidies</strong>:-\n\t<ul>\n\t\t<li>A subsidy is a financial benefit given by a government to a producer or consumer of a good or service.</li>\n\t\t<li>Subsidies can be direct or indirect. Direct subsidies are payments made to the producer or consumer, while indirect subsidies are tax breaks or other benefits that reduce the cost of production or consumption.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Indirect tax:-</strong>\n\t<ul>\n\t\t<li><strong>It is a tax that is levied on the consumption of goods and services. </strong></li>\n\t\t<li>It is not directly levied on the income of a person.&nbsp;</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "<p>In the given expression of GDP according to the expenditure method, which of the following represents the aggregate imports expenditure incurred by the economy?</p>\n\n<p>C + I + G + X - M</p>\n", "comp": "", "opts": ["C", "M", "I", "X"], "cidx": 1, "sol": "<span style=\"color: rgb(33, 37, 41);\">T</span>he expenditure method is a system for calculating gross domestic product (GDP) that combines\u00a0C + I + G + X - M. It\u00a0is the most common way to estimate GDP. It says everything that the\u00a0private sector, including consumers and private firms,\u00a0and government spending within the borders of a particular country, must add up to the total value of all finished goods and services produced over a certain period of time.\u00a0", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "Which of these is NOT a flow concept?", "comp": "", "opts": ["Profit of a corporation", "Output produced by a firm", "Interest expense on loan", "Number of machines used in a factory"], "cidx": 3, "sol": "<p>Number of machines\u00a0used in a factory is\u00a0NOT\u00a0a flow concept because it is a\u00a0stock concept\u00a0that represents the quantity of a resource at a specific point in time, rather than the rate of change or flow of that resource.</p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "_______ is the income of the Government, Which arises out of the property left by the people without a legal heir.", "comp": "", "opts": ["Escheat", "<span style=\"color: rgb(33, 37, 41);\">Moot</span>", "<span style=\"color: rgb(33, 37, 41);\">Felony</span>", "<span style=\"color: rgb(33, 37, 41);\">Lien</span>"], "cidx": 0, "sol": "<p>The correct answer is <u><strong>Escheat</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li style=\"color:  (33, 37, 41);\"><strong>Escheat</strong>:-\n\n\t<ul>\n\t\t<li style=\"color:  (33, 37, 41);\"><strong>It is a legal concept that refers to the transfer of property ownership to the state when the owner dies without leaving a will or any legal heirs.</strong></li>\n\t\t<li style=\"color:  (33, 37, 41);\">This process ensures that the property does not remain unclaimed or become abandoned, and the state can use the proceeds for public welfare or other purposes.</li>\n\t\t<li style=\"color:  (33, 37, 41);\">Escheat is a common law principle that dates back to medieval times and is still recognized in many jurisdictions worldwide.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p style=\"color:  (33, 37, 41);\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li style=\"color:  (33, 37, 41);\"><strong>Moot</strong>:-\n\n\t<ul>\n\t\t<li style=\"color:  (33, 37, 41);\">It refers to a point that is no longer relevant or debatable.</li>\n\t</ul>\n\t</li>\n\t<li style=\"color:  (33, 37, 41);\"><strong>Felony</strong>:-\n\t<ul>\n\t\t<li style=\"color:  (33, 37, 41);\">It is a serious crime.</li>\n\t</ul>\n\t</li>\n\t<li style=\"color:  (33, 37, 41);\"><strong>Lien</strong>:-\n\t<ul>\n\t\t<li style=\"color:  (33, 37, 41);\">It is a legal claim over someone&#39;s property as security for a debt or obligation.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "Which of the following aggregates best describes the National Income?", "comp": "", "opts": ["GDP at MP", "NNP at FC", "NDP at MP", "GNP at FC"], "cidx": 1, "sol": "<p><span style=\"color: rgb(33, 37, 41);\">The correct answer is&nbsp;<u><strong>NNP at FC</strong></u>.</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></span></p>\n\n<ul>\n\t<li><span style=\"color: rgb(33, 37, 41);\"><strong>NNP at FC</strong> (</span>Net National Product&nbsp;at factor cost) <strong>best describes </strong>the <strong>National Income</strong>.</li>\n\t<li>It&#39;s calculated by deducting depreciation from GDP at MP, giving a more accurate picture of the net value of production.</li>\n\t<li>Net National Product at Factor Cost or<strong> NNP<sub>FC</sub></strong> : It is the<strong> net value of all the final goods and services that are produced by the residents of a nation within a period of one year</strong>.</li>\n\t<li>It can be shown as\n\t<ul>\n\t\t<li>\n\t\t<p><strong>NNP<sub>FC</sub></strong> = <strong>GNP<sub>MP</sub> - Net Indirect Taxes - Depreciation</strong>.</p>\n\t\t</li>\n\t</ul>\n\t</li>\n\t<li><span style=\"font-weight: bolder;\">National income</span>&nbsp;of a country means the&nbsp;<span style=\"font-weight: bolder;\">sum total of incomes earned by the citizens of that country</span>&nbsp;during a given&nbsp;<span style=\"font-weight: bolder;\">period, over a year.</span></li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Gross Domestic Product (GDP)</strong> at <strong>Market Price</strong> or <strong>GDP</strong><sub><strong>MP</strong> </sub>:It is the gross market value of all final goods and services that is produced within the domestic territory of a nation within an accounting year.\n\n\t<ul>\n\t\t<li>\n\t\t<p>It is shown as: <strong>GDP<sub>MP</sub></strong> = <strong>Net domestic product at FC (NDP<sub>FC</sub>) + Depreciation + Net Indirect tax</strong>.</p>\n\t\t</li>\n\t</ul>\n\t</li>\n\t<li>\n\t<p><strong>Net Domestic Product (NDP)</strong> at <strong>Market Price</strong> or <strong>NDP<sub>MP</sub></strong> :<span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">It is the net market value of all the final goods and services produced within the domestic territory of the nation within a year excluding depreciation</span></p>\n\t</li>\n\t<li>\n\t<p><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\"><strong><span style=\"font-family: var(--bs-body-font-family); font-size: var(--bs-body-font-size); font-weight: var(--bs-body-font-weight); text-align: var(--bs-body-text-align);\">\u200b\u200b</span>Gross National Product (GNP)</strong> at <strong>Factor Cost</strong> or <strong>GNP<sub>FC</sub></strong> :It is referred to as the gross money value of all the final goods and services that are produced by the residents living within the boundaries of a nation during one accounting year excluding the net indirect taxes. </span></p>\n\n\t<ul>\n\t\t<li>\n\t\t<p>It is shown as: <strong>GNP<sub>FC</sub></strong> = <strong>GNP<sub>MP</sub>&nbsp;-&nbsp;Net Indirect Taxes</strong>.</p>\n\t\t</li>\n\t</ul>\n\t</li>\n\t<li><span style=\"font-weight: bolder;\">National income is calculated using various methods</span>, such as the output method, income method, and expenditure method.\n\t<ul>\n\t\t<li><span style=\"font-weight: bolder;\">The output method</span>&nbsp;measures national income by<span style=\"font-weight: bolder;\">&nbsp;adding up the value of all goods and services produced</span>&nbsp;in the country, while the income method measures it by adding up all the income earned by individuals and businesses in the country.</li>\n\t\t<li><span style=\"font-weight: bolder;\">The expenditure method</span>&nbsp;measures national income by&nbsp;<span style=\"font-weight: bolder;\">adding up all the spending on goods and services</span>&nbsp;by households, businesses, and the government.</li>\n\t\t<li>The<span style=\"font-weight: bolder;\">&nbsp;income method</span>&nbsp;measures all the<span style=\"font-weight: bolder;\">&nbsp;income earned by all the factors of production</span>&nbsp;in an economy.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "The curve giving the maximum amount of corn that can be produced in the economy for any given amount of cotton and vice-versa. This curve is called the ____.", "comp": "", "opts": ["<span style=\"\">Total revenue curve</span>", "<span style=\"\">Indifference curve</span>", "<span style=\"\">Production possibility frontier</span>", "<span style=\"\">Demand curve</span>"], "cidx": 2, "sol": "The correct answer is the Production Possibility Frontier (PPF). The PPF represents the maximum amount of two goods that can be produced with the available resources and technology in the economy. It shows the trade-offs and opportunity costs of production, illustrating that producing more of one good requires sacrificing the production of the other. The slope of the PPF represents the opportunity cost of producing one good in terms of the other. Points on the PPF curve represent the efficient allocation of resources, while points inside the curve represent inefficient allocation, indicating that the economy is not utilizing its resources fully.", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 126000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

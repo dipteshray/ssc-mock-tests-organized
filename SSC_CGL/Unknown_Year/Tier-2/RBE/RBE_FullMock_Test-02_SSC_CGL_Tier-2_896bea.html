@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 2</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 2</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p>If interest be compounded half-yearly, then find the amount which will be collected on ₹41,875 at the rate of 16% per annum after 1 year.</p>",
+      "option1": "<p>40,000</p>",
+      "option2": "<p>43,000</p>",
+      "option3": "<p>48,843</p>",
+      "option4": "<p>40,517</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_92644eb0bb76170e.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> A man can row 15 km/hr in still water. When the river is running at a speed of 4.5 km/hr, then it takes him 2 hr to row to a place and comes back to the initial point. How much distance did the man covered in his to and for journey (in km)?</p><p><br/> </p>",
+      "option1": "<p> 13.65</p>",
+      "option2": "<p> 28.3</p>",
+      "option3": "<p> 13.0</p>",
+      "option4": "<p> 27.3</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_432896033452102b.jpg"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> A vessel contains mixture of oil and water in the ratio 7:4. Using a separator, 5 litres of water is separated from the vessel and 10 litres of oil is added in the vessel. Find the ratio of water to oil after separation if initial quantity of the mixture was 407 litres. </p><p><br/> </p>",
+      "option1": "<p> 269 : 143</p>",
+      "option2": "<p> 17 : 13</p>",
+      "option3": "<p> 143 : 269</p>",
+      "option4": "<p> 13 : 17</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_863e84cb0e87243f.jpg"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> The difference between the length of two parallel sides of a trapezium is 8 cm. The perpendicular distance between these two parallel sides is 63 cm. If the area of the trapezium is 1134 cm², then find the length of each of the parallel sides (in cm).</p><p><br/> </p>",
+      "option1": "<p> 22 ,14</p>",
+      "option2": "<p> 25, 17</p>",
+      "option3": "<p> 18, 10</p>",
+      "option4": "<p> 28, 20</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_3a9201cda51c47ea.jpg"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> For doing a certain work, A is 40% more efficient than B and B is 20% less efficient than C. C alone can complete the same work in 46 hours. A and B work together for 15 hours. How long (in hours) will C alone take to complete the remaining work?</p><p><br/> </p>",
+      "option1": "<p> 17.4</p>",
+      "option2": "<p> 15.5</p>",
+      "option3": "<p> 17.2</p>",
+      "option4": "<p> 27.6</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_b6acbef63792cb66.gif"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p>In a race, Amish beats Bhuwan by 20 seconds. In the same race, Bhuwan beats Rashid by 60 seconds. Bhuwan’s speed is the average speed of Amish and Rashid. The time (in seconds) taken by Amish to run the race is:</p>",
+      "option1": "<p>40</p>",
+      "option2": "<p>20</p>",
+      "option3": "<p>60</p>",
+      "option4": "<p>80</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 7,
+      "question": "<p>Consider the following frequency distribution table with class intervals:</p><p>Class Interval</p><p>Frequency</p><p>10 - 19</p><p>4</p><p>20 - 29</p><p>6</p><p>30 - 39</p><p>8</p><p>40 - 49</p><p>4</p><p>50 - 59</p><p>5</p><p>What is the mode of this frequency distribution?</p>",
+      "option1": "<p>30.8</p>",
+      "option2": "<p>32.8</p>",
+      "option3": "<p>33.8</p>",
+      "option4": "<p>35.8</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 8,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_6a4f7cdaca44d799.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_598566c50c32a37f.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_ca222c68fa07dc1f.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_dab23196b52db05a.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_8c6d381a1465275f.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_eba750bcc472abfd.jpg"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p>Slant height of a cone is 35 cm. If area of its base is 2464 cm2, then what is the curved surface area of this cone?</p>",
+      "option1": "<p>3100 cm2</p>",
+      "option2": "<p>3300 cm2</p>",
+      "option3": "<p>3080 cm2</p>",
+      "option4": "<p>3400 cm2</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_f5f3ad628130e45a.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_5c77a8f494f4043.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_2b788d0b66def35f.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_50007a5e2a6eedb3.gif",
+      "option4": "<p> none</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_c8e47f5240d6c92.jpg"
+    },
+    {
+      "sr_no": 11,
+      "question": "https://appxcontent.kaxa.in/test_s3_migration/2023-12-26/1703586209c4b9f9e3-1703586209.png",
+      "option1": "<p>30</p>",
+      "option2": "<p>20</p>",
+      "option3": "<p>18</p>",
+      "option4": "<p>15</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 12,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_e933660252fecb0a.gif",
+      "option1": "<p> 6</p>",
+      "option2": "<p> 1</p>",
+      "option3": "<p> 0</p>",
+      "option4": "<p> -6</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_7c3aa78c27957323.jpg"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p>Vandana and Kumkum invested the sum of ₹1,06,500 each at the rate of 20% p.a. and 30% respectively on compound interest (compounding annually). If time period is 3 years for both, then what will be the total compound interest earned by Vandana and Kumkum?</p>",
+      "option1": "<p>77532</p>",
+      "option2": "<p>127480.5</p>",
+      "option3": "<p>205012.5</p>",
+      "option4": "<p>205120.5</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_b938621858a5ce6d.jpg"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> Three years ago, Raman’s salary was ₹44800. His salary is increased by 25%, A% and 30% in first, second and third year respectively. Raman’s present salary is ₹87360. What is the value of A?</p><p><br/> </p>",
+      "option1": "<p> 25</p>",
+      "option2": "<p> 15</p>",
+      "option3": "<p> 18</p>",
+      "option4": "<p> 20</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_df6cbd1e8fd33fb5.gif"
+    },
+    {
+      "sr_no": 15,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_5c41291c00436987.png",
+      "option1": "<p> 13%</p>",
+      "option2": "<p> 14%</p>",
+      "option3": "<p> 15%</p>",
+      "option4": "<p> 18%</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_7b74a315d9091329.gif"
+    },
+    {
+      "sr_no": 16,
+      "question": "<p>If</p>",
+      "option1": "<p>5/3</p>",
+      "option2": "<p>3/5</p>",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_a0fa21055e8c6bac.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_a9769edb752971ce.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> In a class of 80 students, 40% are boys and the remaining are girls. The average score of boys in a test is 30% less than that of girls. If the average score of all the boys and girls in the class is 66.88, then what is the average score of boys?</p><p><br/> </p>",
+      "option1": "<p> 53.2</p>",
+      "option2": "<p> 76</p>",
+      "option3": "<p> 63.2</p>",
+      "option4": "<p> 66</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_e4f822e212aa7d6f.jpg"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p>From the top and bottom of an upright pole, the angle of elevation of the top of an upright tower are 30 degree and 60 degree respectively. If the foot of the pole and the foot of the tower lie on the same level ground, what is the ratio of height of the tower to the height of pole?</p>",
+      "option1": "<p>2/3</p>",
+      "option2": "<p>3/2</p>",
+      "option3": "<p>5/4</p>",
+      "option4": "<p>4/5</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_5546a3c0eebda84d.jpg"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> Six years ago, the ratio of ages of two wizards A to B was 5 : 3. After 4 years from now, the ratio of their ages will be 11 : 7. What is A’s age at present?</p><p><br/> </p>",
+      "option1": "<p> 106</p>",
+      "option2": "<p> 226</p>",
+      "option3": "<p> 100</p>",
+      "option4": "<p> 66</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_7b56e1ce43c8ffce.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p>100 surnames were randomly picked up from a local telephone directory and the frequency distribution of the number of letters in the English alphabets in the surnames was obtained as follows:</p><p>Number of letters</p><p>1-4</p><p>4-7</p><p>7-10</p><p>10-13</p><p>13-16</p><p>16-19</p><p>Number of surnames</p><p>6</p><p>30</p><p>40</p><p>16</p><p>4</p><p>4</p><p>Determine the median number of letters in the surnames</p>",
+      "option1": "<p>11.55</p>",
+      "option2": "<p>7.95</p>",
+      "option3": "<p>10</p>",
+      "option4": "<p>8.05</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 21,
+      "question": "<p>What is the perimeter of the largest square that can be inscribed in a circle of diameter 13 cm?</p>",
+      "option1": "<p>17√2</p>",
+      "option2": "<p>13√2</p>",
+      "option3": "<p>26√2</p>",
+      "option4": "<p>39√2</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_76e7c72dfc8f010f.jpg"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> A dealer marks an article at 45% above its cost price and sells it by giving a 10% discount on its marked price and another cash discount of Rs 50. If he still earns a profit of 25%, what is the marked price (in Rs.) of the article?</p><p><br/> </p>",
+      "option1": "<p> 909</p>",
+      "option2": "<p> 1132</p>",
+      "option3": "<p> 1318</p>",
+      "option4": "<p> 1235</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_8263d65768415211.gif"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p>If ∛N lies between 7 and 9, where N is an integer then how many values N can take?</p>",
+      "option1": "<p>386</p>",
+      "option2": "<p>385</p>",
+      "option3": "<p>384</p>",
+      "option4": "<p>387</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_69206ff2d9d027cf.jpg"
+    },
+    {
+      "sr_no": 24,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_9f256b111270b459.gif",
+      "option1": "<p> -20</p>",
+      "option2": "<p> 20</p>",
+      "option3": "<p> 24</p>",
+      "option4": "<p> -24</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_d153e030bc7c4385.jpg"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> If the 9-digit number 45069x4y8 is divisible by 44, then what is the value of (3x+9y) for the minimum value of y?</p><p><br/> </p>",
+      "option1": "<p> 6</p>",
+      "option2": "<p> 12</p>",
+      "option3": "<p> 9</p>",
+      "option4": "<p> 8</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_6b65f351e90a22b7.gif"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p>Cards numbered 1 to 20 are mixed up and then a card is drawn at random. What is the probability that the card drawn has a number which is a multiple of 3 or 5</p>",
+      "option1": "<p>1/2</p>",
+      "option2": "<p>2/5</p>",
+      "option3": "<p>8/15</p>",
+      "option4": "<p>9/20</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_4bfebb31f04e778e.gif"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> A, B and C invest capitals in a business in the ratio 6 : 3 : 5. At the end of every quarter, A halves his capital, whereas B doubles his capital and C leaves his capital as it is. At the end of a year, C’s share in the total profit it Rs 7,20,000. What is B’s share (in Rs) in the profit?</p><p><br/> </p>",
+      "option1": "<p> 16,20,000</p>",
+      "option2": "<p> 4,05,000</p>",
+      "option3": "<p> 7,00,000</p>",
+      "option4": "<p> 15,40,000</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_db5c39fc7105b5bd.gif"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_932d80568bb6ed0c.png",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_d47326c77c29dfa8.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_16ee5fd484b0d1d0.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_10e4582997c1f3e3.gif",
+      "option4": "<p> none</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_8ccdca9e09924d17.gif"
+    },
+    {
+      "sr_no": 29,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_ae35882ea0748d82.png",
+      "option1": "<p>33.55</p>",
+      "option2": "<p>35.42</p>",
+      "option3": "<p>33.63</p>",
+      "option4": "<p>36.63</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_8d9414383ea9c6b7.gif"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> A person sells an article at a certain price. If he sells it at 60% of this selling price, then he has a loss of 5%. If he sells it at its original selling price, then the profit percent will be:</p><p><br/> </p>",
+      "option1": "<p> 54.33</p>",
+      "option2": "<p> 56.33</p>",
+      "option3": "<p> 55.33</p>",
+      "option4": "<p> 58.33</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019036969_html_258b81b5fb6ea152.jpg"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. The table has two apples and a knife.</p><p> B. They seek a way to divide the apples among them equally, and you must accomplish this using only one stroke of the knife</p><p> C. The brain teaser shows three people standing side by side with a table in front of them.</p><p> D. A text overlay on the brain teaser reads, “Only 6% of people can handle this puzzle: these three want to share two apples equally, how do you handle this with using only one stroke of the knife.”</p>",
+      "option1": "<p> DCAB</p>",
+      "option2": "<p> DACB</p>",
+      "option3": "<p> ABCD</p>",
+      "option4": "<p> ABDC</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is A. </p><p> The complete sentence will look like “A text overlay on the brain teaser reads, “Only 6% of people can handle this puzzle: these three want to share two apples equally, how do you handle this with using only one stroke of the knife.” The brain teaser shows three people standing side by side with a table in front of them. The table has two apples and a knife. They seek a way to divide the apples among them equally, and you must accomplish this using only one stroke of the knife.”</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Those mangoes tasted sour.</p>",
+      "option1": "<p> Mangoes are sour when they were tasted.</p>",
+      "option2": "<p> Those mangoes was sour when they were tasted.</p>",
+      "option3": "<p> Those mangoes were sour when they were tasted. </p>",
+      "option4": "<p> Those mangoes are sour when they are tasted.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is C.</p><p> Rule followed here is: </p><p> Sub + verb (according to tense and number) + adjective + when + pronoun (according to number) + H.V (according to tense and number) + V3</p><p> Thus, Active form: Those mangoes tasted sour.</p><p> Passive form: Those mangoes were sour when they were tasted.</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> <br/> </p><p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. “Though tools from the Palaeolithic Age have been identified earlier in parts of the Aravallis, it is for the first time that cave paintings and rock art of a large magnitude have been found in Haryana,” she added.</p><p> B. The Upper Paleolithic Age began around 40,000 years ago and lasted till around 10,000 years ago.</p><p> C. “Starting from the Lower Palaeolithic to Middle Palaeolithic then Upper Palaeolithic, we see the evolution here. We have found significant remains from Lower Palaeolithic till Middle and Upper Palaeolithic period too,” she explained.</p><p> D. While yet to be established through archaeological dating, Bhattacharyya says the Mangar cave art is 20,000-40,000 years old. Bhattacharyya claimed that the discovery is extremely significant.</p><p><br/> </p>",
+      "option1": "<p> DCBA</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> BDCA</p>",
+      "option4": "<p> CDBA</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is C</p><p> The passage will sound as: “The Upper Paleolithic Age began around 40,000 years ago and lasted till around 10,000 years ago. While yet to be established through archaeological dating, Bhattacharyya says the Mangar cave art is 20,000-40,000 years old. Bhattacharyya claimed that the discovery is extremely significant. “Starting from the Lower Palaeolithic to Middle Palaeolithic then Upper Palaeolithic, we see the evolution here. We have found significant remains from Lower Palaeolithic till Middle and Upper Palaeolithic period too,” she explained. “Though tools from the Palaeolithic Age have been identified earlier in parts of the Aravallis, it is for the first time that cave paintings and rock art of a large magnitude have been found in Haryana,” she added.”</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> Group of mammals including human</p>",
+      "option1": "<p> Flocks</p>",
+      "option2": "<p> Cattle</p>",
+      "option3": "<p> Primate</p>",
+      "option4": "<p> Paparazzi</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Primate.</p><p> Primate: Humans are also classified within: the subgroup of mammals called primates; and the subgroup of primates called apes and in particular the 'Great Apes'.</p><p> Flocks: to go or meet somewhere in large numbers.</p><p> Cattle: Cattle are large quadrupedal ungulate mammals with cloven hooves.</p><p> Paparazzi: photographers who follow famous people around in order to get pictures of them to sell to a newspaper or magazine.</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate option to replace the highlighted word in the given sentence.</p><p> Harsh <b>eats very much</b> than Manisha.</p>",
+      "option1": "<p> No improvement</p>",
+      "option2": "<p> Eats a lot</p>",
+      "option3": "<p> Eats much</p>",
+      "option4": "<p> Eats more</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The correct statement is: Harsh eats more than Manisha. </p><p> In the given sentence there is comparison between two people and when comparison is between two then comparative degree is used. </p><p>Very much is a superlative degree and is grammatically incorrect. Instead of “eats very much” the comparative degree “eats more” will be used.</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> The following sentence has been divided into parts. One of them may contain an error. Select the part that contains the error from the given options. If you don’t find any error, mark ‘No error’ as your answer.</p><p> Did you baked / the vanilla cake / yourself this time?</p>",
+      "option1": "<p> No error</p>",
+      "option2": "<p> Did you baked</p>",
+      "option3": "<p> the chocolate cake</p>",
+      "option4": "<p> yourself this time</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically incorrect and error lies in the first segment. </p><p> Correct structure of Simple Past Tense: <b>Did+ Subject+ 1st form of Verb+ Object+ Remaining Words+ ? </b> </p><p> Thus, the correct sentence is: <b>Did you bake the vanilla cake yourself this time?</b> </p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Give the child a nourishing diet.</p>",
+      "option1": "<p> The child must have given a nourishing diet.</p>",
+      "option2": "<p> The child was given a nourishing diet.</p>",
+      "option3": "<p> The child should be given a nourishing diet.</p>",
+      "option4": "<p> The child is given a nourishing diet.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Rule to change Active Voice into Passive Voice-: </b> </p><p> <br/> <br/> </p><p> Imperative Sentence- </p><p> <br/> <br/> </p><p> <b>v1 + Object---------- Subject (Objective case) + should + be + v3.</b><b> </b> </p><p> <br/> <br/> </p><p> <b>Thus, the correct Passive form will be: The child should be given a nourishing diet.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> He gifted me a beautiful teddy bear.</p>",
+      "option1": "<p> I have been gifted a beautiful teddy bear by him.</p>",
+      "option2": "<p> I was gifted a beautiful teddy bear by him.</p>",
+      "option3": "<p> I am being gifted a beautiful teddy bear by him.</p>",
+      "option4": "<p> I am gifted a beautiful teddy bear by him.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Rule-: </b> </p><p> <b>Active Voice to Passive Voice-: </b> </p><p> Sub + v2 + obj ----------------- Obj + was/were + v3 + by + Sub. </p><p> Thus, the correct Passive Voice of the given sentence is: </p><p> <b>I was gifted a beautiful teddy bear by him.</b></p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> Ritual washing of the body. </p>",
+      "option1": "<p> Accentuate</p>",
+      "option2": "<p> Alliteration</p>",
+      "option3": "<p> Ablution</p>",
+      "option4": "<p> Abdication</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Ablution</b>: Ritual washing of the body. </p><p> An <b>ablution</b> is a washing or a cleaning of oneself, for personal hygiene, or a ritual washing or cleaning associated with religious observance.</p><p> <b>Accentuate:</b> Give more force or importance to. </p><p> <b>Alliteration:</b> Commencement of adjacent words with the same letter. </p><p> <b>Abdication:</b> To formally give up. </p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Given below are four jumbled sentences. Select the option that gives their correct logical sequence.</p><p> A. The last few decades have been monumental when it comes to technological development. Humans have developed systems and machines that make our lives easier.</p><p> B. However, with the development of society, there has been a severe detriment to the quality of Earth’s environment.</p><p> C. Especially during the early modern period from the early 16th century to as far as the late 18the century, also commonly referred to as “The Scientific Revolution” or “The Enlightenment”, modern technology leapt ahead in development in such a short time frame compared to all of history</p><p> D. One of the most massive threats to the condition of the planet is climate change. Inadequate research and reckless misuse of natural resources are some of the core reasons for the deteriorating condition of the planet.</p><p><br/> </p>",
+      "option1": "<p> ABCD</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> ACBD</p>",
+      "option4": "<p> ABDC</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is C</p><p> The fully structured paragraph will look like:</p><p> “The last few decades have been monumental when it comes to technological development. Humans have developed systems and machines that make our lives easier. Especially during the early modern period from the early 16th century to as far as the late 18the century, also commonly referred to as “The Scientific Revolution” or “The Enlightenment”, modern technology leapt ahead in development in such a short time frame compared to all of history. However, with the development of society, there has been a severe detriment to the quality of Earth’s environment. One of the most massive threats to the condition of the planet is climate change. Inadequate research and reckless misuse of natural resources are some of the core reasons for the deteriorating condition of the planet.”</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the sentence that contains no spelling errors.</p><p><br/> </p>",
+      "option1": "<p> The Lieutenant of the Indian army fought bravely and protected the pride of the country.</p>",
+      "option2": "<p> The Leiutenant of the Indian army fought bravely and protected the pride of the country.</p>",
+      "option3": "<p> The Lieutenant of the Indian army fought bravelly and protected the pride of the country.</p>",
+      "option4": "<p> The Lieutenant of the Indian army fought bravely and protected the priide of the country.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A.</p><p> “The Lieutenant of the Indian army fought bravely and protected the pride of the country.” </p><p> Bravely: in a courageous manner. </p><p> <b>Lieutenant: </b>A <b>lieutenant</b> is a commissioned officer in the armed forces or the police who can take command if her higher-ups aren't around. </p><p> Pride: a feeling of self-respect and personal worth.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> Only then, having realised their diplomatic <b>gaffe</b>, did the White House alter its stance.</p>",
+      "option1": "<p> Blooper</p>",
+      "option2": "<p> Blunder</p>",
+      "option3": "<p> Indiscretion</p>",
+      "option4": "<p> Succeed</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> Gaffe: a mistake that a person makes in a social or public situation, especially something very embarrassing</p><p> Blooper, Blunder, Indiscretion are all synonyms of Gaffe</p><p>Succeed: to manage to achieve what you want; to do well</p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> Then they were seated behind him, and the <b>puissant</b> horses shot off down the Corso and towards the Bastioni at a magnificent pace.</p>",
+      "option1": "<p> Enduring</p>",
+      "option2": "<p> Ineffectual</p>",
+      "option3": "<p> Robust</p>",
+      "option4": "<p> Athletic</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> Ineffectual: not producing an intended effect</p><p> Puissant: having great power or influence</p><p> Enduring, Robust and Athletic are the synonyms of the word Puissant.</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> She hardly goes to the Gym on Sunday, ______?</p>",
+      "option1": "<p> isn’t she</p>",
+      "option2": "<p> doesn’t she</p>",
+      "option3": "<p> does she</p>",
+      "option4": "<p> is she</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Rules for making question tag-: </b> </p><p> <b>The sentence and the question tag must be in the same tense. </b> </p><p> <br/> <br/> </p><p> <b>If the sentence is positive, the question tag must be negative and vice versa. </b> </p><p> <b>Always use pronoun in the question tag.</b></p><p> <br/> <br/> </p><p> <b>For negative question tag, use the contracted form of ‘helping verb’ and </b> </p><p> <b>Not’. Eg.- didn’t, hadn’t, won’t etc. </b> </p><p> Thus, the correct sentence is: <b>She hardly goes to the Gym on Sunday, does she? </b> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. A grisly road accident that killed six members of a family on the Delhi-Meerut Expressway in Ghaziabad on Tuesday was the latest glaring example of the shocking lack of traffic sense that permeates Indian roads and the lax attitudes of the authorities that enable such behaviour.</p><p> B. Corporate offices to transport employees – was arrested and a first information report registered against him.</p><p> C. CCTV cameras showed a speeding bus being driven on the wrong side of the carriageway ramming into a Mahindra TUV 300, which unsuccessfully tried to change lanes at the last minute.</p><p> D. Three children were among those who died on the spot. The driver of the bus – it appears that the vehicle was once used to ferry schoolchildren and later kept using the board even though it was used by.</p><p><br/> </p>",
+      "option1": "<p> ACDB</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> ABCD</p>",
+      "option4": "<p> ACBD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A.</p><p> The passage sounds as:</p><p> “A grisly road accident that killed six members of a family on the Delhi-Meerut Expressway in Ghaziabad on Tuesday was the latest glaring example of the shocking lack of traffic sense that permeates Indian roads and the lax attitudes of the authorities that enable such behaviour. CCTV cameras showed a speeding bus being driven on the wrong side of the carriageway ramming into a Mahindra TUV 300, which unsuccessfully tried to change lanes at the last minute. Three children were among those who died on the spot. The driver of the bus – it appears that the vehicle was once used to ferry schoolchildren and later kept using the board even though it was used by corporate offices to transport employees – was arrested and a first information report registered against him.”</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech. </p><p> He said to Samantha, “When do you intend to pay back the money you borrowed from me?”</p>",
+      "option1": "<p> He enquired Samantha when did she intend to pay back the money, she borrowed from him.</p>",
+      "option2": "<p> He enquired Samantha when she intended to pay back the money, she borrowed from him.</p>",
+      "option3": "<p> He enquired Samantha when she intended to pay back the money, she had borrowed from him.</p>",
+      "option4": "<p> He enquired when Samantha intended to pay back the money, she borrowed from him.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Interrogative sentences transformation rules: </b> </p><p> <b>1. Change ‘Said to’ into asked, questioned, inquired or interrogated. </b> </p><p> <b>2. Question mark (?) should be changed into ‘full stop’. </b> </p><p> <b>3. The sentences will not be in interrogative form in Indirect Speech. This means that helping verb is used after the subject. </b> </p><p> <b>4. Tense and pronoun shall be changed according to the rules. </b> </p><p> <b>5. If the question can be answered in yes/no, conjunction if/whether will be used.</b></p><p> <b>If the question is of ‘wh family’ no conjunction will be used.</b> </p><p> Thus, the correct indirect form is: <b>He enquired Samantha when she intended to pay back the money, she had borrowed from him.</b> </p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Select the correct homonym from the given options to fill in the blank.</p><p> Proper treatment of human faecal ______ is very essential before they are discharged into the river.</p>",
+      "option1": "<p> waist</p>",
+      "option2": "<p> meet</p>",
+      "option3": "<p> waste</p>",
+      "option4": "<p> Meat</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C.</p><p> The correct sentence is “Proper treatment of human faecal waste is very essential before they are discharged into the river.”</p><p> Waste: something that is not necessary</p><p> Waist: the narrowest part around the middle of your body</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p>The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p>(a) The rise and fall/ (b) of the tide are due/ (c) to lunar influence. /(d) No error</p>",
+      "option1": "<p>The rise and fall</p>",
+      "option2": "<p>of the tide are due</p>",
+      "option3": "<p>to lunar influence</p>",
+      "option4": "<p>No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option b is the correct answer.</p><p>The “rise and fall” is a singular subject. Hence singular verb ‘is’ will be used.</p><p>The correct sentence is: <strong>The rise and fall of the tide is due to lunar influence.</strong></p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> Identify the pair of synonyms from the given word.</p><p> Camouflage</p>",
+      "option1": "<p> Hide</p>",
+      "option2": "<p> Reveal</p>",
+      "option3": "<p> Disguise</p>",
+      "option4": "<p> Pretend</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Camouflage</b>: To <b>camouflage </b>is to disguise, and a <b>camouflage</b> is that which disguises — like the leaf-colored and patterned uniforms worn by soldiers who want to blend in with their natural surroundings. </p><p> <b>Disguise: </b>any attire that modifies the appearance in order to conceal the wearer's identity. </p><p> <b>Hide:</b> prevent from being seen or discovered. </p><p> <b>Reveal:</b> make visible. </p><p> <b>Pretend:</b> make believe with the intent to deceive. </p><p> <b>Thus, the correct synonym of ‘camouflage’ is ‘Disguise’.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>A. On the afternoon of that eventful day, I stood on the porch, dumb, expectant and guessed vaguely from my mother's signs and from the hurrying to and fro in the house that something unusual was about to happen, so I went to the door and waited on the steps.</p><p>B. I did not know what the future held of marvel or surprise for me and anger and bitterness had preyed upon me continually for weeks and a deep languor had succeeded this passionate struggle.</p><p>C. The most important day I remember in all my life is the one on which my teacher, Anne Mansfield Sullivan, came to me and I am filled with wonder when I consider the immeasurable contrasts between the two lives which it connects and it was the third of March, 1887, three months before I was seven years old.</p><p>D. The afternoon sun penetrated the mass of honeysuckle that covered the porch, and fell on my upturned face and my fingers lingered almost unconsciously on the familiar leaves and blossoms which had just come forth to greet the sweet southern spring.</p>",
+      "option1": "<p>CBAD</p>",
+      "option2": "<p>DABC</p>",
+      "option3": "<p>CADB</p>",
+      "option4": "<p>CDAB</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p><p>The correct arrangement is: CADB:</p><p><strong>The most important day I remember in all my life is the one on which my teacher, Anne Mansfield Sullivan, came to me and I am filled with wonder when I consider the immeasurable contrasts between the two lives which it connects and it was the third of March, 1887, three months before I was seven years old. On the afternoon of that eventful day, I stood on the porch, dumb, expectant and guessed vaguely from my mother's signs and from the hurrying to and fro in the house that something unusual was about to happen, so I went to the door and waited on the steps. The afternoon sun penetrated the mass of honeysuckle that covered the porch, and fell on my upturned face and my fingers lingered almost unconsciously on the familiar leaves and blossoms which had just come forth to greet the sweet southern spring. I did not know what the future held of marvel or surprise for me and anger and bitterness had preyed upon me continually for weeks and a deep languor had succeeded this passionate struggle.</strong></p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p>Five thousand rupees _________ been spent on different useful commodities.</p>",
+      "option1": "<p>Were</p>",
+      "option2": "<p>Has</p>",
+      "option3": "<p>Have</p>",
+      "option4": "<p>Was</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p><p><strong>Rule-: Plural Noun always takes plural verb. </strong></p><p>Hence the correct word to fill in the blank is – have.</p><p><strong>Confusion: - </strong></p><p><strong>If plural noun is used after cardinal adjectives (one, two, three, four etc.) and if plural noun denotes certain amount, weight, height or period, singular verb will be used. </strong></p><p><strong>In other word we can say that plural number used as a singular unit will take singular verb. </strong></p><p><strong>E.g.- Five thousand rupees is a handsome amount.</strong></p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Select the INCORRECTLY spelt word.</p><p><br/> </p>",
+      "option1": "<p> Groan</p>",
+      "option2": "<p> Guarentee</p>",
+      "option3": "<p> Greave</p>",
+      "option4": "<p> Gravely</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is correct answer. </p><p> The correct spelling is: Guarantee: an unconditional commitment that something will happen or that something is true. </p><p> <b>Groan:</b> an utterance expressing pain or disapproval. </p><p> <b>Greave:</b> armor plate that protects legs below the knee. </p><p> <b>Gravely:</b> in a grave and sober manner.</p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p>Select the option that expresses the given sentence in direct speech.</p><p>Veronica said that she had had a strange experience the day before.</p>",
+      "option1": "<p>Varonica said, “I have a strange experience yesterday.”</p>",
+      "option2": "<p>Varonica said, “I have had a strange experience yesterday.”</p>",
+      "option3": "<p>Varonica said, “I had a strange experience yesterday.”</p>",
+      "option4": "<p>Varonica said, “I had had a strange experience yesterday.”</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p><p>It is an indirect speech. So, the third person (she) will change into first person (I). As the sentence is in past perfect tense (had had), it will change to simple past (had). Day before will change to yesterday.</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the option that will improve the highlighted part of the given sentence. In case no improvement is needed, select 'No improvement required'.</p><p> I have been wondering <b>at taking</b> cycling as a hobby.</p><p><br/> </p>",
+      "option1": "<p> About taking up</p>",
+      "option2": "<p> No improvement required</p>",
+      "option3": "<p> On taking to</p>",
+      "option4": "<p> To take up</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The given sentence is grammatically incorrect and to rectify the sentence ‘about taking up’ should be used instead of ‘at taking’. </p><p> Wonder about: To have a strong curiosity about something or someone. </p><p> Thus, the correct answer is: I have been wondering <b>about taking up</b> cycling as a hobby. </p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Identify the option that arranges the given parts in the correct order to form a meaningful paragraph.</p><p> A. Production, exchange and consumption of goods and services are among the basic economic activities of life.</p><p> B. The scarce resources of an economy have competing usages. In other words, every society has to decide on how to use its scarce resources.</p><p> C. In other words, every society has to decide on how to use its scarce resources.</p><p> D. In the course of these basic economic activities, every society has to face scarcity of resources and it is the scarcity of resources that gives rise to the problem of choice.</p>",
+      "option1": "<p> BDCA</p>",
+      "option2": "<p> ABDC</p>",
+      "option3": "<p> BCDA</p>",
+      "option4": "<p> ADBC</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> The correct arrangement is – ADBC: <b>Production, exchange and consumption of goods and services are among the basic economic activities of life. In the course of these basic economic activities, every society has to face scarcity of resources and it is the scarcity of resources that gives rise to the problem of choice. The scarce resources of an economy have competing usages. In other words, every society has to decide on how to use its scarce resources.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom.</p><p> The army is <b>bidding defiance</b> by going against the government. </p>",
+      "option1": "<p> To follow the order</p>",
+      "option2": "<p> To defy</p>",
+      "option3": "<p> To enroll in a fight with neighbouring country</p>",
+      "option4": "<p> To make a heroic move</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Bid defiance: behaviour in which you refuse to obey someone or something; To defy.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Only a man of iron can _____________.</p><p><br/> </p>",
+      "option1": "<p> Blaze the trail</p>",
+      "option2": "<p> Bite the dust</p>",
+      "option3": "<p> Blow one’s own trumpet</p>",
+      "option4": "<p> Blue stocking</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The most appropriate idiom to fill in the blank is Blaze the trail. </p><p> Blaze the trail means: to be a pioneer and make path for others. </p><p> <br/> <br/> </p><p> Bite the dust: to be defeated. </p><p> <br/> <br/> </p><p> Blow one’s own trumpet: to praise one’s own self. </p><p> <br/> <br/> </p><p> Blue stocking: an educated intellectual woman. </p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the most appropriate One Word Substitution for the given group of words. </p><p> Words which are inscribed on the grave. </p>",
+      "option1": "<p> Epistle</p>",
+      "option2": "<p> Epitaph</p>",
+      "option3": "<p> Epithet</p>",
+      "option4": "<p> Epitome</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Epitaph. </p><p> Epitaph: Words which are inscribed on the grave. </p><p> Epistle: An epistle is a long, formal letter. </p><p> Epithet: Adjective added to a person’s name usually to criticize or praise him. </p><p> Epitome: A perfect example/ a standard or typical example.</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.</p><p> Vikram said, “Pragyan rover of Chandrayaan III will achieve its target.” </p>",
+      "option1": "<p> Vikram told that Pragyan rover of Chandrayaan III would achieve its target. </p><p><br/> </p>",
+      "option2": "<p> Vikram said that Pragyan rover of Chandrayaan III would achieve its target.</p>",
+      "option3": "<p> Vikram had said that Pragyan rover of Chandrayaan III would achieve its target.</p>",
+      "option4": "<p> Vikram said that Pragyan rover of Chandrayaan III would be achieving its target.</p><p><br/> </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The correct indirect speech of the given sentence is: </p><p> <b>Vikram said that Pragyan rover of Chandrayaan III would achieve its target.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> The distant past when there was no paper or language or the written word, and hence no books or written documents, 1. ___________ called prehistory, or, as we often say, prehistoric times. How people lived in those times was difficult to 2. <b>surmise</b> until scholars began to discover the places where prehistoric people lived. Excavation at these places brought to light old tools, pottery, habitats, bones of ancient human beings and animals, and drawings on cave walls. By piecing together the information 3. __________ from these objects and the cave drawings, scholars have constructed fairly accurate knowledge about what happened and how people lived in prehistoric times. When the basic needs of food, water, clothing and shelter were fulfilled people 4. _____________ the need to express themselves. Painting and drawing were the oldest art forms practised by human beings to express themselves, using the cave walls as their canvas.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 1.</p><p><br/> </p>",
+      "option1": "<p> is</p>",
+      "option2": "<p> are</p>",
+      "option3": "<p> was</p>",
+      "option4": "<p> were</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The given sentence requires singular verb and present tense. </p><p> Thus, the correct answer is - The distant past when there was no paper or language or the written word, and hence no books or written documents, <b>is</b> called prehistory, or, as we often say, prehistoric times.</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> The distant past when there was no paper or language or the written word, and hence no books or written documents, 1. ___________ called prehistory, or, as we often say, prehistoric times. How people lived in those times was difficult to 2. <b>surmise</b> until scholars began to discover the places where prehistoric people lived. Excavation at these places brought to light old tools, pottery, habitats, bones of ancient human beings and animals, and drawings on cave walls. By piecing together the information 3. __________ from these objects and the cave drawings, scholars have constructed fairly accurate knowledge about what happened and how people lived in prehistoric times. When the basic needs of food, water, clothing and shelter were fulfilled people 4. _____________ the need to express themselves. Painting and drawing were the oldest art forms practised by human beings to express themselves, using the cave walls as their canvas.</p><p> <br/> <br/> </p><p> Select the most appropriate meaning of the highlighted word <b>surmise</b>.</p><p><br/> </p>",
+      "option1": "<p> Proof</p>",
+      "option2": "<p> Speculation</p>",
+      "option3": "<p> Contradict</p>",
+      "option4": "<p> Travel</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Surmise: imagine to be the case or true or probable. </p><p> Speculation: When you guess about how something is going to come out (or how it happened), that's speculation. </p><p> Contradict: prove negative; show to be false. </p><p> Hence, the most suitable synonym of the given word is Speculation. </p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> The distant past when there was no paper or language or the written word, and hence no books or written documents, 1. ___________ called prehistory, or, as we often say, prehistoric times. How people lived in those times was difficult to 2. <b>surmise</b> until scholars began to discover the places where prehistoric people lived. Excavation at these places brought to light old tools, pottery, habitats, bones of ancient human beings and animals, and drawings on cave walls. By piecing together the information 3. __________ from these objects and the cave drawings, scholars have constructed fairly accurate knowledge about what happened and how people lived in prehistoric times. When the basic needs of food, water, clothing and shelter were fulfilled people 4. _____________ the need to express themselves. Painting and drawing were the oldest art forms practised by human beings to express themselves, using the cave walls as their canvas.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 3.</p><p><br/> </p>",
+      "option1": "<p> passed</p>",
+      "option2": "<p> spread</p>",
+      "option3": "<p> deduced</p>",
+      "option4": "<p> rumored</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is deduced. </p><p> Deduced: To deduce is to figure something out based on what you already know. When you see a person crying, it's easy to deduce that the person is sad. </p><p> Passed: go across or through. </p><p> Spread: distribute or disperse widely. </p><p> Rumored: gossip (usually a mixture of truth and untruth) passed around by word of mouth. </p><p> Thus, the most appropriate word to fill the blank is ‘deduced’. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> The distant past when there was no paper or language or the written word, and hence no books or written documents, 1. ___________ called prehistory, or, as we often say, prehistoric times. How people lived in those times was difficult to 2. <b>surmise</b> until scholars began to discover the places where prehistoric people lived. Excavation at these places brought to light old tools, pottery, habitats, bones of ancient human beings and animals, and drawings on cave walls. By piecing together the information 3. __________ from these objects and the cave drawings, scholars have constructed fairly accurate knowledge about what happened and how people lived in prehistoric times. When the basic needs of food, water, clothing and shelter were fulfilled people 4. _____________ the need to express themselves. Painting and drawing were the oldest art forms practised by human beings to express themselves, using the cave walls as their canvas.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 4.</p><p><br/> </p>",
+      "option1": "<p> acclimatized</p>",
+      "option2": "<p> felt</p>",
+      "option3": "<p> renounced</p>",
+      "option4": "<p> demanded</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Felt suits the best to fill in the blank. </p><p> Felt: the past tense and past participle of feel.</p><p> Acclimatize: to change to suit different conditions of life, weather, etc., or to make someone or something do this. </p><p> Renounced: to say formally that you no longer want to have something or to be connected with something. </p><p> Demand: a strong request or order that must be obeyed. </p><p> The full passage is: </p><p><b>The distant past when there was no paper or language or the written word, and hence no books or written documents, is called prehistory, or, as we often say, prehistoric times. How people lived in those times was difficult to surmise until scholars began to discover the places where prehistoric people lived. Excavation at these places brought to light old tools, pottery, habitats, bones of ancient human beings and animals, and drawings on cave walls. By piecing together the information deduced from these objects and the cave drawings, scholars have constructed fairly accurate knowledge about what happened and how people lived in prehistoric times. When the basic needs of food, water, clothing and shelter were fulfilled people felt the need to express themselves. Painting and drawing were the oldest art forms practised by human beings to express themselves, using the cave walls as their canvas.</b></p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> The share of crops in the gross value of output of agriculture and allied sectors has declined by 7.5 percentage points in the last 10 years, while livestock’s share has increased by 5 percentage points during the same period, shows a report released by the National Statistical Office (NSO).</p><p> The NSO’s report on ‘State-wise and Item-wise Value of Output from Agriculture, Forestry and Fishing’ said, “It may be perused that the crops sub-sector accounted for 62.4% of the agriculture and allied sectors in 2011-12, which has gradually come down to 54.9% in 2020-21.”</p><p> The share of the livestock sub-sector in the agriculture and allied sectors has increased to 30.58 in 2020-21 from 25.57 per cent in 2011-21. The agriculture and allied sectors comprise four sub-sectors namely crop, livestock, forestry &amp; logging and fishing &amp; aquaculture. The share of Forestry and Logging, and Fishing and Aquaculture too has increased marginally. The share of forestry and logging has increased from 7.8 per cent in 2011-12 to 8.42 per cent in 2020-21, while the contribution of fishing and aquaculture rose from 4.19 per cent to 6.08 per cent during this period. According to the report, the gross value of output (at constant prices 2011-12) of the Agriculture, Forestry and Fishing sector (excluding irrigation) was recorded at Rs 26.12 lakh in 2020-21, which was Rs 19.08 lakh crore in 2011-12. In 2020-21, three states—Uttar Pradesh (Rs 3.11 lakh crore), Maharashtra (RS 2.46 lakh crore) and Rajasthan (Rs 2.36 lakh crore)—contributed the most in the gross value of agriculture, forestry and fishing sector in the country.</p><p> <br/> <br/> </p><p> Which of the following statement is NOT correct according to the passage?</p><p><br/> </p>",
+      "option1": "<p> The share of the livestock sub-sector in the agriculture and allied sectors has decreased to 30.58 in 2020-21 from 25.57 per cent in 2011-21.</p>",
+      "option2": "<p> Uttar Pradesh contributes Rs 3.11 lakh crore in the gross value of agriculture, forestry and fishing sector in the country.</p>",
+      "option3": "<p> The share of forestry and logging has increased from 7.8 per cent in 2011-12 to 8.42 per cent in 2020-21.</p>",
+      "option4": "<p> Crops sub-sector accounted for 62.4% of the agriculture and allied sectors in 2011-12.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A.</p><p> According to the passage: “The share of the livestock sub-sector in the agriculture and allied sectors has <b>increased</b> to 30.58 in 2020-21 from 25.57 per cent in 2011-21.”</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The share of crops in the gross value of output of agriculture and allied sectors has declined by 7.5 percentage points in the last 10 years, while livestock’s share has increased by 5 percentage points during the same period, shows a report released by the National Statistical Office (NSO).</p><p> The NSO’s report on ‘State-wise and Item-wise Value of Output from Agriculture, Forestry and Fishing’ said, “It may be perused that the crops sub-sector accounted for 62.4% of the agriculture and allied sectors in 2011-12, which has gradually come down to 54.9% in 2020-21.”</p><p> The share of the livestock sub-sector in the agriculture and allied sectors has increased to 30.58 in 2020-21 from 25.57 per cent in 2011-21. The agriculture and allied sectors comprise four sub-sectors namely crop, livestock, forestry &amp; logging and fishing &amp; aquaculture. The share of Forestry and Logging, and Fishing and Aquaculture too has increased marginally. The share of forestry and logging has increased from 7.8 per cent in 2011-12 to 8.42 per cent in 2020-21, while the contribution of fishing and aquaculture rose from 4.19 per cent to 6.08 per cent during this period. According to the report, the gross value of output (at constant prices 2011-12) of the Agriculture, Forestry and Fishing sector (excluding irrigation) was recorded at Rs 26.12 lakh in 2020-21, which was Rs 19.08 lakh crore in 2011-12. In 2020-21, three states—Uttar Pradesh (Rs 3.11 lakh crore), Maharashtra (RS 2.46 lakh crore) and Rajasthan (Rs 2.36 lakh crore)—contributed the most in the gross value of agriculture, forestry and fishing sector in the country.</p><p> <br/> <br/> </p><p> Select a most suitable title for the given passage. </p><p><br/> </p>",
+      "option1": "<p> None of them fits the given passage.</p>",
+      "option2": "<p> Various works done by National Statistical Office (NSO).</p>",
+      "option3": "<p> Share of various states in agriculture an allied sectors.</p>",
+      "option4": "<p> Share of crops in agriculture and allied sectors.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> Given passage talks about the share of various sub-sector of agriculture in the Indian Economy. The main focus of the passage is on the Crop sub-sector. Thus, the most suitable title for the passage is “Share of crops in agriculture and allied sectors.”</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The share of crops in the gross value of output of agriculture and allied sectors has declined by 7.5 percentage points in the last 10 years, while livestock’s share has increased by 5 percentage points during the same period, shows a report released by the National Statistical Office (NSO).</p><p> The NSO’s report on ‘State-wise and Item-wise Value of Output from Agriculture, Forestry and Fishing’ said, “It may be perused that the crops sub-sector accounted for 62.4% of the agriculture and allied sectors in 2011-12, which has gradually come down to 54.9% in 2020-21.”</p><p> The share of the livestock sub-sector in the agriculture and allied sectors has increased to 30.58 in 2020-21 from 25.57 per cent in 2011-21. The agriculture and allied sectors comprise four sub-sectors namely crop, livestock, forestry &amp; logging and fishing &amp; aquaculture. The share of Forestry and Logging, and Fishing and Aquaculture too has increased marginally. The share of forestry and logging has increased from 7.8 per cent in 2011-12 to 8.42 per cent in 2020-21, while the contribution of fishing and aquaculture rose from 4.19 per cent to 6.08 per cent during this period. According to the report, the gross value of output (at constant prices 2011-12) of the Agriculture, Forestry and Fishing sector (excluding irrigation) was recorded at Rs 26.12 lakh in 2020-21, which was Rs 19.08 lakh crore in 2011-12. In 2020-21, three states—Uttar Pradesh (Rs 3.11 lakh crore), Maharashtra (RS 2.46 lakh crore) and Rajasthan (Rs 2.36 lakh crore)—contributed the most in the gross value of agriculture, forestry and fishing sector in the country.</p><p> <br/> <br/> </p><p> What is the share of the forestry and logging in 2011-12?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 8.42%</p>",
+      "option2": "<p> 7.8%</p>",
+      "option3": "<p> 54.9%</p>",
+      "option4": "<p> 4.9%</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B.</p><p> According to the passage: “The share of forestry and logging has increased from 7.8 per cent in 2011-12”</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> The share of crops in the gross value of output of agriculture and allied sectors has declined by 7.5 percentage points in the last 10 years, while livestock’s share has increased by 5 percentage points during the same period, shows a report released by the National Statistical Office (NSO).</p><p> The NSO’s report on ‘State-wise and Item-wise Value of Output from Agriculture, Forestry and Fishing’ said, “It may be perused that the crops sub-sector accounted for 62.4% of the agriculture and allied sectors in 2011-12, which has gradually come down to 54.9% in 2020-21.”</p><p> The share of the livestock sub-sector in the agriculture and allied sectors has increased to 30.58 in 2020-21 from 25.57 per cent in 2011-21. The agriculture and allied sectors comprise four sub-sectors namely crop, livestock, forestry &amp; logging and fishing &amp; aquaculture. The share of Forestry and Logging, and Fishing and Aquaculture too has increased marginally. The share of forestry and logging has increased from 7.8 per cent in 2011-12 to 8.42 per cent in 2020-21, while the contribution of fishing and aquaculture rose from 4.19 per cent to 6.08 per cent during this period. According to the report, the gross value of output (at constant prices 2011-12) of the Agriculture, Forestry and Fishing sector (excluding irrigation) was recorded at Rs 26.12 lakh in 2020-21, which was Rs 19.08 lakh crore in 2011-12. In 2020-21, three states—Uttar Pradesh (Rs 3.11 lakh crore), Maharashtra (RS 2.46 lakh crore) and Rajasthan (Rs 2.36 lakh crore)—contributed the most in the gross value of agriculture, forestry and fishing sector in the country.</p><p> <br/> <br/> </p><p> Which sub-sectors showed the maximum growth?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Crops</p>",
+      "option2": "<p> Forestry and Logging</p>",
+      "option3": "<p> Livestock</p>",
+      "option4": "<p> Fishing &amp; aquaculture</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C.</p><p> Share of crops has decreased by 7.5% in last 10 years.</p><p> Share of livestock has increased by 5% in last 10 years.</p><p> Share of Forestry and Logging has increased by 0.62% in last 10 years.</p><p> Share of Fishing and Aquaculture has increased by 1.89% in last 10 years.</p><p> Thus maximum increase is in Livestock.</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> “We are disappointed that the GST Council and authorities have chosen to apply 28% GST on the total entry amount including prize money,” said Joy Bhattacharjya, director general, of the Federation of Indian Fantasy Sports (FIFS). This has been a shared sentiment among all stakeholders of India’s sprawling online gaming industry ever since the Goods and Services Tax (GST) Council announced a 28 per cent tax on turnover of online gaming.</p><p> Bhattcharjya and many members of the FIFS believe that a change in valuation to tax on the total consideration will cause irreversible damage to the industry, lead to loss of revenue to the exchequer, and loss of employment for lakhs of skilled engineers. “This decision will have a chilling effect on the USD 2.5 billion of FDI already invested by investors and jeopardise potentially any further FDI in the sector,” he said adding that the decision will push users towards illegal betting platforms leading to user risk and loss of revenue for the government.</p><p> The Indian online gaming industry has been witnessing significant growth over the years and today there are nearly 1,000 companies operating in this industry which employ over 1 lakh people. The numbers are expected to grow substantially, transforming the online gaming industry into an economic powerhouse.</p><p> Regardless of the prospects, the industry has been grappling with some complex challenges related to the regulatory framework. And, one of these challenges is the implementation of the GST on online gaming. While the government has been in the process of finalising a GST structure for the industry, the latest development seems like a major challenge for many stakeholders in the online gaming industry. The latest decision by the GST Council has come as a shock to the gaming industry in India which is estimated to be worth around $ 2.8 billion in FY22. When it comes to online games in India, taxation and legality largely depend on if they are considered a game of chance or a game of skill. Games of chance are seen to attract more indirect tax or GST, while games of skill attract lower GST. The council has now argued that there should be no distinction between the two kinds of gaming. Much before the decision to levy 28 per cent GST, the primary dilemma was whether GST should be applied to the total pool of cash or just the service element earned by the online gaming platform.</p><p> However, now the finance minister has said that the tax will be levied on the entire value. The tax will essentially be levied on the full-face value of the bet placed (or money paid to play the game) and not on the gross gaming revenue, which the industry sought. Industry insiders strongly feel that this will have a huge impact.</p><p> <br/> <br/> </p><p> According to the passage the online gaming can be classified as</p>",
+      "option1": "<p> Game of will and game of skill</p>",
+      "option2": "<p> Game of chance and game of choice</p>",
+      "option3": "<p> Game of joy and game of skill</p>",
+      "option4": "<p> Game of chance and game of skill</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D.</p><p> According to the given passage: “When it comes to online gaming in India, taxation and legality largely depend on if they are considered a game of chance or a game of skill.”</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <br/> </p><p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> “We are disappointed that the GST Council and authorities have chosen to apply 28% GST on the total entry amount including prize money,” said Joy Bhattacharjya, director general, of the Federation of Indian Fantasy Sports (FIFS). This has been a shared sentiment among all stakeholders of India’s sprawling online gaming industry ever since the Goods and Services Tax (GST) Council announced a 28 per cent tax on turnover of online gaming.</p><p> Bhattcharjya and many members of the FIFS believe that a change in valuation to tax on the total consideration will cause irreversible damage to the industry, lead to loss of revenue to the exchequer, and loss of employment for lakhs of skilled engineers. “This decision will have a chilling effect on the USD 2.5 billion of FDI already invested by investors and jeopardise potentially any further FDI in the sector,” he said adding that the decision will push users towards illegal betting platforms leading to user risk and loss of revenue for the government.</p><p> The Indian online gaming industry has been witnessing significant growth over the years and today there are nearly 1,000 companies operating in this industry which employ over 1 lakh people. The numbers are expected to grow substantially, transforming the online gaming industry into an economic powerhouse.</p><p> Regardless of the prospects, the industry has been grappling with some complex challenges related to the regulatory framework. And, one of these challenges is the implementation of the GST on online gaming. While the government has been in the process of finalising a GST structure for the industry, the latest development seems like a major challenge for many stakeholders in the online gaming industry. The latest decision by the GST Council has come as a shock to the gaming industry in India which is estimated to be worth around $ 2.8 billion in FY22. When it comes to online games in India, taxation and legality largely depend on if they are considered a game of chance or a game of skill. Games of chance are seen to attract more indirect tax or GST, while games of skill attract lower GST. The council has now argued that there should be no distinction between the two kinds of gaming. Much before the decision to levy 28 per cent GST, the primary dilemma was whether GST should be applied to the total pool of cash or just the service element earned by the online gaming platform.</p><p> However, now the finance minister has said that the tax will be levied on the entire value. The tax will essentially be levied on the full-face value of the bet placed (or money paid to play the game) and not on the gross gaming revenue, which the industry sought. Industry insiders strongly feel that this will have a huge impact.</p><p> <br/> <br/> </p><p> According to the passage, approximately how many people are employed in the online gaming industry.</p>",
+      "option1": "<p> over 1.5 lakh</p>",
+      "option2": "<p> over 1 lakh</p>",
+      "option3": "<p> over 2 lakh</p>",
+      "option4": "<p> over 2.5 lakh</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B.</p><p> According to the passage: “The Indian online gaming industry has been witnessing significant growth over the years and today there are nearly 1,000 companies operating in this industry which employ over 1 lakh people.”</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> “We are disappointed that the GST Council and authorities have chosen to apply 28% GST on the total entry amount including prize money,” said Joy Bhattacharjya, director general, of the Federation of Indian Fantasy Sports (FIFS). This has been a shared sentiment among all stakeholders of India’s sprawling online gaming industry ever since the Goods and Services Tax (GST) Council announced a 28 per cent tax on turnover of online gaming.</p><p> Bhattcharjya and many members of the FIFS believe that a change in valuation to tax on the total consideration will cause irreversible damage to the industry, lead to loss of revenue to the exchequer, and loss of employment for lakhs of skilled engineers. “This decision will have a chilling effect on the USD 2.5 billion of FDI already invested by investors and jeopardise potentially any further FDI in the sector,” he said adding that the decision will push users towards illegal betting platforms leading to user risk and loss of revenue for the government.</p><p> The Indian online gaming industry has been witnessing significant growth over the years and today there are nearly 1,000 companies operating in this industry which employ over 1 lakh people. The numbers are expected to grow substantially, transforming the online gaming industry into an economic powerhouse.</p><p> Regardless of the prospects, the industry has been grappling with some complex challenges related to the regulatory framework. And, one of these challenges is the implementation of the GST on online gaming. While the government has been in the process of finalising a GST structure for the industry, the latest development seems like a major challenge for many stakeholders in the online gaming industry. The latest decision by the GST Council has come as a shock to the gaming industry in India which is estimated to be worth around $ 2.8 billion in FY22. When it comes to online games in India, taxation and legality largely depend on if they are considered a game of chance or a game of skill. Games of chance are seen to attract more indirect tax or GST, while games of skill attract lower GST. The council has now argued that there should be no distinction between the two kinds of gaming. Much before the decision to levy 28 per cent GST, the primary dilemma was whether GST should be applied to the total pool of cash or just the service element earned by the online gaming platform.</p><p> However, now the finance minister has said that the tax will be levied on the entire value. The tax will essentially be levied on the full-face value of the bet placed (or money paid to play the game) and not on the gross gaming revenue, which the industry sought. Industry insiders strongly feel that this will have a huge impact.</p><p> <br/> <br/> </p><p> According to the passage finance minister has levied tax on which of the following:</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 28% on game of chance and 18% on the game of skill</p>",
+      "option2": "<p> 18% on game of chance and 28% on the game of skill</p>",
+      "option3": "<p> 28% on game of chance and 28% on the game of skill</p>",
+      "option4": "<p> 18% on game of chance and 18% on the game of skill</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> According to the passage: “Goods and Services Tax (GST) Council announced a 28 per cent tax on turnover of online gaming. Finance minister has said that the tax will be levied on the entire value”</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> “We are disappointed that the GST Council and authorities have chosen to apply 28% GST on the total entry amount including prize money,” said Joy Bhattacharjya, director general, of the Federation of Indian Fantasy Sports (FIFS). This has been a shared sentiment among all stakeholders of India’s sprawling online gaming industry ever since the Goods and Services Tax (GST) Council announced a 28 per cent tax on turnover of online gaming.</p><p> Bhattcharjya and many members of the FIFS believe that a change in valuation to tax on the total consideration will cause irreversible damage to the industry, lead to loss of revenue to the exchequer, and loss of employment for lakhs of skilled engineers. “This decision will have a chilling effect on the USD 2.5 billion of FDI already invested by investors and jeopardise potentially any further FDI in the sector,” he said adding that the decision will push users towards illegal betting platforms leading to user risk and loss of revenue for the government.</p><p> The Indian online gaming industry has been witnessing significant growth over the years and today there are nearly 1,000 companies operating in this industry which employ over 1 lakh people. The numbers are expected to grow substantially, transforming the online gaming industry into an economic powerhouse.</p><p> Regardless of the prospects, the industry has been grappling with some complex challenges related to the regulatory framework. And, one of these challenges is the implementation of the GST on online gaming. While the government has been in the process of finalising a GST structure for the industry, the latest development seems like a major challenge for many stakeholders in the online gaming industry. The latest decision by the GST Council has come as a shock to the gaming industry in India which is estimated to be worth around $ 2.8 billion in FY22. When it comes to online games in India, taxation and legality largely depend on if they are considered a game of chance or a game of skill. Games of chance are seen to attract more indirect tax or GST, while games of skill attract lower GST. The council has now argued that there should be no distinction between the two kinds of gaming. Much before the decision to levy 28 per cent GST, the primary dilemma was whether GST should be applied to the total pool of cash or just the service element earned by the online gaming platform.</p><p> However, now the finance minister has said that the tax will be levied on the entire value. The tax will essentially be levied on the full-face value of the bet placed (or money paid to play the game) and not on the gross gaming revenue, which the industry sought. Industry insiders strongly feel that this will have a huge impact.</p><p> <br/> <br/> </p><p> What is the amount of foreign direct investment in the online gaming industry?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> USD 2.5 billion</p>",
+      "option2": "<p> USD 2.8 billion</p>",
+      "option3": "<p> USD 28 billion</p>",
+      "option4": "<p> USD 25 billion</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A</p><p> According to the passage: “This decision will have a chilling effect on the USD 2.5 billion of FDI already invested by investors and jeopardise potentially any further FDI in the sector.”</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p><strong>Read the following passage and answer the questions given after it.</strong></p><p>Christopher was a dog, who lived in a certain town which was affected by a famine.</p><p>People had no food to eat, and they cared not to give any to the dogs or cattle or any animal. Due to lack of food, along with other animals, the dogs were starving. Some of them even died. Christopher was not able to bear the hunger and realizing that the place did not offer conditions to live, he decided to leave for a foreign land in search of food and better conditions. After travelling a long distance, he came to a certain town. He saw a door open in one of the houses due to the negligence of a rich lady householder. He went into the house, and found abundant food. He had not eaten for a long time, and ate to his heart's content. Then he thought of leaving silently.</p><p>No sooner had he come out of the house, he was spotted by other dogs of the neighborhood. They realized he did not belong to their community and chased him. Since, he had his stomach full, he could not run fast, and they bit him all over with their sharp teeth. He somehow escaped, and thought, \"It is better to live in peace in one's own country, be it affected by famine. I will rather return home.\"When he returned to his country, the starving dogs there were curious. His friends and relatives gathered around him to enquire about his findings, \"Please tell us about the foreign country you visited. How is it like? How are the people? Is there plenty of food?\"</p><p>The dog said, \"O friends and relatives! What can I say? In the foreign country, the women are careless. They leave doors and windows open. There is lots of food to eat. But, your own kith and kin will not show any sympathy. They will torment you to death.\"</p><p><strong>Give a title to the story.</strong></p>",
+      "option1": "<p>Dog’s Problems</p>",
+      "option2": "<p>Christopher a wise dog</p>",
+      "option3": "<p>A dog who went Abroad</p>",
+      "option4": "<p>Cruel Dogs</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option C.</p><p>The passage tells of a story of a dog who went abroad in search of food and faced problems. So the best suitable title among the given options is “A dog who went Abroad”</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Christopher was a dog, who lived in a certain town which was affected by a famine.</p><p> People had no food to eat, and they cared not to give any to the dogs or cattle or any animal. Due to lack of food, along with other animals, the dogs were starving. Some of them even died. Christopher was not able to bear the hunger and realizing that the place did not offer conditions to live, he decided to leave for a foreign land in search of food and better conditions. After travelling a long distance, he came to a certain town. He saw a door open in one of the houses due to the negligence of a rich lady householder. He went into the house, and found abundant food. He had not eaten for a long time, and ate to his heart's content. Then he thought of leaving silently.</p><p> No sooner had he come out of the house, he was spotted by other dogs of the neighborhood. They realized he did not belong to their community and chased him. Since, he had his stomach full, he could not run fast, and they bit him all over with their sharp teeth. He somehow escaped, and thought, \"It is better to live in peace in one's own country, be it affected by famine. I will rather return home.\"When he returned to his country, the starving dogs there were curious. His friends and relatives gathered around him to enquire about his findings, \"Please tell us about the foreign country you visited. How is it like? How are the people? Is there plenty of food?\"</p><p> The dog said, \"O friends and relatives! What can I say? In the foreign country, the women are careless. They leave doors and windows open. There is lots of food to eat. But, your own kith and kin will not show any sympathy. They will torment you to death.\"</p><p> <br/> <br/> </p><p> According to the passage which statement is not true.</p>",
+      "option1": "<p> Christopher was living in a town which was affected by famine</p>",
+      "option2": "<p> According to the author It is better to live in peace in one's own country, be it affected by famine</p>",
+      "option3": "<p> Women are careless in foreign country</p>",
+      "option4": "<p> Christopher decided to leave for a foreign land because he was not treated properly in his town</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer to the question is option D.</p><p> Christopher decided to leave for a foreign land in search of food and better conditions as his town was affected by famine and he was starving.</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Christopher was a dog, who lived in a certain town which was affected by a famine.</p><p> People had no food to eat, and they cared not to give any to the dogs or cattle or any animal. Due to lack of food, along with other animals, the dogs were starving. Some of them even died. Christopher was not able to bear the hunger and realizing that the place did not offer conditions to live, he decided to leave for a foreign land in search of food and better conditions. After travelling a long distance, he came to a certain town. He saw a door open in one of the houses due to the negligence of a rich lady householder. He went into the house, and found abundant food. He had not eaten for a long time, and ate to his heart's content. Then he thought of leaving silently.</p><p> No sooner had he come out of the house, he was spotted by other dogs of the neighborhood. They realized he did not belong to their community and chased him. Since, he had his stomach full, he could not run fast, and they bit him all over with their sharp teeth. He somehow escaped, and thought, \"It is better to live in peace in one's own country, be it affected by famine. I will rather return home.\"When he returned to his country, the starving dogs there were curious. His friends and relatives gathered around him to enquire about his findings, \"Please tell us about the foreign country you visited. How is it like? How are the people? Is there plenty of food?\"</p><p> The dog said, \"O friends and relatives! What can I say? In the foreign country, the women are careless. They leave doors and windows open. There is lots of food to eat. But, your own kith and kin will not show any sympathy. They will torment you to death.\"</p><p> Why Christopher was chased by other dogs and was bit all over?</p>",
+      "option1": "<p> Because he did not belong to their community</p>",
+      "option2": "<p> Because he had stolen the food</p>",
+      "option3": "<p> Because he can not run fast as he ate a lot</p>",
+      "option4": "<p> Because those other dogs were pet of the rich lady house holder</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A.</p><p> Christopher was bit all over and was chased by the neighboring dogs because he did not belong to their community.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Christopher was a dog, who lived in a certain town which was affected by a famine.</p><p> People had no food to eat, and they cared not to give any to the dogs or cattle or any animal. Due to lack of food, along with other animals, the dogs were starving. Some of them even died. Christopher was not able to bear the hunger and realizing that the place did not offer conditions to live, he decided to leave for a foreign land in search of food and better conditions. After travelling a long distance, he came to a certain town. He saw a door open in one of the houses due to the negligence of a rich lady householder. He went into the house, and found abundant food. He had not eaten for a long time, and ate to his heart's content. Then he thought of leaving silently.</p><p> No sooner had he come out of the house, he was spotted by other dogs of the neighborhood. They realized he did not belong to their community and chased him. Since, he had his stomach full, he could not run fast, and they bit him all over with their sharp teeth. He somehow escaped, and thought, \"It is better to live in peace in one's own country, be it affected by famine. I will rather return home.\"When he returned to his country, the starving dogs there were curious. His friends and relatives gathered around him to enquire about his findings, \"Please tell us about the foreign country you visited. How is it like? How are the people? Is there plenty of food?\"</p><p> The dog said, \"O friends and relatives! What can I say? In the foreign country, the women are careless. They leave doors and windows open. There is lots of food to eat. But, your own kith and kin will not show any sympathy. They will torment you to death.\"</p><p> <br/> <br/> </p><p> What is the moral of the story?</p><p> <br/> </p>",
+      "option1": "<p> The outsiders may not tolerate your lapses but your own kith and kin will</p>",
+      "option2": "<p> our home is the best place to will no matter how shining is the outer world</p>",
+      "option3": "<p> One should go out in search of opportunities</p>",
+      "option4": "<p> The outsiders may tolerate your lapses but not your own kith and kin</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer to the question is option D.</p><p> According to the author the outsiders can tolerate your lapses but your own relatives and close one’s would never tolerate them. As in this story the dog was bitten by his own relatives i.e. Dogs.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p> Which of the following statement is correct? </p><p> A. Nuclear fission is a nuclear reaction in which the nucleus of an atom is bombarded with low-energy neutrons which splits the nucleus into smaller nuclei. </p><p> B. Nuclear fusion reactions are used in nuclear power reactors since it is easy to control and produces large amount of energy. </p><p> C. Nuclear fusion is a reaction that occurs when two or more atoms combine together to form to a single heavier nucleus. Fusions occurs in the Sun. </p>",
+      "option1": "<p> Only statement A and B</p>",
+      "option2": "<p> Only statement A</p>",
+      "option3": "<p> Only statement A and C</p>",
+      "option4": "<p> All the statement A, B and C</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Nuclear Fission: Nuclear fission is a nuclear reaction in which the nucleus of an atom is bombarded with low-energy neutrons which splits the nucleus into smaller nuclei. An abundant amount of energy is released in this process. Nuclear fission reactions are used in nuclear power reactors since it is easy to control and produces large amounts of energy. </p><p> Nuclear fusion: Nuclear fusion is a reaction that occurs when two or more atoms combine together to form to a single heavier nucleus. An enormous amount of energy is released in this process, much greater than the energy released during the nuclear fission reaction.</p><p> Fusion occurs in the sun where the atoms of deuterium and tritium combine in a high-pressure atmosphere with extremely high temperatures to produce an output in the form of a neutron and an isotope of Helium.</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>India rank in Global Hunger Index (GHI) in 2023 is:</p>",
+      "option1": "<p>101</p>",
+      "option2": "<p>121</p>",
+      "option3": "<p>103</p>",
+      "option4": "<p>111</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The 2023 Global Hunger Index gives India a rank of 111 out of 125 countries. This indicates a hunger severity level of 'serious' for the country.</p><p>India ranked 107 out of 121 countries in the Global Hunger Index (GHI) 2022.</p><p>India ranked 101 out of 116 countries in the Global Hunger Index (GHI) 2021.</p><p>The Global Hunger Index (GHI) is a tool for comprehensively measuring and tracking at global, regional, and national levels.</p><p>GHI scores are based on the values of four component indica-tors:</p><p>1. Understanding</p><p>2. Child Stunting</p><p>3. Child wasting</p><p>4. Child mortality</p><p>The GHI score is calculated on a 100-point scale reflecting the se-verity of hunger - zero is the best score (implies no hunger) and 100 is the worst.</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p> Which is the largest freshwater lake in the India?</p><p><br/> </p>",
+      "option1": "<p> The Wular Lake</p>",
+      "option2": "<p> Loktak Lake</p>",
+      "option3": "<p> Dal Lake</p>",
+      "option4": "<p> Chilika Lake</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The Wular lake in Jammu and Kashmir is the largest freshwater lake in India. </p><p> Lake Baikal in Russia is the world’s largest freshwater lake by both volume and depth. </p><p> Chilika Lake in Odisha is the largest saline water lake in India.</p><p> Vembanad Lake in Kerala is the longest lake in India.</p><p> Cholamu Lake in Sikkim is the highest lake in India.</p><p> Lonar Lake is a notified National Geo-heritage Monument, saline, soda lake, located at Lonar in Buldhana district, Maharashtra.</p><p> <br/> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p> Which of the following statement is correct about India?</p><p> A. The Finance Commission(FC) is a constitutional body, that determines the method and formula for distributing the tax proceeds between the Centre and states, and among the states as per the Constitutional arrangement and present requirements. </p><p> <br/> </p><p> B. Under Article 280 of the Constitution, the President of India is required to constitute a Finance Commission at an interval of five years or earlier. </p><p><br/> </p>",
+      "option1": "<p> Only Statement A</p>",
+      "option2": "<p> Only Statement B</p>",
+      "option3": "<p> Statement A and B</p>",
+      "option4": "<p> Neither Statement A nor B</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Both the Statement are correct about Finance Commission of India. </p><p> <br/> </p><p> The Finance Commission (FC) is a constitutional body, that determines the method and formula for distributing the <u>tax</u> proceeds between the Centre and states, and among the states as per the constitutional arrangement and present requirements. </p><p> Under Article 280 of the Constitution, the President of India is required to constitute a Finance Commission at an interval of five years or earlier. </p><p> The 15th Finance Commission was constituted by the President of India in November 2017, under the chairmanship of NK Singh. Its recommendations will cover a period of five years from the year 2021-22 to 2025-26. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p> The largest Masonry dam ‘Nagarjuna Sagar Dam’ has been constructed on the river ----------?</p><p><br/> </p>",
+      "option1": "<p> Godavari</p>",
+      "option2": "<p> Krishna </p>",
+      "option3": "<p> Mahanadi</p>",
+      "option4": "<p> Narmada</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Krishna River. </p><p> <br/> </p><p> Nagarjuna Sagar Dam is a masonry dam across the Krishna River at Nagarjuna Sagar which straddles the border between Palnadu district in Andhra Pradesh and Nalgonda district in Telangana. </p><p> <br/> </p><p> Highest Dam in India-: Tehri Dam (Uttarakhand) Bhagirathi River.</p><p> Longest Dam in India-: Hirakud Dam (Odisha) Mahanadi.</p><p>Oldest Dam in India-: Kallanai Dam (Tamil Nadu) Kaveri River. </p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p> What is the rank of India in the recently released 2023 Global Competitiveness Index, published by the International Institute for Management Development(IMD)?</p><p><br/> </p>",
+      "option1": "<p> 42nd </p>",
+      "option2": "<p> 37th </p>",
+      "option3": "<p> 40th </p>",
+      "option4": "<p> 35th </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 40th. </p><p> <br/> </p><p> India has been ranked 40th on the latest world competitiveness ranking released by the International Institute for Management Development (IMD). Although India has slipped three spots from the previous year, it has improved from its 43rd rank in 2019-2021. </p><p> <br/> </p><p> <br/> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p> What was the capital of Pallav Dynasty?</p><p><br/> </p>",
+      "option1": "<p> Tanjavur</p>",
+      "option2": "<p> Kanchipuram</p>",
+      "option3": "<p> Badami</p>",
+      "option4": "<p> Kannauj</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Kanchipuram. </p><p> <br/> </p><p> Dynasty – Capital</p><p> <br/> </p><p> Chola – Tanjavur</p><p> Maurya – Patliputra</p><p> Pallavas – Kanchi </p><p> Pandyas – Madurai </p><p> Chalukya – Vatapi or Badami </p><p> Later Chalukyas – Kalyani </p><p> Kakatiyas – Warangal </p><p> Satvahanas – Pratisthana </p><p> Rashtrakuta – Manyakheta </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p> Who amongst of the following is winner of Nobel award in the Chemistry?</p><p><br/> </p>",
+      "option1": "<p> Morten P. meldal</p>",
+      "option2": "<p> Svante Paabo</p>",
+      "option3": "<p> Anton Zeillinger</p>",
+      "option4": "<p> Annie Ernax</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_1ecd10b7ed05c7d9.png"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p> Which of the following state doesn’t share its border with Uttar Pradesh? </p><p><br/> </p>",
+      "option1": "<p> Chhattisgarh</p>",
+      "option2": "<p> Jharkhand</p>",
+      "option3": "<p> Himachal Pradesh</p>",
+      "option4": "<p> Punjab</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_24d8c0d85aa2005c.png"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Which of the following Volcano is active volcano?</p>",
+      "option1": "<p>Mount Kilauea</p>",
+      "option2": "<p>Mount Vesuvis</p>",
+      "option3": "<p>Mount Kilimanjaro</p>",
+      "option4": "<p>Kulal</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Mount Kilauea.</p><p>Active Volcano</p><p>Its vent is open and keep emitting gas, smoke and lava from time to time</p><p>Eg: Mount Kilauea – Hawai Island (USA)</p><p>Stromboli – Mediterranean sea near Italy</p><p>Dormant Volcano</p><p>It is the volcano which has not erupted recently but is expected to do so again.</p><p>Eg: Mount Vesuvis - Italy</p><p>Extinct Volcano</p><p>Those volcanoes that scientist consider unlikely to erupt again as these volcanoes have no longer magma supply</p><p>Eg: Kilimanjaro and Kulal in Africa</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p> Which of the following police forces has launched the “Operation Kawach” against drug traffickers? </p><p><br/> </p>",
+      "option1": "<p> Maharashtra Police</p>",
+      "option2": "<p> Telangana Police</p>",
+      "option3": "<p> Delhi Police</p>",
+      "option4": "<p> Assam Police</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_13352cffc647688b.png"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Which of the following is an example of monosaccharides?</p><p>A. Fructose</p><p>B. Sucrose</p><p>C. Starch</p><p>D. Glucose</p>",
+      "option1": "<p>Only B</p>",
+      "option2": "<p>Both A and D</p>",
+      "option3": "<p>Both B and C</p>",
+      "option4": "<p>Only C</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Fructose and glucose.</p><p>Monosaccharides: Monosaccharides are the simplest carbohydrates; they conform to the general chemical formula (CH2O)x and are termed simple sugars.</p><p>The three main monosaccharides that we consume are fructose, galactose and glucose.</p><p>Disaccharide: Disaccharide (also called a double sugar) is the sugar formed when two monosaccharides (simple sugars) are joined by glycosidic linkage. Like monosaccharides, disaccharides are soluble in water. Three common examples are Sucrose, Lactose, and maltose.</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p> Which of the following constitutional amendment added “The cooperative Socities”?</p><p><br/> </p>",
+      "option1": "<p> 97th </p>",
+      "option2": "<p> 99th </p>",
+      "option3": "<p> 101st </p>",
+      "option4": "<p> 96th </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 97th Amendment. </p><p> It Gave constitutional status and protection to cooperative societies. It made the following three changes in the constitution. </p><p> <br/> </p><p> It made the right to form co-operative societies a fundamental right (Article 19). </p><p> It included a new Directive Principle of State Policy on the promotion of co-operative societies. </p><p> It added a new Part IX-B in the constitutional which is entitled “The Co-operative societies”. </p><p> <br/> </p><p> 99th Constitutional Amendment-: </p><p> Amendments:<br/> <br/> </p><p> Replaced the collegium system of appointing judges to the Supreme Court and High Courts with a new body called the National Judicial Appointments Commission (NJAC).</p><p> However, in 2015, the Supreme Court declared this Amendment Act as unconstitutional and void. Consequently, the earlier collegium system became operative again. </p><p> <br/> </p><p> 101st Amendment-: </p><p> <br/> </p><p> Introduction of the Goods and Services Tax</p><p> Goods and Services Tax (GST) is an indirect tax (or consumption tax) used in India on the supply of goods and services. It is a comprehensive, multistage, destination-based tax: comprehensive because it has subsumed almost all the indirect taxes except a few state taxes.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p> Which Park was known as Hailey National Park? </p><p><br/> </p>",
+      "option1": "<p> Pench National Park</p>",
+      "option2": "<p> Jim Corbett National Park</p>",
+      "option3": "<p> Gir National Park</p>",
+      "option4": "<p> Sundarban National Park</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Jim Corbett National Park. </p><p> <br/> </p><p> The Jim Corbett National Park is a part of the largest Corbett Tiger Reserve; the Project Tiger lies in the Nainital district of Uttarakhand. The Majestic landscape of Corbett is well-known for its tiger richness. </p><p> Established in the year 1936 as Hailey National Park, Corbett has the glory of being India’s oldest and most prestigious National Park. </p><p> <br/> </p><p> It is also being honoured as the place where Project Tiger was first launched in the year 1973. </p><p> This Unique tiger territory is best known as the father who gave birth to Project Tiger in India to safeguard the most endangered species and the Royal wild animal of India called Tigers. </p><p> <br/> </p><p> List of National Parks in India-: </p><p> <br/> </p><p> Corbett National Park - (Uttarakhand), </p><p> Kanha National Park - (Madhya Pradesh), </p><p> Tadoba National Park - (Maharashtra), </p><p> Madhav National Park - (M.P.), </p><p> Bandhavgarh National Park - (M.P.), </p><p> Kaziranga National Park - (Assam),</p><p> Bandipur National Park - (Karnataka), </p><p> Bannerghatta National Park - (Karnataka), </p><p>Gir National Park – (Gujarat).</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>‘Shigmo’ is a famous folk dance of which state? </p><p><br/> </p>",
+      "option1": "<p> Madhya Pradesh</p>",
+      "option2": "<p> Goa</p>",
+      "option3": "<p> Jharkhand</p>",
+      "option4": "<p> Arunachal Pradesh</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_a36f546581caee2.png"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p> Yashwant Sagar wetland is designated as Ramsar Sites. It is located in which state?</p><p><br/> </p>",
+      "option1": "<p> Odisha </p>",
+      "option2": "<p> Madhya Pradesh</p>",
+      "option3": "<p> Telangana</p>",
+      "option4": "<p> Tamil Nadu</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_500f947bfab326a9.png"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p> Who was the first President of the United States?</p><p><br/> </p>",
+      "option1": "<p> George Washington</p>",
+      "option2": "<p> Thomas Jefferson</p>",
+      "option3": "<p> John Adams</p>",
+      "option4": "<p> Benjamin Franklin</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a) George Washington. </p><p> George Washington served as the first President of the United States from 1789 to 1797. He is often referred to as the \"Father of His Country.\" </p><p>He was also the Continental Army's commander-in-chief during the American War of Independence.</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p> Which of the following organelles is responsible for protein synthesis in a cell?</p><p><br/> </p>",
+      "option1": "<p> Golgi apparatus</p>",
+      "option2": "<p> Endoplasmic reticulum</p>",
+      "option3": "<p> Lysosome</p>",
+      "option4": "<p> Nucleus</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b) Endoplasmic reticulum. </p><p> <br/> </p><p> The endoplasmic reticulum, specifically the rough endoplasmic reticulum (RER), is responsible for protein synthesis in a cell. </p><p> <br/> </p><p> It contains ribosomes on its surface, which are involved in the production of proteins. </p><p> <br/> </p><p> Endoplasmic Reticulum is a complex network of tubular membranes exclusively present in the cytoplasm of the eukaryotic cell.</p><p> <br/> </p><p> Golgi Apparatus functions: Its main function is the packaging and secretion of proteins. It receives proteins from Endoplasmic Reticulum. It packages it into membrane-bound vesicles, which are then transported to various destinations, such as lysosomes, plasma membrane or secretion. They also take part in the transport of lipids and the formation of lysosomes.</p><p> <br/> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p> Which ancient Indian ruler built the famous Sun Temple at Konark?</p><p><br/> </p>",
+      "option1": "<p> Harsha</p>",
+      "option2": "<p> Ashoka</p>",
+      "option3": "<p> Chandragupta Maurya</p>",
+      "option4": "<p> Narasimhadeva I</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_2b99fe1640cc38b9.png"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p> Which of the following is a characteristic of a perfectly competitive market?</p>",
+      "option1": "<p> A large number of sellers and buyers</p>",
+      "option2": "<p> Product differentiation</p>",
+      "option3": "<p> Control over market prices by individual firms</p>",
+      "option4": "<p> Barriers to entry and exit</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a) A large number of sellers and buyers. </p><p> Perfectly competitive markets are characterized by a large number of sellers and buyers, all producing and consuming homogeneous products. Individual firms in such markets have no control over market prices and face easy entry and exit.</p><p> <br/> </p><p> Types of market: </p><p> Monopoly:</p><p> A monopolistic market is a market formation with the qualities of a pure market. A pure monopoly can only exist when one provider gives a specific service or a product to numerous customers. In a monopolistic market, the imposing business organisation, or the controlling organisation, has the overall control of the entire market, so it sets the supply and price of its goods and services. E.g. Indian Railway. </p><p> Oligopoly:</p><p> An oligopoly is a market form with a few firms, none of which can hold the others back from having a critical impact. The fixation or concentration proportion estimates the piece of the market share of the biggest firms. E.g - commercial air travel. </p><p>Perfect competition, Monopolistic competition. </p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p> Which state had the highest percentage of scheduled castes population in India as per the 2011 census?</p><p><br/> </p>",
+      "option1": "<p> Punjab</p>",
+      "option2": "<p> Uttar Pradesh</p>",
+      "option3": "<p> Tamil Nadu</p>",
+      "option4": "<p> Rajasthan</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Punjab. </p><p> As per Census 2011, the State of Punjab, has the highest percentage of Scheduled Caste population amongst all the States of the Country. The Scheduled Caste population in Punjab is 88.60 lac which is 31.94% of the total population i.e. 277.43 lac of the State. </p><p> <br/> </p><p> Facts-: </p><p> State with the highest population density – Bihar </p><p> State with the lowest population density - Arunachal Pradesh</p><p> Union territory with least population – Lakshadweep </p><p> State with the highest population – Uttar Pradesh</p><p> State with the lowest population – Sikkim </p><p> State with the highest sex ratio – Kerala </p><p> State with the lowest sex ration – Haryana</p><p> State with the highest literacy rate – Kerala</p><p>State with the lowest literacy rate – Bihar. </p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p> Which national park in India is known for its population of Indian one-horned rhinoceros?</p><p><br/> </p>",
+      "option1": "<p> Kaziranga National Park</p>",
+      "option2": "<p> Jim Corbett National Park</p>",
+      "option3": "<p> Bandipur National Park</p>",
+      "option4": "<p> Periyar National Park</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690019994296_html_889d797c68fe6555.png"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p> How many types of ecological pyramids are present in ecosystem?</p><p><br/> </p>",
+      "option1": "<p> Two</p>",
+      "option2": "<p> Three</p>",
+      "option3": "<p> Four </p>",
+      "option4": "<p> Five</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is three. </p><p> There are three types of ecological pyramids </p><p> Pyramids of Number </p><p> Pyramids of Biomass </p><p> Pyramid of Energy </p><p> An ecological pyramid is a graphical representation of the relationship between the different living organisms at different trophic levels. </p><p> Charles Elton developed the concept of the pyramid of numbers. </p><p>Later, G.Evylen Hutchinson and Raymond Lindeman developed the idea of the pyramid of energy or productivity.</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p> Indian Institute of Technology (IIT) will open its first-ever overseas campus in which of the following countries? </p><p><br/> </p>",
+      "option1": "<p> Combodia </p>",
+      "option2": "<p> Tanzania</p>",
+      "option3": "<p> USA</p>",
+      "option4": "<p> Taiwan</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Tanzania. </p><p>Indian Institute of Technology, IIT Madras will open its first ever international campus very soon. It will open its international campus in Zanzibar, Tanzania in October 2023.</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p> Who amongst the following is the author of the new book “RINGSIDE- Up, Close and Personal on India and Beyond”?</p><p><br/> </p>",
+      "option1": "<p> Hardeep Puri</p>",
+      "option2": "<p> Shashi Tharoor</p>",
+      "option3": "<p> Rajdeep Sardesai</p>",
+      "option4": "<p> Dr Vijay Darda</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Dr Vijay Darda. He is the author of the new book “RINGSIDE: Up, Close and Personal on India and Beyond.”</p><p> <br/> </p><p>The book is a captivating compilation of Darda's weekly articles, which were published in the Lokmat Media Group newspapers and other prominent national and regional dailies of the country between 2011 and 2016.</p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>Six people - A, B, C, D, E and F are sitting in a straight line facing north. Who sits to the immediate left of D?</p><p>(I) A sits second from one of the extreme ends of the line. Only two people sit between A and B. E sits to the immediate right of C.</p><p>(II) C sits third from the left end of the line. Only one person sits between C and F. E sits third to the right of F.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image002.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image003.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image004.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image005.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image006.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image003.jpeg"
+    },
+    {
+      "sr_no": 103,
+      "question": "<p>Statement: A = B ≥ C ≤ D &gt; G &lt; E &lt; F</p><p>Conclusions:</p><p>I. B &gt; F</p><p>II. C &lt; A</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Conclusion I. B &gt; F </p><p>We can see that there is no direct comparison between B and F in the given statement. Therefore, we cannot that B is greater than F. </p><p>Hence, conclusion I is false. </p><p>Conclusion II. C &lt; A</p><p>In the given statement: A = B ≥ C. combining these two equations, we can conclude that A ≥ C. therefore, conclusion II is false. </p><p>Hence, neither conclusion I nor II is true. Option C is correct.</p>"
+    },
+    {
+      "sr_no": 104,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>All the given options are related to musical instrument.</p><p>Clarinet, Flute, and Piccolo all are musical instrument that are played by blowing into them. But Piano is a musical instrument that is played by pressing keys on keyboard, which is different from the other musical instruments.</p><p>Hence, Option C is correct.</p>"
+    },
+    {
+      "sr_no": 105,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>If S % D # F @ G &amp; H @ J,</p><p>then how is F related to H?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image008.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>45 × 9 ÷ 12 – 5 + 3</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image009.png"
+    },
+    {
+      "sr_no": 107,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image012.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image013.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image014.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image015.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image016.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image016.jpeg"
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image017.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image018.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image019.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image020.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image021.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image020.jpeg"
+    },
+    {
+      "sr_no": 109,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image022.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image023.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image024.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image025.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image026.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image027.png",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image027.png"
+    },
+    {
+      "sr_no": 111,
+      "question": "<p>E = 1, N = 2, T = 3, S = 4, T = 5, D = 6, U = 7</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Word form = STUDENT: 4,3,7,6,1,2,5</p><p>Hence, Option C is correct.</p>"
+    },
+    {
+      "sr_no": 112,
+      "question": "<p>Statements:</p><p>Some poems are horses.</p><p>All horses are toys.</p><p>All toys are ships.</p><p>Conclusions:</p><p>I. All toys being poems is a possibility.</p><p>II. Some horses are ships.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image028.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image029.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image030.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image031.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image032.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image033.png",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image032.png"
+    },
+    {
+      "sr_no": 114,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image034.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image035.png"
+    },
+    {
+      "sr_no": 116,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image037.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image038.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image039.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image040.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image041.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image040.jpeg"
+    },
+    {
+      "sr_no": 117,
+      "question": "<p># : CLQ:: NDK: %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image042.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "<p>_ V J R W B _ _ R W B V L _ _ B V _ _ W</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Given: B V J R W B V JR W B V L R W B V J R W </p><p>Hence, (b) B V K R W M R, is the correct answer.</p>"
+    },
+    {
+      "sr_no": 119,
+      "question": "<p>(NOTE: Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(7, 3, 43)</p><p>(5, 2, 21)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image043.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>A, B, C and D are sitting around a circular table facing the centre. Who sits to the immediate right of A?</p><p>Statements:</p><p>(I) C sits to the immediate left of A; only one person sits between C and D.</p><p>(II) Only one person sits between A and B; C sits to the immediate right of B.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image045.png"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>If D @ N @ H &amp; Y @ F % V, then how is V related to H?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image046.png"
+    },
+    {
+      "sr_no": 122,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image047.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image048.png"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>Statement:</p><p>Extensive use of pesticides in agricultural production contaminates soil and water, remain in the crops and finally enter food chain, thereby posing threat to the human beings.</p><p>Inference:</p><p>I. Excessive use of pesticides in agricultural production is not good for people.</p><p>II. Excessive use of pesticides in agricultural production can have a bad effect on water.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Inference I state that excessive use of pesticides in agricultural production is not good for people. This can be inferred from the statement, which clearly state that extensive use of pesticides can contaminate soil, water, crops and can pose a threat to human beings.</p><p>Inference II state that excessive use of pesticides in agricultural production can have a bad effect on water. This can also be inferred from the statement, which clearly state that extensive use of pesticides can contaminate soil water, and can enter the food chain, posing a threat to human beings.</p><p>Therefore, both inferences I and II follow from the given statement.</p><p>Hence, option b is correct answer. </p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image049.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image050.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image051.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image052.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image053.png",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image051.png"
+    },
+    {
+      "sr_no": 126,
+      "question": "<p>33 * 4 * 15 * 3 * 61 = 188</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image054.png"
+    },
+    {
+      "sr_no": 127,
+      "question": "<p>Statement: There is a large increase in migration of villagers to urban areas as repeated crop failure has put them into financial problems.</p><p>Course of action:</p><p>I. The villagers should be provided with an alternate source of income in their villages which will make them stay there only.</p><p>II. To ensure their survival, the migrated villagers should be given access to all housing options in urban areas.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Course of action I: The villagers should be provided with an alternate source of income in their villages which will make them stay there only. This course of action sounds logical and appropriate as providing an alternate source of income in their village would help them stay in their villages. So, this course of action is logically follows.</p><p>Course of action II. To ensure their survival, the migrated villagers should be given access to all housing options in urban areas. This course of action is not practical solution because providing access to all housing options in urban areas may not possible for the authorities. It is not solving the root cause of the problem, so this course of action is not logically follows.</p><p>Hence, option d is correct answer.</p>"
+    },
+    {
+      "sr_no": 128,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image057.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image058.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image059.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image060.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image061.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image060.jpeg"
+    },
+    {
+      "sr_no": 129,
+      "question": "<p>189, 532, 316, ?, 377</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711519137653_image062.png"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p>I. Country X reduced their crude oil import by 6% in the last 5 years.</p><p>II. The automobile industry in Country X has witnessed a sharp decline of 13% in its growth margin this year.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Country X reduced their crude oil import by 6% in the last 5 years. The reduction in crude oil impot due to various reason like decrease demand for oil, shifting towards renewable energy. Etc. </p><p>The automobile industry in Country X has witnessed a sharp decline of 13% in its growth margin this year. The decline in the growth margin of the automobile industry due to economic slowdown, changes in consumer preferences, or increased competition. Therefore, it is clear that there is no cause-effect relation between the two statements.</p><p>So, both statements are independent effects of different causes.</p><p>Hence, option c is correct answer.</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 2</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

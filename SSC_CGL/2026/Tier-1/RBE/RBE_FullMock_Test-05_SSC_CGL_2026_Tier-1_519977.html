@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL 2026 Live Mock 5</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL 2026 Live Mock 5</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 60,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p>If GO = 240 and CAT = 4368, then how will you code BAT?</p>",
+      "option1": "<p>5340</p>",
+      "option2": "<p>4550</p>",
+      "option3": "<p>5730</p>",
+      "option4": "<p>4750</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>G = 7 → Opposite = 27 − 7 = 20 (T)<br/>O = 15 → Opposite = 27 − 15 = 12 (L)</p><p>Now multiply opposite positions:<br/>20 × 12 = 240 ✔</p><p>Check CAT</p><p>C = 3 → Opposite = 24<br/>A = 1 → Opposite = 26<br/>T = 20 → Opposite = 7</p><p>Multiply:<br/>24 × 26 × 7</p><p>24 × 26 = 624<br/>624 × 7 = 4368 ✔</p><p>Now solve BAT</p><p>B = 2 → Opposite = 25<br/>A = 1 → Opposite = 26<br/>T = 20 → Opposite = 7</p><p>Multiply:<br/>25 × 26 × 7</p><p>25 × 26 = 650<br/>650 × 7 = 4550</p><p>Final Answer: 4550</p>"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p>If + means −, − means ×, × means ÷, and ÷ means +, then what will be the value of the following expression?</p><p>60 + 12 ÷ 24 × 6 − 4 = ?</p>",
+      "option1": "<p>64</p>",
+      "option2": "<p>56</p>",
+      "option3": "<p>72</p>",
+      "option4": "<p>76</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Given changes:</p><p>→ −<br/>− → ×<br/>× → ÷<br/>÷ → +</p><p>Original:<br/>60 + 12 ÷ 24 × 6 − 4</p><p>After replacing signs:<br/>60 − 12 + 24 ÷ 6 × 4</p><p>Solve ÷ and × first:<br/>24 ÷ 6 = 4<br/>4 × 4 = 16</p><p>Now:<br/>60 − 12 + 16<br/>= 48 + 16<br/>= 64</p>"
+    },
+    {
+      "sr_no": 3,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image001.jpeg",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image002.jpeg",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image003.jpeg",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image004.jpeg",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image005.jpeg",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image006.png"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p>‘Shadow’ is related to ‘Light’ in the same way as ‘Echo’ is related to ‘________’.</p>",
+      "option1": "<p>Sound</p>",
+      "option2": "<p>Silence</p>",
+      "option3": "<p>Voice</p>",
+      "option4": "<p>Wall</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Shadow is produced due to Light.<br/>Similarly, Echo is produced due to Sound.</p><p>Correct Answer: (a) Sound</p>"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p>If 4 P 2 Q 1 = 9 and 5 P 3 Q 2 = 17, then 6 P 4 Q 3 = ?</p>",
+      "option1": "<p>18</p>",
+      "option2": "<p>27</p>",
+      "option3": "<p>13</p>",
+      "option4": "<p>21</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Pattern:</p><p>a P b Q c = (a × b) + c</p><p>Check:<br/>4 × 2 + 1 = 9<br/>5 × 3 + 2 = 17</p><p>Now,<br/>6 × 4 + 3 = 27</p><p>Final Answer: 27</p>"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p>Which of the two signs should be interchanged in order to make the following equation correct?</p><p>324 − 216 ÷ 9 + 4 × 5 = 233</p>",
+      "option1": "<p>− and +</p>",
+      "option2": "<p>÷ and ×</p>",
+      "option3": "<p>× and +</p>",
+      "option4": "<p>÷ and −</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Check options:</p><p>Interchange × and +</p><p>New expression:<br/>324 − 216 ÷ 9 × 4 + 5</p><p>216 ÷ 9 = 24<br/>24 × 4 = 96</p><p>324 − 96 + 5 = 233 ✔</p><p>Final Answer: × and +</p>"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p>Find the next term of the series.</p><p>53, 70, 95, 129, 173, 228, ?</p>",
+      "option1": "<p>292</p>",
+      "option2": "<p>295</p>",
+      "option3": "<p>293</p>",
+      "option4": "<p>292</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Series:</p><p>53, 70, 95, 129, 173, 228, ?</p><p>Step 1: Find differences</p><p>70 − 53 = 17<br/>95 − 70 = 25<br/>129 − 95 = 34<br/>173 − 129 = 44<br/>228 − 173 = 55</p><p>Step 2: Find pattern in differences</p><p>25 − 17 = 8<br/>34 − 25 = 9<br/>44 − 34 = 10<br/>55 − 44 = 11</p><p>Pattern: +8, +9, +10, +11</p><p>Next increase = +12</p><p>Step 3:</p><p>55 + 12 = 67</p><p>Step 4:</p><p>228 + 67 = 295</p><p>Final Answer: 295</p>"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p>In the question, a statement is given followed by two conclusions I and II. You have to take the statement to be true even if it seems to be at variance from commonly known facts. You have to decide which of the given conclusions, if any, follow from the given statement.</p><p>Statement:<br/>The growing demand for electric vehicles in foreign countries shows the strength of India’s automobile technology.</p><p>Conclusion I: Electric vehicles are not popular in India.</p><p>Conclusion II: India’s automobile technology is appreciated in foreign countries.</p>",
+      "option1": "<p>I and II both follow</p>",
+      "option2": "<p>Only II follows</p>",
+      "option3": "<p>Only I follows</p>",
+      "option4": "<p>Neither I nor II follows</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Conclusion I:</p><p>Electric vehicles are not popular in India. ❌</p><p>The statement does not compare popularity in India.<br/>No information is given about demand in India.<br/>So, this does not follow.</p><p>Conclusion II:</p><p>India’s automobile technology is appreciated in foreign countries. ✔</p><p>If foreign countries are demanding Indian electric vehicles,<br/>it clearly indicates appreciation and recognition.<br/>So, this follows.</p><p>Final Answer: Only II follows</p>"
+    },
+    {
+      "sr_no": 9,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image007.jpeg",
+      "option1": "<p>Play</p>",
+      "option2": "<p>Run</p>",
+      "option3": "<p>Sleep<br/> </p>",
+      "option4": "<p>Dance</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>First view:<br/>Eat is adjacent to Cry and Play</p><p>Second view:<br/>Play is adjacent to Cry and Dance</p><p>Cry is common → cube rotated</p><p>So Eat and Dance become opposite faces</p><p>Final Answer: Dance</p>"
+    },
+    {
+      "sr_no": 10,
+      "question": "<p>All the persons in a row are facing North. Drishti is 28th from the left and Deepesh is 9th from the right. If Drishti and Deepesh exchange their positions, what will be the position of Drishti from the left, if 40 persons are there in the row?</p>",
+      "option1": "<p>31st </p>",
+      "option2": "<p>33rd </p>",
+      "option3": "<p>32nd </p>",
+      "option4": "<p>34th </p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Total persons = 40</p><p>Drishti = 28th from left<br/>Deepesh = 9th from right</p><p>First convert Deepesh’s position to left:</p><p>Position from left<br/>= 40 − 9 + 1<br/>= 32</p><p>So Deepesh = 32nd from left</p><p>After exchange → Drishti will sit at Deepesh’s position</p><p>Therefore, Drishti’s new position from left = 32</p><p>Final Answer: 32nd from left</p>"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p>Which of the following letter-clusters should replace # and % so that the pattern and relationship followed between the letter-cluster pair on the left side of :: is the same as that on the right side of :: ?</p><p># : DTF :: URQ : %</p>",
+      "option1": "<p># = DSG, % = VWM </p>",
+      "option2": "<p># = DTU, % = VWP</p>",
+      "option3": "<p># = CQG, % = VUP</p>",
+      "option4": "<p># = CPH, % = UPN</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>CQG → DTF</p><p>C → D (+1)<br/>Q → T (+3)<br/>G → F (–1)</p><p>Pattern = +1, +3, –1</p><p>URQ → VUP</p><p>U → V (+1)<br/>R → U (+3)<br/>Q → P (–1)</p><p>Same pattern.</p><p>Answer: # = CQG, % = VUP</p>"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p>What should come in place of the question mark (?) in the given series? </p><p>189 166 155 132 121 98 ?</p>",
+      "option1": "<p>83</p>",
+      "option2": "<p>87</p>",
+      "option3": "<p>92</p>",
+      "option4": "<p>75</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Series:<br/>189, 166, 155, 132, 121, 98, ?</p><p>Find the pattern of differences:</p><p>189 → 166 = –23<br/>166 → 155 = –11<br/>155 → 132 = –23<br/>132 → 121 = –11<br/>121 → 98 = –23</p><p>Pattern: –23, –11, –23, –11, –23</p><p>So next difference should be –11</p><p>98 – 11 = 87</p><p>Answer: 87</p>"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p>A series is given, with one term missing. Choose the correct alternative from the given ones that will complete the series.</p><p>C2H4, E5J9, H9M16, L14Q25, ?</p>",
+      "option1": "<p>Q19U36</p>",
+      "option2": "<p>Q20V36</p>",
+      "option3": "<p>Q20U36</p>",
+      "option4": "<p>Q19V36</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Series:<br/>C2H4, E5J9, H9M16, L14Q25, ?</p><p>Pattern:</p><p>• First letters → +2, +3, +4, +5 → Q<br/>• First numbers → +3, +4, +5, +6 → 20<br/>• Second letters → +2, +3, +4, +5 → V<br/>• Last numbers → 2², 3², 4², 5², 6² → 36</p>"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p>Which of the following letter-number clusters will replace the question mark (?) in the given series to make it logically complete? </p><p>JCH34, KDI43, LEJ52, MFK61 ?</p>",
+      "option1": "<p>MKL67</p>",
+      "option2": "<p>NGK70</p>",
+      "option3": "<p>MFL67</p>",
+      "option4": "<p>NGL70</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Letters:</p><p>J K L M → +1 → N<br/>C D E F → +1 → G<br/>H I J K → +1 → L</p><p>So letters = NGL</p><p>Numbers:</p><p>34, 43, 52, 61 → +9 pattern<br/>61 + 9 = 70</p><p>Answer: NGL70</p>"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>If the 10th day of a month is Monday, which of the following would be the 3rd day before the 28th day of that month?</p>",
+      "option1": "<p>Thursday</p>",
+      "option2": "<p>Friday</p>",
+      "option3": "<p>Wednesday</p>",
+      "option4": "<p>Tuesday</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>10th = Monday</p><p>28 − 10 = 18 days<br/>18 ÷ 7 → remainder 4</p><p>Monday + 4 = Friday</p><p>3 days before Friday = Tuesday</p><p>Final Answer: Tuesday</p>"
+    },
+    {
+      "sr_no": 16,
+      "question": "<p>Directions: Answer the question given below.</p><p>You have prepared a financial report for your department and later realise that you have made a serious calculation error which may affect the organisation’s budget. Your senior officer suspects an issue and asks for clarification. What will you do?</p>",
+      "option1": "<p>Justify the report and try to hide the mistake.</p>",
+      "option2": "<p>Inform your senior about the mistake, apologise and submit a corrected report.</p>",
+      "option3": "<p>Ignore the issue and hope it is not noticed further.</p>",
+      "option4": "<p>Alter the data to make the report appear correct.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: (b)</p><p>Reason:</p><p>Hence, the most appropriate action is:</p><p>(b) Inform your senior about the mistake, apologise and submit a corrected report.</p>"
+    },
+    {
+      "sr_no": 17,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image008.jpeg",
+      "option1": "<p>9</p>",
+      "option2": "<p>11</p>",
+      "option3": "<p>13</p>",
+      "option4": "<p>10</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image009.png"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p>Select the letter-cluster from among the given options that can replace the question mark (?) in the following series:</p><p>LMP, QRS, VWV, ABY, FGB, ?</p>",
+      "option1": "<p>KLE</p>",
+      "option2": "<p>MKD</p>",
+      "option3": "<p>KME</p>",
+      "option4": "<p>MKC</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Series:<br/>LMP, QRS, VWV, ABY, FGB, ?</p><p>Pattern:</p><p>• First letters → +5 (cyclic)<br/>L → Q → V → A → F → K</p><p>• Second letters → +5 (cyclic)<br/>M → R → W → B → G → L</p><p>• Third letters → +3 (cyclic)<br/>P → S → V → Y → B → E</p><p>Final Answer: KLE</p>"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p>In a certain code language,</p><p>'A + B' means 'A is the sister of B'<br/>'A – B' means 'A is the brother of B'<br/>'A × B' means 'A is the wife of B'<br/>'A ÷ B' means 'A is the father of B'.</p><p>Based on the above, how is M related to Q if 'M ÷ N × O − P + Q'?</p>",
+      "option1": "<p>Wife's Brother </p>",
+      "option2": "<p>Brother's Wife's Father</p>",
+      "option3": "<p>Brother's Wife's Brother</p>",
+      "option4": "<p>Wife's Father</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image010.png"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p>Select the option that represents the letters that, when placed from left to right in the blanks below, will complete the letter sequence correctly.</p><p>W_X_Z WX_ _ Z_XY_Z_ _YZ_</p>",
+      "option1": "<p>WYYXWYXWZ</p>",
+      "option2": "<p>WYXYWYWXZ</p>",
+      "option3": "<p>WYYXWYXYZ</p>",
+      "option4": "<p>WYXYYWXWZ</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>WWXYZ /WXXYZ/WXYYZ /WXYZZ</p>"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p>In the number 764205893, the positions of the first and the sixth digits are interchanged. Similarly, the positions of the second and seventh digits are interchanged, the third and eighth digits are interchanged, and the fourth and ninth digits are interchanged. After rearranging all in the same way, which number would be at the fifth position from the right?</p>",
+      "option1": "<p>7</p>",
+      "option2": "<p>8</p>",
+      "option3": "<p>6</p>",
+      "option4": "<p>0</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Number: 764205893</p><p>Write positions clearly:</p><p>1 2 3 4 5 6 7 8 9<br/>7 6 4 2 0 5 8 9 3</p><p>Now interchange as given:</p><p>1 ↔ 6 → 7 ↔ 5<br/>2 ↔ 7 → 6 ↔ 8<br/>3 ↔ 8 → 4 ↔ 9<br/>4 ↔ 9 → 2 ↔ 3<br/>5 remains same</p><p>After rearrangement:</p><p>1 2 3 4 5 6 7 8 9<br/>5 8 9 3 0 7 6 4 2</p><p>New number = 589307642</p><p>Now count from right:</p><p>Right side:<br/>2 (1st)<br/>4 (2nd)<br/>6 (3rd)<br/>7 (4th)<br/>0 (5th)</p><p>Final Answer: 0</p>"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p>Read the given statements and conclusions carefully. Assuming that the information given in the statements is true, even if it appears to be at variance with commonly known facts, decide which of the given conclusion(s) logically follows(s) from the statements.</p><p>Statements:<br/>All terraces are lawns.<br/>All lawns are grounds.<br/>No ground is a field.</p><p>Conclusions:<br/>(I) No terrace is a field.<br/>(II) Some grounds are terraces.</p>",
+      "option1": "<p>Only conclusion (I) follows.</p>",
+      "option2": "<p>Both conclusions (I) and (II) follow.</p>",
+      "option3": "<p>Neither conclusion (I) nor (II) follows.</p>",
+      "option4": "<p>Only conclusion (II) follows.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image011.png"
+    },
+    {
+      "sr_no": 23,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image012.png",
+      "option1": "<p>7</p>",
+      "option2": "<p>16</p>",
+      "option3": "<p>12</p>",
+      "option4": "<p>19</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585550345_image013.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p>In a code language, if GARDEN is coded as JDUGHQ, then how will MARKET be coded in that code language?</p>",
+      "option1": "<p>PCUNHW</p>",
+      "option2": "<p>PDVHNW</p>",
+      "option3": "<p>PDUNHW</p>",
+      "option4": "<p>PCVNHW</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>GARDEN → JDUGHQ</p><p>Each letter is shifted +3 forward.</p><p>Apply same rule to MARKET:</p><p>M → P<br/>A → D<br/>R → U<br/>K → N<br/>E → H<br/>T → W</p><p>So, MARKET → PDUNHW</p>"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p>Each of J, K, L, M, N, O and P has an exam on a different day of a week starting from Monday. and ending on Sunday of the same week. Only two people have exams before P. Only one person has an exam after L. Only three people have exams between P and J. Only one person has an exam between K and L. O has an exam immediately after M. How many people have exams between M and N.</p>",
+      "option1": "<p>4</p>",
+      "option2": "<p>2</p>",
+      "option3": "<p>3</p>",
+      "option4": "<p>1</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Day</p><p>Letter</p><p>Monday</p><p>M</p><p>Tuesday</p><p>O</p><p>Wednesday</p><p>P</p><p>Thursday</p><p>K</p><p>Friday</p><p>N</p><p>Saturday</p><p>L</p><p>Sunday</p><p>J</p><p>There are three persons between M &amp; N.</p>"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p>Which of the following statements regarding the Rig Vedic period is FALSE?</p>",
+      "option1": "<p>The society was essentially patriarchal.</p>",
+      "option2": "<p>Child marriage and 'Sati' were widely prevalent practices.</p>",
+      "option3": "<p>The battle of Ten Kings was fought on the banks of the Parushni.</p>",
+      "option4": "<p>'Niska' was a gold ornament used as a medium of exchange.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The FALSE statement is: Child marriage and 'Sati' were widely prevalent practices.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p>The 'Digital India Act 2025' aims to address which of the following?</p><p>1- Regulation of Artificial Intelligence (AI).</p><p>2- Cyber-security and Online Safety.</p>",
+      "option1": "<p>1 only</p>",
+      "option2": "<p>2 only</p>",
+      "option3": "<p>Both 1 &amp; 2</p>",
+      "option4": "<p>Neither 1 &amp; 2</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The proposed Digital India Act 2025 aims to modernize India’s digital regulatory framework (to replace the IT Act, 2000) and is intended to address:</p><p>✅ Regulation of Artificial Intelligence (AI)<br/>✅ Cyber-security and Online Safety</p><p>It focuses on emerging technologies, platform accountability, user safety, and strengthening cyber governance.</p>"
+    },
+    {
+      "sr_no": 28,
+      "question": "<p>During a cold morning at sea, a ship appears to be \"floating\" in the air above its actual position. This optical phenomenon, occurs because:</p>",
+      "option1": "<p>Light rays bend towards the denser, cooler air near the water surface.</p>",
+      "option2": "<p>Light rays undergo Total Internal Reflection in the warmer upper layers.</p>",
+      "option3": "<p>The atmospheric pressure at sea level causes light to scatter blue.</p>",
+      "option4": "<p>The ship reflects light at an angle greater than the Brewster angle.</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct answer is: Light rays bend towards the denser, cooler air near the water surface.</p><p>Explanation:</p><p>This phenomenon is known as a superior mirage.</p><p>A superior mirage occurs when:</p><p>Because of this bending, the image of the ship appears higher than its actual position, giving the illusion that it is \"floating\" in the air.</p>"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p>Which territory was the major reason for the clashes and wars between Bahamani Kingdom and Vijayanagar Empire?</p>",
+      "option1": "<p>Malabar</p>",
+      "option2": "<p>Warangal</p>",
+      "option3": "<p>Madurai</p>",
+      "option4": "<p>Raichur</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The territory that was the major reason for the clashes and wars between the Bahamani Kingdom and the Vijayanagar Empire was Raichur.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p>The SANKALP Scheme comes under the ambit of which Ministry?</p>",
+      "option1": "<p>Ministry of Road, Transport and Highways</p>",
+      "option2": "<p>Ministry of Women and Child Development</p>",
+      "option3": "<p>Ministry of Skill Development</p>",
+      "option4": "<p>Ministry of Tribal Affairs</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The SANKALP Scheme (Skill Acquisition and Knowledge Awareness for Livelihood Promotion) comes under the Ministry of Skill Development and Entrepreneurship (MSDE).</p><p>Key Details</p>"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p>According to the Ramsar Convention, which one of the following lakes is protected as waterfowl habitat?</p>",
+      "option1": "<p>Chilika Lake</p>",
+      "option2": "<p>Pulicat Lake</p>",
+      "option3": "<p>Vembanad Lake</p>",
+      "option4": "<p>Sambhar Lake</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>According to the Ramsar Convention, the lake in India that is explicitly protected as a waterfowl habitat is Chilika Lake (Odisha).</p><p>Explanation</p><p>Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p>By which of the following Acts was the India Council abolished?</p>",
+      "option1": "<p>Morley-Minto Reforms, 1909</p>",
+      "option2": "<p>The Government of India Act, 1919</p>",
+      "option3": "<p>The Government of India Act, 1935</p>",
+      "option4": "<p>The Indian Independence Act, 1947</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The Council of India was abolished by the Government of India Act, 1935.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p>The International Date Line is made zigzag to avoid which one of the following island groups?</p>",
+      "option1": "<p>Cook Islands</p>",
+      "option2": "<p>Aleutian Islands</p>",
+      "option3": "<p>Bonin Islands</p>",
+      "option4": "<p>Solomon Islands</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The International Date Line (IDL) is made zigzag to avoid splitting the Aleutian Islands.</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p>What is the full form of SIR introduced by the Election Commission of India?</p>",
+      "option1": "<p>Special Inclusive Review</p>",
+      "option2": "<p>Selective Intensive Revision</p>",
+      "option3": "<p>Special Intensive Revision</p>",
+      "option4": "<p>Specific Internal Review</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The full form of SIR, as introduced by the Election Commission of India, is Special Intensive Revision.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p>In Economics, 'Gresham's Law' states that:</p>",
+      "option1": "<p>Demand always creates its own supply. </p>",
+      "option2": "<p>High-quality goods always drive out low-quality goods.</p>",
+      "option3": "<p>As income increases, the proportion spent on food decreases.</p>",
+      "option4": "<p>Bad money drives out good money from circulation.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>In Economics, Gresham’s Law states that “Bad money drives out good money from circulation.”</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p>PIL under Article 32 evolved from epistolary jurisdiction; what 1980s case conceptualized it as right to constitutional remedies?</p>",
+      "option1": "<p>Hussainara Khatoon</p>",
+      "option2": "<p>Minerva Mills</p>",
+      "option3": "<p>Shah Bano </p>",
+      "option4": "<p>LIC of India</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The case that conceptualized Public Interest Litigation (PIL) under Article 32 as a right to constitutional remedies through epistolary jurisdiction in the 1980s was Hussainara Khatoon v. State of Bihar (1979–1980).</p><p>Explanation</p><p>Evaluating the options</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p>Which among the following refers to as ‘The Big Splat’?</p>",
+      "option1": "<p>Formation of the Universe</p>",
+      "option2": "<p>Formation of the Sun</p>",
+      "option3": "<p>Formation of the Earth</p>",
+      "option4": "<p>Formation of the Moon</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The phrase “The Big Splat” refers to the formation of the Moon.</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p>Which one among the following is popularly known as the Black Pagoda?</p>",
+      "option1": "<p>Shore Temple at Mamallapuram</p>",
+      "option2": "<p>Sun Temple at Konark</p>",
+      "option3": "<p>Kamakhya Temple at Guwahati</p>",
+      "option4": "<p>Martand Sun Temple in Kashmir</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The temple popularly known as the Black Pagoda is the Sun Temple at Konark (Odisha).</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p>Who among the following holds his/her office at the pleasure of the President?</p>",
+      "option1": "<p>The Chairman of a Public Service Commission</p>",
+      "option2": "<p>The Comptroller and Auditor General of India</p>",
+      "option3": "<p>The Speaker of the Lok Sabha</p>",
+      "option4": "<p>The Attorney General of India</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The office that is held at the pleasure of the President among the given options is the Attorney General of India.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p>Which Indian space tech startup announced its upcoming satellite mission named ‘Mission Drishti’, scheduled for launch in 2026?</p>",
+      "option1": "<p>Skyroot Aerospace</p>",
+      "option2": "<p>Agnikul Cosmos</p>",
+      "option3": "<p>GalaxEye</p>",
+      "option4": "<p>Dhruva Space</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The upcoming satellite mission “Mission Drishti”, scheduled for launch in 2026, has been announced by the Indian spacetech startup GalaxEye.</p><p>Key Details</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p>Basohli Paintings are associate with which Indian City?</p>",
+      "option1": "<p>Jammu</p>",
+      "option2": "<p>Guwahati</p>",
+      "option3": "<p>Agra</p>",
+      "option4": "<p>Jaisalmer</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Basohli Paintings are associated with Basohli, a town in the Kathua district of Jammu &amp; Kashmir.</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p>National Critical Mineral Mission (NCMM) was launched in:</p>",
+      "option1": "<p>January 2025</p>",
+      "option2": "<p>March 2025</p>",
+      "option3": "<p>July 2025</p>",
+      "option4": "<p>October 2025</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The National Critical Mineral Mission (NCMM) was launched in January 2025.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p>Which one of the following texts provides a detailed and connected account of Buddha’s life?</p>",
+      "option1": "<p>Baudhayana Dharmasutra</p>",
+      "option2": "<p>Mahavagga</p>",
+      "option3": "<p>Lalitavistara</p>",
+      "option4": "<p>Therigatha</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The text that provides a detailed and connected account of Buddha’s life is the Lalitavistara Sūtra.</p><p>Explanation</p><p>Evaluating the options</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p>If a sample of human blood is mixed with distilled water (hypotonic), the Red Blood Cells will swell and burst. However, if they are placed in a strong salt solution (hypertonic), they will shrivel. This shrivelling process is known as:</p>",
+      "option1": "<p>Haemolysis </p>",
+      "option2": "<p>Crenation </p>",
+      "option3": "<p>Plasmolysis </p>",
+      "option4": "<p>Phagocytosis</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The shrivelling of Red Blood Cells (RBCs) when placed in a hypertonic solution (like strong salt water) is known as Crenation.</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p>In the Indian constitutional scheme, which of the following pairs is correctly matched with respect to the body and the type of jurisdiction primarily associated with it?</p>",
+      "option1": "<p>Supreme Court of India – Advisory jurisdiction under Article 370</p>",
+      "option2": "<p>High Courts – Original jurisdiction over disputes between States</p>",
+      "option3": "<p>Finance Commission – Quasi-judicial jurisdiction over tax disputes</p>",
+      "option4": "<p>Central Administrative Tribunal – Jurisdiction over service matters of public servants</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correctly matched pair in the Indian constitutional scheme is: Central Administrative Tribunal – Jurisdiction over service matters of public servants.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p>Karyala folk art is associated with which Indian State?</p>",
+      "option1": "<p>Himachal Pradesh</p>",
+      "option2": "<p>Kerela</p>",
+      "option3": "<p>Karnataka</p>",
+      "option4": "<p>Chhattisgarh</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Karyala (also spelled Kariyala) folk art is associated with Himachal Pradesh.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p>The only Indian State which shares border with Sikkim is?</p>",
+      "option1": "<p>Arunachal Pradesh</p>",
+      "option2": "<p>Assam</p>",
+      "option3": "<p>Meghalaya</p>",
+      "option4": "<p>West Bengal</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The only Indian state that shares a border with Sikkim is West Bengal.</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p>Who has been named BBC Indian Sportswoman of the Year for 2025?</p>",
+      "option1": "<p>Harmanpreet Kaur</p>",
+      "option2": "<p>Divya Deshmukh</p>",
+      "option3": "<p>Smriti Mandhana</p>",
+      "option4": "<p>Avani Lekhara</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The BBC Indian Sportswoman of the Year 2025 is Smriti Mandhana.</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p>The Earth in its initial phases of formation was a hot object with a thin layer of atmosphere comprising of which gases?</p>",
+      "option1": "<p>Hydrogen and Helium</p>",
+      "option2": "<p>Carbon Dioxide and Nitrogen</p>",
+      "option3": "<p>Oxygen and Nitrogen</p>",
+      "option4": "<p>Hydrogen and Methane</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>In the initial phases of Earth’s formation, the planet was extremely hot and surrounded by a thin primary atmosphere composed mainly of Hydrogen (H₂) and Helium (He).</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p>Which Article of the Constitution of India empowers the Parliament to make laws for the whole or any part of the territory of India for implementing international treaties, agreements or conventions?</p>",
+      "option1": "<p>Article 246</p>",
+      "option2": "<p>Article 249</p>",
+      "option3": "<p>Article 253</p>",
+      "option4": "<p>Article 257</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct answer is Article 253.</p><p>Explanation</p><p>Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p>Which of the following numbers is both a Rational Number and a Terminating Decimal?</p>",
+      "option1": "<p>2/7</p>",
+      "option2": "<p>3/8</p>",
+      "option3": "<p>√5</p>",
+      "option4": "<p>π</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>(a) 2/7<br/>2/7 is a rational number, but its decimal form is 0.2857142857… (repeating).<br/>It is a non-terminating recurring decimal, so not terminating.</p><p>(b) 3/8<br/>3/8 = 0.375<br/>This is a terminating decimal and also a rational number.<br/>So, this satisfies both conditions.</p><p>(c) √5<br/>√5 is an irrational number.<br/>It cannot be written as p/q and is non-terminating non-repeating.</p><p>(d) π (pi)<br/>π is also irrational and non-terminating non-repeating.</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p>If x + y + z = 19, x² + y² + z² = 133 and xz = y², then the difference between z and x is:</p>",
+      "option1": "<p>1</p>",
+      "option2": "<p>3</p>",
+      "option3": "<p>5</p>",
+      "option4": "<p>4</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image001.png"
+    },
+    {
+      "sr_no": 53,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image002.png",
+      "option1": "<p>√5</p>",
+      "option2": "<p>√10</p>",
+      "option3": "<p>2√10</p>",
+      "option4": "<p>2√5</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image003.png"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p>A can do a certain work in 80 days. B is 25% more efficient than A, while C is 20% more efficient than B. B alone completed 25% of the work. A and C together completed the remaining work. The entire work got completed in:</p>",
+      "option1": "<p>24 days</p>",
+      "option2": "<p>16 days</p>",
+      "option3": "<p>32 days</p>",
+      "option4": "<p>40 days</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image004.png"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p>The surface area of a sphere is 256π cm². If the radius of the sphere is tripled, by what percentage does the surface area increase?</p>",
+      "option1": "<p>700%</p>",
+      "option2": "<p>800%</p>",
+      "option3": "<p>900%</p>",
+      "option4": "<p>600%</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Short method:</p><p>Surface area ∝ r²</p><p>Radius × 3 ⇒ Area × 3² = 9</p><p>Increase = 9 − 1 = 8 times</p><p>Percentage increase = 8 × 100 = 800%</p><p>Basic method:</p><p>4πr² = 256π<br/>⇒ r² = 64<br/>⇒ r = 8</p><p>If radius is tripled: new radius = 3r</p><p>New surface area = 4π(3r)²<br/>= 4π × 9r²<br/>= 9 × (4πr²)</p><p>So, new area = 9 times original area</p><p>Increase = 9 − 1 = 8 times</p><p>Percentage increase = 8 × 100 = 800%</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p>P and Q run a 16 km race on a circular track of length 1500 m. They complete one round in 200 seconds and 250 seconds, respectively. After how much time from the start will the faster person meet the slower person for the last time?</p>",
+      "option1": "<p>33 min 20 sec</p>",
+      "option2": "<p>34 min 12 sec</p>",
+      "option3": "<p>35 min 40 sec</p>",
+      "option4": "<p>32 min 18 sec</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Track length = 1500 m</p><p>Speeds: P = 1500/200 = 7.5 m/s, Q = 1500/250 = 6 m/s.</p><p>Relative speed = 1.5 m/s.</p><p>Time to gain 1 lap = 1500 / 1.5 = 1000 s.</p><p>P finishes race in 16,000 / 7.5 = 2133.33 s.</p><p>So they meet at 1000 s and again at 2000 s.</p><p><b>Last meeting = 2000 seconds (≈ 33 min 20 s).</b></p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p>A and B start a business with equal investments. After 6 months, A adds Rs. 20,000 more. At the end of 1 year, if the total profit is Rs. 50,000, and B’s share is Rs. 20,000, what was their initial investment?</p>",
+      "option1": "<p>30,000</p>",
+      "option2": "<p>20,000</p>",
+      "option3": "<p>25,000</p>",
+      "option4": "<p>35,000</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Profit ratio = 30,000 : 20,000 = 3 : 2</p><p>Let initial investment = x each</p><p>A’s money = 12x + 20,000 × 6 = 12x + 1,20,000<br/>B’s money = 12x</p><p>So,</p><p>(12x + 1,20,000) : 12x = 3 : 2</p><p>⇒ 12x + 1,20,000 = (3/2) × 12x<br/>⇒ 12x + 1,20,000 = 18x<br/>⇒ 1,20,000 = 6x<br/>⇒ x = 20,000</p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p>In a city council election, a total of 4800 votes were polled. Maya, Kabir, and Sara were the candidates contesting the election. 15% of the total votes were declared invalid. Maya received one-third of the votes received by Kabir. The average of Maya’s and Kabir’s votes was equal to Sara’s votes. How many votes did Maya receive?</p>",
+      "option1": "<p>680</p>",
+      "option2": "<p>650</p>",
+      "option3": "<p>560</p>",
+      "option4": "<p>590</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image005.png"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p>The sides of a triangle are 48 cm, 140 cm, and 148 cm. The circumference of its circumcircle is:</p>",
+      "option1": "<p>142π cm</p>",
+      "option2": "<p>144π cm</p>",
+      "option3": "<p>146π cm</p>",
+      "option4": "<p>148π cm</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image006.png"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p>If x⁴ + y⁴ + x²y² = 273 and x² + y² + xy = 21, then what is the value of x/y + y/x?</p>",
+      "option1": "<p>17/4</p>",
+      "option2": "<p>15/4</p>",
+      "option3": "<p>17/3</p>",
+      "option4": "<p>5</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image008.png"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p>A triangle has vertices at A(1, 2), B(6, 2), and C(3, 8). What is its area?</p>",
+      "option1": "<p>12 sq. units</p>",
+      "option2": "<p>15 sq. units</p>",
+      "option3": "<p>18 sq. units</p>",
+      "option4": "<p>20 sq. units</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Short method:</p><p>AB horizontal ⇒ base = 6 − 1 = 5</p><p>Height = 8 − 2 = 6</p><p>Area = 1/2 × 5 × 6 = 15</p><p>Answer = 15 sq. units</p><p>Basic method:</p><p>Using coordinate formula:</p><p>Area = 1/2 | x₁(y₂ − y₃) + x₂(y₃ − y₁) + x₃(y₁ − y₂) |</p><p>= 1/2 | 1(2 − 8) + 6(8 − 2) + 3(2 − 2) |</p><p>= 1/2 | 1(−6) + 6(6) + 3(0) |</p><p>= 1/2 | −6 + 36 + 0 |</p><p>= 1/2 × 30</p><p>= 15 sq. units</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p>A certain sum invested at simple interest for 2 years amounts to Rs. 10,080 and the same sum invested at simple interest for 5 years amounts to Rs. 12,600, with the rate of interest being the same in both cases. What is the rate of interest p.a.?</p>",
+      "option1": "<p>15%</p>",
+      "option2": "<p>18%</p>",
+      "option3": "<p>10%</p>",
+      "option4": "<p>8%</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image009.png"
+    },
+    {
+      "sr_no": 63,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image011.png",
+      "option1": "<p>1/7</p>",
+      "option2": "<p>1/14</p>",
+      "option3": "<p>1/9</p>",
+      "option4": "<p>1/12</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image012.png"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p>A person bought a cycle at a discount of 10% on the marked price. He spent Rs. 500 on repairs and sold it for Rs. 5,500, gaining 10%. What was the marked price?</p>",
+      "option1": "<p>₹5150</p>",
+      "option2": "<p>₹5050</p>",
+      "option3": "<p>₹5200</p>",
+      "option4": "<p>₹5000</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image013.png"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p>R’s income is 300 percent of S’s income and R’s expenditure is 150 percent of S’s expenditure. If R’s income is 500 percent of S’s expenditure, then what is the respective ratio of R’s savings and S’s savings?</p>",
+      "option1": "<p>7 : 5</p>",
+      "option2": "<p>9 : 7</p>",
+      "option3": "<p>11 : 3</p>",
+      "option4": "<p>21 : 4</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Let S’s expenditure = 1</p><p>R’s income = 500% = 5</p><p>5 = 300% of S’s income ⇒ S’s income = 5/3</p><p>R’s expenditure = 150% = 1.5</p><p>Savings:<br/>R = 5 − 1.5 = 3.5 = 7/2<br/>S = 5/3 − 1 = 2/3</p><p>Ratio = (7/2) : (2/3)</p><p>Multiply by 6 ⇒ 21 : 4</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p>In ∆ABC, ∠A = 90°, M is the midpoint of BC and D is a point on BC such that AD ⊥ BC. If AB = 7 cm and AC = 24 cm, then AD : AM is equal to:</p>",
+      "option1": "<p>221 : 402</p>",
+      "option2": "<p>83 : 112</p>",
+      "option3": "<p>116 : 325</p>",
+      "option4": "<p>336 : 625</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image014.png"
+    },
+    {
+      "sr_no": 67,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image015.png",
+      "option1": "<p>15.4</p>",
+      "option2": "<p>16.4</p>",
+      "option3": "<p>17.4</p>",
+      "option4": "<p>18.4</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>2021 sales (in thousands):<br/>75 + 80 + 70 + 90 + 88 = 403</p><p>Average (2021) = 403 / 5 = 80.6</p><p>2022 sales (in thousands):<br/>85 + 90 + 110 + 95 + 110 = 490</p><p>Average (2022) = 490 / 5 = 98</p><p>Difference = 98 − 80.6 = 17.4 thousand</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image016.png",
+      "option1": "<p>15√3 m</p>",
+      "option2": "<p>29√3 m</p>",
+      "option3": "<p>43/√3 m</p>",
+      "option4": "<p>45√3 m</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image018.png"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p>The base of a prism is a rectangle whose length is three times its width. The perimeter of the base is 40 cm. The prism is divided into 5 horizontal layers whose heights form an arithmetic progression starting from 8 cm in the first layer and ending at 16 cm in the fifth layer. What is the total volume of the prism?</p>",
+      "option1": "<p>4500 cm³</p>",
+      "option2": "<p>4550 cm³</p>",
+      "option3": "<p>4570 cm³</p>",
+      "option4": "<p>4580 cm³</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image019.png"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p>A metal container in the shape of a cylinder has a radius of 14 cm and a height of 20 cm. A larger storage tank can hold 24,640 cm³ of water. How many times must the cylindrical container be completely filled to fill the storage tank?</p>",
+      "option1": "<p>3</p>",
+      "option2": "<p>2</p>",
+      "option3": "<p>1</p>",
+      "option4": "<p>4</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Volume of cylinder = πr²h<br/>= 22/7 × 14² × 20<br/>= 12,320 cm³</p><p>Number of times = 24,640/12,320</p><p>= 2 times</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p>The average marks of 40 students in a class is 75. If the marks of one student were wrongly entered as 95 instead of 55, what is the CORRECT average?</p>",
+      "option1": "<p>74</p>",
+      "option2": "<p>75</p>",
+      "option3": "<p>76</p>",
+      "option4": "<p>72</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image021.png"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p>A dealer marks a refrigerator 30% above the cost price and allows a discount of 15% on it. What is his profit (rounded off to 1 decimal place) percentage?</p>",
+      "option1": "<p>12%</p>",
+      "option2": "<p>12.5%</p>",
+      "option3": "<p>10.5%</p>",
+      "option4": "<p>10%</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Let Cost Price = 100</p><p>Marked Price = 130</p><p>After 15% discount:<br/>Selling Price = 130 × 0.85 = 110.5</p><p>Profit = 110.5 − 100 = 10.5</p><p>Profit % = 10.5%</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p>Find the point where y = 3x - 12 crosses x-axis.</p>",
+      "option1": "<p>(5, 0)</p>",
+      "option2": "<p>(4, 0)</p>",
+      "option3": "<p>(6, 0)</p>",
+      "option4": "<p>(3, 0)</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>At x-axis ⇒ y = 0</p><p>So,<br/>0 = 3x − 12<br/>3x = 12<br/>x = 4</p><p>Therefore, the point is (4, 0).</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image022.png",
+      "option1": "<p>C and E</p>",
+      "option2": "<p>A and D</p>",
+      "option3": "<p>B and D</p>",
+      "option4": "<p>B and C</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Cricket percentages:</p><p>A = 35%<br/>B = 37%<br/>C = 50%<br/>D = 35%<br/>E = 30%</p><p>Equal percentages = A and D (35%)</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p>ABCD is a cyclic quadrilateral in which sides AD and BC are produced to meet at P, and sides DC and AB meet at Q when produced. If ∠A = 64° and ∠ABC = 78°, then ∠DPC – ∠BQC = ?</p>",
+      "option1": "<p>38°</p>",
+      "option2": "<p>42°</p>",
+      "option3": "<p>56°</p>",
+      "option4": "<p>24°</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1771585666828_image023.png"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>IDIOM:</p><p>What does \"A biting remark\" mean?</p>",
+      "option1": "<p>A remark about food.</p>",
+      "option2": "<p>A very critical comment.</p>",
+      "option3": "<p>A humorous joke. </p>",
+      "option4": "<p>A compliment given sarcastically.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The idiom “A biting remark” means a very critical, harsh, or cutting comment (कठोर या तीक्ष्ण टिप्पणी) — something sharp enough to hurt or sting emotionally.</p><p>Option Analysis:</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>Fill in the blank:</p><p>\"I will lend you the book provided ______.\"</p>",
+      "option1": "<p>you will return it tomorrow. </p>",
+      "option2": "<p>you would return it tomorrow. </p>",
+      "option3": "<p>you return it tomorrow. </p>",
+      "option4": "<p>you returning it tomorrow.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct completion is: Option 3: you return it tomorrow. ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Arrange the following sentences to form a coherent paragraph:</p><p>P. The researchers found that sleep deprivation affects the prefrontal cortex. </p><p>Q. Participants who slept less than six hours showed significantly slower reaction times.</p><p>R. This area of the brain is responsible for complex decision-making. </p><p>S. A recent study explored the link between sleep and cognitive performance. </p>",
+      "option1": "<p>QRPS</p>",
+      "option2": "<p>SPRQ</p>",
+      "option3": "<p>QSRP</p>",
+      "option4": "<p>SRQP</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The coherent arrangement of the sentences is: S → P → R → Q ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Choose the grammatically correct sentence.</p>",
+      "option1": "<p>He asked me why was I late for the meeting.</p>",
+      "option2": "<p>He asked me why I am late for the meeting.</p>",
+      "option3": "<p>He asked me why I was late for the meeting.</p>",
+      "option4": "<p>He asked me that why I was late for the meeting.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The grammatically correct sentence is:</p><p>Option 3: He asked me why I was late for the meeting. ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>IDIOM:</p><p>‘To be on the horns of a dilemma’</p>",
+      "option1": "<p>To be in a position of power</p>",
+      "option2": "<p>To have solved a mystery after so many unsuccessful attempts.</p>",
+      "option3": "<p>To be stubborn in one's opinions</p>",
+      "option4": "<p>To be forced to choose between two unpleasant options.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The idiom “to be on the horns of a dilemma” means to be forced to choose between two equally unpleasant or undesirable options (दो कठिन विकल्पों में से किसी एक को चुनने की मजबूरी).</p><p>Option Analysis:</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>One Word Substitution:</p><p>A formal expression of high praise.</p>",
+      "option1": "<p>Encomium</p>",
+      "option2": "<p>Diatribe</p>",
+      "option3": "<p>Invective</p>",
+      "option4": "<p>Pejorative</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct one‑word substitution is: Encomium ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>Read the following passage and answer the given questions accordingly:</p><p>The emergence of the BRICS bloc—initially a clever nomenclatural coinage to identify a burgeoning quartet of emerging markets—has transcended its fiscal origins to become a formidable, albeit heterogeneous, geopolitical counter-weight to the entrenched Bretton Woods institutions. While critics often decry the coalition as a \"motley crew\" of disparate political systems and divergent economic trajectories, the bloc’s recent expansionary foray signifies a deliberate pivot toward \"multipolarity.\" This shift is not merely a quest for symbolic equity but a pragmatic maneuver to insulate developing economies from the \"weaponization of finance\" and the perceived hegemony of the G7. The ideological glue binding these nations is a shared skepticism toward Western-centric unilateralism, fostering a collective push for the democratization of global governance.</p><p>However, the cohesion of this expanded vanguard remains a subject of intense scrutiny, as internal centrifugal forces threaten to dilute its strategic efficacy. The persistent Sino-Indian territorial friction and the differing degrees of \"de-dollarization\" fervor among members create a precarious equilibrium. For BRICS to evolve from a reactionary forum into a proactive architect of a new international order, it must navigate the labyrinthine complexities of intra-bloc trade and synchronized fiscal policies. The group stands at a critical juncture: it must either reconcile the antithetical interests of its diverse constituents or risk remaining a grandiose, yet functional, talk-shop defined more by what it opposes than by what it proposes.</p><p>Q- The author’s description of BRICS as a \"motley crew\" primarily emphasizes its:</p>",
+      "option1": "<p>Internal political uniformity.</p>",
+      "option2": "<p>Inherent structural diversity.</p>",
+      "option3": "<p>External financial stability.</p>",
+      "option4": "<p>Apparent military capability.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The author’s description of BRICS as a “motley crew” emphasizes its inherent structural diversity ✅.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Read the following passage and answer the given questions accordingly:</p><p>The emergence of the BRICS bloc—initially a clever nomenclatural coinage to identify a burgeoning quartet of emerging markets—has transcended its fiscal origins to become a formidable, albeit heterogeneous, geopolitical counter-weight to the entrenched Bretton Woods institutions. While critics often decry the coalition as a \"motley crew\" of disparate political systems and divergent economic trajectories, the bloc’s recent expansionary foray signifies a deliberate pivot toward \"multipolarity.\" This shift is not merely a quest for symbolic equity but a pragmatic maneuver to insulate developing economies from the \"weaponization of finance\" and the perceived hegemony of the G7. The ideological glue binding these nations is a shared skepticism toward Western-centric unilateralism, fostering a collective push for the democratization of global governance.</p><p>However, the cohesion of this expanded vanguard remains a subject of intense scrutiny, as internal centrifugal forces threaten to dilute its strategic efficacy. The persistent Sino-Indian territorial friction and the differing degrees of \"de-dollarization\" fervor among members create a precarious equilibrium. For BRICS to evolve from a reactionary forum into a proactive architect of a new international order, it must navigate the labyrinthine complexities of intra-bloc trade and synchronized fiscal policies. The group stands at a critical juncture: it must either reconcile the antithetical interests of its diverse constituents or risk remaining a grandiose, yet functional, talk-shop defined more by what it opposes than by what it proposes.</p><p>Q- What is the primary \"ideological glue\" mentioned in the first stanza?</p>",
+      "option1": "<p>Shared economic prosperity.</p>",
+      "option2": "<p>Common cultural heritage.</p>",
+      "option3": "<p>Mutual political distrust.</p>",
+      "option4": "<p>Global western skepticism.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The primary “ideological glue” mentioned in the first stanza is:</p><p>Option 4: Global western skepticism ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Read the following passage and answer the given questions accordingly:</p><p>The emergence of the BRICS bloc—initially a clever nomenclatural coinage to identify a burgeoning quartet of emerging markets—has transcended its fiscal origins to become a formidable, albeit heterogeneous, geopolitical counter-weight to the entrenched Bretton Woods institutions. While critics often decry the coalition as a \"motley crew\" of disparate political systems and divergent economic trajectories, the bloc’s recent expansionary foray signifies a deliberate pivot toward \"multipolarity.\" This shift is not merely a quest for symbolic equity but a pragmatic maneuver to insulate developing economies from the \"weaponization of finance\" and the perceived hegemony of the G7. The ideological glue binding these nations is a shared skepticism toward Western-centric unilateralism, fostering a collective push for the democratization of global governance.</p><p>However, the cohesion of this expanded vanguard remains a subject of intense scrutiny, as internal centrifugal forces threaten to dilute its strategic efficacy. The persistent Sino-Indian territorial friction and the differing degrees of \"de-dollarization\" fervor among members create a precarious equilibrium. For BRICS to evolve from a reactionary forum into a proactive architect of a new international order, it must navigate the labyrinthine complexities of intra-bloc trade and synchronized fiscal policies. The group stands at a critical juncture: it must either reconcile the antithetical interests of its diverse constituents or risk remaining a grandiose, yet functional, talk-shop defined more by what it opposes than by what it proposes.</p><p>Q- In the second stanza, the term \"centrifugal forces\" refers to factors that:</p>",
+      "option1": "<p>Consolidate regional power.</p>",
+      "option2": "<p>Accelerate economic growth.</p>",
+      "option3": "<p>Disrupt collective unity.</p>",
+      "option4": "<p>Enhance diplomatic reach.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The term “centrifugal forces” in the second stanza refers to factors that disrupt collective unity ✅.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Read the following passage and answer the given questions accordingly:</p><p>The emergence of the BRICS bloc—initially a clever nomenclatural coinage to identify a burgeoning quartet of emerging markets—has transcended its fiscal origins to become a formidable, albeit heterogeneous, geopolitical counter-weight to the entrenched Bretton Woods institutions. While critics often decry the coalition as a \"motley crew\" of disparate political systems and divergent economic trajectories, the bloc’s recent expansionary foray signifies a deliberate pivot toward \"multipolarity.\" This shift is not merely a quest for symbolic equity but a pragmatic maneuver to insulate developing economies from the \"weaponization of finance\" and the perceived hegemony of the G7. The ideological glue binding these nations is a shared skepticism toward Western-centric unilateralism, fostering a collective push for the democratization of global governance.</p><p>However, the cohesion of this expanded vanguard remains a subject of intense scrutiny, as internal centrifugal forces threaten to dilute its strategic efficacy. The persistent Sino-Indian territorial friction and the differing degrees of \"de-dollarization\" fervor among members create a precarious equilibrium. For BRICS to evolve from a reactionary forum into a proactive architect of a new international order, it must navigate the labyrinthine complexities of intra-bloc trade and synchronized fiscal policies. The group stands at a critical juncture: it must either reconcile the antithetical interests of its diverse constituents or risk remaining a grandiose, yet functional, talk-shop defined more by what it opposes than by what it proposes.</p><p>Q- To become a \"proactive architect,\" the bloc must successfully:</p>",
+      "option1": "<p>Adopt western ideologies.</p>",
+      "option2": "<p>Expand territorial borders.</p>",
+      "option3": "<p>Enforce military treaties.</p>",
+      "option4": "<p>Align conflicting motives.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The bloc can only become a “proactive architect” if it manages to align conflicting motives ✅.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>Read the following passage and answer the given questions accordingly:</p><p>The emergence of the BRICS bloc—initially a clever nomenclatural coinage to identify a burgeoning quartet of emerging markets—has transcended its fiscal origins to become a formidable, albeit heterogeneous, geopolitical counter-weight to the entrenched Bretton Woods institutions. While critics often decry the coalition as a \"motley crew\" of disparate political systems and divergent economic trajectories, the bloc’s recent expansionary foray signifies a deliberate pivot toward \"multipolarity.\" This shift is not merely a quest for symbolic equity but a pragmatic maneuver to insulate developing economies from the \"weaponization of finance\" and the perceived hegemony of the G7. The ideological glue binding these nations is a shared skepticism toward Western-centric unilateralism, fostering a collective push for the democratization of global governance.</p><p>However, the cohesion of this expanded vanguard remains a subject of intense scrutiny, as internal centrifugal forces threaten to dilute its strategic efficacy. The persistent Sino-Indian territorial friction and the differing degrees of \"de-dollarization\" fervor among members create a precarious equilibrium. For BRICS to evolve from a reactionary forum into a proactive architect of a new international order, it must navigate the labyrinthine complexities of intra-bloc trade and synchronized fiscal policies. The group stands at a critical juncture: it must either reconcile the antithetical interests of its diverse constituents or risk remaining a grandiose, yet functional, talk-shop defined more by what it opposes than by what it proposes.</p><p>Q- The \"weaponization of finance\" is presented in the text as a:</p>",
+      "option1": "<p>Reason for recent pivots.</p>",
+      "option2": "<p>Method for global equity.</p>",
+      "option3": "<p>Result of market growth.</p>",
+      "option4": "<p>Source of internal strife.</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The phrase “weaponization of finance” in the passage is presented as a reason for recent pivots ✅.</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Choose the antonym of “Plethora”</p>",
+      "option1": "<p>Fragile</p>",
+      "option2": "<p>Abundance</p>",
+      "option3": "<p>Paucity</p>",
+      "option4": "<p>Generous</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The antonym of “Plethora” is: Option 3: Paucity ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>Select the synonym of ‘Avarice’</p>",
+      "option1": "<p>Altruism</p>",
+      "option2": "<p>Cupidity</p>",
+      "option3": "<p>Accuracy</p>",
+      "option4": "<p>Audacity</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The synonym of “Avarice” is: Option 2: Cupidity ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>One-Word Substitution:</p><p>The belief that nothing in the world has a real existence.</p>",
+      "option1": "<p>Hedonism</p>",
+      "option2": "<p>Asceticism</p>",
+      "option3": "<p>Stoicism</p>",
+      "option4": "<p>Nihilism</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct one‑word substitution is: Option 4: Nihilism ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Change the voice of the following sentence:</p><p>The ancient civilization built these magnificent monuments without the aid of any modern machinery or advanced technology.</p>",
+      "option1": "<p>These magnificent monuments were built by the ancient civilization without the aid of any modern machinery or advanced technology.</p>",
+      "option2": "<p>These magnificent monuments had been built by the ancient civilization without modern machinery.</p>",
+      "option3": "<p>Modern machinery or advanced technology was not used when the ancient civilization built these monuments.</p>",
+      "option4": "<p>Without the aid of modern machinery, these magnificent monuments were being built by the ancient civilization.</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct passive voice transformation is:</p><p>Option 1: These magnificent monuments were built by the ancient civilization without the aid of any modern machinery or advanced technology. ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Change the narration of the following sentence:</p><p>She said to her friend, \"I am sorry that I forgot to bring the book that I had promised to lend you for your upcoming entrance exam.\"</p>",
+      "option1": "<p>She expressed regret to her friend that she forgot to bring the book she had promised to lend her for the entrance exam.</p>",
+      "option2": "<p>She told her friend that she was sorry she forgot to bring the book she had promised to lend her.</p>",
+      "option3": "<p>She said to her friend she was sorry that she had forgotten to bring the book she promised to lend her for the exam.</p>",
+      "option4": "<p>She apologized to her friend for forgetting to bring the book she had promised to lend her for her upcoming entrance exam.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct change of narration is:</p><p>Option 4: She apologized to her friend for forgetting to bring the book she had promised to lend her for her upcoming entrance exam. ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>Identify the error given in the sentence:</p><p>The reason why / he was unable to attend / the international conference / was because he was ill. </p>",
+      "option1": "<p>The reason why </p>",
+      "option2": "<p>he was unable to attend </p>",
+      "option3": "<p>the international conference</p>",
+      "option4": "<p>was because he was ill. </p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The error lies in “was because he was ill.”</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>Improve the highlighted part of the sentence:</p><p>The committee decided to postpone the meeting due to the fact that the chairman was unavailable.</p>",
+      "option1": "<p>as for the fact</p>",
+      "option2": "<p>because</p>",
+      "option3": "<p>on account of</p>",
+      "option4": "<p>No Improvement</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The best improvement is: “because.”</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Identify the error given in the sentence:</p><p>The judge asked the witness / that if he had seen / anyone suspicious lurking / near the premises on the night of the crime.</p>",
+      "option1": "<p>The judge asked the witness </p>",
+      "option2": "<p>that if he had seen </p>",
+      "option3": "<p>anyone suspicious lurking </p>",
+      "option4": "<p>near the premises on the night of the crime.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The error lies in “that if he had seen.”</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>Improve the highlighted part of the sentence:</p><p>The sales of electric vehicles have increased more than 50% since last year.</p>",
+      "option1": "<p>by more than 50% since last year</p>",
+      "option2": "<p>over 50% from last year</p>",
+      "option3": "<p>more than 50% from a year ago</p>",
+      "option4": "<p>No Improvement</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The best improvement is: “by more than 50% since last year.”</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>Change the narration of the following sentence:</p><p>My father said to me, \"Don't let the failures of the past discourage you from pursuing your dreams with renewed vigour and determination.\"</p>",
+      "option1": "<p>My father forbade me to let the failures of the past discourage me from pursuing my dreams with renewed vigour.</p>",
+      "option2": "<p>My father told me that I should not let the failures of the past discourage me from pursuing my dreams.</p>",
+      "option3": "<p>My father advised me not to let the failures of the past discourage me from pursuing my dreams with renewed vigour and determination.</p>",
+      "option4": "<p>My father suggested that I don't let the failures of the past discourage me from pursuing my dreams.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct change of narration is:</p><p>Option 3: My father advised me not to let the failures of the past discourage me from pursuing my dreams with renewed vigour and determination. ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Change the voice of the following sentence:</p><p>Please ensure that you return all the borrowed library books to the circulation desk before the commencement of the semester exams.</p>",
+      "option1": "<p>All the borrowed library books should be ensured to be returned by you before the exams commence.</p>",
+      "option2": "<p>Let the borrowed library books be returned to the circulation desk by you before the semester exams.</p>",
+      "option3": "<p>It is requested that you must return all the borrowed library books to the desk before the exams.</p>",
+      "option4": "<p>You are requested to ensure that all the borrowed library books are returned to the circulation desk before the commencement of the semester exams.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The correct passive voice transformation is:</p><p>Option 4: You are requested to ensure that all the borrowed library books are returned to the circulation desk before the commencement of the semester exams. ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Arrange the following sentences to form a coherent paragraph:</p><p>P. This change is driven by the rise of remote work and digital nomadism. </p><p>Q. Consequently, many companies are downsizing their physical real estate.</p><p>R. However, the modern workforce is increasingly embracing flexibility. </p><p>S. Traditionally, the concept of an office was a fixed physical location. </p>",
+      "option1": "<p>SQPR</p>",
+      "option2": "<p>QRSP</p>",
+      "option3": "<p>SRPQ</p>",
+      "option4": "<p>QSPR</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The coherent arrangement of the sentences is: S → R → P → Q ✅</p><p>Explanation:</p><p>Final Coherent Paragraph: Traditionally, the concept of an office was a fixed physical location. However, the modern workforce is increasingly embracing flexibility. This change is driven by the rise of remote work and digital nomadism. Consequently, many companies are downsizing their physical real estate.</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>Mark the antonym of ‘Exculpate’</p>",
+      "option1": "<p>Absolve</p>",
+      "option2": "<p>Explain</p>",
+      "option3": "<p>Forgive</p>",
+      "option4": "<p>Indict</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The antonym of “Exculpate” is: Option 4: Indict ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>Mark the synonym of ‘Truculent’.</p>",
+      "option1": "<p>Peaceful</p>",
+      "option2": "<p>Transient</p>",
+      "option3": "<p>Pugnacious</p>",
+      "option4": "<p>Trusting</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The synonym of “Truculent” is: Option 3: Pugnacious ✅</p><p>Explanation:</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL 2026 Live Mock 5</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

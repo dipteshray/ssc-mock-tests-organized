@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 14</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 14</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> By selling an article at 7/9 of its selling price, a man loses 12.5%. If he sells it at 90% of its original selling price, then what will be the profit percentage?</p><p><br/> </p>",
+      "option1": "<p> 1.50 %</p>",
+      "option2": "<p> 2.40 %</p>",
+      "option3": "<p> 1.25 %</p>",
+      "option4": "<p> 2.50 %</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_9817937fd9a15f03.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> A man, a woman and a boy can complete a work in 15,30 and 40 days. How many boys must assist 1 man and 3 women to complete the job in 3.75 days.</p><p><br/> </p>",
+      "option1": "<p> 15</p>",
+      "option2": "<p> 10</p>",
+      "option3": "<p> 4</p>",
+      "option4": "<p> 8</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_b9c54a1994a68094.png"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> A can do a piece of work in 4 days, and B can do four times the same work in 20 days when they work for 7 hours a day. If they work together, then how many hours in addition to 2 days’ work will they require to complete the work?</p><p><br/> </p>",
+      "option1": "<p> 4.55</p>",
+      "option2": "<p> 1.55</p>",
+      "option3": "<p> 8.55</p>",
+      "option4": "<p> 3.55</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_8d0e63365dee7489.png"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> A sum of 9450 has to distributed among A, B, C and D. Total share of B and D is equal to 8/13 of total share of A and C. Share of D is 1/5 of share of A. Share of C is 14 times of Share of A. What are the shares of A, B, C and D respectively?</p><p><br/> </p>",
+      "option1": "<p> ₹390, ₹3522, ₹5460, ₹78 </p>",
+      "option2": "<p> ₹2500, ₹5750, ₹950, ₹250 </p>",
+      "option3": "<p> ₹1800, ₹4140, ₹5220, ₹180 </p>",
+      "option4": "<p> ₹1600, ₹3680, ₹4640, ₹160</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_ead319e59ddf0e67.jpg"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> Let ‘a’ be a positive integer. When 89 and 125 are divided by ‘a’, the remainder are 4 and 6 respectively. Find the value of ‘a’?</p><p><br/> </p>",
+      "option1": "<p> 15</p>",
+      "option2": "<p> 17</p>",
+      "option3": "<p> 9</p>",
+      "option4": "<p> 7</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_ab51d1b409a34096.png"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> A starts a business by investing Rs. 25 Lakh. After 3 months, B joined the business by investing Rs. 40 Lakh then 4 months after B joined, C too joins them by investing Rs 50 lakh. One year after A started the business, they make Rs. 2,73,000 in profit. What is C’s share of the profit?</p><p><br/> </p>",
+      "option1": "<p> 100000</p>",
+      "option2": "<p> 125000</p>",
+      "option3": "<p> 75000</p>",
+      "option4": "<p> 150000</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_70961d5d38b1362b.png"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p>In a school, 40% of the number of students are girls and the rest are boys. 3/10 of the number of boys are below 12 years of age and 7/24 of the number of girls are below 12 years of age. If the number of students below 12 years of age is 178, then 1/3 of the total number of students in the school will be equal to:</p>",
+      "option1": "<p>255</p>",
+      "option2": "<p>225</p>",
+      "option3": "<p>200</p>",
+      "option4": "<p>315</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_68bdd5556c489938.jpg"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> If x is subtracted from each of the number 29, 87, 53 and 169, then the number so obtained in this order are in proportion. What is the mean proportion to (7x – 5) and (5x + 5) ?</p><p><br/> </p>",
+      "option1": "<p> 36 </p>",
+      "option2": "<p> 49 </p>",
+      "option3": "<p> 30 </p>",
+      "option4": "<p> 25</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_dfd6ec9e90f6fe58.jpg"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> On selling an article for Rs.525, the gain is 50% more than the amount of loss incurred on selling it for Rs.480. If the article is sold for Rs.500, then what is the gain/loss percent</p><p><br/> </p>",
+      "option1": "<p> Loss 0.3%</p>",
+      "option2": "<p> Loss 0.4%</p>",
+      "option3": "<p> Profit 0.4%</p>",
+      "option4": "<p> Profit 0.3%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_16e997271b930210.png"
+    },
+    {
+      "sr_no": 10,
+      "question": "<p> If the simple interest on Rs. 675 increases by Rs. 135, when the rate of interest increases by 5% per annum. Find the time for which the money was lent?</p><p><br/> </p>",
+      "option1": "<p> 2 years</p>",
+      "option2": "<p> 8 years</p>",
+      "option3": "<p> 4 years</p>",
+      "option4": "<p> None of these</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_41b902f52ff665f8.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p> After selling 816 articles, a man earns a profit of cost price of 24 articles. Find profit %</p><p><br/> </p>",
+      "option1": "<p> 5.75%</p>",
+      "option2": "<p> 7.50%</p>",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_bdc14f7f1b14009.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_69b3efe946f5e463.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_5389fcc108b73eb0.png"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p> An alloy contains copper and tin in the ratio 3:2. If 250 gm of copper is added to this alloy then the copper in it becomes double the quantity of tin in it. What is the amount of tin (in gm) in the alloy?</p><p><br/> </p>",
+      "option1": "<p> 250</p>",
+      "option2": "<p> 750</p>",
+      "option3": "<p> 1000</p>",
+      "option4": "<p> 500</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_ae05efc5c91031f8.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_58bfe0b646970680.png",
+      "option1": "<p> 15.5%</p>",
+      "option2": "<p> 18.5%</p>",
+      "option3": "<p> 16%</p>",
+      "option4": "<p> 19%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_9524d90e4c7b8c59.png"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> A shopkeeper gives 2 articles free on the purchase of every 8 articles and allows an additional discount of 10% to customers. Find the net discount.</p><p><br/> </p>",
+      "option1": "<p> 28%</p>",
+      "option2": "<p> 25%</p>",
+      "option3": "<p> 26%</p>",
+      "option4": "<p> 32%</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_5403d712318eb8b1.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p> Average of all odd numbers between 1255 and 2465 is</p><p><br/> </p>",
+      "option1": "<p> 1862</p>",
+      "option2": "<p> 1861</p>",
+      "option3": "<p> 1859</p>",
+      "option4": "<p> 1860</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_89aebd3c73689b6b.png"
+    },
+    {
+      "sr_no": 16,
+      "question": "<p> Area of a triangle with vertices (a, b+c); (b, c+a); (c, a+b)</p><p><br/> </p>",
+      "option1": "<p> abc</p>",
+      "option2": "<p> a2 + b2 + c2</p>",
+      "option3": "<p> ab + bc + ac</p>",
+      "option4": "<p> 0</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_eb26c1050ec98ed6.png"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p>PQRS is a square. SR is a tangent (at point S) to the circle with centre O and TR = OS. Then the ratio of area of the circle to the area of the square is:</p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_744a8924fae5463b.gif",
+      "option2": "<p>11/7</p>",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_95852fb48372f1.gif",
+      "option4": "<p>7/11</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_a4a376b714b3c33a.png"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> In 9 months Rs.5000 amounts to Rs.5788.125 at x% p.a. compound interest, compounded quarterly. The value of x is:</p><p><br/> </p>",
+      "option1": "<p> 5</p>",
+      "option2": "<p> 20</p>",
+      "option3": "<p> 10</p>",
+      "option4": "<p> 15</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_23c7d63363bb80ef.png"
+    },
+    {
+      "sr_no": 19,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_df245dd301296c7a.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_4dd742a18dc14b47.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_b1780d142a524c46.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_66cc77d5678c44aa.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_5acceee411944fe7.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_6a1113f950fbd5cd.png"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p> A delivery boy started from his office at 10 a.m. to deliver an article. He rode his scooter at a speed of 35km/h. He delivered the article and waited for 5 minutes to get the payment. After the payment was made, he reached his office at 11:25 a.m., traveling at a speed of 21 km/h. Find the total distance travelled by the boy.</p><p><br/> </p>",
+      "option1": "<p> 32 km</p>",
+      "option2": "<p> 17.5 km</p>",
+      "option3": "<p> 35 km</p>",
+      "option4": "<p> 40 km</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_7e0daf607cabaeca.png"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> If rate of Interest for 1st year is 9 (1/11) %, for 2nd year= 12.5% and for 3rd year is 11(1/9)%. Find the ratio of Principle to that of amount after 3 years.</p><p><br/> </p>",
+      "option1": "<p> 10:13</p>",
+      "option2": "<p> 13:17</p>",
+      "option3": "<p> 11:15</p>",
+      "option4": "<p> 17:19</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_d28bfc680e15c1b9.png"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> Three successive discounts on the marked price of an article turn out to be equivalent to single discount of 35.4%. If the rates of the first and second discount are 5% and 20% respectively, What is the rate of the third discount?</p><p><br/> </p>",
+      "option1": "<p> 7.5%</p>",
+      "option2": "<p> 15%</p>",
+      "option3": "<p> 16.67%</p>",
+      "option4": "<p> 12%</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_ad9799309c209e0.png"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p> The average of 19 numbers is 22. The average of the first 10 numbers is 25 and the average of the last 10 numbers is 19. If the 10th number is removed, then the average of the remaining numbers is:</p><p><br/> </p>",
+      "option1": "<p> 22</p>",
+      "option2": "<p> 16.5</p>",
+      "option3": "<p> 17.5</p>",
+      "option4": "<p> 11</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_749fcb3789cf78e2.gif"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p> In a laboratory, two bottles contain mixture of acid and water in the ratio 2:5 in the first and 7:3 in the second bottle. The ratio in which the contents of these two bottles be mixed such that the new mixture has acid and water in the ratio 2:3 is?</p><p><br/> </p>",
+      "option1": "<p> 4:15</p>",
+      "option2": "<p> 9:8 </p>",
+      "option3": "<p> 21:8 </p>",
+      "option4": "<p> 1:2</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_c829aa9314c415b8.png"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> In an election between two candidates, 60% of the voters cast their votes, out of which 15% of the votes were declared invalid. A candidate got 17238 votes, which were 65% of the total valid votes. Find the total number of voters enrolled in that election.</p><p><br/> </p>",
+      "option1": "<p> 50000 </p>",
+      "option2": "<p> 48000 </p>",
+      "option3": "<p> 52000 </p>",
+      "option4": "<p> 45000</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_2eeaee77268da1d9.jpg"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> A dice is thrown, find the probability that prime number will appear on the face when the dice is rolled.</p><p><br/> </p>",
+      "option1": "<p> 1/2</p>",
+      "option2": "<p> 2/3</p>",
+      "option3": "<p> 5/6</p>",
+      "option4": "<p> 1/3 </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_eac2ee79742a840d.png"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> Evaluate P (A ∪ B), if 2P (A) = P (B) = 5/13 and P (A|B) = 2/5.</p><p><br/> </p>",
+      "option1": "<p> 11/26</p>",
+      "option2": "<p> 13/11</p>",
+      "option3": "<p> 11/13</p>",
+      "option4": "<p> 15/26</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_41fe91289f5de124.png"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_95358a4141de9903.gif",
+      "option1": "<p> 560 </p>",
+      "option2": "<p> 540 </p>",
+      "option3": "<p> 524 </p>",
+      "option4": "<p> 464</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_4eed64c1c7e6972.png"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> Find the least number of square tiles that will be paved on the floor of the roof 9m 50cm long and 7m 50cm wide without any wastage?</p><p><br/> </p>",
+      "option1": "<p> 155</p>",
+      "option2": "<p> 185</p>",
+      "option3": "<p> 255</p>",
+      "option4": "<p> 285</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_8b212bfe33b09950.jpg"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> In racing over a distance X at uniform speed, A can beat B by 20 m. B can beat C by 10 m and A can beat C by 29 m. Then find X in meters</p><p><br/> </p>",
+      "option1": "<p> 100 m</p>",
+      "option2": "<p> 200 m</p>",
+      "option3": "<p> 150 m</p>",
+      "option4": "<p> 90 m</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693376106685_html_6f448e423ca3039f.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p>Q1. Sentence of a paragraph are given below. While the first and the last sentences (S1 and S6) are in the correct order, the sentences in between are jumbled up. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>S1. Surveillance footage from nearby cameras was reviewed to track the movements of possible suspects.</p><p>A. The fingerprints found at the scene were sent to the lab for identification.</p><p>B. The detective carefully examined the crime scene for any potential clues.</p><p>C. The police interrogated the witnesses to gather firsthand accounts of the incident.</p><p>D. The suspect's alibi was thoroughly checked by the investigators.</p><p>S6. Forensic experts analyzed the gathered evidence to establish a timeline of events.</p>",
+      "option1": "<p>ABDC</p>",
+      "option2": "<p>DBCA</p>",
+      "option3": "<p>BDCA</p>",
+      "option4": "<p>DBAC</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is b.</p><p>Correct sequence is DBCA.</p><p>The correct sequence of sentences about crime investigation:</p><p>S1. Surveillance footage from nearby cameras was reviewed to track the movements of possible suspects.</p><p>D The suspect's alibi was thoroughly checked by the investigators.</p><p>B The detective carefully examined the crime scene for any potential clues.</p><p>C The police interrogated the witnesses to gather firsthand accounts of the incident.</p><p>A The fingerprints found at the scene were sent to the lab for identification.</p><p>S6 Forensic experts analyzed the gathered evidence to establish a timeline of events.</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Ashmita failed to ________ to her name.</p>",
+      "option1": "<p> keep up</p>",
+      "option2": "<p> live up</p>",
+      "option3": "<p> rise up</p>",
+      "option4": "<p> shine up</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Live up:</b> to achieve what is expected, esp. high standard.</p><p> <b>Keep up:</b> move or progress at the same rate as someone or something else.</p><p> <b>Rise up:</b> come to the surface.</p><p> <b>Shine up:</b> Try to impress or please, be attentive to.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> Select the option that can be used as a one-word substitution for the given group of words.</p><p> The doctrine that every natural thing in the universe has a soul.</p>",
+      "option1": "<p> Animism</p>",
+      "option2": "<p> Ablution</p>",
+      "option3": "<p> Anemone</p>",
+      "option4": "<p> Aeshtetics</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Animism:</b> The doctrine that every natural thing in the universe has a soul.</p><p> <b>Ablution:</b> act of washing oneself.</p><p> <b>Anemone:</b> any of several types of small plant, wild or grown in gardens, with red, blue, or white flowers.</p><p> <b>Aesthetics:</b> concerned with beauty or the appreciation of beauty.</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that expresses the given sentence in direct speech.</p><p> “Why don’t you see a doctor?” said Kamal to Manisha.</p>",
+      "option1": "<p> Kamal asked Manisha why she couldn’t see a doctor.</p>",
+      "option2": "<p> Kamal demanded why Manisha didn’t see her doctor.</p>",
+      "option3": "<p> Kamal advised Manisha to see a doctor.</p>",
+      "option4": "<p> Kamal advised that Manisha to see her doctor.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is c.</p><p> <b>Rule:</b></p><p> Change <b>‘Said to’</b> into <b>advised/ order/ respected/ forbade/ suggested etc</b>.</p><p> In place of <b>‘comma and inverted comma’</b> conjunction <b>‘to’.</b></p><p> ‘<b>To’</b> is followed by <b>‘V1’.</b></p><p> <b>Tense </b>will change according to rules.</p><p> Hence, <b>“Why don’t you see a doctor?” said Kamal to Manisha.</b> ---- <b>Kamal advised Manisha to see a doctor.</b></p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.</p><p> Anita was <i><b>moved with</b></i> tears at his sad story.</p>",
+      "option1": "<p> moved by</p>",
+      "option2": "<p> moved to</p>",
+      "option3": "<p> moved in</p>",
+      "option4": "<p> No improvement</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Move to:</b> to cause (someone) to feel (an emotion and especially sadness or sympathy).</p><p> <b>Move by:</b> (of the mind or feelings) affected with emotion or passion.</p><p> <b>Move in:</b> take possession of a new house.</p><p> Thus, the correct sentence is ‘Anita was <b>moved to </b>tears at his sad story.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> Select the correct word from the given options to fill in the blank.</p><p> The order is __________ and you must abide by it, as there is not even the slightest chance of its being modified or withdrawn.</p>",
+      "option1": "<p> irretrievable</p>",
+      "option2": "<p> irreparable</p>",
+      "option3": "<p> irrevocable</p>",
+      "option4": "<p> irreconcilable</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is c.</p><p> <b>Irretrievable:</b> not able to be retrieved or put right.</p><p> <b>Irreparable:</b> (of an injury or loss) impossible to rectify or repair.</p><p> <b>Irrevocable:</b> not able to be changed, reversed, or recovered; final.</p><p> <b>Irreconcilable:</b> (of ideas or statements) so different from each other that they cannot be made compatible.</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.</p><p> Digressive</p>",
+      "option1": "<p> Rambling</p>",
+      "option2": "<p> Pertinent</p>",
+      "option3": "<p> Tangential</p>",
+      "option4": "<p> Discursive</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Digressive:</b> moves away from the main subject.</p><p> <b>Rambling:</b> (of writing or speech) lengthy and confused or inconsequential.</p><p> <b>Pertinent:</b> relevant or applicable to a particular matter; apposite.</p><p> <b>Tangential:</b> relating to or along a tangent.</p><p> <b>Discursive:</b> digressing from subject to subject.</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the right order to form a meaningful and coherent paragraph.<br/> A. According to his hypothesis, now known as the neuron theory, each nerve cell communicates with others through contiguity rather than continuity.<br/> B. The watershed of all studies of the nervous system was an observation made in 1889 by Spanish scientist Santiago Ramón y Cajal.<br/> C. It has since been proved that Cajal’s theory is not universally true, but his central idea has remained an accurate guiding principle for all further study.<br/> D. That is, communication between adjacent but separate cells must take place across the space and barriers separating them.</p>",
+      "option1": "<p> ADCB</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> BCDA</p>",
+      "option4": "<p> CDAB</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> <b>The correct order of the sentences to form a coherent paragraph is:</b></p><p> <i>B. The watershed of all studies of the nervous system was an observation made in 1889 by Spanish scientist Santiago Ramón y Cajal.</i></p><p> <i>A. According to his hypothesis, now known as the neuron theory, each nerve cell communicates with others through contiguity rather than continuity.</i></p><p> <i>D. That is, communication between adjacent but separate cells must take place across the space and barriers separating them.</i></p><p> <i>C. It has since been proved that Cajal’s theory is not universally true, but his central idea has remained an accurate guiding principle for all further study.</i></p><p> <b>So, the correct answer is (B) BADC.</b></p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> The chef is preparing a delicious meal in the kitchen.</p>",
+      "option1": "<p> A delicious meal is being prepared by the chef in the kitchen.</p>",
+      "option2": "<p> A delicious meal was being prepared by the chef in the kitchen.</p>",
+      "option3": "<p> A delicious meal has been prepared by the chef in the kitchen.</p>",
+      "option4": "<p> A delicious meal will be prepared by the chef in the kitchen.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a.</p><p> <b>Rule:</b></p><p> <b>Subject + is/am/are + V1 + Ing + Object ------ Object + is/am/are + being + V3 + by + subject</b></p><p> <b>Hence, the chef is preparing a delicious meal in the kitchen ---- A delicious meal is being prepared by the chef in the kitchen.</b></p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> I was deeply interested in flying and was making my own _______ with flying machines</p>",
+      "option1": "<p> judgements</p>",
+      "option2": "<p> experiments</p>",
+      "option3": "<p> trying</p>",
+      "option4": "<p> indulging</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> (a) <b>Judgements -</b> This word does not fit the context of the sentence. Judgments are opinions or decisions formed about something, and they do not relate directly to making or creating flying machines.</p><p> (b) <b>Experiments -</b> This is the correct choice. \"Experiments\" refers to practical activities undertaken to discover or demonstrate something new. In the context of the sentence, the speaker is likely conducting experiments with flying machines.</p><p> (c) <b>Trying -</b> While \"trying\" is a valid word, it doesn't fit as well in the sentence as \"experiments.\" \"Trying\" implies making an effort or attempting to do something, but it doesn't capture the idea of hands-on creative work with flying machines.</p><p> (d<b>) Indulging -</b> \"Indulging\" means allowing oneself to enjoy something, often in excess. It doesn't convey the idea of actively engaging in the process of making flying machines.</p><p> So, the complete sentence with the correct choice would be: \"I was deeply interested in flying and was making my own experiments with flying machines.\" This implies that the speaker is enthusiastically and creatively working on their own experiments related to flying machines.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the option that can be used as a one-word substitution for the given group of words.</p><p> Anything written in a letter after it is signed</p>",
+      "option1": "<p> Corrigendum</p>",
+      "option2": "<p> Manuscript</p>",
+      "option3": "<p> Postcript</p>",
+      "option4": "<p> Postdiction</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is c.</p><p> <b>Corrigendum</b>: a thing to be corrected, typically an error in a printed book.</p><p> <b>Manuscript</b>: a book, document, or piece of music written by hand rather than typed or printed.</p><p> <b>Postscript</b>: an additional remark at the end of a letter, after the signature and introduced by ‘PS’.</p><p> <b>Postdiction</b>: involves explanation after the fact.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Sentence of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. Environment Education unit of Centre for Science &amp; Environment has always been working towards providing easy to understand reading material.</p><p> B. Their new publication on this subject is an attempt to lend teachers a helping hand.</p><p> C. It unfolds in two sections: Climate change: how to make sense of it all</p><p> D. And natural resources how to share &amp; care.</p><p> E. However, they are introduced to students not as a paragraph to memorize but as an activity to do.</p><p> <br/> </p>",
+      "option1": "<p> ACEBD</p>",
+      "option2": "<p> DBCAE</p>",
+      "option3": "<p> ABCDE</p>",
+      "option4": "<p> BECAD</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> <b>A introduces the topic ‘Environment Education Unit'<br/> The pronoun 'their' in sentence 'B' refers to the same.<br/> C and D form a mandatory pair as both of them tell the two topics discussed in the new publication. Also 'And' in D makes it obvious that it will follow C<br/> In E , 'however' concludes the paragraph<br/> Hence, ABCDE should be the right answer. Option C.</b></p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. As the ship rose to the top of each wave, we could see endless enormous seas rolling towards us, and the screaming of the wind and spray was painful to the ears.</p><p> B. Then we double-lashed everything, went through our life-raft drill, attached lifelines, donned oilskins and life jackets — and waited.</p><p> C. At dawn on January 2, the waves were gigantic. We were sailing with only a small storm jib and were still making eight knots. </p><p> D. To slow the boat down, we dropped the storm jib and lashed a heavy mooring rope in a loop across the stern. </p><p> <br/> </p>",
+      "option1": "<p> CDAB</p>",
+      "option2": "<p> CADB</p>",
+      "option3": "<p> BDAC</p>",
+      "option4": "<p> BACD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> <b>The arrangement CADB presents a logical and coherent flow of information, moving from the conditions on the ship to the actions taken to manage the situation and the preparations made for safety.</b></p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Select the option that expresses the given sentence in direct speech.</p><p> Tom said that the burglar had come in through the window.</p>",
+      "option1": "<p> Tom said, “The burglar had came in through the window.”</p>",
+      "option2": "<p> Tom said, “The burglar must have come in through the window.”</p>",
+      "option3": "<p> Tom said, “Did the burglar come in through the window.”</p>",
+      "option4": "<p> Tom said, “The burglar came in through the window.”</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> <b>Transformation rule- Direct to Indirect Speech:</b></p><p> If <b>Reporting Verb</b> (sentence outside inverted comma) is in past tense and <b>Reported Speech</b> (Sentence inside the inverted comma) then following transformation occurs-</p><p> Simple present Tense ------------------------- Simple Past Tense</p><p> Present Continuous Tense -------------------- Past Continuous Tense.</p><p> Present Perfect Tense -------------------------- Past Perfect tense.</p><p> Present Perfect Continuous Tense ---------- Past Perfect Continuous Tense.</p><p> Other transformation occurs according to the basic rule of transformation.</p><p> Thus, the correct direct speech of the given sentence is:</p><p> <b>Tom said, “The burglar came in through the window.”</b></p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> He would always be late with submissions because he would ________ whatever he was supposed to do.</p>",
+      "option1": "<p> prevaricate</p>",
+      "option2": "<p> procrastinate</p>",
+      "option3": "<p> interrogate</p>",
+      "option4": "<p> discriminate</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> <b>Prevaricate:</b> speak or act in an evasive way.</p><p> <b>Procrastinate:</b> delay or postpone action; put off doing something.</p><p> <b>Interrogate:</b> ask questions of (someone) closely, aggressively, or formally.</p><p> <b>Discriminate:</b> make an unjust or prejudicial distinction in the treatment of different categories of people, especially on the grounds of ethnicity, sex, age, or disability.</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the most appropriate One Word Substitution of the given group of words.</p><p> Head of monks in an abbey</p>",
+      "option1": "<p> Padre</p>",
+      "option2": "<p> Dean</p>",
+      "option3": "<p> Abbot</p>",
+      "option4": "<p> Deacon</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> <b>Abbot:</b> a man who is the head of an abbey of monks.</p><p> <b>Padre:</b> the title of a priest or chaplain in some countries.</p><p> <b>Dean:</b> the head of the chapter of a cathedral or collegiate church.</p><p> <b>Deacon:</b> an ordained minister of an order ranking below that of priest.</p><p> Hence, abbot is the correct answer.</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>When they gathered together, the Buddha was completely silent &amp; some speculated that perhaps the Buddha was tired or ill.</p><p>It is said that Gautam Buddha gathered his disciples one day for a Dharma talk.</p><p>One of the Buddha’s disciples, Mahakasyapa, silently gazed at the flower &amp; broke into a broad smile.</p><p>The origin of Zen Buddhism is ascribed to the Flower Sermon, the earliest source which comes from the 14th century.</p><p>The Buddha silently held up &amp; twirled a flower and twinkled his eyes, several of his disciples tried to interpret what this meant though none of them was correct.</p>",
+      "option1": "<p>EBDAC</p>",
+      "option2": "<p>DBAEC</p>",
+      "option3": "<p>BCDEA</p>",
+      "option4": "<p>CADBE</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option d.</p><p>D introduces the topic i.e., 'Origin of Zen Buddhism’ ascribes to the flower sermon.<br/> B logically talks about the first event in the story.<br/> In A, ‘they’ refers to the disciples mentioned in B.<br/> After this E as the question was asked by the Gautam Buddha.<br/> Finally C will come as one of his disciples was able to figure out the answer.</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> Select the correct passive voice of the given sentence.</p><p> The enemies have destroyed the ‘Ajooba’ town.</p>",
+      "option1": "<p> The ‘Ajooba’ town was destroyed by the enemies.</p>",
+      "option2": "<p> The ‘Ajooba’ town had been destroyed by the enemies.</p>",
+      "option3": "<p> The ‘Ajooba’ town have been destroyed by the enemies.</p>",
+      "option4": "<p> The ‘Ajooba’ town has been destroyed by the enemies.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> <b>Rule:</b></p><p> <b>Active voice ------ passive voice (present perfect tense)</b></p><p> <b>Subject + has/have + V3 + object ------- Object has/ have + been + V3 + by + subject.</b></p><p> <b>Thus,</b></p><p> <b>the enemies have destroyed the ‘Abooja’ town ------ the ‘Abooja’ town has been destroyed by the enemies.</b></p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the right order to form a meaningful and coherent paragraph.<br/> A. Dad: “Yes, tell me.”<br/> B. Laxmi: “Dad, I need to speak to you.”<br/> C. Dad: “I think you are still too young for it.”<br/> D. Laxmi: “Please buy me a scooter.”</p>",
+      "option1": "<p> BADC</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> DCBA</p>",
+      "option4": "<p> ABDC</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The correct order of the sentences to form a coherent paragraph is:</p><p> B. Laxmi: “Dad, I need to speak to you.”</p><p> A. Dad: “Yes, tell me.”</p><p> D. Laxmi: “Please buy me a scooter.”</p><p> C. Dad: “I think you are still too young for it.”</p><p> <br/> <br/> </p><p> So, the correct answer is (A) BADC.</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p>Identify the INCORRECTLY spelt word amongst the following.</p>",
+      "option1": "<p>theoretical</p>",
+      "option2": "<p>beuatiful</p>",
+      "option3": "<p>fluorescent</p>",
+      "option4": "<p>connoissuer</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option b.</p><p><strong>Connoisseur:</strong> an expert judge in matters of taste.</p><p><strong>Theoretical</strong>: Relating to or based on theory.</p><p><strong>Beautiful</strong>: Possessing qualities that give pleasure to the senses or the mind.</p><p><strong>Fluorescent</strong>: Emitting light, especially visible light, when exposed to radiation or another source of energy. Fluorescent substances absorb energy and then re-emit it as light of a different color, often brighter or more vibrant.</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Select the option that expresses the given sentence in direct speech.</p><p> Shikha said, “Gandhiji started the Quit India Movement”.</p>",
+      "option1": "<p> Shikha said that Gandhiji started the Quit India Movement.</p>",
+      "option2": "<p> Shikha said that Gandhiji had started the Quit India Movement.</p>",
+      "option3": "<p> Shikha said that Gandhiji had been started the Quit India Movement.</p>",
+      "option4": "<p> Shikha said that Gandhiji was started the Quit India Movement.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> <b>In case of ‘historical event’ the tense does not change.</b></p><p> Thus, the correct indirect speech of the given sentence:</p><p> <b>Shikha said that Gandhiji started the Quit India Movement.</b></p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> Two hundred/ rupees are/ in my pocket/ No error</p>",
+      "option1": "<p> Two hundred</p>",
+      "option2": "<p> rupees are</p>",
+      "option3": "<p> in my pocket</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> Rule:</p><p> <b>Plural number</b> used as a singular unit will take <b>singular verb.</b></p><p> <b>Example: Two hundred miles is a long distance to cover by bicycle.</b></p><p> Hence, to rectify the sentence we will change helping verb ‘are’ into ‘is.’</p><p> The correct sentence is: <b>Two hundred rupees is in my pocket.</b></p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the most appropriate meaning of the <b>highlighted idiom.</b></p><p> Full employment is the <b>will-o-the-wisp</b> that politicians have been chasing for decades.</p>",
+      "option1": "<p> to do things by his will</p>",
+      "option2": "<p> realistic situation</p>",
+      "option3": "<p> Unreal imagining</p>",
+      "option4": "<p> want lots of fame and money</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> <b>Will-o-the-wisp:</b> something that is impossible to get or achieve.</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> The gate ______ by the watchman on duty.</p>",
+      "option1": "<p> Opened</p>",
+      "option2": "<p> was opened</p>",
+      "option3": "<p> were opened</p>",
+      "option4": "<p> was opening</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> Given sentence is in passive voice. So was opened will be used.</p><p> Thus, the complete sentence is: The gate <b>was opened</b> by the watchman on duty.</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.</p><p> Disgruntled </p>",
+      "option1": "<p> Dissatisfied</p>",
+      "option2": "<p> Miffed</p>",
+      "option3": "<p> Content</p>",
+      "option4": "<p> Aggrieved</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> <b>Disgruntled:</b> disappointed and annoyed.</p><p> <b>Content:</b> in a state of peaceful happiness.</p><p> <b>Dissatisfied:</b> not content or happy with something.</p><p> <b>Miffed:</b> somewhat annoyed; peeved.</p><p> <b>Aggrieved:</b> feeling resentment at having been unfairly treated.</p><p> Thus, the correct answer is <b>‘content’.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate meaning of the given idiom.</p><p> Queer fish</p>",
+      "option1": "<p> a type of exotic marine creature</p>",
+      "option2": "<p> a skilled fisherman</p>",
+      "option3": "<p> in a very uncomfortable situation</p>",
+      "option4": "<p> strange and eccentric person</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> <b>Queer fish:</b> A person whose behaviour is strange or unusual.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> The best-known leader/ among them were/ Mahatma Gandhi, Sardar Patel/ and Jawaharlal Nehru.</p>",
+      "option1": "<p> The best-known leader</p>",
+      "option2": "<p> among them were</p>",
+      "option3": "<p> Mahatma Gandhi, Sardar Patel</p>",
+      "option4": "<p> and Jawaharlal Nehru.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The given sentence is grammatically incorrect.</p><p> Here, ‘the best-known leaders’ will be used instead of ‘the best-known leader’.</p><p> Use <b>plural nouns</b> with <b>more than one thing</b> and <b>singular nouns</b> with <b>a single thing.</b></p><p> <b>Thus, </b>the noun<b> ‘leader’ </b>must be replaced by the plural form<b> ‘leaders.’</b></p><p> Correct sentence: <b>The best-known leaders among them were Mahatma Gandhi, Sardar Patel and Jawaharlal Nehru.</b></p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the correct passive voice form of the given sentence.</p><p> The police are determined to catch the murderer.</p>",
+      "option1": "<p> The murderer is determined to be caught by the police.</p>",
+      "option2": "<p> The murderer was determined to catch by the police.</p>",
+      "option3": "<p> The police to be determined to catch the murderer.</p>",
+      "option4": "<p> The police was determined to catch the murderer.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is option a.</p><p> <b>Active to Passive transformation rule in Infinitive (To + V1): -</b></p><p> <b>Active voice ------------------------- Passive voice</b></p><p> <b>To + V1 ------------------------------- To + be + V3</b></p><p> <b>The police are determined to catch the murderer ---- The murderer is determined to be caught by the police.</b></p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Identify the INCORRECTLY spelt word amongst the following.</p><p> <br/> </p>",
+      "option1": "<p> abstinence</p>",
+      "option2": "<p> prescience</p>",
+      "option3": "<p> exclamatory</p>",
+      "option4": "<p> Reluctent</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> <b>Reluctant:</b> unwilling and hesitant; disinclined.</p><p> <b>Abstinence:</b> the practice of restraining oneself from indulging in something, typically alcohol.</p><p> <b>Prescience:</b> the fact of knowing something in advance; foreknowledge.</p><p> <b>Exclamatory:</b> (of a cry or remark) expressing surprise, strong emotion, or pain.</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> Whenever I looked at the moon, my heart field with pleasure. I wish I had wings to fly up to moon. I know if I could 1. ______ to become an 2. _________, I would be able to go to the moon. Special equipment and a special training are required to go to moon. I would have to wear a special space suit along with a gas-mask for breathing my space shuttle would be equipped with 3. _______ cameras and other scientific 4. ________.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 1.</p><p> <br/> </p>",
+      "option1": "<p> grow up</p>",
+      "option2": "<p> mow</p>",
+      "option3": "<p> blow</p>",
+      "option4": "<p> show</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The phrase \"grow up\" in this context refers to the process of maturing and becoming an adult. When the sentence says \"if I could grow up to become an,\" it is suggesting that as the speaker matures and</p><p> becomes an adult, they might be able to fulfill their wish of going to the moon. Going to the moon requires specialized training, equipment, and knowledge, which are typically attainable as one grows up and pursues a career in space exploration or a related field. The other options (b) \"mow,\" (c) \"blow,\" and (d) \"show\" do not fit the context and meaning of the sentence.</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> Whenever I looked at the moon, my heart field with pleasure. I wish I had wings to fly up to moon. I know if I could 1. ______ to become an 2. _________, I would be able to go to the moon. Special equipment and a special training are required to go to moon. I would have to wear a special space suit along with a gas-mask for breathing my space shuttle would be equipped with 3. _______ cameras and other scientific 4. ________.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 2.</p>",
+      "option1": "<p> astrology</p>",
+      "option2": "<p> astronomy</p>",
+      "option3": "<p> astronaut</p>",
+      "option4": "<p> aristocrat</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> An <b>\"astronaut\"</b> is a person who is trained to travel and work in space. In the given context, the sentence is discussing the speaker's desire to go to the moon. To achieve this, the speaker would need to become an astronaut, as astronauts are the individuals who undergo specialized training and use the necessary equipment to travel to space, including the moon. The other options (A) \"astrology,\" (B) \"astronomy,\" and (D) \"aristocrat\" do not fit the context or the subject matter of space exploration and traveling to the moon. </p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> Whenever I looked at the moon, my heart field with pleasure. I wish I had wings to fly up to moon. I know if I could 1. ______ to become an 2. _________, I would be able to go to the moon. Special equipment and a special training are required to go to moon. I would have to wear a special space suit along with a gas-mask for breathing my space shuttle would be equipped with 3. _______ cameras and other scientific 4. ________.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 3.</p>",
+      "option1": "<p> senstitive</p>",
+      "option2": "<p> touchy</p>",
+      "option3": "<p> primitive</p>",
+      "option4": "<p> decorative</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The word \"sensitive\" fits well in the context of a space shuttle being equipped with cameras. Cameras used for scientific purposes would need to be sensitive to capture accurate and detailed images of the moon and other celestial bodies. Sensitivity in this context refers to the camera's ability to capture subtle details and variations in light and colour. The other options, (B) \"touchy,\" (C) \"primitive,\" and (D) \"decorative,\" do not convey the appropriate characteristics of cameras used for scientific exploration and observation.</p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> Whenever I looked at the moon, my heart field with pleasure. I wish I had wings to fly up to moon. I know if I could 1. ______ to become an 2. _________, I would be able to go to the moon. Special equipment and a special training are required to go to moon. I would have to wear a special space suit along with a gas-mask for breathing my space shuttle would be equipped with 3. _______ cameras and other scientific 4. ________.</p><p> Select the most appropriate option to fill in blank number 4.</p>",
+      "option1": "<p> Accessory</p>",
+      "option2": "<p> Things</p>",
+      "option3": "<p> Intuition</p>",
+      "option4": "<p> Gadgets</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> In the context of space exploration and the equipment needed for a mission to the moon, the word \"gadgets\" makes the most sense. Gadgets refer to small, specialized tools or devices that serve a specific purpose. In the context of a space shuttle and scientific exploration, gadgets could include various instruments, devices, and tools used for data collection, measurements, and experiments. The other options, (A) \"accessory,\" (B) \"things,\" and (C) \"intuition,\" do not accurately convey the idea of the specialized scientific equipment that would be necessary for a mission to the moon.</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Gender equality is, first and foremost, a human right. A woman is entitled to live in dignity and freedom. Empowering women is also an indispensable tool for advancing development and reducing poverty. Empowered women contribute to the health and productivity of whole families and communities and improved prospects for the next generation.</p><p> The importance of gender equality is underscored by its inclusion as one of the eight Millennium Development Goals. Gender equality is acknowledged as being a key to achieving the other seven goals. Yet discrimination against women – including gender-based violence, economic discrimination, reproductive health inequities, and harmful traditional practices – remains the most pervasive and persistent form of inequality.</p><p> Since the beginning of civilization, there has been bulk evidence of women being considered inferior to men. Almost every country, no matter how progressive has a history of ill-treating women. This has eventually nudged women to retrospect their status in society and has even led women from all over the world to be rebellious to reach the status they have today. Since then, women have been vocal about gender equality and have continuously made efforts to empower themselves to achieve that equality. The empowerment and autonomy of women and the improvement of their political, social, economic, and health status is a highly important end in itself. In addition, it is essential for the achievement of sustainable development. The full participation and partnership of both women and men is required in productive and reproductive life, including shared responsibilities for the care and nurturing of children and maintenance of the household. In all parts of the world, women are facing threats to their lives, health and well-being as a result of being overburdened with work and of their lack of power and influence.</p><p> In most regions of the world, women receive less formal education than men, and at the same time, women’s knowledge, abilities and coping mechanisms often go unrecognized. The power relations that impede women’s attainment of healthy and fulfilling lives operate at many levels of society, from the most personal to the highly public.</p><p> <br/> <br/> </p><p> Q. Why is the empowerment and autonomy of women considered important for development?</p>",
+      "option1": "<p> It aligns with historical norms</p>",
+      "option2": "<p> It's required for political influence</p>",
+      "option3": "<p> It's essential for sustainable development</p>",
+      "option4": "<p> It only benefits women directly</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> The empowerment and autonomy of women are considered important for sustainable development. When women are empowered and have the ability to make decisions about their own lives, it has positive ripple effects on society as a whole. Women's participation in various aspects of development, including economic, social, and political, contributes to more inclusive and balanced growth. This empowerment leads to improved health and education outcomes, reduced poverty, and enhanced overall well-being for families and communities. Gender equality and women's autonomy are not only a matter of human rights but also crucial for achieving long-term and sustainable progress.</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Gender equality is, first and foremost, a human right. A woman is entitled to live in dignity and freedom. Empowering women is also an indispensable tool for advancing development and reducing poverty. Empowered women contribute to the health and productivity of whole families and communities and improved prospects for the next generation.</p><p> The importance of gender equality is underscored by its inclusion as one of the eight Millennium Development Goals. Gender equality is acknowledged as being a key to achieving the other seven goals. Yet discrimination against women – including gender-based violence, economic discrimination, reproductive health inequities, and harmful traditional practices – remains the most pervasive and persistent form of inequality.</p><p> Since the beginning of civilization, there has been bulk evidence of women being considered inferior to men. Almost every country, no matter how progressive has a history of ill-treating women. This has eventually nudged women to retrospect their status in society and has even led women from all over the world to be rebellious to reach the status they have today. Since then, women have been vocal about gender equality and have continuously made efforts to empower themselves to achieve that equality. The empowerment and autonomy of women and the improvement of their political, social, economic, and health status is a highly important end in itself. In addition, it is essential for the achievement of sustainable development. The full participation and partnership of both women and men is required in productive and reproductive life, including shared responsibilities for the care and nurturing of children and maintenance of the household. In all parts of the world, women are facing threats to their lives, health and well-being as a result of being overburdened with work and of their lack of power and influence.</p><p> In most regions of the world, women receive less formal education than men, and at the same time, women’s knowledge, abilities and coping mechanisms often go unrecognized. The power relations that impede women’s attainment of healthy and fulfilling lives operate at many levels of society, from the most personal to the highly public.</p><p> <br/> <br/> </p><p> Q. What is the significance of gender equality in relation to the Millennium Development Goals?</p>",
+      "option1": "<p> It's a secondary goal</p>",
+      "option2": "<p> It's unrelated to other goals</p>",
+      "option3": "<p> It's key to achieving other goals</p>",
+      "option4": "<p> It's a recent addition to the goals</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> Gender equality is acknowledged as being key to achieving the other Millennium Development Goals. This means that progress in achieving gender equality has a positive impact on the advancement of various other development goals. When women are empowered, educated, and have equal access to resources and opportunities, it contributes to the overall success of efforts to reduce poverty, improve health and education, promote environmental sustainability, and more. Gender equality is not just a separate goal; it's interconnected with and enhances the outcomes of many other development objectives.</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Gender equality is, first and foremost, a human right. A woman is entitled to live in dignity and freedom. Empowering women is also an indispensable tool for advancing development and reducing poverty. Empowered women contribute to the health and productivity of whole families and communities and improved prospects for the next generation.</p><p> The importance of gender equality is underscored by its inclusion as one of the eight Millennium Development Goals. Gender equality is acknowledged as being a key to achieving the other seven goals. Yet discrimination against women – including gender-based violence, economic discrimination, reproductive health inequities, and harmful traditional practices – remains the most pervasive and persistent form of inequality.</p><p> Since the beginning of civilization, there has been bulk evidence of women being considered inferior to men. Almost every country, no matter how progressive has a history of ill-treating women. This has eventually nudged women to retrospect their status in society and has even led women from all over the world to be rebellious to reach the status they have today. Since then, women have been vocal about gender equality and have continuously made efforts to empower themselves to achieve that equality. The empowerment and autonomy of women and the improvement of their political, social, economic, and health status is a highly important end in itself. In addition, it is essential for the achievement of sustainable development. The full participation and partnership of both women and men is required in productive and reproductive life, including shared responsibilities for the care and nurturing of children and maintenance of the household. In all parts of the world, women are facing threats to their lives, health and well-being as a result of being overburdened with work and of their lack of power and influence.</p><p> In most regions of the world, women receive less formal education than men, and at the same time, women’s knowledge, abilities and coping mechanisms often go unrecognized. The power relations that impede women’s attainment of healthy and fulfilling lives operate at many levels of society, from the most personal to the highly public.</p><p> <br/> <br/> </p><p> Q. What does the text suggest is crucial for achieving gender equality?</p>",
+      "option1": "<p> Equal representation in politics</p>",
+      "option2": "<p> Shared responsibilities for children</p>",
+      "option3": "<p> Equal distribution of household chores</p>",
+      "option4": "<p> Overburdening women with work</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> The text suggests that shared responsibilities for children are crucial for achieving gender equality. This means that both women and men should participate equally in the care and nurturing of children, as well as in the maintenance of the household. When responsibilities are shared, it helps to reduce the burden on women and allows them to participate more fully in various aspects of life, including education, work, and public engagement. This shift towards shared responsibilities contributes to a more balanced and equal society.</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Gender equality is, first and foremost, a human right. A woman is entitled to live in dignity and freedom. Empowering women is also an indispensable tool for advancing development and reducing poverty. Empowered women contribute to the health and productivity of whole families and communities and improved prospects for the next generation.</p><p> The importance of gender equality is underscored by its inclusion as one of the eight Millennium Development Goals. Gender equality is acknowledged as being a key to achieving the other seven goals. Yet discrimination against women – including gender-based violence, economic discrimination, reproductive health inequities, and harmful traditional practices – remains the most pervasive and persistent form of inequality.</p><p> Since the beginning of civilization, there has been bulk evidence of women being considered inferior to men. Almost every country, no matter how progressive has a history of ill-treating women. This has eventually nudged women to retrospect their status in society and has even led women from all over the world to be rebellious to reach the status they have today. Since then, women have been vocal about gender equality and have continuously made efforts to empower themselves to achieve that equality. The empowerment and autonomy of women and the improvement of their political, social, economic, and health status is a highly important end in itself. In addition, it is essential for the achievement of sustainable development. The full participation and partnership of both women and men is required in productive and reproductive life, including shared responsibilities for the care and nurturing of children and maintenance of the household. In all parts of the world, women are facing threats to their lives, health and well-being as a result of being overburdened with work and of their lack of power and influence.</p><p> In most regions of the world, women receive less formal education than men, and at the same time, women’s knowledge, abilities and coping mechanisms often go unrecognized. The power relations that impede women’s attainment of healthy and fulfilling lives operate at many levels of society, from the most personal to the highly public.</p><p> <br/> <br/> </p><p> Q. According to the text, why is empowering women crucial for development?</p>",
+      "option1": "<p> To reduce poverty</p>",
+      "option2": "<p> To achieve political parity</p>",
+      "option3": "<p> To prioritize reproductive health</p>",
+      "option4": "<p> To promote traditional practices</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A</p><p> According to the text, empowering women is crucial for development, primarily to reduce poverty. When women are empowered, they can actively participate in economic activities, access education and resources, and make decisions about their lives. This empowerment leads to improved economic opportunities, higher income levels, and overall poverty reduction. Women's empowerment has a direct positive impact on their families, communities, and societies, contributing to sustainable development and poverty alleviation.</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Time management is a set of strategies designed to help you plan how to divide your time between specific activities to achieve maximum productivity, efficacy, and results on a daily and weekly level, as well as long term.</p><p> Time management can help you learn how to make decisions, set goals, and budget your time skilfully. It’s a way to stay organized and learn to prioritize your activities based on their importance. Effective time management can lead to increased productivity and efficiency. By prioritizing tasks and setting realistic deadlines, you can focus your energy on the most urgent tasks and accomplish them in a timely fashion. This, in turn, will increase your overall job satisfaction. Good time management can also help you in your leisure life. Once you master it, you’ll have no trouble making room for activities you enjoy (e.g., hobbies, family time, and hanging out with friends). A well-balanced routine helps reduce stress and positively impacts your physical and mental health. A study published in the Western Journal of Nursing Research that centres on how researchers could increase their research productivity confirms that employing several time management strategies, which we’ll outline below, can unlock better productivity for any individual, especially those working in a complex environment and carrying multiple roles and responsibilities. </p><p> Additionally, time management has been linked to stress management. A 2014 study conducted by researchers of the University of Wuerzburg on a group of students has shown that controlling how you spend your time helps reduce perceived stress and anxiety. At the two and four-week mark of time management training, students reported a reduction in feelings of stress. These two studies illustrate what a substantial body of research over the past few decades has concluded many times over - with proper time management, individuals can overcome the sinking feeling of being overwhelmed with work and the demands of modern-day life and learn how to lower the impact it has on them. </p><p> <br/> <br/> </p><p> Q. Which of the following best summarizes the passage's main message?</p>",
+      "option1": "<p> Proper time management eliminates stress entirely.</p>",
+      "option2": "<p> Time management is unnecessary in the modern world.</p>",
+      "option3": "<p> Effective time management leads to better productivity, reduced stress, and improved well-being.</p>",
+      "option4": "<p> Time management is only relevant for professionals in research fields.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> This choice captures the main message of the passage, emphasizing the positive outcomes of effective time management, including increased productivity, alleviation of stress, and enhanced overall well-being.</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Time management is a set of strategies designed to help you plan how to divide your time between specific activities to achieve maximum productivity, efficacy, and results on a daily and weekly level, as well as long term.</p><p> Time management can help you learn how to make decisions, set goals, and budget your time skilfully. It’s a way to stay organized and learn to prioritize your activities based on their importance. Effective time management can lead to increased productivity and efficiency. By prioritizing tasks and setting realistic deadlines, you can focus your energy on the most urgent tasks and accomplish them in a timely fashion. This, in turn, will increase your overall job satisfaction. Good time management can also help you in your leisure life. Once you master it, you’ll have no trouble making room for activities you enjoy (e.g., hobbies, family time, and hanging out with friends). A well-balanced routine helps reduce stress and positively impacts your physical and mental health. A study published in the Western Journal of Nursing Research that centres on how researchers could increase their research productivity confirms that employing several time management strategies, which we’ll outline below, can unlock better productivity for any individual, especially those working in a complex environment and carrying multiple roles and responsibilities. </p><p> Additionally, time management has been linked to stress management. A 2014 study conducted by researchers of the University of Wuerzburg on a group of students has shown that controlling how you spend your time helps reduce perceived stress and anxiety. At the two and four-week mark of time management training, students reported a reduction in feelings of stress. These two studies illustrate what a substantial body of research over the past few decades has concluded many times over - with proper time management, individuals can overcome the sinking feeling of being overwhelmed with work and the demands of modern-day life and learn how to lower the impact it has on them. </p><p> <br/> <br/> </p><p> Q. The passage mentions that effective time management contributes to achieving which of the following on a daily and weekly level?</p>",
+      "option1": "<p> Minimalistic lifestyle</p>",
+      "option2": "<p> Maximum productivity and efficacy</p>",
+      "option3": "<p> Long vacations</p>",
+      "option4": "<p> Absolute workaholism</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> The passage indicates that effective time management helps individuals achieve maximum productivity and efficacy on a daily and weekly level. It enables individuals to allocate their time efficiently to tasks, leading to more productive outcomes.</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Time management is a set of strategies designed to help you plan how to divide your time between specific activities to achieve maximum productivity, efficacy, and results on a daily and weekly level, as well as long term.</p><p> Time management can help you learn how to make decisions, set goals, and budget your time skilfully. It’s a way to stay organized and learn to prioritize your activities based on their importance. Effective time management can lead to increased productivity and efficiency. By prioritizing tasks and setting realistic deadlines, you can focus your energy on the most urgent tasks and accomplish them in a timely fashion. This, in turn, will increase your overall job satisfaction. Good time management can also help you in your leisure life. Once you master it, you’ll have no trouble making room for activities you enjoy (e.g., hobbies, family time, and hanging out with friends). A well-balanced routine helps reduce stress and positively impacts your physical and mental health. A study published in the Western Journal of Nursing Research that centres on how researchers could increase their research productivity confirms that employing several time management strategies, which we’ll outline below, can unlock better productivity for any individual, especially those working in a complex environment and carrying multiple roles and responsibilities. </p><p> Additionally, time management has been linked to stress management. A 2014 study conducted by researchers of the University of Wuerzburg on a group of students has shown that controlling how you spend your time helps reduce perceived stress and anxiety. At the two and four-week mark of time management training, students reported a reduction in feelings of stress. These two studies illustrate what a substantial body of research over the past few decades has concluded many times over - with proper time management, individuals can overcome the sinking feeling of being overwhelmed with work and the demands of modern-day life and learn how to lower the impact it has on them. </p><p> <br/> <br/> </p><p> Q. Which benefit of time management is highlighted as particularly important for individuals with complex roles and responsibilities?</p>",
+      "option1": "<p> Enhanced decision-making abilities</p>",
+      "option2": "<p> Improved job satisfaction</p>",
+      "option3": "<p> Increased efficiency</p>",
+      "option4": "<p> Better research productivity</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The passage suggests that employing time management strategies is particularly important for individuals with complex roles and responsibilities, especially those working in a complex environment and carrying multiple roles and responsibilities, as it can lead to better research productivity.</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Time management is a set of strategies designed to help you plan how to divide your time between specific activities to achieve maximum productivity, efficacy, and results on a daily and weekly level, as well as long term.</p><p> Time management can help you learn how to make decisions, set goals, and budget your time skilfully. It’s a way to stay organized and learn to prioritize your activities based on their importance. Effective time management can lead to increased productivity and efficiency. By prioritizing tasks and setting realistic deadlines, you can focus your energy on the most urgent tasks and accomplish them in a timely fashion. This, in turn, will increase your overall job satisfaction. Good time management can also help you in your leisure life. Once you master it, you’ll have no trouble making room for activities you enjoy (e.g., hobbies, family time, and hanging out with friends). A well-balanced routine helps reduce stress and positively impacts your physical and mental health. A study published in the Western Journal of Nursing Research that centres on how researchers could increase their research productivity confirms that employing several time management strategies, which we’ll outline below, can unlock better productivity for any individual, especially those working in a complex environment and carrying multiple roles and responsibilities. </p><p> Additionally, time management has been linked to stress management. A 2014 study conducted by researchers of the University of Wuerzburg on a group of students has shown that controlling how you spend your time helps reduce perceived stress and anxiety. At the two and four-week mark of time management training, students reported a reduction in feelings of stress. These two studies illustrate what a substantial body of research over the past few decades has concluded many times over - with proper time management, individuals can overcome the sinking feeling of being overwhelmed with work and the demands of modern-day life and learn how to lower the impact it has on them. </p><p> <br/> <br/> </p><p> <br/> <br/> </p><p> Q. According to the passage, what does a balanced routine accomplished through time management positively impact?</p>",
+      "option1": "<p> Only physical health</p>",
+      "option2": "<p> Only mental health</p>",
+      "option3": "<p> Both physical and mental health</p>",
+      "option4": "<p> Neither physical nor mental health</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> The passage states that a well-balanced routine accomplished through time management positively impacts both physical and mental health. It contributes to reduced stress and positively affects overall well-being.</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives.</p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives. The islands, being located close to South-East Asia, have the potential to strengthen India’s Look East-Act East policy. The Andaman and Nicobar Islands constitute just 0.2 per cent of India’s landmass but account for 30 per cent of the country’s 200-nautical-mile Exclusive Economic Zone (EEZ). The past decade has seen the arrival of new technologies which make it possible to harmonise progress with nature. This period also witnessed the rising geo-strategic importance of the islands. All-round progress of the islands is, therefore, a desirable goal.</p><p> The Andaman and Nicobar Islands, which stretch over 750 km in the Bay of Bengal, give India a tremendous reach. They give India a commanding position over the Sea Lines of Communication (SLOCs) and the considerable traffic that flows to and fro between the Indian and Pacific Oceans through the Malacca Strait. Their strategic location enables India to play an important role in the region, both in disaster situations (as during the tsunami of 2004) and in dealing with maritime security threats. With these islands as their base, India in concert with other countries can be a net security provider to the region and the SLOCs. Fortunately, the basin countries of the Andaman Sea have resolved most of their issues amicably and the maritime boundaries are well delineated. This is in sharp contrast to the disputes that arise in the South China Sea; maybe there is a lesson for them based on the Andaman Sea resolutions. Peacetime threats and challenges arise from illegal migration and human trafficking, poaching, and subversive threats from the seas, which, though not very pronounced, cannot be discounted.</p><p> <br/> <br/> </p><p> Q. Which of the following best describes the primary role of the Andaman and Nicobar Islands in India's regional strategy?</p>",
+      "option1": "<p> Economic hub for trade</p>",
+      "option2": "<p> Environmental preservation center</p>",
+      "option3": "<p> Disaster response base</p>",
+      "option4": "<p> Maritime security stronghold</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The primary role of the Andaman and Nicobar Islands in India's regional strategy is a maritime security stronghold. The passage mentions that the islands' geographical location provides India with a commanding position over Sea Lines of Communication (SLOCs) and maritime traffic flowing between the Indian and Pacific Oceans through the Malacca Strait. This strategic location allows India to play a significant role in disaster response, maritime security, and dealing with security threats in the region.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives.</p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives. The islands, being located close to South-East Asia, have the potential to strengthen India’s Look East-Act East policy. The Andaman and Nicobar Islands constitute just 0.2 per cent of India’s landmass but account for 30 per cent of the country’s 200-nautical-mile Exclusive Economic Zone (EEZ). The past decade has seen the arrival of new technologies which make it possible to harmonise progress with nature. This period also witnessed the rising geo-strategic importance of the islands. All-round progress of the islands is, therefore, a desirable goal.</p><p> The Andaman and Nicobar Islands, which stretch over 750 km in the Bay of Bengal, give India a tremendous reach. They give India a commanding position over the Sea Lines of Communication (SLOCs) and the considerable traffic that flows to and fro between the Indian and Pacific Oceans through the Malacca Strait. Their strategic location enables India to play an important role in the region, both in disaster situations (as during the tsunami of 2004) and in dealing with maritime security threats. With these islands as their base, India in concert with other countries can be a net security provider to the region and the SLOCs. Fortunately, the basin countries of the Andaman Sea have resolved most of their issues amicably and the maritime boundaries are well delineated. This is in sharp contrast to the disputes that arise in the South China Sea; maybe there is a lesson for them based on the Andaman Sea resolutions. Peacetime threats and challenges arise from illegal migration and human trafficking, poaching, and subversive threats from the seas, which, though not very pronounced, cannot be discounted.</p><p> <br/> <br/> </p><p> Q. What is the key challenge in achieving a balance between development and environmental preservation on the islands?</p>",
+      "option1": "<p> Lack of technology</p>",
+      "option2": "<p> Limited financial resources</p>",
+      "option3": "<p> Conflicting interests and priorities</p>",
+      "option4": "<p> Insufficient population on the islands</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> The key challenge in achieving a balance between development and environmental preservation on the Andaman and Nicobar Islands is the conflicting interests and priorities.</p><p> The passage suggests that while there is an aspiration for the islands' development and participation in India's broader development initiatives, there is also a need to preserve the islands' pristine nature and the equilibrium of its citizens. Balancing economic development with environmental conservation can be difficult due to differing priorities.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives.</p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives. The islands, being located close to South-East Asia, have the potential to strengthen India’s Look East-Act East policy. The Andaman and Nicobar Islands constitute just 0.2 per cent of India’s landmass but account for 30 per cent of the country’s 200-nautical-mile Exclusive Economic Zone (EEZ). The past decade has seen the arrival of new technologies which make it possible to harmonise progress with nature. This period also witnessed the rising geo-strategic importance of the islands. All-round progress of the islands is, therefore, a desirable goal.</p><p> The Andaman and Nicobar Islands, which stretch over 750 km in the Bay of Bengal, give India a tremendous reach. They give India a commanding position over the Sea Lines of Communication (SLOCs) and the considerable traffic that flows to and fro between the Indian and Pacific Oceans through the Malacca Strait. Their strategic location enables India to play an important role in the region, both in disaster situations (as during the tsunami of 2004) and in dealing with maritime security threats. With these islands as their base, India in concert with other countries can be a net security provider to the region and the SLOCs. Fortunately, the basin countries of the Andaman Sea have resolved most of their issues amicably and the maritime boundaries are well delineated. This is in sharp contrast to the disputes that arise in the South China Sea; maybe there is a lesson for them based on the Andaman Sea resolutions. Peacetime threats and challenges arise from illegal migration and human trafficking, poaching, and subversive threats from the seas, which, though not very pronounced, cannot be discounted.</p><p> <br/> <br/> </p><p> Q. The main challenge faced by the Andaman and Nicobar Islands concerning maritime security is:</p>",
+      "option1": "<p> Naval conflicts with neighbouring countries</p>",
+      "option2": "<p> Trade imbalance with South-East Asia</p>",
+      "option3": "<p> Environmental pollution from shipping routes</p>",
+      "option4": "<p> Various forms of threats from the sea</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The main challenge faced by the Andaman and Nicobar Islands concerning maritime security is various forms of threats from the sea. The passage mentions that peacetime threats and challenges to the islands include issues like illegal migration, human trafficking, poaching, and subversive threats from the sea. These threats arise from the surrounding maritime environment and can potentially compromise the security and stability of the islands. These challenges might not always be very pronounced, but they cannot be discounted. Therefore, the islands need to be prepared to address a range of security concerns originating from the sea.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives.</p><p> The Andaman and Nicobar Islands are one of India’s key assets both in terms of strategic location and natural bounties. So far, we have endeavoured to preserve the islands through a policy of protectionism that is articulated through environmental restrictions and regulation of their societal and economic affairs. This policy has worked well to preserve the pristine nature of the islands as well as its avowedly nationalist citizens in a state of equilibrium. However, times have changed, and in step with the rest of the country, people of the islands now aspire to benefit from the government’s development initiatives. The islands, being located close to South-East Asia, have the potential to strengthen India’s Look East-Act East policy. The Andaman and Nicobar Islands constitute just 0.2 per cent of India’s landmass but account for 30 per cent of the country’s 200-nautical-mile Exclusive Economic Zone (EEZ). The past decade has seen the arrival of new technologies which make it possible to harmonise progress with nature. This period also witnessed the rising geo-strategic importance of the islands. All-round progress of the islands is, therefore, a desirable goal.</p><p> The Andaman and Nicobar Islands, which stretch over 750 km in the Bay of Bengal, give India a tremendous reach. They give India a commanding position over the Sea Lines of Communication (SLOCs) and the considerable traffic that flows to and fro between the Indian and Pacific Oceans through the Malacca Strait. Their strategic location enables India to play an important role in the region, both in disaster situations (as during the tsunami of 2004) and in dealing with maritime security threats. With these islands as their base, India in concert with other countries can be a net security provider to the region and the SLOCs. Fortunately, the basin countries of the Andaman Sea have resolved most of their issues amicably and the maritime boundaries are well delineated. This is in sharp contrast to the disputes that arise in the South China Sea; maybe there is a lesson for them based on the Andaman Sea resolutions. Peacetime threats and challenges arise from illegal migration and human trafficking, poaching, and subversive threats from the seas, which, though not very pronounced, cannot be discounted.</p><p> <br/> <br/> </p><p> Q. How does the aspiration for development on the islands align with India's broader policies?</p>",
+      "option1": "<p> It contradicts India's regional engagement goals</p>",
+      "option2": "<p> It supports India's Look East-Act East policy</p>",
+      "option3": "<p> It focuses solely on environmental protection</p>",
+      "option4": "<p> It aims to disconnect from neighbouring countries</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> The aspiration for development on the Andaman and Nicobar Islands aligns with India's broader policies, specifically the Look East-Act East policy. The passage mentions that the islands' potential for development is seen as contributing to India's Look East-Act East policy. This policy aims to enhance India's engagement and cooperation with countries in South-East Asia and beyond. By leveraging the strategic location of the Andaman and Nicobar Islands, India can strengthen its regional ties, promote economic growth, and participate in regional initiatives. The islands' proximity to South-East Asia makes them an essential component of India's efforts to enhance connectivity and collaboration with neighbouring nations.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>Which of the following is also known as the ‘Sarda Act’?</p>",
+      "option1": "<p>Hindu Widow Remarriage Act</p>",
+      "option2": "<p>Indian Slavery Act</p>",
+      "option3": "<p>Child Marriage Restrain Act</p>",
+      "option4": "<p>Hindu Inheritance Act</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>The \"Child Marriage Restraint Act\" is also known as the \"Sarda Act.\" It was passed in British India in 1929 and aimed to restrain the practice of child marriage. </p><p>The act was named after its sponsor, Harbilas Sarda, who was an Indian social reformer and politician. The act set a minimum age for marriage, making it illegal for boys under 18 and girls under 14 to marry. </p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>Which of the following organizations primarily takes care of agricultural and rural credit?</p>",
+      "option1": "<p>IIFCL</p>",
+      "option2": "<p>IFCL</p>",
+      "option3": "<p>NABARD</p>",
+      "option4": "<p>NEDFI</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is NABARD. </p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>According to census 2011, which of the following percentage depict the level of urbanization in India?</p>",
+      "option1": "<p>31.16%</p>",
+      "option2": "<p>28%</p>",
+      "option3": "<p>33.16%</p>",
+      "option4": "<p>26%</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option a is the correct answer. </p><p>In the 2011 census, it was reported that 31.16% of India's population lived in urban areas, while the remaining 68.84% lived in rural areas. </p><p><strong>Data Point</strong></p><p><strong>Value</strong></p><p>Total Population</p><p>1,210,854,977</p><p>Male Population</p><p>623,270,258</p><p>Female Population</p><p>587,584,719</p><p>Population Growth Rate (2001-2011)</p><p>17.7%</p><p>Literacy Rate</p><p>74.04%</p><p>Rural Population</p><p>833,087,662</p><p>Urban Population</p><p>377,761,078</p><p>Sex Ratio (Females per 1000 Males)</p><p>940</p><p>Child Sex Ratio (0-6 years)</p><p>919</p><p>State with Highest Population</p><p>Uttar Pradesh (199,812,341)</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Pala King, Dharmapala was succeeded by his son _________.</p>",
+      "option1": "<p>Kumarpala</p>",
+      "option2": "<p>Narayanpala</p>",
+      "option3": "<p>Devapala</p>",
+      "option4": "<p>Mahipala</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>Pala King, Dharampala was succeeded by Devapala. </p><p><strong>Pala Dynasty: </strong></p><p><strong>Aspect</strong></p><p><strong>Information</strong></p><p>Period</p><p>8th century to 12th century AD</p><p>Founders</p><p>Gopala (first ruler) and later established by Dharmapala</p><p>Capital</p><p>Initially, Gaur (Gauda) and later moved to Vikramashila and Pataliputra (present-day Patna)</p><p>Region</p><p>Bengal region (present-day Bangladesh and parts of West Bengal, India)</p><p>Rulers</p><p>Gopala, Dharmapala, Devapala, Mahipala, Narayanapala, and others</p><p>Patronage of Buddhism</p><p>Prominent patrons of Mahayana Buddhism and contributed to the spread of Buddhism in the region</p><p>Achievements</p><p>- Patronized art, literature, and learning</p><p>- Developed the famous Vikramashila and Nalanda universities</p><p>- Known for their naval power and trade with Southeast Asia</p><p>Decline</p><p>- Internal struggles and weak rulers contributed to the decline</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>What type of electroacoustic transducer is used in a seismograph to measure vibrations in rockets?</p>",
+      "option1": "<p>Pressure transducer</p>",
+      "option2": "<p>Temperature transducer</p>",
+      "option3": "<p>Ultrasonic transducer</p>",
+      "option4": "<p>Piezoelectric transducer</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p><p><strong>Pressure transducers</strong> are devices used to measure pressure changes in a system. They convert the mechanical pressure into an electrical signal that can be measured and analyzed. They are commonly used in various applications, such as monitoring fluid pressures, gas pressures, and atmospheric pressures.</p><p><strong>Temperature transducers</strong>, also known as temperature sensors or thermocouples, are devices used to measure temperature changes in a system.</p><p><strong>Ultrasonic transducers</strong> are devices that use ultrasonic waves (sound waves with frequencies higher than the human audible range) to measure distances, detect objects, or perform other specific functions.</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Which of the following is an act of Privatization?</p>",
+      "option1": "<p>Implementation of GST</p>",
+      "option2": "<p>Nationalisation of a bank</p>",
+      "option3": "<p>Disinvestment in Public Sector Units</p>",
+      "option4": "<p>Reduction in Custom Duty</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>Which of the following state governments has launched the Chief Minister’s Learn and Earn scheme (Mukhyamantri Seekho Kamao Yojana)?</p>",
+      "option1": "<p>Bihar</p>",
+      "option2": "<p>Delhi</p>",
+      "option3": "<p>Madhya Pradesh</p>",
+      "option4": "<p>Uttar Pradesh</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Madhya Pradesh’. </p><p>Mukhyamantri Sikho Kamao Yojana (Chief Minister Learn and Earn Scheme) was approved by the Madhya Pradesh Cabinet. Youth who have passed class 12, ITI, UG and PG are eligible for this scheme. The scheme will provide stipend to the youths along with training, skill upgradation will boost their employment opportunities and pave way for a better way of earning.</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Christopher Guruswamy is an exponent of which of the following Indian classical dance forms?</p>",
+      "option1": "<p>Kathakali</p>",
+      "option2": "<p>Kathak</p>",
+      "option3": "<p>Bharatnatyam</p>",
+      "option4": "<p>Mohiniyattam</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is BharatNatyam. </p><p>Bharatnatyam is one of the major classical dance forms of India and has its origins in the state of Tamil Nadu. Christopher Guruswamy is known for his expertise and contributions to this graceful and expressive dance style. </p><p><strong>Classical Dance Form</strong></p><p><strong>Famous Dancers</strong></p><p>Bharatnatyam</p><p>Yamini Krishnamurthy, Alarmel Valli, Mallika Sarabhai, Padma Subrahmanyam, Vyjayanthimala</p><p>Kathak</p><p>Birju Maharaj, Shovana Narayan, Sitara Devi, Pandit Chitresh Das, Uma Sharma</p><p>Kathakali</p><p>Kalamandalam Gopi, Kottakkal Sivaraman, Sadanam Krishnankutty, Keezhpadam Kumaran Nair</p><p>Odissi</p><p>Kelucharan Mohapatra, Sanjukta Panigrahi, Sonal Mansingh, Guru Debaprasad Das, Sharon Lowen</p><p>Manipuri</p><p>Guru Bipin Singh, Darshana Jhaveri, Rajkumar Singhajit Singh, Charu Sija Mathur</p><p>Kuchipudi</p><p>Raja and Radha Reddy, Yamini Reddy, Vempati Chinna Satyam, Swapna Sundari, Bhagavatula Sethuram</p><p>Mohiniyattam</p><p>Kalamandalam Kshemavathy, Sunanda Nair, Kalamandalam Kshemavathy, Methil Devika, Dr. Neena Prasad</p><p>Sattriya</p><p>Guru Bipin Singh, Prateesha Suresh, Anwesa Mahanta, Guru Jatin Goswami, Anita Sharma</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Identify the element that has atomic number 3.</p>",
+      "option1": "<p>Lithium</p>",
+      "option2": "<p>Magnesium</p>",
+      "option3": "<p>Sodium</p>",
+      "option4": "<p>Calcium</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Lithium’. </p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>The _______________ Amendment of the Constitution of India envisages the Gram Sabha as the foundation of the Panchayat Raj System to perform functions and powers entrusted to it by the State Legislatures.</p>",
+      "option1": "<p>76th</p>",
+      "option2": "<p>73rd</p>",
+      "option3": "<p>44th</p>",
+      "option4": "<p>42nd</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is: (B) 73rd. </p><p><strong>73rd amendment</strong> introduced the <strong>Panchayati Raj system</strong> in India and provided constitutional recognition and statutory status to the Gram Sabha and the Panchayats (<strong>local self-government institutions) at the village, intermediate, and district levels. </strong></p><p>The amendment aimed to empower local communities and promote grassroots democracy by devolving powers and responsibilities to the Panchayats, making them an essential foundation of the decentralized governance structure in rural areas.</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>What is the function of hemoglobin in the human body?</p>",
+      "option1": "<p>Transporting oxygen in the blood</p>",
+      "option2": "<p>Breaking down toxins in the liver</p>",
+      "option3": "<p>Regulating blood sugar levels</p>",
+      "option4": "<p>Aiding in the digestion of proteins</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option A; Transporting oxygen in the blood. </p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>In which layer of atmosphere do we spend the most of our lives?</p>",
+      "option1": "<p>Thermosphere</p>",
+      "option2": "<p>Troposphere</p>",
+      "option3": "<p>Stratosphere</p>",
+      "option4": "<p>Exosphere</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is troposphere. </p><p>We spend most of our lives in the troposphere, which is the lowest layer of the Earth's atmosphere. The troposphere extends from the Earth's surface up to an average altitude of about 10 to 14 kilometers (6 to 9 miles) above sea level, though its height can vary depending on the location and weather conditions. This layer contains the air we breathe, weather phenomena, and most of the Earth's clouds. The other layers of the atmosphere, such as the stratosphere and thermosphere, are higher up and less frequently visited by humans in their daily lives.</p><p><strong>Atmosphere Layer</strong></p><p><strong>Altitude Range</strong></p><p><strong>Characteristic Activities</strong></p><p>Troposphere</p><p>Surface to ~10-14 km (6-9 mi)</p><p>Weather phenomena, air we breathe, most of Earth's clouds</p><p>Stratosphere</p><p>~10-50 km (6-31 mi)</p><p>Ozone layer (absorbs UV radiation), commercial jets fly here</p><p>Mesosphere</p><p>~50-85 km (31-53 mi)</p><p>Meteors burn up, very low temperatures</p><p>Thermosphere</p><p>~85-500 km (53-311 mi)</p><p>Auroras, space station orbits, high temperatures</p><p>Exosphere</p><p>~500 km and beyond</p><p>Transition to outer space, satellite orbits, low density of gases</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>Losong festival is a celebration of harvesting of ___________.</p>",
+      "option1": "<p>Sikkimese</p>",
+      "option2": "<p>Gujarati</p>",
+      "option3": "<p>Assamese</p>",
+      "option4": "<p>Bengali</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option A; Sikkimese. </p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>What is rank of India in 2023 Corruption Perceptions Index?</p>",
+      "option1": "<p>44th</p>",
+      "option2": "<p>85th</p>",
+      "option3": "<p>93th</p>",
+      "option4": "<p>42nd</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 93th.</p><p><strong>India ranked 93 among 180 countries</strong> in the current index (85th in 2022 &amp; 2021). Transparency International gave India a CPI score of 39.</p><p>In CPI-2023, Denmark (with a score of 90) topped the index for the sixth consecutive year. Finland and New Zealand occupied second and third rank with scores of 87 and 85 respectively. Somalia was ranked last.</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Balban was the slave of which of the following Delhi Sultans?</p>",
+      "option1": "<p>Iltutmish</p>",
+      "option2": "<p>Nasiruddin Mahmud</p>",
+      "option3": "<p>Qutbuddin Aibak</p>",
+      "option4": "<p>Aram Shah</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Iltutmish. </p><p>Balban belonged to the famous group of 40 Turkic slaves of Iltutmish. </p><p>Balban, also known as Ghiyas ud-Din Balban, was a Turkish slave who rose to prominence in the Delhi Sultanate. </p><p>He entered the service of the Sultanate during the reign of Sultan Iltutmish, who ruled from 1211 to 1236. Balban's exceptional military skills, loyalty, and administrative acumen earned him a high position in the court. </p><p>After the death of Nasiruddin Mahmud, Balban became the Sultan and ruled from 1266 to 1287.</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Who is the chief minister of Manipur as of Aug 2024?</p>",
+      "option1": "<p>Pema Khandu</p>",
+      "option2": "<p>Neiphiu Rio</p>",
+      "option3": "<p>N. Biren Singh</p>",
+      "option4": "<p>Hemant Soren</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option C; N. Biren Singh. </p><p><strong>Important facts about Manipur. </strong></p><p><strong>Aspect</strong></p><p><strong>Fact</strong></p><p>Location</p><p>Northeastern region of India</p><p>Capital</p><p>Imphal</p><p>Official Language</p><p>Manipuri (Meitei)</p><p>Statehood</p><p>January 21, 1972</p><p>Major Tribes</p><p>Nagas, Kukis, Meiteis, Pangals (Manipuri Muslims)</p><p>Famous Lake</p><p>Loktak Lake - Largest freshwater lake in Northeast India</p><p>Endangered Deer</p><p>Sangai Deer - Found only in Manipur, state animal</p><p>Handloom and Handicrafts</p><p>Renowned for exquisite handloom and handicraft products</p><p>Traditional Dance</p><p>Manipuri Dance - Classical dance form with graceful movements</p><p>Highest Peak</p><p>Mount Iso (Tenipu Peak) - Northeast India's highest peak</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>Correctly match the following</p>",
+      "option1": "<p>1-c, 2-a, 3-b</p>",
+      "option2": "<p>1-a, 2-b, 3-c</p>",
+      "option3": "<p>1-b, 2-c, 3-a</p>",
+      "option4": "<p>1-c, 2-b, 3-a</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p><p><strong>Crop Season</strong></p><p><strong>Time of Sowing</strong></p><p><strong>Time of Harvest</strong></p><p><strong>Examples</strong></p><p>Kharif</p><p>June to July</p><p>September to October</p><p>Rice, Maize, Millet, Cotton, Soybean, Groundnut, Sugarcane, Pigeonpea, Sorghum, Pearl millet</p><p>Rabi</p><p>October to November</p><p>April to May</p><p>Wheat, Barley, Mustard, Gram (Chickpea), Lentils, Peas, Linseed, Oats</p><p>Zaid</p><p>Between Kharif and Rabi seasons</p><p>Between Rabi and Kharif seasons</p><p>Cucumber, Watermelon, Muskmelon, Bitter gourd, Pumpkin, Moong (Green gram), Sesame (Til), Cowpea</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>Gol Gumbaz in Karnataka is a tomb of which ruler?</p>",
+      "option1": "<p>Aurangzeb</p>",
+      "option2": "<p>Devaraya II</p>",
+      "option3": "<p>Muhammad Shah I</p>",
+      "option4": "<p>Adil Shah</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Adil Shah’. </p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>The population of India according to their economic status is divided into:</p>",
+      "option1": "<p>Marginal workers, household industrial workers, non-workers</p>",
+      "option2": "<p>Main workers, marginal workers, non-workers</p>",
+      "option3": "<p>cultivators, main workers, marginal workers</p>",
+      "option4": "<p>Non workers, agricultural labourers, marginal workers</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option B is the correct answer. </p><p>The population is commonly categorized into three broad groups based on their economic activity:</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>The Article of the Indian Constitution that deals with all the executive powers of the Governor is ________________.</p>",
+      "option1": "<p>Article 154</p>",
+      "option2": "<p>Article 169</p>",
+      "option3": "<p>Article 73</p>",
+      "option4": "<p>Article 129</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option A; Article 154. </p><p><strong>Article 154 of the Indian Constitution deals with the executive powers of the Governor. </strong></p><p>According to this article, the executive powers of the state are vested in the Governor. </p><p>The Governor acts as the head of the state's executive and exercises these powers on the advice of the Council of Ministers headed by the Chief Minister. </p><p><strong>Article 169</strong>: Article 169 of the Indian Constitution deals with the creation or abolition of Legislative Councils in states.</p><p><strong>Article 73:</strong> Article 73 of the Indian Constitution deals with the extent of executive power of the Union (Central Government) in the context of the federal structure of India. It states that the executive power of the Union extends to matters on which Parliament has the power to make laws. In other words, the Central Government has executive authority in subjects under the Union List (i.e., matters on which only the Central Government can legislate) and Concurrent List (i.e., matters on which both the Central and State Governments can legislate). </p><p><strong>Article 129</strong>: Article 129 of the Indian Constitution deals with the Supreme Court's powers to punish for contempt of court. According to this article, the Supreme Court has the authority to punish any person for contempt of itself. Contempt of court refers to any act that shows disrespect or disregard for the authority, dignity, or orders of the court.</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>Who amongst the following has won the Women’s singles title at the 2023 French Open?</p>",
+      "option1": "<p>Karolina Muchova</p>",
+      "option2": "<p>Iga Swiatek</p>",
+      "option3": "<p>Elena Rybakina</p>",
+      "option4": "<p>Coco Gauff</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Iga Swiatek. </p><p>Iga Swiatek has won the 2023 French Open Women’s Singles Title. </p><p><strong>French Open Men’s Single Title: Novak Djokovic</strong> won his men's-record 23rd Grand Slam title with a victory over Casper Ruud in French Open Final. Djokovic broke a tie with rival Rafael Nadal for the most major singles trophies. </p><p><strong>Australian Open—</strong></p><p>Men’s Single—Novak Djokovic. </p><p>Women’s Single --- Aryna Sabalenka. </p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Who is the current chairman of Rajya Sabha?</p>",
+      "option1": "<p>Droupadi Murmu</p>",
+      "option2": "<p>M. Venkaiah Naidu</p>",
+      "option3": "<p>Jagdeep Dhankhar</p>",
+      "option4": "<p>Om Birla</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Jagdeep Dhankhar. </p><p><strong>The Vice President of India</strong> is the ex-officio Chairman of Rajya Sabha. Jagdeep Dhankhar is current Vice President of India. </p><p><strong>Article 64:</strong> The Vice-President shall be ex officio Chairman of the Council of States and shall not hold any other office of profit. </p><p><strong>Vice President of India: </strong></p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>The confluence of two holy rivers Alaknanda and Bhagirathi to form Ganga is known as ______.<br/> </p>",
+      "option1": "<p>Devkoomud<br/> </p>",
+      "option2": "<p>Devdristi<br/> </p>",
+      "option3": "<p>Devmukhut<br/> </p>",
+      "option4": "<p>Devprayag<br/> </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option D; Devprayag. </p><p><strong>Panch Prayag</strong></p><p><strong>Location</strong></p><p><strong>Confluence of Alaknanda with</strong></p><p>Vishnuprayag</p><p>Joshimath, Chamoli</p><p>Dhauliganga River</p><p>Nandaprayag</p><p>Chamoli</p><p>Nandakini River</p><p>Karnaprayag</p><p>Chamoli</p><p>Pindar River</p><p>Rudraprayag</p><p>Rudraprayag, Uttarakhand</p><p>Mandakini River</p><p>Devprayag</p><p>Tehri Garhwal</p><p>Bhagirathi River</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>The \"August Offer\" made by the British government in 1940 proposed the expansion of which Indian institution?</p>",
+      "option1": "<p>Legislative Councils</p>",
+      "option2": "<p>Indian Civil Services</p>",
+      "option3": "<p>Indian National Army</p>",
+      "option4": "<p>Indian National Congress<br/> </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option A is the correct answer. </p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>When was VAT introduced in India?</p>",
+      "option1": "<p>2002</p>",
+      "option2": "<p>2003</p>",
+      "option3": "<p>2005</p>",
+      "option4": "<p>2004</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option C; 2005. </p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>Q. Five colleagues, Chand Chandini, Nidhi, Vikram and Ajay, are sitting in a row facing north. Who sits in the right extreme?</p><p>I. Nidhi and Chandini occupy the extreme ends of the row. Vikram is sitting exactly in the centre. No two people with the name starting with the same letter are immediate neighbours of each other.</p><p>II. Ajay is sitting to the immediate left of Vikram. No two people with the name starting with the same letter are immediate neighbours of each other.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image002.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image003.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image004.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image005.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image006.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image003.jpeg"
+    },
+    {
+      "sr_no": 103,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image007.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image007.png"
+    },
+    {
+      "sr_no": 104,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image008.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image009.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image010.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image011.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image012.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 105,
+      "question": "<p>5 * 15 * 7 * 24 * 4 * 76</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image013.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>To prevent the recurrence of bad debts, it is imperative to implement appropriate measures by drawing lessons from the previous instances of escalating non-performing assets in the banking sector.</p><p>Course of action:</p><p>I. In order to guarantee the timely repayment of loan instalments, it is essential to closely monitor the progress of the project or endeavour for which the loan was granted on a regular basis.</p><p>II. In order to guarantee the timely repayment of loan instalments, it is essential to closely monitor the progress of the project or endeavour for which the loan was granted on a regular basis.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the given statement “To prevent the recurrence of bad debts, it is imperative to implement appropriate measures by drawing lessons from the previous instances of escalating non-performing assets in the banking sector.” </p><p>To ensure that debts taken are repaid promptly, the customers’ requirements and future prospects ought to be studied and their work constantly checked. Thus, both the courses follow.</p><p>Hence, option b is correct answer (Both I and II follow).</p>"
+    },
+    {
+      "sr_no": 107,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except Potato (which is a vegetable), all others are fruits.</p>"
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image014.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image015.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image016.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image017.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image018.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image015.jpeg"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>‘A # B’ means ‘A is married to B’</p><p>‘A@B’ means ‘A is the father of B’</p><p>‘A%B’ means ‘A is the mother of B’</p><p>‘A&amp;B’ means ‘A is the brother of B’</p><p>‘A$B’ means ‘A is the son of B’</p><p>If R @ X $ H % N # Q @ B, then how Q is related to R.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image019.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "<p>C = 1, V = 2, U = 3, A = 4, M = 5, U = 6</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Word form from the given letters:</p><p>2,4,1,3,6,5 = V A C U U M.</p><p>Hence, B is the correct answer.</p>"
+    },
+    {
+      "sr_no": 111,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image020.png"
+    },
+    {
+      "sr_no": 112,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image021.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image026.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "<p>(NOTE): Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(21, 44, 17), (28, 55, 21)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image027.png"
+    },
+    {
+      "sr_no": 114,
+      "question": "<p>4, 12, 27, 63, 135, ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image028.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>then which of the following expression shows W is daughter-in-law of B?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image029.png"
+    },
+    {
+      "sr_no": 116,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image030.png"
+    },
+    {
+      "sr_no": 117,
+      "question": "<p>Statements:</p><p>All Tomatoes are Parrot.</p><p>Some Mobiles are Tomato.</p><p>All Pillows are Mobile.</p><p>Conclusions:</p><p>1) All Pillows are Parrot.</p><p>2) Some Pillows are Parrot.</p><p>3) Some Parrots are Mobile.</p><p>4) All Mobiles are Parrot.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image031.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except ‘5932’, all are cubes.</p><p>Cube of 14 is 2744.</p><p>Cube of 16 is 4096.</p><p>Cube of 17 is 4913.</p>"
+    },
+    {
+      "sr_no": 119,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image032.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image033.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image034.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image035.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image036.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image036.jpeg"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>Statement: The sale of cooler has gone down which is considerably causing great concern to the company</p><p>Courses of action:</p><p>I. The company ought to conduct a thorough analysis of competing products in the market.</p><p>II. The price of the product should be reduced and quality improved.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the given statement ‘the sale of cooler has gone down which is considerable causing great concern to the company.’</p><p>Conclusion I is talking about ‘The company ought to conduct a thorough analysis of competing products in the market.’ This will help assess the cause for the lowering down of sales and then a suitable action can be taken. Thus, only I follow.</p><p>Conclusion II is talking about ‘The price of the product should be reduced and quality improved.’ This statement does not follow the statement.</p><p>Hence, Only I course of action follows the statement.</p>"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>Six people are sitting around a circular table facing the centre. Who is sitting to the immediate left of Priya?</p><p>I. kaya is the immediate neighbour of Jaya and Tara. Sonal is the immediate neighbour of Priya and Swati.</p><p>II. Sonal is sitting immediate right of Priya, Tara and Swati are not sitting immediately next to each other.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image037.png"
+    },
+    {
+      "sr_no": 122,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image038.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image039.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image040.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image041.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image042.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image041.jpeg"
+    },
+    {
+      "sr_no": 123,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image043.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image044.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image045.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image046.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image047.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image046.jpeg"
+    },
+    {
+      "sr_no": 124,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image048.png"
+    },
+    {
+      "sr_no": 125,
+      "question": "<p>I. A large number of candidates submitted applications against an advertisement for the post of MTS issued by SSC organisation.</p><p>II. The current year has witnessed an unparalleled surge in the count of unemployed youth as compared to the preceding year.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Increase in the number of unemployed youths is the reason behind huge crowds for a single vacancy. So, it is very clear from here that statement I is effect of the cause stated in statement II. Hence option B is the correct answer.</p><p>Hence, option b is correct answer (II is the cause and I is its possible effect)</p>"
+    },
+    {
+      "sr_no": 126,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image049.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image050.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image051.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image052.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image053.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image052.jpeg"
+    },
+    {
+      "sr_no": 127,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image054.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image055.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image056.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image057.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image058.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image058.jpeg"
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>S Y _ T V S _ H T _ S Y _ _ V _ _ J T V</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>S Y G T V/ S Y H T V/ S Y J U V/ S Y J T V.</p>"
+    },
+    {
+      "sr_no": 129,
+      "question": "<p>In row I – L, M, N and O are seated and all of them are facing south.</p><p>In row II – P, Q, R and S are seated and all of them are facing north.</p><p>N sits at the extreme right end of their row and is facing R. S sits at the extreme right end of their row. Q sits to the immediate right of R and is facing L. O sits at the extreme left end of their row.</p><p>Who sits opposite to the second left of P?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image059.png"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p># : DKR :: PCL: %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531541744_image060.png"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 14</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

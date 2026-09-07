@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL 2026 Live Mock 21</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL 2026 Live Mock 21</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 15,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p>20 friends are at a gathering. If each person shakes hands with every other person exactly once, how many handshakes occur?</p>",
+      "option1": "<p>180</p>",
+      "option2": "<p>190</p>",
+      "option3": "<p>200</p>",
+      "option4": "<p>210</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image001.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p>Pointing to a boy, Ramesh said, \"He is the son of my father’s only daughter’s husband.\" How is the boy related to Ramesh?</p>",
+      "option1": "<p>Cousin</p>",
+      "option2": "<p>Nephew</p>",
+      "option3": "<p>Son</p>",
+      "option4": "<p>Brother</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image002.png"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p>There are two terms on the left side of the symbol (::) and one term and a question mark on the right side. In place of the question mark, choose the correct alternative that has the same relation with the given term as the terms on the left side have.</p><p>Fossil : Time :: Photograph : ?</p>",
+      "option1": "<p>Reel</p>",
+      "option2": "<p>Album</p>",
+      "option3": "<p>Age</p>",
+      "option4": "<p>Moment</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: (b) Moment</p>"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p>There are two terms on the left side of the symbol (::) and one term and a question mark on the right side. In place of the question mark, choose the correct alternative that has the same relation with the given term as the terms on the left side have.</p><p>29 : 841 :: 27 : ?</p>",
+      "option1": "<p>676</p>",
+      "option2": "<p>864</p>",
+      "option3": "<p>729</p>",
+      "option4": "<p>765</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>29 → 29² = 841<br/>So, the pattern is: number × number</p><p>Now apply the same to 27:<br/>27 → 27² = 729</p>"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p>In each of the questions given below, term groups are given out of which three are alike in a particular way while one is different. Find out the odd term group. Which number is different from the rest?</p>",
+      "option1": "<p>25</p>",
+      "option2": "<p>36</p>",
+      "option3": "<p>49</p>",
+      "option4": "<p>64</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p><b>64</b> is the only cube in this arrangment.</p>"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p>Statement: Excessive use of mobile phones is harmful to mental health.<br/>Judgement: Should mobile phone usage be restricted?</p>",
+      "option1": "<p>Yes, it leads to addiction and stress.</p>",
+      "option2": "<p>No, individuals should decide their own usage.</p>",
+      "option3": "<p>Yes, it affects sleep and concentration.</p>",
+      "option4": "<p>All of the above</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: (d) All of the above</p>"
+    },
+    {
+      "sr_no": 7,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image003.png",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image004.png",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image005.png",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image006.png",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image007.png",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image004.png"
+    },
+    {
+      "sr_no": 8,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image008.png",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image009.jpeg",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image010.jpeg",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image011.jpeg",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image012.jpeg",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image013.png"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p>In the following question, a pair of words on the left is related to each other in a particular way. Find the word from the options that completes the second pair so that the same relationship holds between the pairs.</p><p>COLD : FRPG :: WARM : ____</p>",
+      "option1": "<p>ZDUP</p>",
+      "option2": "<p>ZDVP</p>",
+      "option3": "<p>YBTO</p>",
+      "option4": "<p>XASO</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>C → F (+3)<br/>O → R (+3)<br/>L → P (+4)<br/>D → G (+3)</p><p>Pattern: +3, +3, +4, +3</p><p>Apply same to WARM:<br/>W → Z (+3)<br/>A → D (+3)<br/>R → V (+4)<br/>M → P (+3)</p><p>So, WARM → ZDVP</p>"
+    },
+    {
+      "sr_no": 10,
+      "question": "<p>Complete the following series:<br/>PDA, OCZ, MAX, JXU, FTQ, ?</p>",
+      "option1": "<p>AOL</p>",
+      "option2": "<p>AQL</p>",
+      "option3": "<p>ANM</p>",
+      "option4": "<p>AMN</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>1st letters: P → O → M → J → F<br/>Pattern: −1, −2, −3, −4<br/>Next: F − 5 = A</p><p>2nd letters: D → C → A → X → T<br/>Pattern: −1, −2, −3, −4<br/>Next: T − 5 = O</p><p>3rd letters: A → Z → X → U → Q<br/>Pattern: −1, −2, −3, −4<br/>Next: Q − 5 = L</p><p>So, next term = AOL</p>"
+    },
+    {
+      "sr_no": 11,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image014.png",
+      "option1": "<p>21</p>",
+      "option2": "<p>19</p>",
+      "option3": "<p>20</p>",
+      "option4": "<p>24</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image015.png"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p>Complete the series:<br/>1024, 256, 64, 16, 4, ?</p>",
+      "option1": "<p>-1</p>",
+      "option2": "<p>1</p>",
+      "option3": "<p>0</p>",
+      "option4": "<p>2</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>1024 ÷ 4 = 256<br/>256 ÷ 4 = 64<br/>64 ÷ 4 = 16<br/>16 ÷ 4 = 4<br/>4 ÷ 4 = 1</p><p>So, next term = 1</p>"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p>Calculate the correct value if @ means subtraction, * means addition, % means multiplication, and # means division for:<br/>12 @ 8 * 6 % 4 # 2</p>",
+      "option1": "<p>17</p>",
+      "option2": "<p>18</p>",
+      "option3": "<p>16</p>",
+      "option4": "<p>20</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Solution :<br/>@ → −, * → +, % → ×, # → ÷</p><p>Expression:<br/>12 − 8 + 6 × 4 ÷ 2</p><p>Apply BODMAS:<br/>6 × 4 = 24<br/>24 ÷ 2 = 12</p><p>Now:<br/>12 − 8 + 12 = 16</p>"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p>A paper is folded once, and a hole is punched through it. When the paper is unfolded, how many holes will appear?</p>",
+      "option1": "<p>One</p>",
+      "option2": "<p>Two</p>",
+      "option3": "<p>Three</p>",
+      "option4": "<p>Four</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>When a paper is folded once, it creates two layers.<br/>If a hole is punched through the folded paper, the hole goes through both layers.<br/>When the paper is unfolded, each layer shows a hole.</p><p>So, total holes = 2 </p>"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>Statement: The productivity of employees has decreased significantly.<br/>Judgement: What should the management do?</p>",
+      "option1": "<p>Fire all underperforming employees immediately.</p>",
+      "option2": "<p>Provide training and skill development programmes.</p>",
+      "option3": "<p>Ignore the situation for some time.</p>",
+      "option4": "<p>Reduce employee salaries.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: (b) Provide training and skill development programmes</p>"
+    },
+    {
+      "sr_no": 16,
+      "question": "<p>Only Matrix I is visible. Matrix II is \"shifted by +2\" alphabetically. Identify the correct code for the given word. Find the correct code for HATE after shifting the Matrix II by +2.</p><p>Matrix I</p><p>0</p><p>1</p><p>2</p><p>3</p><p>4</p><p>0</p><p>A</p><p>B</p><p>C</p><p>D</p><p>E</p><p>1</p><p>F</p><p>G</p><p>H</p><p>I</p><p>J</p><p>2</p><p>K</p><p>L</p><p>M</p><p>N</p><p>O</p><p>3</p><p>P</p><p>Q</p><p>R</p><p>S</p><p>T</p><p>4</p><p>U</p><p>V</p><p>W</p><p>X</p><p>Y</p>",
+      "option1": "<p>12 00 34 04</p>",
+      "option2": "<p>10 44 32 20</p>",
+      "option3": "<p>13 01 42 10</p>",
+      "option4": "<p>10 44 32 02</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Matrix II (After +2 shift):</p><p>0</p><p>1</p><p>2</p><p>3</p><p>4</p><p>0</p><p>C</p><p>D</p><p>E</p><p>F</p><p>G</p><p>1</p><p>H</p><p>I</p><p>J</p><p>K</p><p>L</p><p>2</p><p>M</p><p>N</p><p>O</p><p>P</p><p>Q</p><p>3</p><p>R</p><p>S</p><p>T</p><p>U</p><p>V</p><p>4</p><p>W</p><p>X</p><p>Y</p><p>Z</p><p>A</p>"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p>If in the word \"DRIVER\", all the consonants are replaced by the next letter in the English alphabet and all vowels are replaced by the previous letter, what will be the new word?</p>",
+      "option1": "<p>ESHTDQ</p>",
+      "option2": "<p>ESHWDS</p>",
+      "option3": "<p>ESJSEQ</p>",
+      "option4": "<p>ERHTDQ</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Word: DRIVER</p><p>D → E (consonant → next)<br/>R → S (consonant → next)<br/>I → H (vowel → previous)<br/>V → W (consonant → next)<br/>E → D (vowel → previous)<br/>R → S (consonant → next)</p><p>New word = ESHWDS</p>"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p>A man is facing towards the north. He then turns 90° clockwise, again 180° anti-clockwise, and then 270° clockwise. In which direction is he facing now?</p>",
+      "option1": "<p>East</p>",
+      "option2": "<p>South</p>",
+      "option3": "<p>West</p>",
+      "option4": "<p>North</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>So, final direction = South</p><p>Correct Answer: (b) South</p>"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p>If the month of March 2024 started on a Friday, then which date will be the last Friday of June 2024?</p>",
+      "option1": "<p>27</p>",
+      "option2": "<p>28</p>",
+      "option3": "<p>29</p>",
+      "option4": "<p>30</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Now in June:<br/>1st June = Saturday<br/>So Fridays = 7, 14, 21, 28</p><p>Last Friday = 28</p>"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p>Arrange the given words in the sequence in which they occur in the dictionary.</p>",
+      "option1": "<p>1, 2, 4, 5, 3</p>",
+      "option2": "<p>1, 2, 4, 3, 5</p>",
+      "option3": "<p>2, 1, 4, 5, 3</p>",
+      "option4": "<p>1, 4, 2, 5, 3</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Develop → Device → Devil → Devoid → Devote</p>"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p>In a certain code language, ‘dog runs fast’ is coded as ‘ka te lo’ and ‘dog eats tasty food’ is coded as ‘ pa ki te su’. How will ‘dog’ be coded in that language?</p>",
+      "option1": "<p>ka</p>",
+      "option2": "<p>te</p>",
+      "option3": "<p>lo</p>",
+      "option4": "<p>pa</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: (b) te</p>"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p>In a certain code language, ‘SUN’ is coded as ‘57’ and ‘MOON’ is coded as ‘61’. How will ‘STAR’ be coded in that code language?</p>",
+      "option1": "<p>58</p>",
+      "option2": "<p>61</p>",
+      "option3": "<p>62</p>",
+      "option4": "<p>63</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>SUN → S(19) + U(21) + N(14) = 54 → +3 = 57<br/>MOON → M(13) + O(15) + O(15) + N(14) = 57 → +4 = 61</p><p>Pattern: Sum of letters + number of letters</p><p>Now for STAR:<br/>S(19) + T(20) + A(1) + R(18) = 58<br/>Number of letters = 4</p><p>58 + 4 = 62</p>"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p>5 girls A, B, C, D and E are sitting in a row facing north (not necessarily in the same order). Only D is to the right of B. Only A is to the left of C. Who is sitting in the middle of the row?</p>",
+      "option1": "<p>A</p>",
+      "option2": "<p>B</p>",
+      "option3": "<p>E</p>",
+      "option4": "<p>D</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268723400_image016.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p>In 24 hours, how many times minute and hour hands of a clock overlap?</p>",
+      "option1": "<p>24</p>",
+      "option2": "<p>22</p>",
+      "option3": "<p>20</p>",
+      "option4": "<p>21</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 25,
+      "question": "<p>At what time (in PM), the angle between hour and minute hands of a clock will be 100°?</p>",
+      "option1": "<p>6:15</p>",
+      "option2": "<p>1:55</p>",
+      "option3": "<p>7:20</p>",
+      "option4": "<p>3:00</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Formula:<br/>Angle = |30h − 5.5m| </p>"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p>The 'Bhartiya Nyaya Sanhita' (BNS), which replaced the IPC, includes a new provision for 'Organized Crime'. Which section primarily deals with this?</p>",
+      "option1": "<p>Section 111 </p>",
+      "option2": "<p>Section 183</p>",
+      "option3": "<p>Section 237</p>",
+      "option4": "<p>Section 315</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The provision for \"Organized Crime\" in the Bharatiya Nyaya Sanhita (BNS) is primarily covered under Section 111. This section formally defines and addresses organized crime, marking a significant shift from the Indian Penal Code (IPC).</p><p>Key Details</p><p>Why Section 111 Matters</p>"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p>The administrative unit 'Pargana' during the Delhi Sultanate was headed by:</p>",
+      "option1": "<p>Shiqdar </p>",
+      "option2": "<p>Amil </p>",
+      "option3": "<p>Muqaddam </p>",
+      "option4": "<p>Barid</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The administrative unit Pargana during the Delhi Sultanate was headed by the Amil, who was responsible for revenue collection and local administration.</p><p>Detailed Explanation:</p><p>❌ Why Other Options Are Incorrect</p>"
+    },
+    {
+      "sr_no": 28,
+      "question": "<p>Consider the following statements:</p><p>Which of the statements given above are correct?</p>",
+      "option1": "<p>Only 1 and 3</p>",
+      "option2": "<p>Only 2 and 3</p>",
+      "option3": "<p>Only 1 and 2</p>",
+      "option4": "<p>All 1, 2 and 3</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Statements: 1 and 2</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p>Consider the following pairs:</p><p>How many of the above pairs are correctly matched?</p>",
+      "option1": "<p>Only Three</p>",
+      "option2": "<p>All four</p>",
+      "option3": "<p>Only One</p>",
+      "option4": "<p>Only Two</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Pairs: 2</p><p>Solution:</p><p>Only two pairs are correctly matched.</p>"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p>Which color of light deviates the most when passing through a prism?</p>",
+      "option1": "<p>Violet</p>",
+      "option2": "<p>Yellow</p>",
+      "option3": "<p>Green</p>",
+      "option4": "<p>Red</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Option: Violet</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p>Which of the following classical dances is traditionally performed only by men, who also play the female roles?</p>",
+      "option1": "<p>Mohiniyattam </p>",
+      "option2": "<p>Bharatanatyam</p>",
+      "option3": "<p>Kathakali </p>",
+      "option4": "<p>Odissi </p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Kathakali</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p>Consider the following statements regarding Abdul Ghaffar Khan:</p><p>Which of the statements given above are correct?</p>",
+      "option1": "<p>Only 2 and 3</p>",
+      "option2": "<p>Only 1 and 2</p>",
+      "option3": "<p>Only 1 and 3</p>",
+      "option4": "<p>All 1, 2 and 3</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Statements: 1 and 2</p><p>Solution:</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p>Which of the following is a famous miniature painting school from the Himalayan region?</p>",
+      "option1": "<p>Mewar</p>",
+      "option2": "<p>Bundi</p>",
+      "option3": "<p>Kangra</p>",
+      "option4": "<p>Kishangarh</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Kangra</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p>Match the Indian states in List-I with their respective coastline lengths in List-II:</p><p>List-I (State)</p><p>List-II (Length in km)</p><p>A. Gujarat</p><p>1. 574.71</p><p>B. Andhra Pradesh</p><p>2. 877.97</p><p>C. Maharashtra</p><p>3. 2,340.62</p><p>D. Odisha</p><p>4. 193.95</p><p>E. Goa</p><p>5. 1,053.07</p>",
+      "option1": "<p>A–3, B–5, C–2, D–1, E–4</p>",
+      "option2": "<p>A–5, B–3, C–1, D–2, E–4</p>",
+      "option3": "<p>A–5, B–3, C–2, D–4, E–1</p>",
+      "option4": "<p>A–2, B–3, C–5, D–1, E–4</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Option: A–3, B–5, C–2, D–1, E–4</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p>India won the 2025 ICC Champions Trophy by defeating which team in the final match?</p>",
+      "option1": "<p>South Africa</p>",
+      "option2": "<p>England</p>",
+      "option3": "<p>Australia</p>",
+      "option4": "<p>New Zealand</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>India won the 2025 ICC Champions Trophy by defeating New Zealand in the final. The match was played on 9 March 2025 at the Dubai International Cricket Stadium, where India chased down New Zealand’s 251/7 to win by 4 wickets. Rohit Sharma was named Player of the Match for his crucial 76 runs.</p><p>Match Highlights-</p><p>Significance of the Victory:</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p>The 'Union Public Service Commission' (UPSC) submits its annual report to:</p>",
+      "option1": "<p>The President </p>",
+      "option2": "<p>The Parliament </p>",
+      "option3": "<p>The Cabinet Secretariat</p>",
+      "option4": "<p>The Ministry of Personnel, Public Grievances and Pensions</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Answer: The President </p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p>The ‘Bhuvan-Panchayat V4’ geoportal launched by ISRO is intended to assist in which area?</p>",
+      "option1": "<p>Urban traffic management </p>",
+      "option2": "<p>Deep sea fishing zones </p>",
+      "option3": "<p>Rural land development </p>",
+      "option4": "<p>Space debris tracking</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The ‘Bhuvan-Panchayat V4’ geoportal launched by ISRO is specifically designed to support rural land development and decentralized planning at the Panchayat level. It provides space-based geospatial tools to empower local governance and improve developmental monitoring.</p><p>Key Details:</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p>Insulin is secreted by which specific cells of the Pancreas?</p>",
+      "option1": "<p>Alpha cells </p>",
+      "option2": "<p>Beta cells </p>",
+      "option3": "<p>Delta cells </p>",
+      "option4": "<p>Gamma cells</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Beta cells</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p>The 'Zero Hour' in Parliamentary proceedings starts at:</p>",
+      "option1": "<p>10:00 AM </p>",
+      "option2": "<p>11:00 AM </p>",
+      "option3": "<p>12:00 PM</p>",
+      "option4": "<p>2:00 PM</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: 12:00 PM</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p>The working of a rocket is based on the principle of:</p>",
+      "option1": "<p>Conservation of Mass </p>",
+      "option2": "<p>Conservation of Energy </p>",
+      "option3": "<p>Conservation of Power</p>",
+      "option4": "<p>Conservation of Momentum </p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Conservation of Momentum</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p>Kala Ramnath is associated with which of the following gharanas?</p>",
+      "option1": "<p>Indore gharana</p>",
+      "option2": "<p>Maihar Gharana</p>",
+      "option3": "<p>Mewati Gharana</p>",
+      "option4": "<p>Agra Gharana</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Option: Mewati Gharana</p><p>Kala Ramnath, a renowned Hindustani classical violinist, is a disciple of Pandit Jasraj and is primarily associated with the Mewati Gharana. Her playing style is deeply influenced by the vocal traditions of this lineage, often described as \"singing violin.\"</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p>Who wrote 'Tabaqat-i-Nasiri'?</p>",
+      "option1": "<p>Amir Khusrau </p>",
+      "option2": "<p>Minhaj-us-Siraj </p>",
+      "option3": "<p>Ziauddin Barani </p>",
+      "option4": "<p>Ibn Battuta</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Minhaj-us-Siraj</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p>In which process change in internal energy equals to zero?</p><p>1. Adiabatic process</p><p>2. Isobaric Process</p><p>3. Isothermal Process</p><p>4. Isochoric Process</p>",
+      "option1": "<p>Only 2 and 3</p>",
+      "option2": "<p>Only 1 and 2</p>",
+      "option3": "<p>Only 3</p>",
+      "option4": "<p>None of these</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Only 3</p><p>Solution:<br/>For an ideal gas, internal energy depends only on temperature.</p><p>In an isothermal process, temperature remains constant:</p><p>ΔT = 0 ⇒ ΔU = 0</p><p>Therefore, the correct answer is Only 3.</p><p>Other Options</p><p>Important: ΔU = 0 in an isothermal process only for an ideal gas.</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p>The 'Pardoning Power' of the President is mentioned under which Article?</p>",
+      "option1": "<p>Article 70</p>",
+      "option2": "<p>Article 72 </p>",
+      "option3": "<p>Article 74 </p>",
+      "option4": "<p>Article 76</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Option: Article 72</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p>The 'Siachen Glacier' is located in which of the following ranges?</p>",
+      "option1": "<p>Pir Panjal </p>",
+      "option2": "<p>Zanskar </p>",
+      "option3": "<p>Ladakh</p>",
+      "option4": "<p>Karakoram </p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Option: Karakoram</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p>Which act introduced 'Dyarchy' at the central level?</p>",
+      "option1": "<p>Indian Councils Act 1909</p>",
+      "option2": "<p>Government of India Act 1919</p>",
+      "option3": "<p>Government of India Act 1935</p>",
+      "option4": "<p>Independence Act 1947</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Government of India Act 1935</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p>Which of the following trees is characteristic of 'Tropical Deciduous Forests'?</p>",
+      "option1": "<p>Teak </p>",
+      "option2": "<p>Pine </p>",
+      "option3": "<p>Mahogany </p>",
+      "option4": "<p>Spruce</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Option: Teak</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p>The 'Contingency Fund of the State' is operated by:</p>",
+      "option1": "<p>The State Finance Minister</p>",
+      "option2": "<p>The Governor </p>",
+      "option3": "<p>The Chief Minister </p>",
+      "option4": "<p>The Vidhan Sabha Speaker</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Option: The Governor</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p>The 'Laccadive Islands' (Lakshadweep) are a result of which of the following?</p>",
+      "option1": "<p>Volcanic eruption </p>",
+      "option2": "<p>Tectonic plate movement </p>",
+      "option3": "<p>Coral origin </p>",
+      "option4": "<p>Submerged mountain range</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Option: Coral origin</p><p>Explanation</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p>Consider the following statements regarding the Indian National Congress sessions held in 1923:</p><p>Which of the statements given above are correct?</p>",
+      "option1": "<p>Only 1, 2 and 3</p>",
+      "option2": "<p>Only 1, 3 and 4</p>",
+      "option3": "<p>Only 1, 2 and 4</p>",
+      "option4": "<p>All 1, 2, 3 and 4</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Statements: 1, 2, 3, and 4</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p>In triangle ABC, the coordinates of vertices A and B are (0, 0) and (9, 0), respectively. Vertex C lies somewhere on the line y = 2x, and the centroid of triangle ABC is (4, 2). What are the coordinates of point C?</p>",
+      "option1": "<p>(3, 5)</p>",
+      "option2": "<p>(2, 5)</p>",
+      "option3": "<p>(2, 6)</p>",
+      "option4": "<p>(3, 6)</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image001.png"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p>The edge (side) of a cubical water tank is 5 meters. Find the total surface area of the tank and its maximum water-holding capacity (volume).</p>",
+      "option1": "<p>Surface Area = 150 m² and Volume = 125 m³</p>",
+      "option2": "<p>Surface Area = 200 m² and Volume = 125 m³</p>",
+      "option3": "<p>Surface Area = 250 m² and Volume = 125 m³</p>",
+      "option4": "<p>Surface Area = 100 m² and Volume = 125 m³</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Side of cube = 5 m</p><p>Total Surface Area = 6a²<br/>= 6 × 5²<br/>= 6 × 25<br/>= 150 m²</p><p>Volume = a³<br/>= 5³<br/>= 125 m³</p><p>Final Answer: Total Surface Area = 150 m² and Volume = 125 m³</p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p>A salesperson sells mobile phones at Rs. 15,000 each, earning a 3% commission, and phone cases at Rs. 800 each, with a 15% commission. If they sell 2 phones and 5 cases per day, what will be their total commission earned in 25 days?</p>",
+      "option1": "<p>₹37,470</p>",
+      "option2": "<p>₹37,400</p>",
+      "option3": "<p>₹37,450</p>",
+      "option4": "<p>₹37,500</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Commission per phone = 3% of 15000 = 450<br/>For 2 phones = 2 × 450 = 900</p><p>Commission per case = 15% of 800 = 120<br/>For 5 cases = 5 × 120 = 600</p><p>Total per day = 900 + 600 = 1500</p><p>For 25 days = 1500 × 25 = 37,500</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p>In a competitive exam preparation center, the ratio of the number of students studying Mathematics to the number of students studying General Awareness is 5 : 3. If there are 120 students studying General Awareness, find the total number of students in the center.</p>",
+      "option1": "<p>160</p>",
+      "option2": "<p>240</p>",
+      "option3": "<p>320</p>",
+      "option4": "<p>400</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image004.png"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p>P and Q can finish a certain job in 20 and 30 days, respectively. They started working together, but P left after a while, and Q managed to complete the remaining work alone in 10 days. How many days did P work before leaving?</p>",
+      "option1": "<p>7 days</p>",
+      "option2": "<p>7 (1/2) days</p>",
+      "option3": "<p>8 (1/2) days</p>",
+      "option4": "<p>8 days</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image005.png"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p>A retailer sells a watch for ₹W, incurring a loss of 10%. During a holiday promotion, they mark up the same watch to ₹1.4W. At the sale, they offer a flat discount of 25% on this new marked price.<br/>What will be the percentage profit or loss for the retailer on that watch during the sale?</p>",
+      "option1": "<p>5.5% profit</p>",
+      "option2": "<p>5.5% loss</p>",
+      "option3": "<p>5.3% loss</p>",
+      "option4": "<p>5.3% profit</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>W = 0.9CP</p><p>New SP = 1.4W × 0.75 = 1.05W</p><p>⇒ SP = 1.05 × 0.9CP = 0.945CP</p><p>Loss = 1 − 0.945 = 5.5%</p><p>Answer: 5.5% Loss</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p>Two swimmers start from opposite ends of a 900 m long lake pool and swim towards each other. Swimmer A swims at 50 m/min, while Swimmer B swims at 70 m/min. However, Swimmer A starts 6 minutes earlier. At what time after A's start will they meet? </p>",
+      "option1": "<p>9 min</p>",
+      "option2": "<p>12 min</p>",
+      "option3": "<p>10 min</p>",
+      "option4": "<p>11 min</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>A swims alone for 6 min ⇒ distance = 50 × 6 = 300 m</p><p>Remaining distance = 900 − 300 = 600 m</p><p>Relative speed = 50 + 70 = 120 m/min</p><p>Time after B starts = 600 / 120 = 5 min</p><p>Total time after A starts = 6 + 5 = 11 min</p><p>Answer: 11 minutes</p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p>The investments of three partners, X, Y, and Z, are initially in the ratio 4 : 5 : 7. After a year, X adds ₹16,000, Y adds ₹15,000, and Z adds some amount to their respective investments. The new ratio of their investments becomes 6 : 7 : 9. Find the amount (in ₹) added by partner Z.</p>",
+      "option1": "<p>₹13,000</p>",
+      "option2": "<p>₹13,400</p>",
+      "option3": "<p>₹13,500</p>",
+      "option4": "<p>₹13,700</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image006.png"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p>Three concentric circles are designed for a target practice board. Their diameters form an arithmetic progression. If the smallest circle has a circumference of 10π cm and the largest circle has a circumference of 26π cm, what is the circumference of the middle circle?</p>",
+      "option1": "<p>14π</p>",
+      "option2": "<p>18π</p>",
+      "option3": "<p>16π</p>",
+      "option4": "<p>12π</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image012.png"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p>Train A can cross a pole in 9 seconds, while train B takes 12 seconds to cross train A when they travel in opposite directions on parallel tracks. If the ratio of the length of train A to that of train B is 3:2 and the speed of train A is 72 km/h, then find the speed (in km/h) of train B.</p>",
+      "option1": "<p>18 km/hr</p>",
+      "option2": "<p>16 km/hr</p>",
+      "option3": "<p>12 km/hr</p>",
+      "option4": "<p>14 km/hr</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image014.png"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p>If 45% of x is equal to 27% of y, what is the ratio x : y?</p>",
+      "option1": "<p>3 : 4</p>",
+      "option2": "<p>3 : 5</p>",
+      "option3": "<p>4 : 5</p>",
+      "option4": "<p>2 : 3</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>45% of x = 27% of y</p><p>45x = 27y</p><p>x : y = 27 : 45 = 3 : 5</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p>Rs. 1200 is lent at a certain rate of simple interest. After 8 months, another Rs.1800 is lent at a rate that is 2 times the original rate. If the total simple interest received from both amounts after 1 year is Rs. 152, find the original rate of interest.</p>",
+      "option1": "<p>4.2 %</p>",
+      "option2": "<p>5.5 %</p>",
+      "option3": "<p>3.33 %</p>",
+      "option4": "<p>6.33 %</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image016.png"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p>The distance between the centers of two circles is d. The lengths of their direct and transverse common tangents are L and M, respectively. If L² + M² = 410 and the sum of the squares of their radii is 155, find the value of d.</p>",
+      "option1": "<p>6√10 </p>",
+      "option2": "<p>6</p>",
+      "option3": "<p>5√10</p>",
+      "option4": "<p>5</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image017.png"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p>A electronics store marks its cameras at 60% above the cost price. They offer a standard discount of 20% on the marked price. If a customer receives an additional \"First-Time Buyer\" discount of Rs.600, and the store still makes a 20% profit on the cost price, what is the cost price of the camera?</p>",
+      "option1": "<p>₹7530</p>",
+      "option2": "<p>₹7590</p>",
+      "option3": "<p>₹7500</p>",
+      "option4": "<p>₹7550</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>SP after discounts = 1.6x × 0.8 − 600 = 1.28x − 600</p><p>Given SP = 1.2x</p><p>⇒ 1.28x − 600 = 1.2x<br/>⇒ 0.08x = 600<br/>⇒ x = 7500</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p>Find the least number that must be added to 5420 to make it a perfect square. Also, find the square root of the resulting perfect square number.</p>",
+      "option1": "<p>36, 72</p>",
+      "option2": "<p>56, 74</p>",
+      "option3": "<p>64, 76</p>",
+      "option4": "<p>49, 73</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Nearest perfect square above 5420:</p><p>73² = 5329<br/>74² = 5476</p><p>Required addition = 5476 − 5420 = 56</p><p>Square root = 74</p><p>Answer: 56, 74</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p>M and N are situated respectively on the sides PQ and QR of triangle PQR and this triangle is right angle at Q. If PN = 9 cm MR = 7 cm and MN = 3 cm then find the length of PR.</p>",
+      "option1": "<p>18 cm</p>",
+      "option2": "<p>8 cm</p>",
+      "option3": "<p>15 cm</p>",
+      "option4": "<p>11 cm</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image018.png"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p>Find the Simple Interest on a principal amount of ₹5,000 at an annual interest rate of 10% for a period of 2 years.</p>",
+      "option1": "<p>₹1000</p>",
+      "option2": "<p>₹1100</p>",
+      "option3": "<p>₹1200</p>",
+      "option4": "<p>₹1300</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image019.png"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p>Simplify the following expression:</p><p>72 ÷ 6 × [5 + {18 − (3² + 4×2)}] + 64 ÷ (2³) − 7 × {12 − [4 + (6 ÷ 3)]}</p>",
+      "option1": "<p>38</p>",
+      "option2": "<p>44</p>",
+      "option3": "<p>26</p>",
+      "option4": "<p>54</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>72 ÷ 6 × [5 + {18 − (9 + 8)}] + 64 ÷ 8 − 7 × {12 − [4 + 2]}</p><p>= 72 ÷ 6 × [5 + (18 − 17)] + 8 − 7 × (12 − 6)</p><p>= 72 ÷ 6 × [5 + 1] + 8 − 7 × 6</p><p>= 72 ÷ 6 × 6 + 8 − 42</p><p>= 12 × 6 + 8 − 42</p><p>= 72 + 8 − 42</p><p>= 80 − 42</p><p>= 38</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p>A right prism has a base in the shape of a trapezium (trapezoid). The parallel sides of the trapezium are 12 cm and 8 cm, and the height of the trapezium is 5 cm. If the height of the prism is 20 cm, what is its volume?</p>",
+      "option1": "<p>1050 cm³</p>",
+      "option2": "<p>1150 cm³</p>",
+      "option3": "<p>1100 cm³</p>",
+      "option4": "<p>1000 cm³</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image021.png"
+    },
+    {
+      "sr_no": 70,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image022.png",
+      "option1": "<p>√35</p>",
+      "option2": "<p>√33</p>",
+      "option3": "<p>6</p>",
+      "option4": "<p>7</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image023.png"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p>A rectangular hall of 4.50 meters by 6.30 meters is to be paved with square tiles, all of the same size. What is the largest size of the tile (in centimeters) that could be used for this purpose?</p>",
+      "option1": "<p>90 cm</p>",
+      "option2": "<p>60 cm</p>",
+      "option3": "<p>45 cm</p>",
+      "option4": "<p>30 cm</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Convert to cm:<br/>4.50 m = 450 cm, 6.30 m = 630 cm</p><p>Largest square tile = HCF(450, 630)</p><p>450 = 2 × 3² × 5²<br/>630 = 2 × 3² × 5 × 7</p><p>HCF = 2 × 3² × 5 = 90</p><p>Answer: 90 cm</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image028.png",
+      "option1": "<p>58 : 55</p>",
+      "option2": "<p>9 : 5</p>",
+      "option3": "<p>17 : 13</p>",
+      "option4": "<p>65 : 42</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Male : Female on Saturday = 340 : 260 = 17 : 13</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p>One type of rice is sold for Rs. 48 per kg at a 20% profit. Another type of rice is sold for Rs. 84 per kg at a 40% profit. If these two varieties are mixed in the ratio of 3 : 2 (first variety to second variety) and the final mixture is sold at Rs. 60 per kg, what is the overall profit or loss percentage?</p>",
+      "option1": "<p>30%</p>",
+      "option2": "<p>15%</p>",
+      "option3": "<p>20%</p>",
+      "option4": "<p>25%</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image029.png"
+    },
+    {
+      "sr_no": 74,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image034.png",
+      "option1": "<p>27</p>",
+      "option2": "<p>30</p>",
+      "option3": "<p>23</p>",
+      "option4": "<p>31</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image034.png"
+    },
+    {
+      "sr_no": 75,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image037.png",
+      "option1": "<p>51.6%</p>",
+      "option2": "<p>52.4%</p>",
+      "option3": "<p>54.7%</p>",
+      "option4": "<p>53.8%</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1781268797925_image038.png"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>Read the following passage carefully and answer the given questions:</p><p>The French Revolution, erupting in 1789, was not merely a local insurrection but a seismic shift that dismantled the centuries-old \"Ancien Régime.\" Driven by the Enlightenment ideals of Liberté, Égalité, and Fraternité, the Third Estate—comprising commoners—rebelled against the crushing financial burdens and the absolute power of the monarchy. The storming of the Bastille became the quintessential symbol of this defiance, signaling that the divine right of kings was no longer an unassailable doctrine in the face of a starving, determined populace.</p><p>However, the path to democracy was fraught with internal discord and radicalization. The transition from a constitutional monarchy to the First Republic was marked by the \"Reign of Terror,\" where ideological purity often superseded the very justice the revolutionaries sought. While the revolution eventually succumbed to the rise of Napoleon Bonaparte, its legacy remained indelible. It permanently altered the global political landscape by introducing the concept of popular sovereignty and challenging the entrenched privileges of the European aristocracy.</p><p>Q- According to the passage, what was the primary driver for the Third Estate's rebellion?</p>",
+      "option1": "<p>The desire to establish Napoleon as the new leader.</p>",
+      "option2": "<p>The pursuit of territorial expansion across Europe.</p>",
+      "option3": "<p>The need for ideological purity within the Church.</p>",
+      "option4": "<p>The burden of finances and the King's absolute rule.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: The burden of finances and the King's absolute rule</p><p>Explanation</p><p>According to the passage:</p><p>Options Recap</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>Read the following passage carefully and answer the given questions:</p><p>The French Revolution, erupting in 1789, was not merely a local insurrection but a seismic shift that dismantled the centuries-old \"Ancien Régime.\" Driven by the Enlightenment ideals of Liberté, Égalité, and Fraternité, the Third Estate—comprising commoners—rebelled against the crushing financial burdens and the absolute power of the monarchy. The storming of the Bastille became the quintessential symbol of this defiance, signaling that the divine right of kings was no longer an unassailable doctrine in the face of a starving, determined populace.</p><p>However, the path to democracy was fraught with internal discord and radicalization. The transition from a constitutional monarchy to the First Republic was marked by the \"Reign of Terror,\" where ideological purity often superseded the very justice the revolutionaries sought. While the revolution eventually succumbed to the rise of Napoleon Bonaparte, its legacy remained indelible. It permanently altered the global political landscape by introducing the concept of popular sovereignty and challenging the entrenched privileges of the European aristocracy.</p><p>Q- What does the \"storming of the Bastille\" represent in the text?</p>",
+      "option1": "<p>The final victory of the French military over Britain.</p>",
+      "option2": "<p>The symbolic end of the king's unquestionable power.</p>",
+      "option3": "<p>The beginning of the Napoleon era in French history.</p>",
+      "option4": "<p>The successful implementation of a new tax structure.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: The symbolic end of the king's unquestionable power</p><p>Explanation</p><p>In the passage:</p><p>Options Recap</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Read the following passage carefully and answer the given questions:</p><p>The French Revolution, erupting in 1789, was not merely a local insurrection but a seismic shift that dismantled the centuries-old \"Ancien Régime.\" Driven by the Enlightenment ideals of Liberté, Égalité, and Fraternité, the Third Estate—comprising commoners—rebelled against the crushing financial burdens and the absolute power of the monarchy. The storming of the Bastille became the quintessential symbol of this defiance, signaling that the divine right of kings was no longer an unassailable doctrine in the face of a starving, determined populace.</p><p>However, the path to democracy was fraught with internal discord and radicalization. The transition from a constitutional monarchy to the First Republic was marked by the \"Reign of Terror,\" where ideological purity often superseded the very justice the revolutionaries sought. While the revolution eventually succumbed to the rise of Napoleon Bonaparte, its legacy remained indelible. It permanently altered the global political landscape by introducing the concept of popular sovereignty and challenging the entrenched privileges of the European aristocracy.</p><p>Q- The author suggests that the \"Reign of Terror\" was a period where:</p>",
+      "option1": "<p>The ideals of the revolution were perfectly achieved.</p>",
+      "option2": "<p>Absolute justice was served to all citizens equally.</p>",
+      "option3": "<p>Extremism overshadowed the original goals of justice.</p>",
+      "option4": "<p>The monarchy successfully regained its lost influence.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Extremism overshadowed the original goals of justice</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Read the following passage carefully and answer the given questions:</p><p>The French Revolution, erupting in 1789, was not merely a local insurrection but a seismic shift that dismantled the centuries-old \"Ancien Régime.\" Driven by the Enlightenment ideals of Liberté, Égalité, and Fraternité, the Third Estate—comprising commoners—rebelled against the crushing financial burdens and the absolute power of the monarchy. The storming of the Bastille became the quintessential symbol of this defiance, signaling that the divine right of kings was no longer an unassailable doctrine in the face of a starving, determined populace.</p><p>However, the path to democracy was fraught with internal discord and radicalization. The transition from a constitutional monarchy to the First Republic was marked by the \"Reign of Terror,\" where ideological purity often superseded the very justice the revolutionaries sought. While the revolution eventually succumbed to the rise of Napoleon Bonaparte, its legacy remained indelible. It permanently altered the global political landscape by introducing the concept of popular sovereignty and challenging the entrenched privileges of the European aristocracy.</p><p>Q- What is the significance of the \"French Revolution\" in a global context?</p>",
+      "option1": "<p>It established the concept that the people hold power.</p>",
+      "option2": "<p>It prevented the rise of any future European dictators.</p>",
+      "option3": "<p>It ensured that the aristocracy kept their privileges.</p>",
+      "option4": "<p>It led to the immediate end of all European wars.</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: It established the concept that the people hold power</p><p>Explanation</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>Read the following passage carefully and answer the given questions:</p><p>The French Revolution, erupting in 1789, was not merely a local insurrection but a seismic shift that dismantled the centuries-old \"Ancien Régime.\" Driven by the Enlightenment ideals of Liberté, Égalité, and Fraternité, the Third Estate—comprising commoners—rebelled against the crushing financial burdens and the absolute power of the monarchy. The storming of the Bastille became the quintessential symbol of this defiance, signaling that the divine right of kings was no longer an unassailable doctrine in the face of a starving, determined populace.</p><p>However, the path to democracy was fraught with internal discord and radicalization. The transition from a constitutional monarchy to the First Republic was marked by the \"Reign of Terror,\" where ideological purity often superseded the very justice the revolutionaries sought. While the revolution eventually succumbed to the rise of Napoleon Bonaparte, its legacy remained indelible. It permanently altered the global political landscape by introducing the concept of popular sovereignty and challenging the entrenched privileges of the European aristocracy.</p><p>Q- Which word in the second paragraph is a synonym for \"permanent\" or \"unforgettable\"?</p>",
+      "option1": "<p>Radicalization </p>",
+      "option2": "<p>Sovereignty</p>",
+      "option3": "<p>Indelible </p>",
+      "option4": "<p>Entrenched</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Indelible</p><p>Explanation:</p><p>❌ Why other options are wrong</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Fill in the Blank:</p><p>We walked along the sea __________.</p>",
+      "option1": "<p>coarse</p>",
+      "option2": "<p>cause</p>",
+      "option3": "<p>choir</p>",
+      "option4": "<p>course</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: course</p><p>Explanation</p><p>Sentence: We walked along the sea __________.</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>Change the narration of the following sentence:</p><p>He said, \"I shall be playing football at this time.\"</p>",
+      "option1": "<p>He said he will be playing football at that time. </p>",
+      "option2": "<p>He said he would be playing football at that time.</p>",
+      "option3": "<p>He said he should be playing football at that time.</p>",
+      "option4": "<p>He said he might be playing football at that time.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: He said he would be playing football at that time.</p><p>Explanation</p><p>So, the correct indirect narration is: He said he would be playing football at that time.</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Select the most appropriate SYNONYM of the given word: MANDATORY</p>",
+      "option1": "<p>Optional</p>",
+      "option2": "<p>Compulsory </p>",
+      "option3": "<p>Secondary </p>",
+      "option4": "<p>Voluntary</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Compulsory</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Identify the error given in the sentence:</p><p>This ritual / has come down / since times immemorial. </p>",
+      "option1": "<p>This ritual</p>",
+      "option2": "<p>has come down </p>",
+      "option3": "<p>since times immemorial. </p>",
+      "option4": "<p>No Error</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: since times immemorial.</p><p>Explanation</p><p>Sentence: This ritual / has come down / since times immemorial.</p><p>So, the corrected sentence is: This ritual has come down since time immemorial.</p><p>Options Recap</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Change the voice of the following sentence:</p><p>The gardener was watering the plants in the evening.</p>",
+      "option1": "<p>The plants are watered by gardener in evening.</p>",
+      "option2": "<p>The plants were watered by gardener in evening.</p>",
+      "option3": "<p>The plants were being watered by the gardener.</p>",
+      "option4": "<p>The plants have been watered by the gardener.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: The plants were being watered by the gardener.</p><p>Explanation</p><p>So, the correct passive voice is: The plants were being watered by the gardener in the evening.</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>Antonym of PERILOUS.</p>",
+      "option1": "<p>Safe</p>",
+      "option2": "<p>Dangerous</p>",
+      "option3": "<p>Risky</p>",
+      "option4": "<p>Unstable</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Safe</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Improve the highlighted part of the sentence:</p><p>I like tea and I like juice.</p>",
+      "option1": "<p>tea to juice.</p>",
+      "option2": "<p>tea after juice.</p>",
+      "option3": "<p>both tea and juice.</p>",
+      "option4": "<p>No improvement.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: both tea and juice</p><p>Explanation</p><p>Sentence: I like tea and I like juice.</p><p>Options Recap</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>IDIOM:</p><p>A piece of cake</p>",
+      "option1": "<p>Delicious food</p>",
+      "option2": "<p>A small portion</p>",
+      "option3": "<p>To be happy</p>",
+      "option4": "<p>Very easy task</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Very easy task</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>One Word Substitution:</p><p>One who eats too much.</p>",
+      "option1": "<p>Glutton</p>",
+      "option2": "<p>Greedy</p>",
+      "option3": "<p>Gourmet </p>",
+      "option4": "<p>Nibbler</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Glutton</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Arrange the following sentences to form a coherent paragraph:</p><p>S1: Space exploration has always fascinated the human imagination. </p><p>P: Early missions focused on reaching the moon and studying nearby planets. </p><p>Q: Private companies are now competing to make space travel more affordable. </p><p>R: The focus has recently shifted toward establishing a colony on Mars. </p><p>S: Technological hurdles remain the biggest challenge for long-term travel. </p><p>S6: Humanity is on the verge of becoming a multi-planetary species soon.</p>",
+      "option1": "<p>RPQS</p>",
+      "option2": "<p>PQSR</p>",
+      "option3": "<p>RSPQ</p>",
+      "option4": "<p>PRQS</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Order: S1 → P → R → Q → S → S6</p><p>Explanation:</p><p>Final Paragraph:<br/>Space exploration has always fascinated the human imagination. Early missions focused on reaching the moon and studying nearby planets. The focus has recently shifted toward establishing a colony on Mars. Private companies are now competing to make space travel more affordable. Technological hurdles remain the biggest challenge for long-term travel. Humanity is on the verge of becoming a multi-planetary species soon.</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Identify the error given in the sentence:</p><p>She not only believes / in hard work but / also in honesty / of the highest order. </p>",
+      "option1": "<p>She not only believes </p>",
+      "option2": "<p>in hard work but </p>",
+      "option3": "<p>also in honesty </p>",
+      "option4": "<p>of the highest order. </p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: She not only believes</p><p>Explanation</p><p>Sentence: She not only believes / in hard work but / also in honesty / of the highest order.</p><p>So, the improved sentence is: She believes not only in hard work but also in honesty of the highest order.</p><p>Options Recap</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>IDIOM:</p><p>Once in a blue moon</p>",
+      "option1": "<p>Every night</p>",
+      "option2": "<p>Fortnightly</p>",
+      "option3": "<p>Very rarely</p>",
+      "option4": "<p>Frequently</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Very rarely</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>Improve the highlighted part of the sentence:</p><p>There are indications that the prospects for growth in manufacturing output has improved.</p>",
+      "option1": "<p>Have improved</p>",
+      "option2": "<p>Have improvements</p>",
+      "option3": "<p>Has improvements</p>",
+      "option4": "<p>Has been improving</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Have improved</p><p>Explanation</p><p>Sentence: There are indications that the prospects for growth in manufacturing output has improved.</p><p>So, the improved sentence is: There are indications that the prospects for growth in manufacturing output have improved.</p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Arrange the following sentences to form a coherent paragraph:</p><p>S1: The human brain is an incredibly complex organ with billions of neurons. </p><p>P: These signals travel through a vast network of interconnected pathways. </p><p>Q: It processes information by sending electrical impulses across synapses. </p><p>R: Any disruption in this delicate flow can lead to cognitive difficulties. </p><p>S: Researchers are still mapping how these specific circuits affect behavior. </p><p>S6: Understanding these patterns is key to treating neurological disorders.</p>",
+      "option1": "<p>QRSP</p>",
+      "option2": "<p>SQRP</p>",
+      "option3": "<p>QPRS</p>",
+      "option4": "<p>SRPQ</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>S1 → Q → P → R → S → S6</p><p>Final Paragraph</p><p>S1: The human brain is an incredibly complex organ with billions of neurons. Q: It processes information by sending electrical impulses across synapses. P: These signals travel through a vast network of interconnected pathways. R: Any disruption in this delicate flow can lead to cognitive difficulties. S: Researchers are still mapping how these specific circuits affect behavior. S6: Understanding these patterns is key to treating neurological disorders.</p><p>Explanation of Sequence</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>Change the voice of the following sentence:</p><p>The manager will announce the results tomorrow.</p>",
+      "option1": "<p>The results will be announced by manager tomorrow.</p>",
+      "option2": "<p>The results shall be announced by manager tomorrow.</p>",
+      "option3": "<p>The results would be announced by manager tomorrow.</p>",
+      "option4": "<p>The results may be announced by manager tomorrow.</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: The results will be announced by manager tomorrow.</p><p>Explanation</p><p>So, the correct passive voice is: The results will be announced by the manager tomorrow.</p><p>Options Recap</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>One Word Substitution:</p><p>Handwriting that cannot be read.</p>",
+      "option1": "<p>Incorrigible</p>",
+      "option2": "<p>Illegible </p>",
+      "option3": "<p>Indelible</p>",
+      "option4": "<p>Inevitable</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Illegible</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Change the narration of the following sentence:</p><p>My friend said to me, \"I cannot help you now.\"</p>",
+      "option1": "<p>My friend told me he cannot help me then.</p>",
+      "option2": "<p>My friend told me he might not help me then.</p>",
+      "option3": "<p>My friend told me he could not help me then.</p>",
+      "option4": "<p>My friend told me he shall not help me then.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: My friend told me he could not help me then.</p><p>Explanation</p><p>So, the correct indirect narration is: My friend told me he could not help me then.</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Synonym of CORDIAL</p>",
+      "option1": "<p>Rude</p>",
+      "option2": "<p>Forsake</p>",
+      "option3": "<p>Distant</p>",
+      "option4": "<p>Friendly</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Friendly</p><p>Explanation</p><p>The word Cordial means warm, polite, and friendly in manner (मिलनसार / सौहार्दपूर्ण). Thus, the most appropriate synonym is Friendly (दोस्ताना / मित्रतापूर्ण).</p><p>Meanings of Other Options</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>Fill in the Blank:</p><p>The shopkeeper does not have __________ sugar in his shop.</p>",
+      "option1": "<p>many</p>",
+      "option2": "<p>any</p>",
+      "option3": "<p>few</p>",
+      "option4": "<p>some</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: any</p><p>Explanation</p><p>Sentence: The shopkeeper does not have __________ sugar in his shop.</p><p>Options Recap with Meanings</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>Select the most appropriate ANTONYM of the given word: AMBIGUOUS</p>",
+      "option1": "<p>Obscure </p>",
+      "option2": "<p>Vague</p>",
+      "option3": "<p>Certain</p>",
+      "option4": "<p>Difficult</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Certain</p><p>Explanation</p><p>Options Recap with Meanings</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL 2026 Live Mock 21</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

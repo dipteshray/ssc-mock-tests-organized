@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 17</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 17</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> Rate of interest= 12.5% p.a., time period= 4 years, Compound Interest= 450, find Principal and Amount if compounded two yearly?</p><p><br/> </p>",
+      "option1": "<p> 1000,1450</p>",
+      "option2": "<p> 1200, 1650</p>",
+      "option3": "<p> 800, 1250</p>",
+      "option4": "<p> 1050, 1500</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_37b4aa4f51c706d.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> 3 years ago the ages in years of A and B were in the ratio 3:4 and the ages of B and C were in the ratio 5:7. 2 years hence, the ages of A and B will be in the ratio 7:9. Find the present age of C?</p>",
+      "option1": "<p> 52</p>",
+      "option2": "<p> 72</p>",
+      "option3": "<p> 54</p>",
+      "option4": "<p> 59</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_131ede67a0ad2233.jpg"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> When 30 is subtracted from 50% of a number, the result is 120. Then 33.33% of the number is:</p><p><br/> </p>",
+      "option1": "<p> 12</p>",
+      "option2": "<p> 100</p>",
+      "option3": "<p> 66.66</p>",
+      "option4": "<p> 300</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_65ff9d182586b4a2.jpg"
+    },
+    {
+      "sr_no": 4,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_4954ad72c002102.gif",
+      "option1": "<p> 2.4</p>",
+      "option2": "<p> 3110</p>",
+      "option3": "<p> 2400</p>",
+      "option4": "<p> 30</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_bd963716e0dd8d01.png"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> Ram is 10 times as good workman as Shyam. If Shyam can complete a work in 88 days. In how many days they can complete the work together.</p><p><br/> </p>",
+      "option1": "<p> 11</p>",
+      "option2": "<p> 10</p>",
+      "option3": "<p> 8 4/5</p>",
+      "option4": "<p> 8</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_86a609d48bb69a9c.png"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> On selling 26 balls at Rs.2860, there is a loss equal to the cost price of 4 balls. The cost price of 2 balls is equal to:</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 240</p>",
+      "option2": "<p> 120</p>",
+      "option3": "<p> 130</p>",
+      "option4": "<p> 260</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_51703332710c48ee.png"
+    },
+    {
+      "sr_no": 7,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_cbccc484da765cd4.png",
+      "option1": "<p> 10.5</p>",
+      "option2": "<p> 8.1</p>",
+      "option3": "<p> 9.4</p>",
+      "option4": "<p> 8.8</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_bad91ad94af45580.png"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> Find the least number which when doubled will be exactly divisible by 14, 9, 36 and 98?</p>",
+      "option1": "<p> 1764</p>",
+      "option2": "<p> 2764</p>",
+      "option3": "<p> 1382</p>",
+      "option4": "<p> 882</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_621e985dd593aef5.jpg"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> In a trapezium, one diagonal divides the other in the ratio 2:9. If the length of the larger of the two parallel sides is 45 cm, then what is the length of the other parallel side (in cm)? </p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 10 cm</p>",
+      "option2": "<p> 5 cm</p>",
+      "option3": "<p> 18 cm</p>",
+      "option4": "<p> 14 cm</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_86317dafb24d41ed.png"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_92fbdbf56ffc0259.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_4600ed573a21454.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_5e14ac2642c10373.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_e164ee82f55724ae.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_bba9ae2fa35d01ba.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_8b9e22af21a00769.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_1e6e9b1985f461d3.png",
+      "option1": "<p> Only I</p>",
+      "option2": "<p> Only II</p>",
+      "option3": "<p> I and II both</p>",
+      "option4": "<p> Neither I nor II</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_afd2f1b5b8dfd061.png"
+    },
+    {
+      "sr_no": 12,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_96c7bad1115ca2f7.gif",
+      "option1": "<p> 10</p>",
+      "option2": "<p> 20</p>",
+      "option3": "<p> 5</p>",
+      "option4": "<p> 0</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_c795138b63061579.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> If a certain sum of money becomes n times of itself in T years at simple interest, then the rate of interest per annum is</p><p> <br/> </p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_e0c4c3672e54777c.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_3fa4e565a8241374.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_8ac93a06a253332.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_7bba4dc58b529f84.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_f3d3cb9a315042e1.png"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> A is 25% more efficient than B and B is 20% less efficient than C. If C can complete a work in 30 days, then in how many days, A and B can complete the work working together if they both work with one-third of their efficiencies?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 50 days</p>",
+      "option2": "<p> 70/3 days</p>",
+      "option3": "<p> 50/3 days</p>",
+      "option4": "<p> 25 days</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_c5deba7b3dfc6098.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p> The average of squares of three consecutive odd natural numbers is 251/3. What is the largest number and the smallest number respectively?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 13, 11</p>",
+      "option2": "<p> 17, 13</p>",
+      "option3": "<p> 13, 11</p>",
+      "option4": "<p> 11, 7</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_724ebdd1969ccce.jpg"
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_2d95d250db53baad.gif",
+      "option1": "<p> 2</p>",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_9636c078a090eb90.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_221a4df140f2fa44.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_e3f87e86e460f2f5.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_b5a5ba99bf34d4ed.png"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> When the price of sugar increased by 25%, a family reduced its consumption per month such that the expenditure on sugar was only 10% more than the earlier one. If the family consumed 37.5 kg sugar per month earlier, then what is its new consumption of sugar per month?</p><p><br/> </p>",
+      "option1": "<p> 28.1 kg </p>",
+      "option2": "<p> 33 kg</p>",
+      "option3": "<p> 28.8 kg</p>",
+      "option4": "<p> 31 kg</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_99526d1a5d57820a.jpg"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> Travelling at 45 km/h, a person reaches his destination in a certain time. He covers 60% of his journey in half of the time. At what speed (in km/h) should he travel to cover the remaining journey so that he reaches the destination right on time?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 36</p>",
+      "option2": "<p> 42</p>",
+      "option3": "<p> 30</p>",
+      "option4": "<p> 40</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_b4ab3b93a3499a0e.png"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> Reeta opened her piggy bank and found coins of denomination Rs.1, Rs.2, Rs.5 and Rs.10 in the ratio 5 : 4 : 3 : 2. If there are 84 coins in all, then how much money (in Rs.) was there in the piggy bank in the form of coins?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 263</p>",
+      "option2": "<p> 87</p>",
+      "option3": "<p> 288</p>",
+      "option4": "<p> 203</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_514629055faff5a2.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_54ea0e94d963d4e9.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_f078ab258d4b777f.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_e0698074b73c55dc.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_3ea5701abde4a7f1.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_2eb45b4b87938552.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_7af08c413236ea97.png"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p>In ∆ABC,∠B is right angle,∠C=45°. AN is the angle bisector of ∠BAC. BO is the median of the side AC and AN cut the median OB at point M. OM is 10 cm, then the value BC is.</p>",
+      "option1": "<p>34.14 cm</p>",
+      "option2": "<p>30 cm</p>",
+      "option3": "<p>24.18 cm</p>",
+      "option4": "<p>20 cm</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_213ff4107208b2cc.gif"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> The average score of 43 students is 140, 26 students is 145 and 31 students is 142. Half of the average score of all the students is: </p><p><br/> </p>",
+      "option1": "<p> 141.4</p>",
+      "option2": "<p> 140.6</p>",
+      "option3": "<p> 70.4</p>",
+      "option4": "<p> 70.9</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_7d0b9cafd7acc17d.gif"
+    },
+    {
+      "sr_no": 23,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_e78b13bc6b3cf5af.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_1879db9ab1139aa3.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_8116093c29221f80.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_d791e6124b9da95f.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_4818222c03326201.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_f7bc46c62fc6f4e4.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_8c16891c30b8ba99.gif",
+      "option1": "<p> 0</p>",
+      "option2": "<p> 1</p>",
+      "option3": "<p> 2</p>",
+      "option4": "<p> 5</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_651af3312fa9ccdf.png"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> You have two dice. One is a standard six-sided die, and the other is a four-sided die with sides numbered 1 to 4. Both dice are fair. If you roll both dice, what is the probability of getting a sum of 7?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 1/12</p>",
+      "option2": "<p> 1/8</p>",
+      "option3": "<p> 1/6</p>",
+      "option4": "<p> 1/4</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_ac534241b944fa7b.png"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p>A works twice as fast as B and B works half as fast as C. All three working together can finish the task in 6 days with the help of D. If D alone can finish the task in 36 days, then in how many days will A alone finish the task if he works for 1 day and takes rest the next 2 days, then works for the 4th day and takes rest on the next two days and so on?</p>",
+      "option1": "<p>25</p>",
+      "option2": "<p>52</p>",
+      "option3": "<p>38</p>",
+      "option4": "<p>57</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>A:B:C = 2:1:2<br/> <br/> 5 *6 + 6 *D = 36 D<br/> D = 1<br/> Total work = 36 * 1 = 36<br/> <br/> Time taken by A = (36/2)*3 - 2 = 52 days</p>"
+    },
+    {
+      "sr_no": 27,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_c7e9cf1c48c03e73.gif",
+      "option1": "<p> 144</p>",
+      "option2": "<p> 150</p>",
+      "option3": "<p> 138</p>",
+      "option4": "<p> 140</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_113c99dc2fa6d0c9.png"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_65129b8454d17d9f.gif",
+      "option1": "<p> 0</p>",
+      "option2": "<p> 1</p>",
+      "option3": "<p> -1</p>",
+      "option4": "<p> -1/2</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_430ac5faa1c43609.png"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> The marked price of an article is Rs.1200. A shopkeeper sells it by giving 15% discount on its marked price. If the cost price of the article is Rs.729, then his profit% is (round off to nearest integer):</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 39</p>",
+      "option2": "<p> 40</p>",
+      "option3": "<p> 33</p>",
+      "option4": "<p> 35</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_a9b1814977d2db07.png"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> In a 1500 m race, if vehicle P gives vehicle Q a start of 200 m, then vehicle P wins the race by 8 sec. Alternatively, if vehicle P gives vehicle Q a start of 400 m, the race ends in a dead heat. How long does vehicle P take to run 1500 m?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> 40 sec</p>",
+      "option2": "<p> 45 sec</p>",
+      "option3": "<p> 60 sec</p>",
+      "option4": "<p> 44 sec</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693637362135_html_40610a7ff95accfd.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Select the option that expresses the given sentence in active voice.</p><p> Shubhankar was interviewing the political leaders.</p>",
+      "option1": "<p> The political leaders were being interviewed by Shubhankar.</p>",
+      "option2": "<p> The political leaders was being interviewed by Shubhankar.</p>",
+      "option3": "<p> The political leaders are being interviewed by Shubhankar.</p>",
+      "option4": "<p> The political leaders is being interviewed by Shubhankar.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> <b>Active Voice to Passive Voice transformation: </b> </p><p> <b>Sub + was/were + verb (Ing) + object ----------- Object + was/ were + being + verb (Ing) + by + Sub.</b></p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>P. To think of it otherwise is to prevent man from understanding the real truth of his greatest of all universal laws.</p><p>Q. But it is also thought of in relation to the various instincts in man.</p><p>R. Love is often thought to be the highest and most fulfilling emotion that men and women can express.</p><p>S. Therefore, we must realize from the mystical point of view is the highest emotion of man and the one emotion that relates man to God.</p>",
+      "option1": "<p>RQSP</p>",
+      "option2": "<p>RSQP</p>",
+      "option3": "<p>RPQS</p>",
+      "option4": "<p>RSPQ</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option a.</p><p>‘RQSP’ This sequence flows logically. It starts with segment R, which introduces the concept of love. Then, segment Q provides additional thoughts about love in relation to instincts. Next, segment S expands on the mystical perspective of love, and finally, segment P concludes by emphasizing the importance of understanding the truth about love.</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p>Which option accurately changes the following direct speech into indirect speech?</p><p>I said to my friend, “Good Morning. Let us go for a shopping today.</p>",
+      "option1": "<p>I told good morning to my friend and asked to go for a shopping that day.</p>",
+      "option2": "<p>I wished my friend good morning and proposed that we should go for a shopping that day.</p>",
+      "option3": "<p>I wished my friend good morning and proposed that they should go for a shopping.</p>",
+      "option4": "<p>I told good morning to my friend and suggested to go for a shopping today.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option b.</p><p>The reporting verb changes from \"said\" to a verb like \"wished\" or \"proposed\" that conveys the meaning of the direct speech appropriately.</p><p>The conjunction \"that\" is added.</p><p>The pronouns and possessive adjectives change to reflect the change from the first person (I, my) to the third person (he/she/they, his/her/their).</p><p>The tense of the reported speech can also change depending on the context.</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that expresses the given sentence in active voice.</p><p> Puneet will never forget it.</p>",
+      "option1": "<p> It will never be forgotten by Puneet.</p>",
+      "option2": "<p> It can never be forgotten by Puneet.</p>",
+      "option3": "<p> It should never be forgotten by Puneet.</p>",
+      "option4": "<p> It may never be forgotten by Puneet.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> <b>Active to Passive Voice transformation: </b> </p><p> <b>Sub + shall/will + V</b><b>1</b><b> + Object ---------- Object + shall/will + be + V</b><b>3</b><b> + by + sub.</b></p><p> The correct passive voice: It will never be forgotten by Puneet.</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> P. The book revolves around a young wizard, Harry Potter who discovers his magical heritage on his 11th birthday </p><p> Q. One of the most loved books of our generation, the Harry Potter Series, is one of the most selling books of all time with over 120 million copies. </p><p> R. When he receives a letter of acceptance to Hogwarts School of Witchcraft and Wizardry.</p><p> S. Published in 1997 by J.K Rowling, Harry Potter and the Philosopher’s Stone is the first book in the series and is the author’s debut novel. </p>",
+      "option1": "<p> QPRS</p>",
+      "option2": "<p> SPRQ</p>",
+      "option3": "<p> PQSR</p>",
+      "option4": "<p> QSPR</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> ‘QSPR’ This sequence flows logically. It starts with segment Q, which introduces the series' popularity, followed by segment S, which provides information about the first book's publication. Then comes segment P, which introduces the protagonist and the central theme of the book, and finally, segment R, which provides additional context about his journey.</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p>Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>P. Which eventually brought an end to the British’s colonial rule in India.</p><p>Q. He had embarked upon the career of being a journalist but was unable to pursue it further as he joined the erstwhile Bhartiya Janata Sangh.</p><p>R. Which ultimately went on to shape the present-day Bhartiya Janata Party. </p><p>S. Vajpayee’s first stint with national politics started as early as 1942, during the time of the Quit India Movement.</p>",
+      "option1": "<p>SPRQ</p>",
+      "option2": "<p>SRQP</p>",
+      "option3": "<p>SPQR</p>",
+      "option4": "<p>SQRP</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option c.</p><p><strong>SPQR:</strong> This sequence flows logically, with the correct order of events: Segment S introduces Vajpayee's entry into national politics, followed by context about the Quit India Movement (P), details about his career (Q), and finally, the connection to the present-day party (R).</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the correct indirect speech for the given direct speech:</p><p> Rashmika said, “Hurray! We have won this tournament.”</p>",
+      "option1": "<p> Rashmika exclaimed with joy that they had won this tournament.</p>",
+      "option2": "<p> Rashmika exclaimed with excitement that they had won that tournament.</p>",
+      "option3": "<p> Rashmika exclaimed with joy that we had won that tournament.</p>",
+      "option4": "<p> Rashmika exclaimed with joy that they had won that tournament.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d. </p><p> <b>Rules: </b> </p><p> <b>Said + Alas! --------------- exclaimed with sorrow.</b></p><p> <b>Said + Hurray! ------------ exclaimed with joy.</b></p><p> <b>Said + Fi! / Ugh! --------- exclaimed with despise/ disgust.</b></p><p> <b>Said + Wow! -------------- exclaimed with joy.</b></p><p> <b>Said + oh! ----------------- exclaimed with surprise / regret.</b></p><p> Conjunction ‘that’ will replace comma and inverted commas.</p><p> Tense and pronoun change according to rules.</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the INCORRECTLY spelt word.</p><p> <br/> </p>",
+      "option1": "<p> Warrant</p>",
+      "option2": "<p> Surreptitiously</p>",
+      "option3": "<p> Acquant</p>",
+      "option4": "<p> Accentuate</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is c.</p><p> <b>Acquaint:</b> make someone aware of or familiar with.</p><p> <b>Warrant:</b> something that serves to give reliable or formal assurance of something</p><p> <b>Surreptitiously:</b> kept secret, especially because it would not be approved of.</p><p> <b>Accentuate:</b> make more noticeable or prominent.</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the most appropriate word to fill in the blank.</p><p> The revolting players and the game’s administrators held ________ discussions to resolve the payment dispute.</p>",
+      "option1": "<p> unnecessary</p>",
+      "option2": "<p> obligatory</p>",
+      "option3": "<p> preliminary</p>",
+      "option4": "<p> silent</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> In the sentence, \"The revolting players and the game’s administrators held ________ discussions to resolve the payment dispute,\" the word \"preliminary\" fits well because it indicates that these discussions were the initial steps taken to address the dispute, setting the stage for further action or more in-depth negotiations.</p><p> <b>Unnecessary:</b> not needed.</p><p> <b>Obligatory:</b> required by a legal, moral, or other rule; compulsory.</p><p> <b>Preliminary:</b> preceding or done in preparation for something fuller or more important.</p><p> <b>Silent:</b> not making or accompanied by any sound.</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Select the most appropriate homonym to fill in the blank.</p><p> The king was moved with _________ for the beggar.</p>",
+      "option1": "<p> Pity</p>",
+      "option2": "<p> Pithy</p>",
+      "option3": "<p> Piety</p>",
+      "option4": "<p> Privy</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> <b>\"Pity\"</b> refers to a feeling of sorrow, compassion, or sympathy for someone else's suffering or misfortune. In this context, it implies that the king was emotionally affected by the beggar's situation.</p><p> <b>\"Pithy\"</b> means concise and meaningful in expression, but it doesn't fit the context of the king's emotions toward the beggar.</p><p> <b>\"Piety\"</b> refers to religious devotion or reverence. This doesn't accurately convey the king's emotional response to the beggar.</p><p> <b>\"Privy\"</b> means being informed about something secret or private. This word doesn't capture the sentiment of the king's emotions in relation to the beggar.</p><p> Given the context of the sentence, option (A) <b>\"Pity\"</b> is the correct answer as it accurately describes the emotion the king felt toward the beggar.</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the most appropriate collocating word to fill in the blank. </p><p> We should first collect the funds and then ________ action.</p>",
+      "option1": "<p> plunge into</p>",
+      "option2": "<p> plunge onto</p>",
+      "option3": "<p> plunge at</p>",
+      "option4": "<p> plunge in</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> \"<b>Plunge into action</b>\" is a common idiomatic expression in English. It means to start doing something energetically, decisively, or with full commitment.</p><p> <b>Plunge into</b>: to jump into something, especially with force.</p><p> <b>Plunge in</b>: to push (something) into something quickly and forcefully.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Select the most appropriate meaning of the given idiom.</p><p> Make up the leeway</p>",
+      "option1": "<p> create a new pathway</p>",
+      "option2": "<p> Struggle out of a bad position</p>",
+      "option3": "<p> take a break from work</p>",
+      "option4": "<p> make a quick decision</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> <b>Make up the leeway: </b>struggle out of a bad position, especially by recovering lost time.</p><p> We got sidetracked with the lunch party, but hopefully we can <b>make up the leeway</b> by getting everyone to pitch in with loading the trucks. </p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. A country’s economic performance is measured using three key indicators, one of which is the unemployment rate. </p><p> B. When adults who are willing and able to work cannot find a job, it may be a sign that an economy is producing less than it could. </p><p> C. On the other hand, unemployment is also a natural phenomenon that even healthy economies experience. </p><p> D. While the official unemployment rate is helpful in representing the state of a nation’s workforce.</p>",
+      "option1": "<p> ACDB</p>",
+      "option2": "<p> ABCD</p>",
+      "option3": "<p> ACBD</p>",
+      "option4": "<p> ADBC</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> The correct sequence maintains a logical flow of ideas, progressing from the general concept of economic performance (A) to the significance of unemployment (B), the acknowledgment of its natural occurrence (C), and finally, the role of the official unemployment rate (D).</p><p> <b>The correct arrangement is: ABCD: </b><i>A country’s economic performance is measured using three key indicators, one of which is the unemployment rate. When adults who are willing and able to work cannot find a job, it may be a sign that an economy is producing less than it could. On the other hand, unemployment is also a natural phenomenon that even healthy economies experience. While the official unemployment rate is helpful in representing the state of a nation’s workforce.</i></p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p>Select the option that expresses the given sentence in passive voice.</p><p>India expected to win the world cup.</p>",
+      "option1": "<p>The World cup was expected to be win by India.</p>",
+      "option2": "<p>It was expected by India to win the World Cup.</p>",
+      "option3": "<p>To win the World Cup has been expected by India.</p>",
+      "option4": "<p>India expected that the World Cup be won by it.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option b.</p><p>The given sentence is in past indefinite tense and conversion rule for changing active to passive voice is,</p><p><strong>Active Voice ---------- Passive Voice</strong></p><p><strong>Subject + V2 + Object ------- Object + was/were + V3 + by + subject. </strong></p><p><strong>India expected to win the world cup. ------- It was expected by India to win the World Cup.</strong></p><p>Thus, The correct passive voice is: It was expected by India to win the World Cup.</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’. </p><p> Hard work <b>cannot </b>substituted by any short cut.</p>",
+      "option1": "<p> No substitution required</p>",
+      "option2": "<p> could not</p>",
+      "option3": "<p> cannot be</p>",
+      "option4": "<p> could not be</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> The given sentence is grammatically incorrect.</p><p> The given sentence is in Passive Voice.</p><p> In passive voice <b>‘cannot + be + V</b><b>3</b><b>’ is used.</b></p><p> Here <b>‘Be’</b> will come after <b>‘cannot’.</b> </p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.<br/> Veil</p>",
+      "option1": "<p> Expose</p>",
+      "option2": "<p> Shroud</p>",
+      "option3": "<p> Mask</p>",
+      "option4": "<p> Overlay</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The word <b>\"veil\"</b> typically refers to something that is used to cover, hide, or obscure something else.</p><p> <b>Expose -</b> This is the correct antonym because when you expose something, you reveal or make it visible, which is the opposite of veiling or covering it.</p><p> <b>Shroud -</b> This is not the correct antonym because \"shroud\" is a synonym of \"veil,\" both referring to something that covers or conceals.</p><p> <b>Mask -</b> While \"mask\" can also mean to conceal or cover, it's not as direct of an antonym as \"expose.\" In some contexts, it could be considered an antonym, but \"expose\" is a more direct opposite in this case.</p><p> <b>Overlay -</b> This is not the correct antonym because \"overlay\" refers to something that is placed on top of another thing, which doesn't necessarily indicate uncovering or revealing.</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom</p><p> Despite his efforts to <b>browbeat</b> the negotiation process, the other party remained calm and composed.</p>",
+      "option1": "<p> To successfully manipulate and control the negotiation process.</p>",
+      "option2": "<p> To engage in a collaborative and cooperative negotiation process.</p>",
+      "option3": "<p> To withdraw from the negotiation process due to intimidation.</p>",
+      "option4": "<p> To communicate openly and transparently during a negotiation process.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> “Browbeat” means to intimidate, bully, or pressure someone using stern or overbearing tactics. </p><p> In the context of the sentence, it means that the person (referred to as \"he\" in the sentence) is attempting to <b>use forceful or aggressive methods to control or influence the negotiation process.</b> Despite these efforts, the other party (the opposing side in the negotiation) <b>remains \"calm and composed,\"</b> indicating that they are not <b>succumbing to the intimidation and are maintaining their composure.</b></p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> The following sentence has been divided into parts. Select the part that contains the error from the given options if not then mark no error.<br/> Everyone attended/ the cultural show/ except she.</p>",
+      "option1": "<p> everyone attended</p>",
+      "option2": "<p> No error</p>",
+      "option3": "<p> except she</p>",
+      "option4": "<p> the cultural show</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> The given sentence is grammatically incorrect.</p><p> According to the grammar, “An objective case comes after <b>‘except’,</b> <b>‘let’, ‘like’, ‘between…….and’, ‘but’, and ‘all prepositions.’</b></p><p> Example: let me introduce the new employee.</p><p> To rectify the given sentence ‘her’ will comes instead of ‘she’.</p><p> The correct sentence is: everyone attended the cultural show except her.</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> We walked as faster/ as we could so that/ we would reach on time.</p>",
+      "option1": "<p> We walked as faster</p>",
+      "option2": "<p> No error</p>",
+      "option3": "<p> as we could so that</p>",
+      "option4": "<p> we would reach on time</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The error is in ‘as faster as.’</p><p> According to the grammar ‘with as……..as’ the adjective/ adverb will come in their positive degree. So, change faster into fast.</p><p> Thus, the correct sentence is: <b>We walked </b><i><b>as fast as</b></i><b> we could so that we would reach on time.</b></p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.</p><p> Gratis</p>",
+      "option1": "<p> Courtesy</p>",
+      "option2": "<p> Unpaid</p>",
+      "option3": "<p> Tariff</p>",
+      "option4": "<p> Complimentary</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> <b>Gratis: </b>without charge; free.</p><p> <b>Tariff: </b>a tax or duty to be paid on a particular class of imports or exports.</p><p> <b>Courtesy: </b>the showing of politeness in one's attitude and behaviour towards others.</p><p> <b>Unpaid: </b>not yet discharged by payment.</p><p> <b>Complimentary: </b>given or supplied free of charge.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Select the option that gives the most appropriate meaning of the underlined idiom.</p><p> Sunaina might take <b>French leave</b> this afternoon and go to the cinema.</p>",
+      "option1": "<p> Departing for a vacation in France.</p>",
+      "option2": "<p> Sneakily avoiding attending a French language class.</p>",
+      "option3": "<p> Departing from a social event without saying goodbye.</p>",
+      "option4": "<p> Leaving without permission, often from work or duties.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> <b>French leave:</b> absence from work or duty without permission.</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> P. There was resentment among Meiteis about the merger of the State with the Union, which led to the Meitei insurgency from the 1960s. </p><p> Q. Which predominantly consists of the culturally distinct Meitei community. The State was ruled by Meitei rulers. </p><p> R. One fourth of Manipur (which is the valley), is home to more than seventy per cent of its population.</p><p> S. Also, Meitei influence declined in the socio-economic spheres after Independence as tribals came into the forefront largely due to reservations. </p>",
+      "option1": "<p> RQPS</p>",
+      "option2": "<p> RPQS</p>",
+      "option3": "<p> RQSP</p>",
+      "option4": "<p> RSPQ</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> The correct sequence provides a smooth and logical flow of information, starting with the geographical and demographic context (R), followed by the cultural context (Q), the cause for resentment (P), and the socio-economic change (S). </p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the most appropriate synonym of the given word.<br/> Platitude</p>",
+      "option1": "<p> Cliché</p>",
+      "option2": "<p> Ingenuity</p>",
+      "option3": "<p> Intercede</p>",
+      "option4": "<p> Deftness</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> <b>Platitude</b>: A <b>platitude</b> refers to a trite, overused, or clichéd statement that lacks originality and depth, often expressed as if it were profound.</p><p> <b>Cliché: </b>a phrase or opinion that is overused and betrays a lack of original thought.</p><p> <b>Ingenuity: </b>the quality of being clever, original and inventive. </p><p> <b>Intercede: </b>intervene on behalf of another.</p><p> <b>Deftness: </b>skilful performance or ability without difficulty.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.<br/> a vehicle used to carry a body in a coffin to a funeral</p>",
+      "option1": "<p> Coffer</p>",
+      "option2": "<p> Hearse</p>",
+      "option3": "<p> Coffle</p>",
+      "option4": "<p> Paean</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> <b>Hearse: </b>a vehicle used to carry a body in a coffin to a funeral.</p><p> <b>Coffer: </b>a strongbox or small chest for holding valuables.</p><p> <b>Coffle: </b>a line of animals or slaves fastened or driven along together. </p><p> <b>Paean: </b>a song of praise or triumph.</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the most appropriate meaning of the given idiom.</p><p> Tug at the heartstrings</p>",
+      "option1": "<p> To exhibit physical strength during emotional moments.</p>",
+      "option2": "<p> To manipulate others' emotions for personal gain.</p>",
+      "option3": "<p> To evoke strong emotions, often of pity or nostalgia.</p>",
+      "option4": "<p> To engage in a competitive emotional display.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> <b>Tug at the heartstrings: </b>to cause someone to feel a great deal of pity or sadness for someone or something.</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.</p><p> He said, \"Let it rain ever so hard, I shall go.\"</p>",
+      "option1": "<p> He said that he would go however hard it might rain.</p>",
+      "option2": "<p> He said that he would go ever if it rains very hard.</p>",
+      "option3": "<p> He suggested that he should go, let it rain very hard.</p>",
+      "option4": "<p> He was determined to go even if it rained so hard</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option a.</p><p> \"He said that he would go however hard it might rain.\" Is the correct answer.</p><p> <br/> <br/> </p><p> Explanation: </p><p> Reporting Verb: \"He said\" - This is the reporting verb that indicates that someone is reporting what was said.</p><p> Reporting Clause: \"that he would go\" - This clause reports the action or statement of the speaker in the original sentence.</p><p> Conjunction \"however\": This conjunction is used to indicate that regardless of the rain's intensity, the determination to go remains unchanged.</p><p> Subordinate Clause: \"however hard it might rain\" - This clause further explains the condition under which the speaker is determined to go. \"However hard it might rain\" is a conditional clause that describes the rain's intensity.</p><p> So, option (a) accurately transforms the original direct speech into indirect speech while maintaining the meaning and grammatical structure. The use of \"however\" and \"might\" correctly conveys the determination despite the rain's severity.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Given below are four jumbled sentences. Select the option that gives their correct order.</p><p> A. Demanding a separate sovereign Bodoland while others like Bodo Liberation Tiger (BLT) have been demanding a separate state. </p><p> B. Capitalizing on the migrant fear a Movement was started by Bodo tribes and insurgent organisation like National Democratic Front of Bodoland (NDFB).</p><p> C. The state of Assam that provided great autonomy and constitutional protection under sixth schedule.</p><p> D. In response to their demands, a tripartite Bodo Accord was signed between the BLT, centre and the Assam government, and Bodoland Territorial Council (BTC) was formed within.</p>",
+      "option1": "<p> CDBA</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> ACDB</p>",
+      "option4": "<p> BCAD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> “BADC” This sequence flows logically. Segment B sets the context for the movement, followed by segment A discussing the demands for a separate Bodoland. Then segment D responds to those demands with the creation of the Bodoland Territorial Council (BTC). Segment C provides additional information about Assam's autonomy. The correct sequence maintains a logical flow of information, starting with the context of the movement, moving on to the demands for a separate Bodoland, providing background information about Assam's autonomy, and then explaining the response to the demands through the Bodo Accord and the formation of the BTC.</p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the most appropriate meaning of the given idiom.</p><p> Fly a kite</p>",
+      "option1": "<p> To engage in a relaxing outdoor activity.</p>",
+      "option2": "<p> To launch a kite into the air for enjoyment.</p>",
+      "option3": "<p> To explore new ideas or concepts.</p>",
+      "option4": "<p> To put forward a proposal or idea to test its reception.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> <b>Fly a kite: </b>To suggest something in order to gauge interest in it or others' perception of it.</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence. If there is no need to substitute it, select ‘No substitution required’.</p><p> The university asked him <b>to return back</b> the funds allotted for the project.</p>",
+      "option1": "<p> to bring back</p>",
+      "option2": "<p> to return</p>",
+      "option3": "<p> no improvement</p>",
+      "option4": "<p> to settle</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> In this sentence, the phrase <b>\"return back\"</b> is redundant because \"return\" already implies the action of giving something back. Using both \"return\" and \"back\" together is unnecessary and can be replaced with a single word to convey the same meaning more effectively.</p><p> <b>to return:</b> This option effectively removes the redundancy and accurately conveys that the university wants the funds to be given back.</p><p> <b>to bring back:</b> \"bring back\" suggests physically bringing something, which might not be the intended meaning. Additionally, \"return\" is a more concise term for the context. <br/> <b>to settle:</b> \"Settle\" suggests resolving or finalizing financial matters, which might not align with the intended action of returning funds.</p><p> Thus, option (b) \"to return\" is the most appropriate substitution because it eliminates the redundancy while maintaining the intended meaning of the sentence.</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Women were not allowed to compete in the Olympics until the 1900 games in Paris. There 1. _______ 19 women out of a total of 1,225 athletes. The women did tennis, golf 2. ______ croquet. Women competed in swimming events for the first time in 1912. But 3. ______ of them were from America, which did not allow female athletes to compete in events without wearing long skirts! It 4. ______ until 1991 that all new Olympic sports were required to include female competitors.</p><p> Select the most appropriate option to fill in blank number 1.</p>",
+      "option1": "<p> was</p>",
+      "option2": "<p> were</p>",
+      "option3": "<p> had</p>",
+      "option4": "<p> had been</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option b.</p><p> \"There 1. _______ 19 women out of a total of 1,225 athletes.\"</p><p> In this context, the subject \"19 women\" is plural, so the correct verb form to use is \"were.\" This matches the subject and verb agreement.</p><p> So, the sentence would read: \"There were 19 women out of a total of 1,225 athletes.\"</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Women were not allowed to compete in the Olympics until the 1900 games in Paris. There <b>1.</b> _______ 19 women out of a total of 1,225 athletes. The women did tennis, golf <b>2.</b> ______ croquet. Women competed in swimming events for the first time in 1912. But <b>3.</b> ______ of them were from America, which did not allow female athletes to compete in events without wearing long skirts! It <b>4.</b> ______ until 1991 that all new Olympic sports were required to include female competitors.</p><p> Select the most appropriate option to fill in blank number 2.</p>",
+      "option1": "<p> BUT</p>",
+      "option2": "<p> OR</p>",
+      "option3": "<p> AND</p>",
+      "option4": "<p> ALSO</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Women were not allowed to compete in the Olympics until the 1900 games in Paris. There <b>1.</b> _______ 19 women out of a total of 1,225 athletes. The women did tennis, golf <b>2.</b> ______ croquet. Women competed in swimming events for the first time in 1912. But <b>3.</b> ______ of them were from America, which did not allow female athletes to compete in events without wearing long skirts! It <b>4.</b> ______ until 1991 that all new Olympic sports were required to include female competitors.</p><p> Select the most appropriate option to fill in blank number 3.</p>",
+      "option1": "<p> Either</p>",
+      "option2": "<p> Any</p>",
+      "option3": "<p> Neither</p>",
+      "option4": "<p> None</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option d.</p><p> \"The women did tennis, golf 2. ______ croquet.\"</p><p> In this context, the most appropriate word to fill in the blank is \"and.\" This would correctly connect the activities the women participated in, forming a list of activities they were involved in.</p><p> So, the sentence would read: \"The women did tennis, golf and croquet.\"</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Women were not allowed to compete in the Olympics until the 1900 games in Paris. There <b>1.</b> _______ 19 women out of a total of 1,225 athletes. The women did tennis, golf <b>2.</b> ______ croquet. Women competed in swimming events for the first time in 1912. But <b>3.</b> ______ of them were from America, which did not allow female athletes to compete in events without wearing long skirts! It <b>4.</b> ______ until 1991 that all new Olympic sports were required to include female competitors.</p><p> Select the most appropriate option to fill in blank number 4.</p>",
+      "option1": "<p> aren’t</p>",
+      "option2": "<p> weren’t</p>",
+      "option3": "<p> wasn’t</p>",
+      "option4": "<p> isn’t</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> \"It 4. ______ until 1991 that all new Olympic sports were required to include female competitors.\"</p><p> In this context, the most appropriate word to fill in the blank is \"wasn't,\" which is the contracted form of \"was not.\" This properly conveys that the requirement for female competitors in new Olympic sports did not exist until 1991.</p><p> So, the sentence would read: \"It wasn't until 1991 that all new Olympic sports were required to include female competitors.\"</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> France’s dominance over international fashion began in early 18th century. Until Industrial Revolution, people belonged to two main classes: wealthy and poor. Only the wealthy could afford fashionable clothes. By the turn of 18th century, King Louis XIV’s court members became the trendsetters of taste, making Paris the fashion capital of Europe. Many of the French cities were supplying the court with silk fabrics, ribbons and laces. At this time intricate seaming of fashion required painstaking hand sewing. All the clothes were hand made and custom made i.e. made to fit the customer’s exact measurements. France became the centre of fashion due to support from the royal court and the development of the silk industry there. Couture (koo-tour’) was the term used for the art of dress making. A male designer was a couturier and his female counterpart was a couturiere. The Industrial Revolution marked the beginning of technological advances in textile and apparel production. Due to the developments more fabrics were produced in less time. During this time spinning jenny and power looms were invented. This gave rise to development of American textile industry. Rapidly increasing trade and industry in return created a middle class with money to spend on the luxuries of life, including better clothing. The invention of sewing machine turned the handcraft into an industry. This democratised fashion and made it accessible for everyone. In 1859, Issac Singer developed the foot treadle for the sewing machine which left the hands free to guide the fabric. An early use for sewing machines was to make Civil War uniforms. In 1849, fabric intended for tents and wagon covers was used to make long wearing pants with pockets for tools by a young boy Levi Strauss. Later these became popular and were called denims. This was the beginning of clothes specially made for labourers. This is the only apparel that has remained same for the last nearly 150 years!</p><p> <br/> <br/> </p><p> Q. What was the significant impact of the Industrial Revolution on fashion and clothing production?</p>",
+      "option1": "<p> It led to the decline of the fashion industry in France.</p>",
+      "option2": "<p> It created a demand for luxurious clothing among the middle class.</p>",
+      "option3": "<p> It introduced intricate seaming techniques in clothing production.</p>",
+      "option4": "<p> It brought about technological advancements in textile and apparel production.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The passage mentions that the Industrial Revolution marked the beginning of technological advances in textile and apparel production. This led to the development of machines like the spinning jenny and power looms, resulting in more fabrics being produced in less time. The invention of the sewing machine also turned handcraft into an industry and democratized fashion, making it accessible for everyone.</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> France’s dominance over international fashion began in early 18th century. Until Industrial Revolution, people belonged to two main classes: wealthy and poor. Only the wealthy could afford fashionable clothes. By the turn of 18th century, King Louis XIV’s court members became the trendsetters of taste, making Paris the fashion capital of Europe. Many of the French cities were supplying the court with silk fabrics, ribbons and laces. At this time intricate seaming of fashion required painstaking hand sewing. All the clothes were hand made and custom made i.e. made to fit the customer’s exact measurements. France became the centre of fashion due to support from the royal court and the development of the silk industry there. Couture (koo-tour’) was the term used for the art of dress making. A male designer was a couturier and his female counterpart was a couturiere. The Industrial Revolution marked the beginning of technological advances in textile and apparel production. Due to the developments more fabrics were produced in less time. During this time spinning jenny and power looms were invented. This gave rise to development of American textile industry. Rapidly increasing trade and industry in return created a middle class with money to spend on the luxuries of life, including better clothing. The invention of sewing machine turned the handcraft into an industry. This democratised fashion and made it accessible for everyone. In 1859, Issac Singer developed the foot treadle for the sewing machine which left the hands free to guide the fabric. An early use for sewing machines was to make Civil War uniforms. In 1849, fabric intended for tents and wagon covers was used to make long wearing pants with pockets for tools by a young boy Levi Strauss. Later these became popular and were called denims. This was the beginning of clothes specially made for labourers. This is the only apparel that has remained same for the last nearly 150 years!</p><p> <br/> <br/> </p><p> Q. Who were the trendsetters of taste in fashion by the turn of the 18th century in France?</p>",
+      "option1": "<p> merchants</p>",
+      "option2": "<p> aristocrats</p>",
+      "option3": "<p> craftsmen</p>",
+      "option4": "<p> king louis xiv’s court members</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The trendsetters of taste in fashion by the turn of the 18th century in France were the members of King Louis XIV's court. They influenced fashion trends and made Paris the fashion capital of Europe, contributing to France's dominance over international fashion.</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> France’s dominance over international fashion began in early 18th century. Until Industrial Revolution, people belonged to two main classes: wealthy and poor. Only the wealthy could afford fashionable clothes. By the turn of 18th century, King Louis XIV’s court members became the trendsetters of taste, making Paris the fashion capital of Europe. Many of the French cities were supplying the court with silk fabrics, ribbons and laces. At this time intricate seaming of fashion required painstaking hand sewing. All the clothes were hand made and custom made i.e. made to fit the customer’s exact measurements. France became the centre of fashion due to support from the royal court and the development of the silk industry there. Couture (koo-tour’) was the term used for the art of dress making. A male designer was a couturier and his female counterpart was a couturiere. The Industrial Revolution marked the beginning of technological advances in textile and apparel production. Due to the developments more fabrics were produced in less time. During this time spinning jenny and power looms were invented. This gave rise to development of American textile industry. Rapidly increasing trade and industry in return created a middle class with money to spend on the luxuries of life, including better clothing. The invention of sewing machine turned the handcraft into an industry. This democratised fashion and made it accessible for everyone. In 1859, Issac Singer developed the foot treadle for the sewing machine which left the hands free to guide the fabric. An early use for sewing machines was to make Civil War uniforms. In 1849, fabric intended for tents and wagon covers was used to make long wearing pants with pockets for tools by a young boy Levi Strauss. Later these became popular and were called denims. This was the beginning of clothes specially made for labourers. This is the only apparel that has remained same for the last nearly 150 years!</p><p> <br/> <br/> </p><p> Q. What was the significance of Isaac Singer's development of the foot treadle for the sewing machine?</p>",
+      "option1": "<p> It enabled sewing without using hands.</p>",
+      "option2": "<p> It improved the sewing machine's durability.</p>",
+      "option3": "<p> It allowed for faster sewing of complex patterns.</p>",
+      "option4": "<p> It introduced automatic stitching.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option A</p><p> Isaac Singer's development of the foot treadle for the sewing machine allowed the hands to be free to guide the fabric while sewing. This innovation improved the efficiency of sewing by using foot power to operate the machine, leaving the hands available for fabric manipulation and control.</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> France’s dominance over international fashion began in early 18th century. Until Industrial Revolution, people belonged to two main classes: wealthy and poor. Only the wealthy could afford fashionable clothes. By the turn of 18th century, King Louis XIV’s court members became the trendsetters of taste, making Paris the fashion capital of Europe. Many of the French cities were supplying the court with silk fabrics, ribbons and laces. At this time intricate seaming of fashion required painstaking hand sewing. All the clothes were hand made and custom made i.e. made to fit the customer’s exact measurements. France became the centre of fashion due to support from the royal court and the development of the silk industry there. Couture (koo-tour’) was the term used for the art of dress making. A male designer was a couturier and his female counterpart was a couturiere. The Industrial Revolution marked the beginning of technological advances in textile and apparel production. Due to the developments more fabrics were produced in less time. During this time spinning jenny and power looms were invented. This gave rise to development of American textile industry. Rapidly increasing trade and industry in return created a middle class with money to spend on the luxuries of life, including better clothing. The invention of sewing machine turned the handcraft into an industry. This democratised fashion and made it accessible for everyone. In 1859, Issac Singer developed the foot treadle for the sewing machine which left the hands free to guide the fabric. An early use for sewing machines was to make Civil War uniforms. In 1849, fabric intended for tents and wagon covers was used to make long wearing pants with pockets for tools by a young boy Levi Strauss. Later these became popular and were called denims. This was the beginning of clothes specially made for labourers. This is the only apparel that has remained same for the last nearly 150 years!</p><p> Q. What kind of clothing did Levi Strauss create using fabric intended for tents and wagon covers?</p>",
+      "option1": "<p> formal wear</p>",
+      "option2": "<p> denims for laborers</p>",
+      "option3": "<p> luxury clothing</p>",
+      "option4": "<p> military uniforms</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> Levi Strauss created denims for laborers using fabric intended for tents and wagon covers. This innovation eventually led to the creation of durable and practical clothing, commonly known as denim jeans, which became popular among laborers and workers.</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Worldwide, at least 13% of people between the ages of 10 and 19 live with a diagnosed mental-health disorder, according to the latest State of the World’s Children report, published this week by the United Nations children’s charity UNICEF. It’s the first time in the organization’s history that this flagship report has tackled the challenges in and opportunities for preventing and treating mental-health problems among young people. It reveals that adolescent mental health is highly complex, understudied — and underfunded. </p><p> Anxiety and depression constitute more than 40% of mental-health disorders among young people (those aged 10–19). UNICEF also reports that, worldwide, suicide is the fourth most-common cause of death (after road injuries, tuberculosis and interpersonal violence) among adolescents (aged 15–19). In eastern Europe and central Asia, suicide is the leading cause of death for young people in that age group — and it’s the second-highest cause in western Europe and North America.</p><p> Sadly, psychological distress among young people seems to be rising. One study found that rates of depression among a nationally representative sample of US adolescents (aged 12 to 17) increased from 8.5% of young adults to 13.2% between 2005 and 2017. There’s also initial evidence that the coronavirus pandemic is exacerbating this trend in some countries. For example, in a nationwide study from Iceland, adolescents (aged 13–18) reported significantly more symptoms of mental ill health during the pandemic than did their peers before it. And girls were more likely to experience these symptoms than were boys.</p><p> Although most mental-health disorders arise during adolescence, UNICEF says that only one-third of investment in mental-health research is targeted towards young people. Moreover, the research itself suffers from fragmentation — scientists involved tend to work inside some key disciplines, such as psychiatry, paediatrics, psychology and epidemiology, and the links between research and health-care services are often poor. This means that effective forms of prevention and treatment are limited, and lack a solid understanding of what works, in which context and why.</p><p> <br/> <br/> </p><p> Q. Among young people aged 10–19, which mental health disorders constitute more than 40% of the total disorders, as reported by UNICEF?</p>",
+      "option1": "<p> Schizophrenia and bipolar disorder</p>",
+      "option2": "<p> Obsessive-compulsive disorder</p>",
+      "option3": "<p> Anxiety and depression</p>",
+      "option4": "<p> Attention-deficit/hyperactivity disorder (ADHD)</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> Among young people aged 10–19, anxiety and depression constitute more than 40% of the total mental health disorders, as reported by UNICEF.</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Worldwide, at least 13% of people between the ages of 10 and 19 live with a diagnosed mental-health disorder, according to the latest State of the World’s Children report, published this week by the United Nations children’s charity UNICEF. It’s the first time in the organization’s history that this flagship report has tackled the challenges in and opportunities for preventing and treating mental-health problems among young people. It reveals that adolescent mental health is highly complex, understudied — and underfunded. </p><p> Anxiety and depression constitute more than 40% of mental-health disorders among young people (those aged 10–19). UNICEF also reports that, worldwide, suicide is the fourth most-common cause of death (after road injuries, tuberculosis and interpersonal violence) among adolescents (aged 15–19). In eastern Europe and central Asia, suicide is the leading cause of death for young people in that age group — and it’s the second-highest cause in western Europe and North America.</p><p> Sadly, psychological distress among young people seems to be rising. One study found that rates of depression among a nationally representative sample of US adolescents (aged 12 to 17) increased from 8.5% of young adults to 13.2% between 2005 and 2017. There’s also initial evidence that the coronavirus pandemic is exacerbating this trend in some countries. For example, in a nationwide study from Iceland, adolescents (aged 13–18) reported significantly more symptoms of mental ill health during the pandemic than did their peers before it. And girls were more likely to experience these symptoms than were boys.</p><p> Although most mental-health disorders arise during adolescence, UNICEF says that only one-third of investment in mental-health research is targeted towards young people. Moreover, the research itself suffers from fragmentation — scientists involved tend to work inside some key disciplines, such as psychiatry, paediatrics, psychology and epidemiology, and the links between research and health-care services are often poor. This means that effective forms of prevention and treatment are limited, and lack a solid understanding of what works, in which context and why.</p><p> <br/> <br/> </p><p> Q. What is a consequence of the poor links between mental-health research and health-care services, as highlighted in the passage?</p>",
+      "option1": "<p> High levels of public awareness</p>",
+      "option2": "<p> Limited availability of effective prevention and treatment methods</p>",
+      "option3": "<p> Decreased investment in mental-health research</p>",
+      "option4": "<p> Increased focus on general health interventions</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> The passage mentions that poor links between mental-health research and health-care services result in limited availability of effective prevention and treatment methods. This is because the lack of strong connections between research and health-care services hinders the development and implementation of strategies that are informed by research findings.</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Worldwide, at least 13% of people between the ages of 10 and 19 live with a diagnosed mental-health disorder, according to the latest State of the World’s Children report, published this week by the United Nations children’s charity UNICEF. It’s the first time in the organization’s history that this flagship report has tackled the challenges in and opportunities for preventing and treating mental-health problems among young people. It reveals that adolescent mental health is highly complex, understudied — and underfunded. </p><p> Anxiety and depression constitute more than 40% of mental-health disorders among young people (those aged 10–19). UNICEF also reports that, worldwide, suicide is the fourth most-common cause of death (after road injuries, tuberculosis and interpersonal violence) among adolescents (aged 15–19). In eastern Europe and central Asia, suicide is the leading cause of death for young people in that age group — and it’s the second-highest cause in western Europe and North America.</p><p> Sadly, psychological distress among young people seems to be rising. One study found that rates of depression among a nationally representative sample of US adolescents (aged 12 to 17) increased from 8.5% of young adults to 13.2% between 2005 and 2017. There’s also initial evidence that the coronavirus pandemic is exacerbating this trend in some countries. For example, in a nationwide study from Iceland, adolescents (aged 13–18) reported significantly more symptoms of mental ill health during the pandemic than did their peers before it. And girls were more likely to experience these symptoms than were boys.</p><p> Although most mental-health disorders arise during adolescence, UNICEF says that only one-third of investment in mental-health research is targeted towards young people. Moreover, the research itself suffers from fragmentation — scientists involved tend to work inside some key disciplines, such as psychiatry, paediatrics, psychology and epidemiology, and the links between research and health-care services are often poor. This means that effective forms of prevention and treatment are limited, and lack a solid understanding of what works, in which context and why.</p><p> <br/> <br/> </p><p> Q. According to the latest State of the World’s Children report by UNICEF, what percentage of people between the ages of 10 and 19 live with a diagnosed mental-health disorder worldwide?</p>",
+      "option1": "<p> 5%</p>",
+      "option2": "<p> 10%</p>",
+      "option3": "<p> 13%</p>",
+      "option4": "<p> 20%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> According to the latest State of the World’s Children report by UNICEF, approximately 13% of people between the ages of 10 and 19 live with a diagnosed mental-health disorder worldwide.</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Worldwide, at least 13% of people between the ages of 10 and 19 live with a diagnosed mental-health disorder, according to the latest State of the World’s Children report, published this week by the United Nations children’s charity UNICEF. It’s the first time in the organization’s history that this flagship report has tackled the challenges in and opportunities for preventing and treating mental-health problems among young people. It reveals that adolescent mental health is highly complex, understudied — and underfunded. </p><p> Anxiety and depression constitute more than 40% of mental-health disorders among young people (those aged 10–19). UNICEF also reports that, worldwide, suicide is the fourth most-common cause of death (after road injuries, tuberculosis and interpersonal violence) among adolescents (aged 15–19). In eastern Europe and central Asia, suicide is the leading cause of death for young people in that age group — and it’s the second-highest cause in western Europe and North America.</p><p> Sadly, psychological distress among young people seems to be rising. One study found that rates of depression among a nationally representative sample of US adolescents (aged 12 to 17) increased from 8.5% of young adults to 13.2% between 2005 and 2017. There’s also initial evidence that the coronavirus pandemic is exacerbating this trend in some countries. For example, in a nationwide study from Iceland, adolescents (aged 13–18) reported significantly more symptoms of mental ill health during the pandemic than did their peers before it. And girls were more likely to experience these symptoms than were boys.</p><p> Although most mental-health disorders arise during adolescence, UNICEF says that only one-third of investment in mental-health research is targeted towards young people. Moreover, the research itself suffers from fragmentation — scientists involved tend to work inside some key disciplines, such as psychiatry, paediatrics, psychology and epidemiology, and the links between research and health-care services are often poor. This means that effective forms of prevention and treatment are limited, and lack a solid understanding of what works, in which context and why.</p><p> <br/> <br/> </p><p> Q. What trend in psychological distress among young people has been observed in relation to the coronavirus pandemic?</p>",
+      "option1": "<p> Decreased distress due to increased awareness</p>",
+      "option2": "<p> Stable distress levels across all regions</p>",
+      "option3": "<p> Rising distress, particularly among girls</p>",
+      "option4": "<p> Decreased distress due to improved mental health services</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> The passage mentions that there is initial evidence that the coronavirus pandemic is exacerbating the trend of psychological distress among young people, with girls being more likely to experience these symptoms than boys.</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Economic hardship exacts a toll on millions of families worldwide – and in some places, it comes at the price of a child’s safety. Roughly 160 million children were subjected to child labour at the beginning of 2020, with 9 million additional children at risk due to the impact of COVID-19. This accounts for nearly 1 in 10 children worldwide. Almost half of them are in hazardous work that directly endangers their health and development. Children may be driven into work for various reasons. Most often, child labour occurs when families face financial challenges or uncertainty – whether due to poverty, sudden illness of a caregiver, or job loss of a primary wage earner.</p><p> The consequences are staggering. Child labour can result in extreme bodily and mental harm, and even death. It can lead to slavery and sexual or economic exploitation. And in nearly every case, it cuts children off from schooling and health care, restricting their fundamental rights. Migrant and refugee children – many of whom have been uprooted by conflict, disaster or poverty – also risk being forced into work and even trafficked, especially if they are migrating alone or taking irregular routes with their families. Trafficked children are often subjected to violence, abuse and other human rights violations. For girls, the threat of sexual exploitation looms large, while boys may be exploited by armed forces or groups.</p><p> Whatever the cause, child labour compounds social inequality and discrimination. Unlike activities that help children develop, such as contributing to light housework or taking on a job during school holidays, child labour limits access to education and harms a child’s physical, mental and social growth. Especially for girls, the “triple burden” of school, work and household chores heightens their risk of falling behind, making them even more vulnerable to poverty and exclusion.</p><p> <br/> <br/> </p><p> Q. How has the COVID-19 pandemic impacted the risk of child labour?</p>",
+      "option1": "<p> Reduced the risk due to increased family time</p>",
+      "option2": "<p> No impact on child labour risk</p>",
+      "option3": "<p> Increased the risk for 9 million more children</p>",
+      "option4": "<p> Decreased the risk through increased government support</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> The passage mentions that the impact of the COVID-19 pandemic has led to an increase in the risk of child labour. The pandemic's economic disruptions, including job losses and financial challenges faced by families, have pushed an additional 9 million children into the risk of child labour. This means that due to the economic hardships caused by the pandemic, more children are at risk of being forced into work to contribute to their family's income or support.</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Economic hardship exacts a toll on millions of families worldwide – and in some places, it comes at the price of a child’s safety. Roughly 160 million children were subjected to child labour at the beginning of 2020, with 9 million additional children at risk due to the impact of COVID-19. This accounts for nearly 1 in 10 children worldwide. Almost half of them are in hazardous work that directly endangers their health and development. Children may be driven into work for various reasons. Most often, child labour occurs when families face financial challenges or uncertainty – whether due to poverty, sudden illness of a caregiver, or job loss of a primary wage earner.</p><p> The consequences are staggering. Child labour can result in extreme bodily and mental harm, and even death. It can lead to slavery and sexual or economic exploitation. And in nearly every case, it cuts children off from schooling and health care, restricting their fundamental rights. Migrant and refugee children – many of whom have been uprooted by conflict, disaster or poverty – also risk being forced into work and even trafficked, especially if they are migrating alone or taking irregular routes with their families. Trafficked children are often subjected to violence, abuse and other human rights violations. For girls, the threat of sexual exploitation looms large, while boys may be exploited by armed forces or groups.</p><p> Whatever the cause, child labour compounds social inequality and discrimination. Unlike activities that help children develop, such as contributing to light housework or taking on a job during school holidays, child labour limits access to education and harms a child’s physical, mental and social growth. Especially for girls, the “triple burden” of school, work and household chores heightens their risk of falling behind, making them even more vulnerable to poverty and exclusion.</p><p> <br/> <br/> </p><p> Q. What is the global impact of child labour?</p>",
+      "option1": "<p> Positive economic growth</p>",
+      "option2": "<p> Reduction in social inequality</p>",
+      "option3": "<p> Reinforcement of discrimination</p>",
+      "option4": "<p> Enhanced child development and well-being</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> Child labour often occurs in marginalized and vulnerable communities where families are facing economic hardships. Children from these communities are more likely to be engaged in labour to contribute to household income. This situation exacerbates existing social inequalities and discrimination.</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Economic hardship exacts a toll on millions of families worldwide – and in some places, it comes at the price of a child’s safety. Roughly 160 million children were subjected to child labour at the beginning of 2020, with 9 million additional children at risk due to the impact of COVID-19. This accounts for nearly 1 in 10 children worldwide. Almost half of them are in hazardous work that directly endangers their health and development. Children may be driven into work for various reasons. Most often, child labour occurs when families face financial challenges or uncertainty – whether due to poverty, sudden illness of a caregiver, or job loss of a primary wage earner.</p><p> The consequences are staggering. Child labour can result in extreme bodily and mental harm, and even death. It can lead to slavery and sexual or economic exploitation. And in nearly every case, it cuts children off from schooling and health care, restricting their fundamental rights. Migrant and refugee children – many of whom have been uprooted by conflict, disaster or poverty – also risk being forced into work and even trafficked, especially if they are migrating alone or taking irregular routes with their families. Trafficked children are often subjected to violence, abuse and other human rights violations. For girls, the threat of sexual exploitation looms large, while boys may be exploited by armed forces or groups.</p><p> Whatever the cause, child labour compounds social inequality and discrimination. Unlike activities that help children develop, such as contributing to light housework or taking on a job during school holidays, child labour limits access to education and harms a child’s physical, mental and social growth. Especially for girls, the “triple burden” of school, work and household chores heightens their risk of falling behind, making them even more vulnerable to poverty and exclusion.</p><p> <br/> <br/> </p><p> Q. What is a possible long-term consequence of child labour on a child's future?</p>",
+      "option1": "<p> Enhanced opportunities for career advancement</p>",
+      "option2": "<p> Improved mental and physical health</p>",
+      "option3": "<p> Missed educational opportunities leading to poverty</p>",
+      "option4": "<p> Early retirement options</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> Child labour often compels children to work at a young age, which can have profound and lasting effects on their future. One of the most significant consequences of child labour is the deprivation of educational opportunities, and this, in turn, can lead to a cycle of poverty.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> Economic hardship exacts a toll on millions of families worldwide – and in some places, it comes at the price of a child’s safety. Roughly 160 million children were subjected to child labour at the beginning of 2020, with 9 million additional children at risk due to the impact of COVID-19. This accounts for nearly 1 in 10 children worldwide. Almost half of them are in hazardous work that directly endangers their health and development. Children may be driven into work for various reasons. Most often, child labour occurs when families face financial challenges or uncertainty – whether due to poverty, sudden illness of a caregiver, or job loss of a primary wage earner.</p><p> The consequences are staggering. Child labour can result in extreme bodily and mental harm, and even death. It can lead to slavery and sexual or economic exploitation. And in nearly every case, it cuts children off from schooling and health care, restricting their fundamental rights. Migrant and refugee children – many of whom have been uprooted by conflict, disaster or poverty – also risk being forced into work and even trafficked, especially if they are migrating alone or taking irregular routes with their families. Trafficked children are often subjected to violence, abuse and other human rights violations. For girls, the threat of sexual exploitation looms large, while boys may be exploited by armed forces or groups.</p><p> Whatever the cause, child labour compounds social inequality and discrimination. Unlike activities that help children develop, such as contributing to light housework or taking on a job during school holidays, child labour limits access to education and harms a child’s physical, mental and social growth. Especially for girls, the “triple burden” of school, work and household chores heightens their risk of falling behind, making them even more vulnerable to poverty and exclusion.</p><p> <br/> <br/> </p><p> Q. The \"triple burden\" of school, work, and household chores affects which group of children more?</p>",
+      "option1": "<p> boys</p>",
+      "option2": "<p> migrant children</p>",
+      "option3": "<p> girls</p>",
+      "option4": "<p> refugee children</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> The \"triple burden\" refers to the situation where girls are expected to juggle three significant responsibilities simultaneously: attending school, engaging in work, and managing household chores. This burden affects girls more profoundly due to societal expectations, cultural norms, and gender roles.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>What is CGS unit of weight?</p>",
+      "option1": "<p>Newton</p>",
+      "option2": "<p>Pound</p>",
+      "option3": "<p>Dyne</p>",
+      "option4": "<p>Meter</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Dyne. </p><p>The CGS (Centimeter-Gram-Second) unit of weight is the dyne. </p><p>The dyne is a unit of force in the CGS system, where 1 dyne is defined as the force required to accelerate a mass of 1 gram at a rate of 1 centimeter per second squared.</p><p><strong>Newton</strong>: The newton (N) is the SI (International System of Units) unit of force. It is defined as the force required to accelerate a mass of 1 kilogram at a rate of 1 meter per second squared.</p><p><strong>Pound</strong>: The pound (lb) is a unit of weight commonly used in the imperial and US customary systems. It is defined as the force exerted by gravity on a mass of 1 pound at the Earth's surface.</p><p><strong>Meter</strong>: The meter (m) is the SI unit of length, not weight. It is defined as the distance that light travels in a vacuum during 1/299,792,458 of a second. It is often used as a fundamental unit of measurement in various physical quantities. </p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>What is the rank of India in the 2023 Global Peace Index?</p>",
+      "option1": "<p>150</p>",
+      "option2": "<p>141</p>",
+      "option3": "<p>126</p>",
+      "option4": "<p>147</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 126. </p><p><strong>About Global Peace Index:</strong></p><p>I<strong>ndia has occupied the 126th spot in the rankings, two higher</strong> than its previous position. </p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Krishna river originates from where?</p>",
+      "option1": "<p>Sihawa</p>",
+      "option2": "<p>Mahabaleshwar</p>",
+      "option3": "<p>Amarkantak</p>",
+      "option4": "<p>Eastern Ghats</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Mahabaleshwar”. </p><p><strong>Krishna River [1400]</strong></p><p><strong>maximum part Andhra Pradesh</strong></p><p><strong>Tributaries Of Krishna River </strong></p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Which of the following constitutional amendment is related to the Reservation of SCs &amp; STs in promotion?</p>",
+      "option1": "<p>85th constitutional amendment act 2002</p>",
+      "option2": "<p>86th constitutional amendment act 2002</p>",
+      "option3": "<p>73rd constitutional amendment act 1992</p>",
+      "option4": "<p>74th constitutional amendment act 1992</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in/test_s3_migration/2023-12-26/1703587154ad0e22b0-1703587154.png"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>Which of the following is correct regarding the National Income?<br/> I. Intermediate goods are not included in the calculation of national income.<br/> II. Final goods are included in the calculation of national income.</p>",
+      "option1": "<p>Both I and II</p>",
+      "option2": "<p>Only I</p>",
+      "option3": "<p>Neither I nor II</p>",
+      "option4": "<p>Only II</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option A is the correct answer. </p><p>Both statements I and II are correct regarding the calculation of national income:</p><p>I. Intermediate goods are not included in the calculation of national income: Intermediate goods are goods that are used as inputs in the production of final goods. They are not included in the calculation of national income to avoid double-counting. Only the value of final goods and services is considered to avoid duplicating their contribution to the economy.</p><p>II. Final goods are included in the calculation of national income: Final goods are goods that are ready for consumption or directly used by individuals, businesses, or government. The value of final goods and services is included in the calculation of national income because these goods represent the actual value added to the economy during production and are intended for ultimate consumption or use.</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Recently, who amongst the following has won the Men’s singles Wimbledon title 2023?</p>",
+      "option1": "<p>Novak Djokovic</p>",
+      "option2": "<p>Carlos Alcaraz</p>",
+      "option3": "<p>Daniil Medvedev</p>",
+      "option4": "<p>Andy Murry</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Carlos Alcaraz”. </p><p><strong>Category </strong></p><p><strong>Winner</strong></p><p><strong>Runner up</strong></p><p><strong>Men’s Singles</strong></p><p><strong>Carlos Alcaraz</strong></p><p>Novak Djokovic</p><p><strong> Women’s Singles</strong></p><p>Marketa Vondrousova</p><p>Ons Jabeur</p><p><strong>Men’s Doubles</strong></p><p>WesleyKoolhof &amp; NealSkupski</p><p>HoracioZeballos &amp; MarcelGranollers</p><p><strong>Women’s Doubles</strong></p><p>Barbora Strýcová &amp; Hsieh Su-wei</p><p>Elise Mertens &amp; Storm Sanders</p><p><strong>Mixed Doubles</strong></p><p>Mate Pavić &amp; Lyudmy laKichenok</p><p>XuYi fan &amp; Joran Vliegen</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>Which among the following is the oldest High Court in India?</p>",
+      "option1": "<p>Telangana</p>",
+      "option2": "<p>Calcutta</p>",
+      "option3": "<p>Allahabad</p>",
+      "option4": "<p>Andhra Pradesh</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Calcutta”. </p><p>The Calcutta High Court is the oldest High Court in India, established in 1862. </p><p>Telangana and Andhra Pradesh High Courts are established in 2019. </p><p><strong>High Court</strong></p><p><strong>Establishment Year</strong></p><p>Calcutta High Court</p><p>1862</p><p>Madras High Court</p><p>1862</p><p>Bombay High Court</p><p>1862</p><p>Allahabad High Court</p><p>1866</p><p>Patna High Court</p><p>1916</p><p>Lahore High Court</p><p>1919 (Now in Pakistan)</p><p>Nagpur High Court</p><p>1936 (Merged with Bombay High Court in 1960)</p><p>Oudh High Court</p><p>1925 (Renamed as Allahabad High Court in 1948)</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Recently, the 2023 NATO summit was held in Vilnius. It is in which of the following countries?</p>",
+      "option1": "<p>Estonia</p>",
+      "option2": "<p>France</p>",
+      "option3": "<p>Ukraine</p>",
+      "option4": "<p>Lithuania</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in/test_s3_migration/2023-12-26/1703587154d06250d3-1703587154.png"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Which of the following statement/statements is/are correct about Buddhism?<br/> A. The religion is based upon the teachings, life experiences of its founder Siddhartha Gautam, born in circa 563 BCE.<br/> B. After 49 consecutive days of meditation, Gautama attained Bodhi (enlightenment) under a Banyan tree at Rajgir, a village in Bihar.<br/> C. Buddha gave his first sermon in the village of Sarnath, near the city of Benares in UP. This event is known as Dharma-Chakra-Pravartana.<br/> </p>",
+      "option1": "<p>All A, B and C</p>",
+      "option2": "<p>Only A and B</p>",
+      "option3": "<p>Only A</p>",
+      "option4": "<p>Only A and C</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option D. </p><p>Only Statement A and C are correct. </p><p>Statement B is incorrect.</p><p>After 49 consecutive days of meditation, <strong>Gautama attained</strong> <strong>Bodhi (enlightenment)</strong> <strong>under a pipal tree</strong> at <strong>Bodhgaya, a village in Bihar. </strong></p><p><strong>Aspect</strong></p><p><strong>Details</strong></p><p>Founder</p><p>Siddhartha Gautama (Buddha)</p><p>Time of Origin</p><p>6th to 5th century BCE</p><p>Location of Origin</p><p>Northern India</p><p>Beliefs</p><p>Four Noble Truths, Eightfold Path, Middle Way</p><p>Sacred Texts</p><p>Tripitaka (Pali Canon), Mahayana Sutras</p><p>Core Concepts</p><p>Dukkha (Suffering), Nirvana (Enlightened State)</p><p>Goal</p><p>Attaining Enlightenment and Liberation</p><p>Practices</p><p>Meditation, Mindfulness, Ethical Conduct</p><p>Major Branches</p><p>Theravada, Mahayana, Vajrayana (Tibetan Buddhism)</p><p>Spread</p><p>India, East Asia, Southeast Asia, Tibet</p><p>Symbols</p><p>Dharma Wheel, Lotus Flower, Buddha Image</p><p>Major Holidays</p><p>Vesak (Buddha's Birthday), Asalha Puja, Magha Puja</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>The reproduction in yeast happens by the process of ______.</p>",
+      "option1": "<p>Fertilisation</p>",
+      "option2": "<p>Spore formation</p>",
+      "option3": "<p>Budding</p>",
+      "option4": "<p>Fragmentation</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Budding”. </p><p>The reproduction in yeast occurs by the process of budding. Budding is a form of asexual reproduction where a small bud or outgrowth forms on the parent organism and eventually detaches to become a new independent organism. </p><p><strong>Reproduction Method</strong></p><p><strong>Explanation</strong></p><p>Fertilisation</p><p>Fusion of male and female gametes to form a zygote. Common in sexual reproduction where offspring inherit genetic material from both parents.</p><p>Spore Formation</p><p>Production of specialized reproductive cells (spores) that can develop into new individuals under suitable conditions. Common in some fungi, plants, and organisms.</p><p>Budding</p><p>Asexual reproduction where a small bud grows on the parent organism, eventually detaching to become a new independent organism.</p><p>Fragmentation</p><p>Asexual reproduction where a parent organism breaks into fragments, each of which can develop into a new individual. Common in some plants, algae, and animals.</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>The Aravalli Range, one of the oldest mountain ranges in India, runs through which states?</p>",
+      "option1": "<p>Rajasthan and Gujarat</p>",
+      "option2": "<p>Jharkhand and Chhattisgarh</p>",
+      "option3": "<p>Maharashtra and Madhya Pradesh</p>",
+      "option4": "<p>Uttar Pradesh and Bihar<br/> </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Rajasthan and Gujarat”. </p><p><strong>Aspect</strong></p><p><strong>Details</strong></p><p>Location</p><p>States of Rajasthan and Gujarat, India</p><p>Length</p><p>Approximately 800 kilometers</p><p>Age</p><p>One of the oldest mountain ranges in India</p><p>Geology</p><p>Folded mountain range with ancient rock formations</p><p>Biodiversity</p><p>Home to diverse flora and fauna</p><p>Notable Peaks</p><p>Guru Shikhar (Rajasthan), Mount Abu (Rajasthan)</p><p>Importance</p><p>Natural heritage, historical significance</p><p>Mineral Resources</p><p>Contains mineral deposits like marble, granite</p><p>Threats</p><p>Deforestation, mining activities</p><p>Conservation Efforts</p><p>Efforts to protect biodiversity, prevent degradation</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Which amongst the following part of brain is responsible for Main thinking part, center of wisdom, knowledge, will power etc.?</p>",
+      "option1": "<p>Hind brain (Cerebellum)</p>",
+      "option2": "<p>Midbrain</p>",
+      "option3": "<p>Forebrain (Cerebrum)</p>",
+      "option4": "<p>Reflex Action</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option C is the correct answer. </p><p><strong>Forebrain or Cerebrum</strong></p><p><strong>Mid-brain</strong></p><p><strong>Hind brain</strong></p><p><strong>Spinal cord</strong></p><p><strong>Reflex action</strong></p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>Which of the following Sultans of Delhi established a strong and large standing army to protect and defeat the Mongol invasion?</p>",
+      "option1": "<p>Alauddin Khilji</p>",
+      "option2": "<p>Ghiyasuddin Balban</p>",
+      "option3": "<p>Jalal-ud-din Khilji</p>",
+      "option4": "<p>Muhammad bin Tughlaq</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Allaudin Khilji”. </p><p>Ghiyasuddin Balban, one of the Sultans of Delhi, established a strong and large standing army to protect against external threats, including the Mongol invasions. </p><p>He ruled during the late 13th century and was known for his efforts to strengthen the military and administration of the Delhi Sultanate. </p><p><strong>Sultan</strong></p><p><strong>Reign</strong></p><p><strong>Key Contributions and Characteristics</strong></p><p>Alauddin Khilji</p><p>1296-1316</p><p>Strengthened the Delhi Sultanate militarily; Introduced market controls to regulate prices and control inflation; Known for his expeditions and campaigns against Mongols and Southern India. He built the Alai Darwaza, a prominent gateway at the Qutub Complex.</p><p>Ghiyasuddin Balban</p><p>1266-1287</p><p>Strengthened the military and administration to counter external threats; Implemented a strict law and order regime; Used the title \"Ulugh Khan\" before becoming Sultan; Played a crucial role in consolidating the Delhi Sultanate.</p><p>Jalal-ud-din Khilji</p><p>1290-1296</p><p>The first ruler of the Khilji dynasty; Ascended to the throne by assassinating the previous Sultan; Began the Khilji dynasty's rule in Delhi; His reign marked the end of the Slave dynasty's rule.</p><p>Muhammad bin Tughlaq</p><p>1325-1351</p><p>Known for his ambitious but often impractical policies; Introduced token currency; Proposed the shifting of the capital from Delhi to Daulatabad, which resulted in logistical challenges; His reign saw various administrative and military experiments.</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>From which of the following Constitutions, India adopted the concept of \"Rule of Law\" in its Constitution?</p>",
+      "option1": "<p>Spanish Constitution</p>",
+      "option2": "<p>Constitution of Sri Lanka</p>",
+      "option3": "<p>Irish Constitution</p>",
+      "option4": "<p>British Constitution</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option D is the correct answer. </p><p>From British Constitutions, India adopted the concept of <strong>\"Rule of Law\"</strong> in its Constitution. </p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Which of the following is referred to as a cell's suicide sack?</p>",
+      "option1": "<p>Mitochondrion</p>",
+      "option2": "<p>Lysosome</p>",
+      "option3": "<p>Golgi complex</p>",
+      "option4": "<p>Nucleus</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option B “Lysosome”. </p><p><strong>Organelle</strong></p><p><strong>Function</strong></p><p><strong>Nickname</strong></p><p>Mitochondrion</p><p>Produces energy (ATP) for the cell</p><p>Powerhouse</p><p>Lysosome</p><p>Breaks down waste and cellular debris</p><p>Suicide sack</p><p>Golgi complex</p><p>Modifies, packages, and transports proteins</p><p>Cellular post office</p><p>Nucleus</p><p>Contains the cell's genetic information</p><p>Control center</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Khijadiya wildlife sanctuary is located in which state?</p>",
+      "option1": "<p>Tamil Nadu</p>",
+      "option2": "<p>Gujarat</p>",
+      "option3": "<p>Maharashtra</p>",
+      "option4": "<p>Madhya Pradesh</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Gujarat”. </p><p>Khijadia wildlife sanctuary falls within Jamnagar District of Gujarat State, India. </p><p>As one of the important waterbird habitats in North-West India, the Site provides breeding, feeding and roosting grounds for a wide range of resident aquatic and also land-based birds. It provides habitat for over 310 bird species, including 125 waterbirds; over 165,000 individual waterbirds have been counted.</p><p><strong>Ramsar Wetland in: </strong></p><p>Gujarat: Khijadia Wildlife Sanctuary, Nalsarovar Bird Sanctuary, Thol Lake Wildlife Sanctuary, Wadhvana Wetland. </p><p>Maharashtra: Lonar Lake</p><p><strong>S. No.</strong></p><p><strong>State Location</strong></p><p><strong>Name of Site</strong></p><p>1</p><p>Gujarat</p><p>Khijadia Wildlife Sanctuary, Nalsarovar Bird Sanctuary, Thol Lake Wildlife Sanctuary, Wadhvana Wetland</p><p>2</p><p>Madhya Pradesh</p><p>Bhoj Wetlands, Sakhya Sagar, Sirpur Wetland, Yashwant Sagar</p><p>3</p><p>Maharashtra</p><p>Lonar Lake, Nandur Madhameshwar, Thane Creek</p><p>4</p><p>Tamil Nadu</p><p>Chitrangudi Bird Sanctuary, Vembannur Wetland Complex, Gulf of Mannar Marine Biosphere Reserve, Kanjirankulam Bird Sanctuary, Karikili Bird Sanctuary, Koonthankulam Bird Sanctuary, Pallikaranai Marsh Reserve Forest, Pichavaram Mangrove, Point Calimere Wildlife and Bird Sanctuary, Suchindram Theroor Wetland Complex, Udhayamarthandapuram Bird Sanctuary, Gulf of Mannar Marine Biosphere Reserve, Vaduvur Bird Sanctuary, Vedanthangal Bird Sanctuary, Vellode Bird Sanctuary</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>Match the Column A with Column B.</p><p><strong>Column A</strong></p><p><strong>Column B</strong></p><p>a) Blue Revolution</p><p> i. An increase in agricultural production</p><p> b) Green Revolution</p><p> ii. increase the production of marine and fish products. </p><p>c)Yellow Revolution</p><p> iii. Enhanced the production of milk. </p><p>d)White Revolution</p><p> iv. Increase in the production of edible oil. </p>",
+      "option1": "<p>a-i, b-iv, c-iii, d-ii</p>",
+      "option2": "<p>a-iii, b-i, c-iv, d-ii</p>",
+      "option3": "<p>a-ii, b-i, c-iv, d-iii</p>",
+      "option4": "<p>a-ii, b-iv, c-i, d-iii</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option C is the correct answer. </p><p><strong>Revolution</strong></p><p><strong>Sector</strong></p><p><strong>Aim</strong></p><p>Blue Revolution</p><p>Fisheries</p><p>Enhance fish and aquatic food production and increase livelihood opportunities for fisherfolk.</p><p>Green Revolution</p><p>Agriculture</p><p>Increase agricultural productivity, especially in cereal crops, through the adoption of modern methods and technologies.</p><p>Yellow Revolution</p><p>Oilseeds</p><p>Achieve self-sufficiency in edible oil production by promoting oilseed cultivation and reducing imports.</p><p>White Revolution</p><p>Dairy</p><p>Increase milk production through improved breeding, feeding, and management of dairy animals.</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>A fountain pen work on the principle of:</p>",
+      "option1": "<p>Gravity</p>",
+      "option2": "<p>Capillary action</p>",
+      "option3": "<p>Electromagnetic induction</p>",
+      "option4": "<p>Osmosis</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Capillary action. </p><p>A fountain pen utilizes capillary action, which involves the adhesive and cohesive forces of liquids, to transfer ink from the pen's reservoir to the paper, allowing for smooth and controlled writing or drawing.</p><p><strong>Capillary Action:</strong> Capillary action is the ability of a liquid to flow in narrow spaces against the force of gravity. This phenomenon occurs due to the combination of two primary forces: adhesive forces and cohesive forces. </p><p><strong>Adhesive Forces:</strong> Adhesive forces refer to the attraction between the molecules of the liquid and the molecules of the surface material. In the case of a fountain pen, the liquid ink is attracted to the surface of the nib (usually made of metals like stainless steel or gold) due to adhesive forces. </p><p><strong>Cohesive Forces:</strong> Cohesive forces are the forces that hold the molecules of a liquid together. These forces allow the liquid to maintain its shape and resist breaking apart. In a fountain pen, cohesive forces keep the ink molecules together. </p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Which of the following foods has all the essential amino acids required in the human diet?</p>",
+      "option1": "<p>Tomatoes</p>",
+      "option2": "<p>Soya bean</p>",
+      "option3": "<p>Berries</p>",
+      "option4": "<p>Avocados</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is “Soyabean”. </p><p><strong>Tomato:</strong></p><p><strong>Soya Bean: </strong></p><p><strong>Berries: </strong></p><p><strong>Avocados</strong>:</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>Recently, Ubinas Volcano has erupted. It is in which of the following countries?</p>",
+      "option1": "<p>Indonesia</p>",
+      "option2": "<p>Peru</p>",
+      "option3": "<p>Uganda</p>",
+      "option4": "<p>Korea</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option B “Peru”. </p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>What is the duration of monsoon in India?</p>",
+      "option1": "<p>140 days – 160 days</p>",
+      "option2": "<p>120 days – 140 days</p>",
+      "option3": "<p>100 days – 120 days</p>",
+      "option4": "<p>80 days – 100 days</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option C “100 days – 120 days”. </p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Which basic objective has been included in the Constitution by the 86th Amendment Act?</p>",
+      "option1": "<p>To maintain and protect the sovereignty, unity and integrity of India</p>",
+      "option2": "<p>Protecting public property and ending violence</p>",
+      "option3": "<p>who is a parent or guardian, to provide opportunities for education to his child or such ward, as the case may be, who may be between the ages of six and fourteen years</p>",
+      "option4": "<p>To value and preserve the rich heritage of our composite culture</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option C is the correct answer. </p><p>The <strong>86th Constitutional Amendment in 2002,</strong> provided Right to Education as a fundamental right in Part-III of the Constitution.<br/> </p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Which of the following states of India is situated closest to the equator?</p>",
+      "option1": "<p>Andhra Pradesh</p>",
+      "option2": "<p>Telangana</p>",
+      "option3": "<p>Goa</p>",
+      "option4": "<p>Tamil Nadu</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option D “Tamil Nadu”. </p><p>Tamil Nadu &amp; Kerala both are closest to equator. </p><p>There is no Equator going via India. India is north to the equator. But in India, the Tropic of Cancer travels via eight states.</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>On which of the following occasions is the Raut Nacha performed by the Yadav community of Chhattisgarh?</p>",
+      "option1": "<p>Holi</p>",
+      "option2": "<p>Buddha Purnima</p>",
+      "option3": "<p>Makar Sankranti</p>",
+      "option4": "<p>Deepawali</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option D “Deepawali”. </p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>In which state of India is ‘Tuticorin port’ located?</p>",
+      "option1": "<p>Kerala</p>",
+      "option2": "<p>West Bengal</p>",
+      "option3": "<p>Tamil Nadu</p>",
+      "option4": "<p>Goa</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Option C “Tamil Nadu”. </p><p>The Tuticorin Port, officially known as V.O. Chidambaranar Port, is a major seaport located in the state of Tamil Nadu, India. It is situated in the city of Thoothukudi (Tuticorin), which is located on the southeastern coast of Tamil Nadu, along the Gulf of Mannar in the Bay of Bengal. </p><p><strong>Port Name</strong></p><p><strong>Location</strong></p><p>Jawaharlal Nehru Port (Nhava Sheva)</p><p>Navi Mumbai, Maharashtra</p><p>V.O. Chidambaranar Port (Tuticorin Port)</p><p>Thoothukudi, Tamil Nadu</p><p>Visakhapatnam Port</p><p>Visakhapatnam, Andhra Pradesh</p><p>Kochi Port</p><p>Kochi, Kerala</p><p>Paradip Port</p><p>Paradip, Odisha</p><p>Mormugao Port</p><p>Mormugao, Goa</p><p>New Mangalore Port</p><p>Mangalore, Karnataka</p><p>Ennore Port</p><p>Chennai, Tamil Nadu</p><p>Kandla Port</p><p>Kandla, Gujarat</p><p>Haldia Port</p><p>Haldia, West Bengal</p><p>Krishnapatnam Port</p><p>Nellore, Andhra Pradesh</p><p>Tuticorin Port (V.O. Chidambaranar Port)</p><p>Thoothukudi, Tamil Nadu</p><p>Hazira Port</p><p>Hazira, Gujarat</p><p>Cochin Port</p><p>Kochi, Kerala</p><p>Panambur Port</p><p>Mangalore, Karnataka</p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image001.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image002.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image003.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image004.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image005.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image006.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image011.png"
+    },
+    {
+      "sr_no": 103,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image012.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image013.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image014.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image015.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image016.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image014.jpeg"
+    },
+    {
+      "sr_no": 104,
+      "question": "<p>Statement: A large number of patients admitted in a particular hospital have been diagnosed with (chicken Pox) a serious contagious disease.</p><p>Course of action:</p><p>I. These patients should be immediately evicted from the hospital for fear of spread of the chicken Pox.</p><p>II. The hospital should make appropriate quarantine arrangements to control the spread of chicken Pox.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the given statement “A large number of patients admitted in a particular hospital have been diagnosed with (chicken Pox) a serious contagious disease”. </p><p>Only II course of action should be followed because appropriate arrangements can only control spread of disease.</p>"
+    },
+    {
+      "sr_no": 105,
+      "question": "<p>Q. Towards which direction is P with respect to the starting point?</p><p>Statements:</p><p>(I) P walked 20 metres, took a right turn and walked 30 metres, again took right turn and walked 20 metres towards West.</p><p>(II) P walked 30 metres, took a left turn and walked 20 metres; again, took left turn and walked 30 metres towards East.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image017.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>0, 6, 24, 60, 120, 210, ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image018.png"
+    },
+    {
+      "sr_no": 107,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image019.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image020.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image021.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image022.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image023.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image023.jpeg"
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image024.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>Among building J, K, L, M, N an O (each building is of different height), which is the tallest?</p><p>(I) M is taller than J and O but shorter than K. N is taller than M but not tallest. K is not the tallest.</p><p>(II) K is shorter than only two buildings. J is shorter than M and K but taller than O. N is taller than J.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image025.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "<p>Statements:</p><p>All footballers are music lover.</p><p>All footballers are dancer.</p><p>No dancer is cricketer.</p><p>No cricketer is player.</p><p>Conclusions:</p><p>I. Dancer can be player being a possibility </p><p>II. All those dancers are footballers are also music lovers.</p><p>III. Any cricketer can never be player.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image026.png"
+    },
+    {
+      "sr_no": 111,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image027.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image028.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image029.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image030.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image031.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 112,
+      "question": "<p># : NKF :: MTU : %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image032.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image033.png"
+    },
+    {
+      "sr_no": 114,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image034.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image035.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image036.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image037.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image038.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image035.jpeg"
+    },
+    {
+      "sr_no": 115,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image039.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 116,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>All except Monastery are places of worship, while monastery is a place where monks stay. Hence, the answer is D.</p>"
+    },
+    {
+      "sr_no": 117,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image040.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In each of the pairs except (A), the ratio of the two numbers is 7:8. </p><p>Hence, the correct answer is B.</p>"
+    },
+    {
+      "sr_no": 119,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image041.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>I. Aadhar card has become mandatory for filing income tax returns with PAN card.</p><p>II. PAN has become more and more susceptible to duplicity and fraud.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>It is very clear from the above statement that II is cause and I is its effect because the PAN has become more vulnerable that is why Aadhar card has become mandatory for filing income tax.</p>"
+    },
+    {
+      "sr_no": 121,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image042.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image043.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image044.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image045.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image046.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image043.jpeg"
+    },
+    {
+      "sr_no": 122,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image047.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image051.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image053.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image054.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image055.png",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image056.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "<p>H X I _ D H _ I _ D _ X _ T D H _ I S _</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>H X I V D/ H X I U D/ H X I T D/ H X I S D.</p><p>Hence the correct answer is D.</p>"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>Statement: Small brands are now looking beyond local grocery stores and are tying up with supermarkets such as Big Bazaar to pull their business out of troubled waters.</p><p>Inference:</p><p>I. Merchandise of smaller brands would not be available at local grocery stores in the near future.</p><p>II. There is a perception among small brands that sale in a supermarket is higher than that of small grocery stores.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The given statement is talking about “Small brands are now looking beyond local grocery stores and are tying up with supermarkets such as Big Bazaar to pull their business out of troubled waters”. From this given statement we can conclude only inference II “there is a perception among small brands that sale in a supermarket is higher than that of small grocery stores”.</p><p>Hence, A is the correct answer.</p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "<p>12 * 8 * 365 * 5 * 43 = 126</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image057.png"
+    },
+    {
+      "sr_no": 126,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image058.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image059.png"
+    },
+    {
+      "sr_no": 127,
+      "question": "<p>(NOTE : Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(29, 21, 20), (25, 24, 7)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image060.png"
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>R = 1, A = 2, C = 3, F = 4, T = 5, E = 6, S = 7, O = 8</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct sequence is:</p><p>F O R E C A S T = 4,8,1,6,3,2,7,5</p>"
+    },
+    {
+      "sr_no": 129,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711532327528_image061.png"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p>Statement: Y = D ≥ Q &gt; F &lt; X &gt; P = G</p><p>Conclusions:</p><p>I. Q &lt; G</p><p>II. Q ≥ Y</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>I. Q &lt; G (False) (there is no direct relation between Q and G).</p><p>II. Q ≥ Y (False) (there is no direct relation between Q and Y).</p><p>Hence, Neither conclusion I nor II is true.</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 17</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

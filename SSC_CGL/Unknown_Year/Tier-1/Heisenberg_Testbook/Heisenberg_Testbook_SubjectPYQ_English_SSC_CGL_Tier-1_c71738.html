@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Pie Chart - 01</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">45:00:00</div>
+      <div class="hdr-testname">Pie Chart - 01</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Pie Chart - 01</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Pie Chart - 01</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Pie Chart - 01</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">45:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 0, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "The number of employees of the company working in the Marketing department is what percentage more than the number of employees working in the IT department?", "comp": "<p><strong>Direction</strong><strong>\u2236 </strong>Study the pie-chart and answer the question.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/03/Sharad_Sunny_5.3.2020%202.PNG\" style=\"width: 342px; height: 335px;\" /></p>\n", "opts": ["16.67", "22", "20", "18.33"], "cidx": 2, "sol": "<p>Number of employees in the Marketing department is = 86.4</p>\n\n<p>Number of employees in the IT department is = 72</p>\nRequired percentage = [(86.4 - 72) /72] &times; 100 = 20%", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "<p>The following pie charts show the number of students studying in different departments of an institute during the academic years 2019 and 2020. The total number of students was 2000 and 2400, respectively, in the academic years 2019 and 2020.</p>\n\n<p>What are the ratio of Commerce and Computer Science students taken together in 2019 to Engineering and Medical students taken together in 2020?</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/09/F1_revannath_SSC_5-9-2022_G5.PNG\" style=\"width: 253px; height: 277px;\" />&nbsp;<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/09/F1_revannath_SSC_5-9-2022_G7.PNG\" style=\"width: 248px; height: 276px;\" /></p>\n", "comp": "", "opts": ["65&nbsp;\u2236 44", "44&nbsp;\u2236 65", "39&nbsp;\u2236 22", "22&nbsp;\u2236 39"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total students who took Commerce and Computer in 2019 = 2000\u00a0\u00d7 (25 + 14)% \u21d2\u00a02000\u00a0\u00d7 39% \u21d2\u00a0780</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total students who took\u00a0Engineering and Medical in 2020\u00a0= 2400\u00a0\u00d7 (12+ 10)% \u21d2\u00a02400\u00a0\u00d7 22% \u21d2 528</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Ratio = 780 : 528 \u21d2 65 : 44</p>\n", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "<p>The given pie chart shows the percentage distribution of a total of 2400 employees in different departments of a company. The given table shows the ratio of male to female employees in the different departments.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Shubham_SSC_20.07.22_G6.PNG\" style=\"width: 224px; height: 275px;\" /></p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 300px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\"><strong>Departments</strong></td>\n\t\t\t<td style=\"text-align: center;\"><strong>Male&nbsp;\u2236 Female</strong></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>HR</td>\n\t\t\t<td style=\"text-align: center;\">3&nbsp;\u2236 5</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>IT</td>\n\t\t\t<td style=\"text-align: center;\">2&nbsp;\u2236 3&nbsp;</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Accounts</td>\n\t\t\t<td style=\"text-align: center;\">3&nbsp;\u2236 7</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Marketing&nbsp;</td>\n\t\t\t<td style=\"text-align: center;\">7&nbsp;\u2236 4&nbsp;</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Production</td>\n\t\t\t<td style=\"text-align: center;\">5&nbsp;\u2236 3&nbsp;</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>What is the ratio of the number of female employees in the Production Department to that of the male employees in the IT Department?</p>\n", "comp": "", "opts": ["8 : 15", "9 : 11", "15 : 8", "11 : 9"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Female employees in production department =\u00a0<span class=\"math-tex\">\\(3\\over8\\)</span>\u00a0\u00d7 0.3\u00a0\u00d7 2400 = 270</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Male employees in IT department =\u00a0<span class=\"math-tex\">\\(2\\over5\\)</span>\u00a0\u00d7 0.15\u00a0\u00d7 2400 = 144</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Ratio = 270\u00a0: 144 = 15 : 8</p>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "<p>The pie graph shows the distribution of employees working in five departments A, B, C, D and E of a company. Total number of employees = 9000</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/03/61cc32282c789ffd7707aa58_Rajiv_24.03.22_13.PNG\" style=\"width: 366px; height: 377px;\" /></p>\n\n<p>If the number of employees working in department A is x and the total number of employees working in departments C and E is y, then the value of y - 2x is:</p>\n", "comp": "", "opts": ["1000", "850", "725", "915"], "cidx": 3, "sol": "<p><span style=\"\">The number of employees working in department A = (64.2/360)&nbsp;&times; 9000 = 1605&nbsp;</span></p>\n\n<p><span style=\"\">The total number of employees working in departments C and E = {(72 + 93)/360}&nbsp;&times; 9000 = 4125</span></p>\n\n<p><span style=\"\">Then,</span></p>\n\n<p><span style=\"\">y - 2x</span></p>\n\n<p><span style=\"\">&rArr; 4125 - 2&nbsp;&times; 1605</span><br />\n<span style=\"\">&rArr;&nbsp;</span>4125 - 3210<br />\n<span style=\"\">&rArr; 915</span></p>\n\n<p><strong><span style=\"\">&there4;&nbsp;If the number of employees working in department A is x and the total number of employees working in departments C and E is y, then the value of y - 2x is 915.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "<p>Study the given pie chart and answer the question that follows.</p>\n\n<p>The pie chart represents the percentage-wise distribution of the total number of Vanilla cakes and Chocolate cakes sold everyday in a week. The total number of cakes sold in a week = 10500.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_SSC_revannath_27-6-2022_G1%20%282%29.PNG\" style=\"width: 254px; height: 247px;\" /></p>\n\n<p>The ratio of the number of Vanilla cakes sold to the number of Chocolate cakes sold on Saturday is 4&nbsp;\u2236 3, the selling price of one Vanilla cake is Rs. 8 and that of one Chocolate cake is Rs. 15, then the total amount earned (in Rs.) by selling all Vanilla cakes and Chocolate cakes on Saturday is:</p>\n", "comp": "", "opts": ["18,480", "14,880", "20,000", "10,488"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">The total number of cakes sold on Saturday = (16/100)\u00a0\u00d7 10500 = 1680</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The ratio of vanilla cakes sold to chocolate cakes sold on Saturday =\u00a04 \u2236\u00a03</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The number of vanilla cake sold = (4/7)\u00a0\u00d7 1680 = 960</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The number of chocolate cake sold = 1680 - 960 = 720</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The total sale = (960\u00a0\u00d7 8) + (720 \u00d7 15) = 7680 + 10800 = 18480.</p>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "<p>Following Pie chart presents monthly expenditure by Sushma and Preeti in different heads. Sushma and Preeti make equal expenditure every month.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/09/F1_SSC_PriyaS_3_9_24_D7.png\" style=\"width: 500px; height: 186px;\" /></p>\n\n<p>&nbsp;</p>\n\n<p><!-- x-tinymce/html -->What is the difference between the expenditure (in Rs.) done on Food by Sushma and Preeti?</p>\n", "comp": "", "opts": ["1000", "500", "1500", "750"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total expenditure of Sushma = 6000 + 7200 + 2500 + 7500 + 1800 + 5000 =\u00a030000</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Preeti expenditure in food = 15%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 30000\u00a0\u00d7 15/100 = 4500</p>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "<p>The pie-chart below represents the number of hours as percent of 24 hours of a day, spent on different activities by a student, Study the pie chart and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/02/SSC_Akash_Piyush_13.12.2022_G14_gautam.png\" style=\"width: 427px; height: 348px;\" /></p>\n\n<p>How many hours per day does the student spend in school?</p>\n", "comp": "", "opts": ["7 hours 20 minutes", "8 hours 15 minutes", "8 hours 10 minutes", "7 hours 12 minutes"], "cidx": 3, "sol": "<p><strong>Calculations:</strong></p>\n\n<p>According to the question,</p>\n\n<p>Total hours = 24hours</p>\n\n<p>Total hours spent in school = 30% of total hours</p>\n\n<p>School = 30%&nbsp;&times; 24</p>\n\n<p>School = 0.30&nbsp;&times; 24 = 7.2 hours or 7 hours 12 minutes</p>\n\n<p><strong>&there4; T<span style=\"\">he student spend 7 hours 12 minutes&nbsp;per day&nbsp;in school.</span></strong></p>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "The total number of employees of the company working in the production and IT department exceeds the total number of employees working in the Marketing and Accounts departments by ______.", "comp": "<p><strong>Direction</strong><strong>\u2236 </strong>Study the pie-chart and answer the question.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/03/Sharad_Sunny_5.3.2020%202.PNG\" style=\"width: 342px; height: 335px;\" /></p>\n", "opts": ["164", "143", "158", "154"], "cidx": 3, "sol": "Number of employees in IT department exceeds than that of Marketing and Accounts department by = [(111.6 + 72) - (57.6 + 86.4)] /360 &times; 1400 = 154", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "<p>Study the given pie chart and answer the question that follows.</p>\n\n<p>Ravi decides to renovate his old house. His percentage expenditure on different renovating items is given by the pie chart.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/02/SSC_Himanshu_Akash_06.02.2024_G1.PNG\" style=\"width: 419px; height: 434px;\" /></p>\n\n<p>Ravi gets a discount of 10%&nbsp;and 8%&nbsp;on the cash payment for Furniture and Electric items, respectively. What is the total amount (in \u20b9) paid by him for Furniture and Electric items?</p>\n", "comp": "", "opts": ["56,000", "58,200", "30,200", "28,000"], "cidx": 1, "sol": "<span style=\"color: rgb(33, 37, 41);\">Total amount paid by Ravi\u00a0</span>on furniture and electric items =\u00a0<span style=\"color: rgb(33, 37, 41);\">200000\u00a0\u00d7 17%\u00a0\u00d7 90% +\u00a0200000\u00a0\u00d7 15% \u00d7 92% = 30600 + 27600 = Rs.58200</span>", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "<p>The pie-chart given below given information about the number of students from five sections A, B, C, D, and E, of class 12 of a school to have appeared and to have passed in the final examination.&nbsp;</p>\n\n<p>The pie-chart on the left given the central angles of the sectors represent the students appearing in the exam from the five different sections, while the pie-chart on the right gives the section-wise numbers of students to pass the exam as percentage of the total number of students who passed the exam from all the five sections taken together.&nbsp;</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/SSC_Akash_Piyush_13.12.2022_G1.PNG\" style=\"width: 338px; height: 314px;\" /><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/SSC_Akash_Piyush_13.12.2022_G2.PNG\" style=\"width: 336px; height: 332px;\" /></p>\n\n<p>Find the ratio of the average of the number of students who appeared in the exam from section A, B and C to the average of the number of students who passed from Section B, C and D.&nbsp;</p>\n", "comp": "", "opts": ["102&nbsp;\u2236 28", "13&nbsp;\u2236 6", "28&nbsp;\u2236 53", "12&nbsp;\u2236 7"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total number of students appeared from section A, B and C =\u00a0<span class=\"math-tex\">\\(210+250+500=960\\)</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u200b<span style=\"color: rgb(33, 37, 41);\">Total number of students passed from section B, C and D =\u00a0</span><span class=\"math-tex\">\\(240+200+120=560\\)</span></p>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"color: rgb(33, 37, 41);\">Ratio of total appeared to the passed students =\u00a0</span><span class=\"math-tex\">\\(\\frac{960}{560}=12:7\\)</span></p>\n", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "<!-- x-tinymce/html -->\n<p>The given pie - diagram shows the expenditure incurred on the preparation of a book by a publisher, under various heads. Study the pie - diagram and answer the question that follows.</p>\n\n<p>Various Expenditure (in percentage) incurred in publishing a book</p>\n\n<p><img alt=\"\" src=\"//cdn.testbook.com/images/production/quesImages/qImage68638a30bbd76fa69b35e1fe.png\" /></p>\n\n<p><br />\nThe marked price of a book is 20% more than the CP. If the marked price of the book is 30, then what is the cost of paper used in a single copy of the book?</p>\n", "comp": "", "opts": ["\u20b95", "\u20b94.50", "\u20b96.50", "\u20b96"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Marked Price (MP) = \u20b930</p>\n\n<p>MP is 20% more than Cost Price (CP)</p>\n\n<p>Percentage of expenditure on paper = 20%</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>MP = CP + 20% of CP</p>\n\n<p>Cost of paper = 20% of CP</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>30 = CP + 0.2 &times; CP</p>\n\n<p>&rArr; 30 = 1.2 &times; CP</p>\n\n<p>&rArr; CP = 30 / 1.2</p>\n\n<p>&rArr; CP = 25</p>\n\n<p>Cost of paper = 20% &times; 25</p>\n\n<p>&rArr; Cost of paper = 0.2 &times; 25</p>\n\n<p>&rArr; Cost of paper = 5</p>\n\n<p><strong>&there4; The cost of paper used in a single copy of the book is \u20b95.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "<p>The following pie charts show the percentage of employees in each department and&nbsp;the percentage of males working in each department.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/04/SSC_Himanshu_Akash_10.04.2023_G13.PNG\" style=\"width: 426px; height: 311px;\" />&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br />\n&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;<span style=\"font-size:16px;\"><strong>Total number of Employees = 5100</strong></span><br />\n<br />\n<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/04/SSC_Himanshu_Akash_10.04.2023_G14.PNG\" style=\"width: 437px; height: 327px;\" /><br />\n<span style=\"font-size:16px;\"><span style=\"font-weight: bolder; \">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Total number of Males = 2050</span></span></p>\n\n<p>Find the number of females working in the production department.</p>\n", "comp": "", "opts": ["36", "40", "32", "24"], "cidx": 0, "sol": "<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">Number of employees in production = 5100\u00a0\u00d7 20% =\u00a01020</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">Number of male employees in production = 2050\u00a0\u00d7 48% = 984</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">So, female production = 1020 - 984 = 36</p>\n", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "<p>The following pie-charts show the number of students studying in different departments of an institute during the academic years 2019 and 2020. The total number of students was 2000 and 2400 in academic years 2019 and 2020, respectively.</p>\n\n<p>What is the percentage increase or decrease in the number of students of Engineering in 2020 as compared to 2019? (correct to 2 decimal places)</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Shubham_SSC_13-06-22_G1.PNG\" style=\"width: 257px; height: 310px;\" /></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F1_Shubham_SSC_13-06-22_G2.PNG\" style=\"width: 257px; height: 310px;\" /></p>\n", "comp": "", "opts": ["10.25%", "10.77%", "11.77%", "10.55%"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">The number\u00a0of Engineering students in 2019 = (13/100)\u00a0\u00d7 2000 = 260</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The number\u00a0of Engineering students in 2020\u00a0= (12/100)\u00a0\u00d7 2400 = 288</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The number\u00a0of Engineering students increases from 2019 to 2020 = 288 - 260 = 28.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The increase percentage = (28/260)\u00a0\u00d7 100 = 10.769...%\u00a0\u2248 10.77%.</p>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "<p>The following Pie charts represent the distribution of candidates who were enrolled for competitive examination and the candidates (out of those enrolled) who passed the exam from five different institutes P, Q, R, S and T.</p>\n\n<p>Fig. Total number of candidates enrolled in five different institutes = 7500</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/11/61a5f68189c1b4c501b7e991_Shubham%20Vaishnav_Sanyukta%20Gaikar_30.11.21_D1.PNG\" /></p>\n\n<p>Fig. Total number of candidates passed the examination from five institutes = 4000</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/11/61a5f68189c1b4c501b7e991_Shubham%20Vaishnav_Sanyukta%20Gaikar_30.11.21_D2.PNG\" /></p>\n\n<p>What is the pass percentage for institute Q? (correct up to one decimal place.)</p>\n", "comp": "", "opts": ["80%", "42.7%", "48%", "71.1%"], "cidx": 1, "sol": "<p><strong>Calculation:-</strong></p>\n\n<p>Total number of candidates enrolled in Q = 7500&nbsp;&times; 3/10</p>\n\n<p>&rArr; 2250</p>\n\n<p>Total number of candidates passed&nbsp;in Q = 4000&nbsp;&times; 24/100</p>\n\n<p>&rArr; 960</p>\n\n<p>Pass percentage = (960/2250)&nbsp;&times; 100</p>\n\n<p>&rArr; 42.66%&nbsp;&asymp; 42.7%</p>\n\n<p><strong>&there4; The pass percentage for institute Q is&nbsp;42.7%</strong></p>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "<p>Study the given pie chart that represents the percentage population of six villages A, B, C, D, E and F in 2020, and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/04/625c3e95dc4014cdafefa6c9_Rajiv_19.04.22_1.PNG\" style=\"width: 361px; height: 257px;\" /></p>\n\n<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:270px;\" width=\"299\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\"><strong>Village</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\"><strong>Percentage of population below poverty line</strong></p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\">A</p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\">30</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\">B</p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\">45</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\">C</p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\">55</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\">D</p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\">60</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\">E</p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\">58</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:72px;\">\n\t\t\t<p align=\"center\">F</p>\n\t\t\t</td>\n\t\t\t<td style=\"width:168px;\">\n\t\t\t<p align=\"center\">40</p>\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<p>If the population below poverty line in village D is 42,000, then the total population in all the six villages taken together is:</p>\n", "comp": "", "opts": ["3,00,000", "3,50,000", "2,95,000", "2,80,000"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">20% of x\u00a0\u00d7 60% = 42,000</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 1200x/10000 = 42,000 \u21d2\u00a0x = (42000\u00a0\u00d7 10000)/1200 \u21d2\u00a0x = 3,50,000</p>\n", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "<p>The following pie-chart shows the percentage of children participating in summer camp in June 2017. The total number of children who participated in the summer camp was 600. Study the pie-chart carefully and answer the question follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/03/SSC_Akash_Piyush_20.03.2023_G1.PNG\" style=\"width: 394px; height: 439px;\" /></p>\n\n<p>What was the total number of children who attended the swimming and Athletics, and Music classes in June 2016 if the number of children increased by 20% in June 2017 for these classes as compared to June 2016?</p>\n", "comp": "", "opts": ["178", "210", "228", "190"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Children who attended the swimming Athletics, and Music classes \u21d2 22 + 16 = 38%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of children\u00a0\u21d2 38\u00a0\u00d7 6 = 228</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Students in 2016 = 228/1.2 = 190</p>\n", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "The total number of students in schools D and E is what percentage more than the total number of students in schools B and C?", "comp": "<p><strong>Directions: </strong>Study the given pie chart and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/F2_V.K.G_Deepak_25.01.2020_D%208.PNG\" /></p>\n", "opts": ["20", "25", "30", "35"], "cidx": 1, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>Total number of students D and E = 61.2 + 118.8 = 180</p>\n\n<p>Total number of students B and C = 64.8 + 79.2 = 144</p>\n\n<p>Required percentage = [(180 &ndash; 144)/144] &times; 100 = 25%</p>\n\n<p>&there4; The correct answer is <strong>25%</strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "<p>The following pie charts represents the distribution of candidates who were enrolled for an entrance examination and the candidates (out of those enrolled) who passed the examination in different institutes&nbsp;(P, Q, R, S, T, V, X).</p>\n\n<p>Study the charts and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/10/6008201b9917bd93b7f1df8e_Nitish%20Chona_Sanyukta%20Gaikar_14.10.21_D1.PNG\" /></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/10/6008201b9917bd93b7f1df8e_Nitish%20Chona_Sanyukta%20Gaikar_14.10.21_D2.PNG\" /></p>\n\n<p>The number of candidates who passed form institutes P and Q together exceeds the number of candidates who enrolled form institutes T and R together by:</p>\n", "comp": "", "opts": ["445", "580", "485", "456"], "cidx": 3, "sol": "<p><b>Given</b></p>\n\n<p>Total candidate enrolled = 8550</p>\n\n<p>Total candidate who passed = 5700</p>\n\n<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>Institute</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>Student in percentage</strong></p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\"><strong>P</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\">22%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>Q</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\">15%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\"><strong>R</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\">10%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>S</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\">17%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\"><strong>T</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\">8%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:26px;\">\n\t\t\t<p align=\"center\"><strong>V</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:26px;\">\n\t\t\t<p align=\"center\">12%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>X</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\">16%</p>\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<table border=\"1\" cellpadding=\"0\" cellspacing=\"0\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>Institute</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>Student who passed in percentage</strong></p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\"><strong>P</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:25px;\">\n\t\t\t<p align=\"center\">18%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>Q</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:27px;\">\n\t\t\t<p align=\"center\">17%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\"><strong>R</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:25px;\">\n\t\t\t<p align=\"center\">13%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>S</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:27px;\">\n\t\t\t<p align=\"center\">16%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:25px;\">\n\t\t\t<p align=\"center\"><strong>T</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:25px;\">\n\t\t\t<p align=\"center\">9%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:26px;\">\n\t\t\t<p align=\"center\"><strong>V</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:26px;\">\n\t\t\t<p align=\"center\">15%</p>\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"width:102px;height:27px;\">\n\t\t\t<p align=\"center\"><strong>X</strong></p>\n\t\t\t</td>\n\t\t\t<td style=\"width:145px;height:27px;\">\n\t\t\t<p align=\"center\">12%</p>\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n\n<p>&nbsp;</p>\n\n<p><strong>Calculation</strong></p>\n\n<p>Total candidate who passed in P and Q is (18% + 17%)</p>\n\n<p>&rArr; (18% + 17%) of 5700&nbsp;</p>\n\n<p>&rArr; 35% of 5700</p>\n\n<p>&rArr; 1995</p>\n\n<p>&rArr; Student who enrolled form institute T and R = 10% + 8%</p>\n\n<p>&rArr; (10% + 8%) of 8550</p>\n\n<p>&rArr; 18% of 8550</p>\n\n<p>&rArr; 1539</p>\n\n<p>&rArr; We have to find the the student who passed from institute P and Q exceeds who enrolled from institute T and R.</p>\n\n<p>&rArr; 1995 - 1539 = 456</p>\n\n<p><strong>&there4;&nbsp;The number of candidates who passed form institutes P and Q together exceeds the number of candidates who enrolled form institutes T and R together is 456</strong></p>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "<p>The following pie charts show the number of start-ups started in various sectors since 2016 and the number&nbsp;of successful start-ups in those sectors respectively.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/SSC_Akash_Tripurari_15.12.2022_G1.PNG\" style=\"width: 433px; height: 302px;\" /><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/12/SSC_Akash_Tripurari_15.12.2022_G2.PNG\" style=\"width: 416px; height: 312px;\" /></p>\n\n<p>What is the ratio of the number of successful start-ups to that of the number of&nbsp;unsuccessful start-ups in the Fin-tech sector?</p>\n", "comp": "", "opts": ["<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">3 \u2236 4</font></font>", "<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">13 \u2236 18</font></font>", "<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">23 \u2236 32</font></font>", "<font style=\"vertical-align: inherit;\"><font style=\"vertical-align: inherit;\">13 \u2236 19</font></font>"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">The ratio of the number of successful start-ups to that of the number of unsuccessful start-ups in Fin-tech sector = 104 :152\u00a0= 13 : 19.</p>\n", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "<!-- x-tinymce/html -->\n<p>The following pie charts show the data of the number of appeared and passed students of class 12 in sections A,B,C,D and E.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/08/F1_SSC__PriyasS_26_8_24__D2.png\" style=\"width: 603px; height: 259px;\" /></p>\n\n<p>What is the percentage of students who appeared for the exam in section E (correct to one decimal place)?</p>\n", "comp": "", "opts": ["18.2%", "16.8%", "29.1%", "16.1%"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Number of students who appeared for the exam in section E = (1800/360) \u00d7 58 = 290</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Percentage of students in section E =\u00a0<span class=\"math-tex\">\\(\\frac{\\text{Number of students in section E}}{\\text{Total number of students}}\\)</span>\u00a0\u00d7 100</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Percentage of students in section E =\u00a0<span class=\"math-tex\">\\(\\frac{290}{1800}\\)</span>\u00a0\u00d7 100 =\u00a016.1%</p>\n", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "<!-- x-tinymce/html -->\n<p>Study the given pie-graph and answer the question that follows.</p>\n\n<p>In a certain company, allocations to various sectors of the yearly budget per Rs.&nbsp;7,200&nbsp;crores are represented by this pie-diagram.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/09/F1_SSC_Priyas_19_10_24__D3.png\" style=\"width: 273px; height: 273px;\" /></p>\n\n<p>The expenditure (in Rs.)&nbsp;on Infrastructure is:</p>\n", "comp": "", "opts": ["Rs.&nbsp;6,098 crores", "Rs.&nbsp;1,649 crores", "Rs.&nbsp;6,089 crores", "Rs.&nbsp;1,694 crores"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total budget = Rs. 7,200 crores</p>\n\n<p>Angle for Infrastructure = 84.7&deg;</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Expenditure on Infrastructure = (Angle for Infrastructure / 360&deg;) &times; Total Budget</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Expenditure on Infrastructure = (84.7&deg; / 360&deg;) &times; 7,200 crores</p>\n\n<p>&rArr; Expenditure on Infrastructure &asymp;&nbsp;1,694&nbsp;crores</p>\n\n<p><strong>&there4; The expenditure on Infrastructure is Rs. 1,694&nbsp;crores.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "<p>Study the given pie chart and the table and answer the question that follows.</p>\n\n<p>The pie chart represents the percentage-wise distribution of 300 students of class X in a school in six different sections A, B, C, D, E, and F.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/02/61ee8be626b9d04f1ceae3e0_Ravi_Rajiv_25.02.22_13.PNG\" style=\"width: 280px; height: 229px;\" /></p>\n\n<p>The table shows the number of boys of class X in six different sections A, B, C, D, E, and F.</p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 300px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Section</td>\n\t\t\t<td style=\"text-align: center;\">A</td>\n\t\t\t<td style=\"text-align: center;\">B</td>\n\t\t\t<td style=\"text-align: center;\">C</td>\n\t\t\t<td style=\"text-align: center;\">D</td>\n\t\t\t<td style=\"text-align: center;\">E</td>\n\t\t\t<td style=\"text-align: center;\">F</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>No. of boys</td>\n\t\t\t<td style=\"text-align: center;\">36</td>\n\t\t\t<td style=\"text-align: center;\">26</td>\n\t\t\t<td style=\"text-align: center;\">34</td>\n\t\t\t<td style=\"text-align: center;\">28</td>\n\t\t\t<td style=\"text-align: center;\">_______</td>\n\t\t\t<td style=\"text-align: center;\">20</td>\n\t\t</tr>\n\t</tbody>\n</table>\n<br />\nIf the total number of students in section C is 57, then the total number of girls in sections C and D together will be:", "comp": "", "opts": ["36", "46", "40", "48"], "cidx": 1, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>Percentage of section C = 100% - (20% + 18% + 17% + 14% + 12%)</p>\n\n<p>&rArr; 100% &ndash;&nbsp;81%</p>\n\n<p>&rArr; 19%</p>\n\n<p>Now, Population of section C = 19% of 300</p>\n\n<p>&rArr; 57</p>\n\n<p>Now, number of girls in section C = (57 &ndash;&nbsp;34)</p>\n\n<p>&rArr; 23</p>\n\n<p>Population of section D = 17% of 300</p>\n\n<p>&rArr; 51</p>\n\n<p>So, number of girls in section D = 51 &ndash; 28</p>\n\n<p>&rArr; 23</p>\n\n<p>Total number of girls in section C and section D together = (23 + 23)</p>\n\n<p>&rArr; 46</p>\n\n<p><strong>&there4; Required number is 46</strong></p>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "<p>The following pie - chart shows the percentage - wise distribution of the number of students in five different schools P, Q, R, S, and T. The total number of students in all five schools together is 8400.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/04/60475140576c0dbdb4e149e4_Ashish%20Singh_Sanyukta%20Gaikar_8.04.21_D1.PNG\" style=\"height: 230px; width: 266px;\" /></p>\n\n<p>Find the average number of students in schools R and S together.</p>\n", "comp": "", "opts": ["1510", "1612", "1512", "1620"], "cidx": 2, "sol": "<p><strong>Given&nbsp;</strong></p>\n\n<p>From Pie chart,</p>\n\n<p>Students in R school = 14% of total students</p>\n\n<p>Students in S school = 22% of total students</p>\n\n<p><strong>Formula Used</strong></p>\n\n<p>Average = Sum of observation/No. of Observation</p>\n\n<p><strong>Calculation&nbsp;</strong></p>\n\n<p>&rArr;&nbsp;&nbsp;Students in R school = (14/100) &times; 8400 = 1176&nbsp;</p>\n\n<p>&rArr; Students in S school = (22/100)&nbsp;&times; 8400 = 1848</p>\n\n<p>&rArr; Average in School R and S together = (1176 + 1848)/2 = 3024/2 = 1512</p>\n\n<p>&there4; The average number of student in schools R and S together is 1512</p>\n\n<p>&nbsp;</p>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "<p>The breakup of the total number of employees of a company working in different offices (A to E), in degrees, is given in the pie chart. The total number of employees = 2400.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/09/F1_revannath_SSC_5-9-2022_G3.PNG\" style=\"width: 276px; height: 276px;\" /></p>\n\n<p>If the percentage of male employees in office C is 20% and that of female employees in E is 40%, then what is the ratio of the numbers of female employees in E to that of female employees in C?</p>\n", "comp": "", "opts": ["5 \u2236 4", "3 \u2236 8", "3 \u2236 2", "2 \u2236 3"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total female employees in office C = 2400\u00a0\u00d7 (54/360)\u00a0\u00d7 80% \u21d2 360\u00a0\u00d7 80% \u21d2 288</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total female employees in office E = 2400\u00a0\u00d7 (72/360)\u00a0\u00d7 40% \u21d2 480\u00a0\u00d7 40% \u21d2 192</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Ratio = 192 : 288 \u21d2 2 : 3.</p>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "<p>Study the given pie chart and answer the question that follows.</p>\n\n<p>The pie chart shows the breakup of the total number of employees of a company working in different offices (A to E), in degrees. The total number of employees = 3600.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/08/F1_Revannath_SSC_26-8-2022_G12.PNG\" style=\"width: 284px; height: 274px;\" /></p>\n\n<p>If the percentage of male employees in office C is 20% and that of female employees in office D is 40%, then what is<br />\nthe ratio of the number of female employees in office D to that of female employees in office C?</p>\n", "comp": "", "opts": ["2 : 3", "3 : 8", "3 : 2", "5 : 6"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">Number of employees in office C = 3600\u00a0\u00d7 (54/360) \u21d2 540</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of female employees in office C = 540\u00a0\u00d7 (100 - 20)% \u21d2 540\u00a0\u00d7 80% \u21d2 432</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of employees in office D = 3600\u00a0\u00d7 (90/360) \u21d2 900</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of female employees in office C = 900\u00a0\u00d7 40%\u00a0\u21d2 360.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Required ratio = 360 : 432 \u21d2 5 : 6</p>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "If the total number of students in schools D and E exceeds the number of students in school A by x, then x lies between:", "comp": "<p><strong>Directions</strong><strong>\u2236</strong> Study the given pie chart and answer the question that follows.</p>\n\n<p>Break \u2013 up (degree \u2013 wise) of the number of students in five schools (A, B, C, D and E) in a city.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/SSC_CPO_Paper1_11_Dec_2019_Shift_1_50Q_images_sharad_D%202.PNG\" /></p>\n\n<p>Total number of students = 5200</p>\n", "opts": ["525 and 550", "550 and 575", "475 and 500", "500 and 525"], "cidx": 3, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>The number of students in schools D and E = 64.8&deg; + 57.6&deg; = 122.4&deg;</p>\n\n<p>The number of students in schools A = 86.4&deg;</p>\n\n<p>The number of students in schools D and E exceeds the number of students in A by</p>\n\n<p>&rArr; [(122.4&deg; &ndash; 86.4&deg;)/360&deg;] &times; 5200</p>\n\n<p>&rArr; (36&deg;/360&deg;) &times; 5200 = 520</p>\n<strong>&there4; 520 lies between 500 and 525.</strong>", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "<p>The following pie chart gives the budget allocation for various sports mentioned. The numbers shown are percentages over 360 degrees.&nbsp;</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/05/SSC_Himanshu_Akash_01.05.2024_G5.PNG\" style=\"width: 442px; height: 330px;\" /><br />\nIf the total amount for all the sports is&nbsp;\u20b942,76,80,000 then the allocation for Hockey, Basketball, and Gymnastics together exceeds the amount allocated to Football, Kabaddi, and Golf together by:</p>\n", "comp": "", "opts": ["9524000", "7453000", "29937600", "8316000"], "cidx": 2, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>Total percentage of pie chart = 100%</p>\n\n<p>According to the given data,</p>\n\n<p>&rArr; 100% = 42,76,80,000</p>\n\n<p>&rArr; 1% = 427680000 / 100 = 4276800</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Total&nbsp;</span>allocation of percents&nbsp;for Hockey, Basketball, and Gymnastics</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;&nbsp;</span>22% + 5% + 8% = 35%&nbsp;</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Total&nbsp;allocation of percent for&nbsp;</span>Football, Kabaddi, and Golf</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; 13% + 10% + 5% = 28%</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">(Total&nbsp;</span><span style=\"color: rgb(33, 37, 41);\">allocation of percent&nbsp;for Hockey, Basketball, and Gymnastics ) -&nbsp;(Total&nbsp;allocation of percent for&nbsp;Football, Kabaddi, and Golf )</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr; 35% - 28% = 7%&nbsp;</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">Now,&nbsp;&nbsp;7% = 4276800&times; 7% = 29937600</span></p>\n\n<p><strong>&there4; The answer is option (3).</strong></p>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "<p>The given pie chart the percentage distribution of the expenditure incurred in publishing a book. Study the chart and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/21/08/6008240fa8b0b30962bf26c3_Aditya%20Raj_Sanykta%20Gaikar_26.08.21_D1.PNG\" style=\"width: 362px; height: 250px;\" /></p>\n\n<p>If 2500 copies are published and the printing cost for them amounts to Rs. 160,000, then what should be the selling price of a book such that the publisher can earn a profit of 25%?</p>\n", "comp": "", "opts": ["Rs. 370", "Rs. 350", "Rs. 420", "Rs. 400"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Number of copies published = 2500</p>\n\n<p>Printing cost of 2500 published copies = \u20b9 160000</p>\n\n<p>Printing expenditure = 20%</p>\n\n<p>Profit percentage on selling a book = 25%</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Profit = Selling price &ndash; Cost price</p>\n\n<p>Profit percentage = (Profit/Cost price) &times; 100</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Printing cost of a book = 160000/2500 = 64</p>\n\n<p>&rArr; Total expenditure on a book = 64 &times; (100/20) = 320</p>\n\n<p>&rArr; Selling price of a book = 320 &times; {(100 + 25)/100} = 400</p>\n\n<p><strong>&there4; The selling price of the book is \u20b9 400.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "<p>Performance of 1800 students in grades has been shown in the following pie chart.</p>\n\n<p>In which two grades taken together is the number of students 54 less than the number of students in grades B and E taken together?</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/F2_G25_revannath_SSC_13-6-2022.PNG\" style=\"width: 339px; height: 256px;\" /></p>\n", "comp": "", "opts": ["C and E", "B and D", "C and D", "A and E"], "cidx": 0, "sol": "<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">Total percentage of grades B and E = 27% + 8% = 35%</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">(54/1800)\u00a0\u00d7 100 = 3%</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">The sum of two groups in which the sum of percentage = 35% - 3% = 32%</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">The percentage of students in Grade C = 24% and E = 8%</p>\n\n<p data-darkreader-inline-color=\"\" style=\"color: rgb(33, 37, 41); --darkreader-inline-color: #d1cdc7;\">The total percentage of Grade C and E = 24% + 8% = 32%</p>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "<p>The given pie chart represents the percentage-wise distribution of the total number of vanilla cakes and chocolate cakes sold every day. The total number of cakes sold in a week = 10500. Study the pie chart and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/06/SSC_revannath_21-6-2022_F2.PNG\" style=\"width: 254px; height: 247px;\" /></p>\n\n<p>The ratio of vanilla cakes sold to chocolate cakes sold on Friday is 4 \u2236&nbsp;3. If the price of one vanilla cake is \u20b99 and that of one chocolate cake is \u20b910, then the total amount earned (in \u20b9) by selling all vanilla cakes and chocolate cakes on Friday is:</p>\n", "comp": "", "opts": ["8,900", "11,000", "10,000", "9,900"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\">The total number of cakes sold on Friday = (10/100)\u00a0\u00d7 10500 = 1050.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The ratio of vanilla cakes sold to chocolate cakes sold on Friday =\u00a04 \u2236\u00a03.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The number of vanilla cake sold = (4/7)\u00a0\u00d7 1050 = 600</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The number of chocolate cake sold = 1050 - 600 = 450</p>\n\n<p style=\"color: rgb(33, 37, 41);\">The total sale = (600\u00a0\u00d7 9) + (450 \u00d7 10) = 5400 + 4500 = 9900.</p>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "<p>Study the following pie chart and answer the below question:</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/02/SSC_Himanshu_Akash_28.02.2024_G3.PNG\" style=\"width: 450px; height: 333px;\" /></p>\n\n<p>How much percent is more expense on rent than the expense on others?</p>\n", "comp": "", "opts": ["10%", "150%", "50%", "100%"], "cidx": 3, "sol": "<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">\u00a0</span>Expense\u00a0on rent = 20%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Expense\u00a0on others = 10%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">ATQ,\u00a0</p>\n\n<p style=\"color: rgb(33, 37, 41);\">20 - 10 = 10.</p>\n\n<p style=\"color: rgb(33, 37, 41);\">10/10\u00a0\u00d7 100 = 100%</p>\n", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "<!-- x-tinymce/html -->\n<p>Study the given pie-charts and answer the question that follows.</p>\n\n<p>The pie-charts show the characteristics of foreign tourists visiting India during a given year.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/10/F2_SSC_Priya_22_10_24_D1.png\" style=\"width: 373px; height: 278px;\" /><br />\n<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/10/F2_SSC_Priya_22_10_24_D11.png\" /></p>\n\n<p>If in a given year, 2,50,000 tourists visited India and the age wise distribution of data applies to all the countries, then the number of Russian tourists who visited India during the year and were in the age group above 50 years is:</p>\n", "comp": "", "opts": ["3,850", "<span style=\"color: rgb(33, 37, 41);\">385&nbsp;</span>", "<span style=\"color: rgb(33, 37, 41);\">375&nbsp;</span>", "<span style=\"color: rgb(33, 37, 41);\">3,750</span>"], "cidx": 3, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total tourists = 2,50,000</p>\n\n<p>Russian tourists = 15%</p>\n\n<p>Tourists above 50 years = 10%</p>\n\n<p><strong>Formula used:</strong></p>\n\n<p>Russian tourists = Total tourists &times; Percentage of Russian tourists</p>\n\n<p>Russian tourists above 50 years = Russian tourists &times; Percentage of tourists above 50 years</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Russian tourists = 2,50,000 &times; 15%</p>\n\n<p>&rArr; Russian tourists = 37,500</p>\n\n<p>Russian tourists above 50 years = 37,500 &times; 10%</p>\n\n<p>&rArr; Russian tourists above 50 years = 3,750</p>\n\n<p><strong>&there4; The number of Russian tourists above 50 years is 3,750.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "<!-- x-tinymce/html -->\n<p>The following pie-chart shows details of the per month expenditure of a family. Study the pie-chart carefully and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/25/04/30-4-2025%20IMG-893%20-3.png\" style=\"width: 526px; height: 289px;\" /></p>\n\n<p>The expenditure on rent, medicines and electricity together is what percentage of the expenditure on groceries and education together?</p>\n", "comp": "", "opts": ["82.22%", "80.22%", "70.82%", "76.52%"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>The percentages from the pie chart are:</p>\n\n<p>Rent: 15%</p>\n\n<p>Medicines: 10%</p>\n\n<p>Electricity: 12%</p>\n\n<p>Groceries: 20%</p>\n\n<p>Education: 25%</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>Step 1: Add the expenditure percentages on rent, medicines, and electricity:</p>\n\n<p>15% + 10% + 12% = 37%</p>\n\n<p>Step 2: Add the expenditure percentages on groceries and education:</p>\n\n<p>20% + 25% = 45%</p>\n\n<p>Step 3: Calculate the required percentage:</p>\n\n<p>Required percentage = (37 / 45) &times; 100</p>\n\n<p>&rArr; Required percentage = 82.22%</p>\n\n<p><strong>&there4; The expenditure on rent, medicines, and electricity together is 82.22% of the expenditure on groceries and education together.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "In the given pie-chart, what is the percentage of tax charged for A?", "comp": "<p>The given pie-chart shows the taxable income for A, B, C and D in lakhs of rupees<strong>.</strong></p>\n\n<p><strong><img src=\"https://storage.googleapis.com/tb-img/production/19/11/F1_V.G_Deepak_28.11.2019_D16.PNG\" style=\"width: 291px; height: 280px;\" /></strong></p>\n\n<p><strong>This chart shows the tax paid for the above taxable income by A, B, C and D in lakhs of rupees.</strong></p>\n\n<p><strong><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/19/11/F1_V.G_Deepak_28.11.2019_D17.PNG\" style=\"width: 299px; height: 297px;\" /></strong></p>\n", "opts": ["30%", "15%", "40%", "20%"], "cidx": 0, "sol": "<p>Income of A = 8.2 lakh</p>\n\n<p>Tax of A = 2.46</p>\nPercentage of tax = (2.46/8.2) &times; 100 = 30%", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "<p>The following chart shows the marks (in degrees) scored by a student in different subjects - English, Hindi, History, Economics, and Political Science - in an examination. The total marks obtained in the examination are 600. Observe the chart and answer the question.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/12/F1_shailesh_12-8-2020_nikhil_G2.PNG\" style=\"width: 383px; height: 254px;\" /></p>\n\n<p>What is the difference between marks scored in History and marks scored in Hindi?</p>\n", "comp": "", "opts": ["25", "15", "30", "40"], "cidx": 0, "sol": "<p><strong>Given :</strong></p>\n\n<p>A pie chart with&nbsp;central angles</p>\n\n<p>Total marks obtained in the examination is 600</p>\n\n<p><strong>To find :</strong></p>\n\n<p>Difference Between marks scored in History and Hindi.</p>\n\n<p><strong>Concept used :</strong></p>\n\n<p>(the difference between the central angle/360&deg;)&nbsp;&times; 600</p>\n\n<p><strong>Solution :</strong></p>\n\n<p>&rArr; The central angle of marks scored in&nbsp;History = 70&deg;&nbsp;</p>\n\n<p>&rArr; The central angle of marks scored in Hindi = 55&deg;&nbsp;</p>\n\n<p>&rArr; Difference between the central angle = 70&deg; - 55&deg;&nbsp;</p>\n\n<p>&rArr; Difference between the central angle = 15&deg;&nbsp;</p>\n\n<p>&rArr; Difference Between the marks scored in History and Hindi = (15&deg;/360&deg;)&nbsp;&times; 600</p>\n\n<p>&rArr; Difference Between the marks scored in History and Hindi = 25</p>\n\n<p><strong>&there4;&nbsp;The difference Between the marks scored in History and Hindi&nbsp;is 25.</strong></p>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "<p>The pie chart given below shows the percentage of employees in various departments of a company having a total workforce of 7200.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/03/SSC_Himanshu_Akash_11.03.2024_G9.PNG\" style=\"width: 450px; height: 317px;\" /></p>\n\n<p>Suppose the company plans to hire 324 more employees in the upcoming recruitment drive, of which 25% will be for the IT department, what would be the percentage increase in the number of employees in the IT department after the recruitment drive?</p>\n", "comp": "", "opts": ["3.75%", "9<span style=\"color: rgb(33, 37, 41);\">%</span>", "12.5<span style=\"color: rgb(33, 37, 41);\">%</span>", "5<span style=\"color: rgb(33, 37, 41);\">%</span>"], "cidx": 0, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total Workforce = 7200</p>\n\n<p>Total number of employees hired = 324</p>\n\n<p>Percentage of hiring in IT department of of&nbsp;total hired = 25%</p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>&rArr;&nbsp;Number of IT employees before hiring = 30% of 7200 = (3/10)&nbsp;&times; 7200 = 2160</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;</span><span style=\"color: rgb(33, 37, 41);\">&nbsp;</span>Increase in the number of IT employees after hiring = 25%&nbsp;&times; 324 = (1/4)&nbsp;&times; 324 = 81</p>\n\n<p>&there4;&nbsp; Percentage increase in the number of IT employee = (81/2160)&nbsp;&times; 100 = <strong>3.75%</strong></p>\n\n<p><strong>Hence, the correct answer is Option 1).</strong></p>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "In the given pie-chart, if 1657850 is the total number of tourists visiting India, how many visited from Australia :", "comp": "<p><strong>Direction: </strong>The given pie-chart shows the numbers of tourists for the year 2015, traveling from India and to India.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/19/11/SSC_CPO_Paper1_15th_March_2019_Shift_1_50Q_R_images_vipul_D%203.PNG\" style=\"width: 348px; height: 552px;\" /></p>\n", "opts": ["563669", "589320", "457602", "331570"], "cidx": 0, "sol": "<p>As the tourist are visiting India, we will be using the 2nd graph.</p>\n\n<p>Total tourist visiting to India = 1657850</p>\nNumber of tourists from Australia who visited to India = 34% of 1657850 = <span style=\"\">1657850&nbsp;</span>&times; (34/100) = 563669", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "<p>The following pie charts show the number of students studying in different departments of an institute during the academic years 2019 and 2020. The total number of students was 2000 and 2400 in academic years 2019 and 2020,&nbsp;respectively.&nbsp;</p>\n\n<p>Students studying humanities in 2019 and 2020 taken together is what percentage of the total number of students studying during the two years taken together? (correct to 2 decimal places)&nbsp;</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Revannath_SSC_6-7-2022-G13.PNG\" style=\"width: 255px; height: 282px;\" /></p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Revannath_SSC_6-7-2022-G14..PNG\" style=\"width: 251px; height: 278px;\" /></p>\n", "comp": "", "opts": ["18.52%", "18.75%", "19.91%", "19.19%"], "cidx": 2, "sol": "<p style=\"color: rgb(33, 37, 41);\">Number of students studying humanities in the year 2019 = 2000\u00a0\u00d7 (21/100) \u21d2 420</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of students studying humanities in the year 2020\u00a0= 2400\u00a0\u00d7 (19/100) \u21d2 456</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total number of students studying humanities in the year 2019 and 2020\u00a0= 420 + 456 \u21d2 876</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Percentage of\u00a0students studying humanities in the year 2019 and 2020 = [876/(2000 + 2400)]\u00a0\u00d7 100</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2\u00a0[876/4400]\u00a0\u00d7 100 \u21d2 876/44 \u21d2 19.909\u00a0\u2248 19.91</p>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "The number of months, in which the number of computers sold was above 20% of the total number of computers sold in 5 months, was:", "comp": "<p><strong>Direction\u2236 Study the pie chart and answer the question.</strong></p>\n\n<p>Distribution (degree wise) of the number of computers sold by a shopkeeper for five months.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/SSC_CPO_Paper1_11_Dec_2019_Shift_2_50Q_sharad_D%201.PNG\" /></p>\n", "opts": ["3", "4", "2", "1"], "cidx": 0, "sol": "<p><strong>Calculation:</strong></p>\n\n<p>100% represents = 360&deg;</p>\n\n<p>20% will represent = (360/100) &times; 20 = 72&deg;&nbsp;</p>\n\n<p>January = 85&deg;&nbsp;</p>\n\n<p>March = 99&deg;&nbsp;</p>\n\n<p>May = 77&deg;&nbsp;</p>\n\n<p>There are 3 months January, March and May.</p>\n\n<p>&there4; The number of months in which the number of computers sold is above 20% is 3</p>\n", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "<p>Study the given pie-charts and answer the question that follows.</p>\n\n<p>The pie-charts show the details of graduate and post graduate students of the Universities A, B, C, D, E, F.&nbsp;</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/10/SSC_Himanshu_Akash_25.10.2023_G2.PNG\" style=\"width: 365px; height: 318px;\" /><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/23/10/SSC_Himanshu_Akash_25.10.2023_G3.PNG\" style=\"width: 361px; height: 362px;\" /><br />\nIf the total number of graduates across all universities is 24,800 and that of postgraduates is 18,400, then the ratio of the graduates in the universities A and E together to the postgraduates in the universities B and C will be:&nbsp;</p>\n", "comp": "", "opts": ["249&nbsp;\u2236 131", "589&nbsp;\u2236 483", "128&nbsp;\u2236 269", "358&nbsp;\u2236 249"], "cidx": 1, "sol": "<p>The graduates in the universities A and E together = 24800\u00a0\u00d7 (22 + 16)%\u00a0<span style=\"color: rgb(33, 37, 41);\">=\u00a0248\u00a0\u00d7 (38)</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">The postgraduates in\u00a0the universities B\u00a0and C\u00a0together = 18400\u00a0\u00d7 (19\u00a0+ 23)% =\u00a0184</span><span style=\"color: rgb(33, 37, 41);\">\u00a0\u00d7 (42</span><span style=\"color: rgb(33, 37, 41);\">)</span></p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">The ratio will be=\u00a0248\u00a0\u00d7 (38)\u00a0:\u00a0184</span><span style=\"color: rgb(33, 37, 41);\">\u00a0\u00d7 (42</span><span style=\"color: rgb(33, 37, 41);\">) = 31\u00d7 19 : 23\u00a0\u00d7 21 = 589 : 483</span></p>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "<p>The Pie chart shows the percentage distributions of total number of laptops (both Dell and HP) sold by six stores in March.</p>\n\n<p>Refer to the pie chart and table carefully and answer the given questions,</p>\n\n<p>Total number = 11200&nbsp;</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/24/04/SSC_Himanshu_Akash_27.03.2024_G2_C2.PNG\" style=\"width: 381px; height: 322px;\" /></p>\n\n<p>Ratio of the number of Dell and HP sold</p>\n\n<table border=\"1\" cellpadding=\"1\" cellspacing=\"1\" style=\"width: 100px;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\"><strong>Stores</strong></td>\n\t\t\t<td style=\"text-align: center;\"><strong>Ratio</strong></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">A</td>\n\t\t\t<td style=\"text-align: center;\">5&nbsp;\u2236 4</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">B</td>\n\t\t\t<td style=\"text-align: center;\">7&nbsp;\u2236 6</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">C</td>\n\t\t\t<td style=\"text-align: center;\">1&nbsp;\u2236 4</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">D</td>\n\t\t\t<td style=\"text-align: center;\">11&nbsp;\u2236 10</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">E</td>\n\t\t\t<td style=\"text-align: center;\">4&nbsp;\u2236 3</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"text-align: center;\">F</td>\n\t\t\t<td style=\"text-align: center;\">3&nbsp;\u2236 1</td>\n\t\t</tr>\n\t</tbody>\n</table>\n<br />\nWhat is the central angle corresponding to the total number of laptops (both Dell and HP) sold by store E? [correct to one decimal place)&nbsp;", "comp": "", "opts": ["43.2&deg;", "<span style=\"color: rgb(33, 37, 41);\">64.8&deg;</span>", "<span style=\"color: rgb(33, 37, 41);\">50.4&deg;</span>", "<span style=\"color: rgb(33, 37, 41);\">63.2&deg;</span>"], "cidx": 2, "sol": "<p><strong>Given:</strong></p>\n\n<p>Total number of laptop sold (100%) = 11200</p>\n\n<p><strong>Concept used:</strong></p>\n\n<p>Angle made at the center of circle will be 360<sup>&deg;</sup></p>\n\n<p><strong>Calculation:</strong></p>\n\n<p>&rArr; % of laptop sold by store E = 14%</p>\n\n<p>Now,</p>\n\n<p><span style=\"color: rgb(33, 37, 41);\">&rArr;&nbsp;</span>(360<sup>&deg;</sup>&nbsp;/ 100%)&nbsp;&times; 14% = 50.4<sup>&deg;</sup></p>\n\n<p><strong>&there4; The correct answer is&nbsp;<span style=\"color: rgb(33, 37, 41);\">50.4</span><span style=\"position: relative;  line-height: 0; vertical-align: baseline; top: -0.5em;font-size:10.5px;\">&deg;</span></strong>.</p>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "<p>Study the given pie chart and answer the question that follow.</p>\n\n<p>The pie charts represents the distribution of candidates who were enrolled for Bank Clerical Examination Fig(i) and the candidates (out of those enrolled) who passed the examination Fig(ii) in five different institutions P, Q, R, S and T.</p>\n\n<p>(I) total number of candidates enrolled in five different institutes = 5500</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/01/61e98ee6f49c9ef41aaecc80_Shubham%20Vaishnav_Sanyukta%20Gaikar_21.01.22_D1.PNG\" /></p>\n\n<p>(II) Total number of candidates who passed the examination from five institutes = 3300</p>\n\n<p>&nbsp;<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/01/61e98ee6f49c9ef41aaecc80_Shubham%20Vaishnav_Sanyukta%20Gaikar_21.01.22_D2.PNG\" /></p>\n\n<p>The percentage of the candidates who passed to the number of candidates enrolled for institutes P and T together is:</p>\n", "comp": "", "opts": ["54%", "50%", "51%", "52%"], "cidx": 2, "sol": "<p><strong>Calculation:</strong></p>\n\n<p><span style=\"\">The number of candidates enrolled for institutes P and T together = (20 + 20)%&nbsp;= 40%</span></p>\n\n<p><span style=\"\">Total number of candidates enrolled in five different institutes = 5500</span></p>\n\n<p>The<span style=\"\">&nbsp;number of candidates enrolled for institutes P and T together </span></p>\n\n<p><span style=\"\">&rArr; (40% of 5500)</span></p>\n\n<p><span style=\"\">&rArr; (40/100&nbsp;&times; 5500)</span></p>\n\n<p><span style=\"\">&rArr; 2200</span></p>\n\n<p><span style=\"\">Now,</span></p>\n\n<p>The number of candidates passed from institutes P and T together = (18 + 16)% = 34%</p>\n\n<p><span style=\"\">Total number of candidates who passed the examination from five institutes = 3300</span></p>\n\n<p>The&nbsp;<span style=\"\">number of candidates passed from institutes P and T together&nbsp;</span></p>\n\n<p><span style=\"\">&rArr;</span> (34% of 3300)</p>\n\n<p>&rArr; (34/100&nbsp;&times; 3300)</p>\n\n<p>&rArr; 1122</p>\n\n<p>Now,</p>\n\n<p><span style=\"\">The percentage of the candidates who passed to the number of candidates enrolled for institutes P and T together&nbsp;</span></p>\n\n<p><span style=\"\">&rArr;</span> (1122/2200&nbsp;&times; 100)%</p>\n\n<p>&rArr; (1122/22)%</p>\n\n<p>&rArr; 51%</p>\n\n<p><strong>&there4; The required percentage is 51%</strong></p>\n", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "<p>Study the given pie chart and answer the question that follows.</p>\n\n<p>The breakup of the total number of employees of a company working in different offices (A to E), in degrees, is given in the pie chart.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_Revannath_SSC._20-7-2022_G1.PNG\" style=\"width: 362px; height: 395px;\" /></p>\n\n<p>&nbsp;</p>\n\n<p>If the percentage of male employees in office C is 20% and that of female employees in office D is 40%, then what is the ratio of the number of male employees in office D to that of female employees in office C?</p>\n", "comp": "", "opts": ["1 : 6", "5 : 4", "3 : 4", "2 : 5"], "cidx": 1, "sol": "<p style=\"color: rgb(33, 37, 41);\">Ratio =\u00a0<span class=\"math-tex\">\\(\\rm\\frac{90^o}{360^o}\\)</span>\u00d7 60% :\u00a0\u00a0<span class=\"math-tex\">\\(\\rm\\frac{54^o}{360^o}\\)</span>\u00d7 80%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">\u21d2 90\u00b0\u00a0\u00d7 60% : 54\u00b0\u00a0\u00d7 80% \u21d2 54 : 43.2 \u21d2 5 : 4</p>\n", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "The total number of employees of the company in offices D and E is what percentage more than the number of employees in office A? (Your answer should be correct to one decimal place.)", "comp": "<p><strong>Directions:</strong> Study the pie-chart and answer the question.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/F1_S.C_29.2.20_Pallavi_D11.PNG\" style=\"width: 422px; height: 346px;\" /></p>\n", "opts": ["21.8", "20.6", "21.4", "22.2"], "cidx": 2, "sol": "<p>Total number of employees of the company in offices D and E = 57.6&deg; + 64.8&deg; = 122.4&deg;</p>\n\n<p>Total number of employees of the company in offices A = 100.8&deg;</p>\nRequired percentage = [(122.4 - 100.8)/100.8] &times; 100 = 21.4%", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "The number of employees working in department C is what percentage more than the total number of employees working in D and E? (Your answer should be correct to one decimal place.)", "comp": "<p><strong>Direction: </strong>Study the pie - chart and answer the question.</p>\n\n<p>Distribution (degree - wise) of the number of employees of a company working in 5 departments A, B, C, D and E.</p>\n\n<p>Total number of employees = 3200</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/SSC_CPO_Paper1_9_Dec_2019_Shift_2_50Q_sharad_D2.PNG\" style=\"width: 286px; height: 239px;\" /></p>\n", "opts": ["22.8", "23.2", "20.6", "21.4"], "cidx": 3, "sol": "<p>Number of employees in department C = 122.4&deg;</p>\n\n<p>Total number of employees in department D and E = 64.8&deg; + 36&deg; = 100.8&deg;</p>\nRequired percentage = [(122.4 &ndash; 100.8&deg;)/100.8] &times; 100 = 21.4%", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "<p>The given pie charts represent the popularity of ice-cream flavours in the years 2005 and 2015.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/11/F1_Mamata_SSC_09.11.22_G5.PNG\" style=\"width: 281px; height: 332px;\" />&nbsp;<img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/11/F1_Mamata_SSC_09.11.22_G7.PNG\" style=\"width: 275px; height: 300px;\" /></p>\n\n<p>If a percentage point shift results in annual additional sales of Rs. 5,000. how much (in Rs.) did the combined annual strawberry and butterscotch sales increase from 2005 to 2015 ?</p>\n", "comp": "", "opts": ["37,000", "74,000", "65,000", "10,000"], "cidx": 0, "sol": "<p><span style=\"font-weight: 700;\">Given:</span></p>\n\n<p>1% = Rs. 5000</p>\n\n<p>In 2005,</p>\n\n<p>Strawberry = 18.90%, Butterscotch = 10.80%</p>\n\n<p>In 2015,</p>\n\n<p>Strawberry = 20.50%, Butterscotch = 16.60%</p>\n\n<p><span style=\"font-weight: 700;\">Calculation:</span></p>\n\n<p>Total sales in 2005</p>\n\n<p>&rArr; 18.90 + 10.80</p>\n\n<p>&rArr; 29.70%</p>\n\n<p>Total sales in 2015</p>\n\n<p>&rArr; 20.50 + 16.60</p>\n\n<p>&rArr; 37.10%</p>\n\n<p>Percentage Increase</p>\n\n<p>&rArr; 37.10 - 29.70</p>\n\n<p>&rArr; 7.4%</p>\n\n<p>&rArr; 7.4&nbsp;&times; 5000</p>\n\n<p>&rArr; 37000</p>\n\n<p><span style=\"font-weight: 700;\">&there4; The percentage increase from 2005 to 2015 is Rs. 37000.</span></p>\n", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "<p>Students of Primary, Middle, Secondary, and Sr. Secondary classes collected donations for a Relief Fund as shown in the given pie chart. If the donation collected from the Middle classes was Rs. 6,750, then how much more money was collected by the Middle classes as compared to the Secondary classes?</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/01/F1_shubham_Akash_24-01-2022_4.PNG\" style=\"width: 362px; height: 243px;\" /></p>\n", "comp": "", "opts": ["Rs. 6,075", "Rs. 675", "Rs. 1,125", "Rs. 2025"], "cidx": 1, "sol": "<p style=\"color: rgb(0, 0, 0); \"><strong>Calculation:</strong></p>\n\n<p style=\"color: rgb(0, 0, 0); \">Let total relief fund for all the students be 100x</p>\n\n<p style=\"color: rgb(0, 0, 0); \">Fund for Middle Class = 30% of 100x = 30x</p>\n\n<p style=\"color: rgb(0, 0, 0); \">Fund for Secondary Class = 27% of 100x = 27x</p>\n\n<p style=\"color: rgb(0, 0, 0); \">Difference between Middle Class and Secondary Class = 3x</p>\n\n<p style=\"color: rgb(0, 0, 0); \">A/Q-</p>\n\n<p style=\"color: rgb(0, 0, 0); \">30x = 6750</p>\n\n<p style=\"color: rgb(0, 0, 0); \">&rArr; 3x = 675</p>\n\n<p><strong>&there4; Rs 675 was collected more by the Middle classes as compared to the Secondary classes</strong></p>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "<p>The following figure shows the expenditures incurred by Rohan in different heads. Rohan has a monthly income of \u20b950,000 out of which he spends 60% on different expenditures. What is the total expenditure (in \u20b9) incurred on Health, Education and Transportation together?</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/11/F1_Mamata_SSC_21.11.22_G9.PNG\" style=\"width: 281px; height: 357px;\" /></p>\n", "comp": "", "opts": ["Rs. 16,800", "<span style=\"\">Rs. 15,800</span>", "<span style=\"\">Rs. 28,000</span>", "<span style=\"\">Rs. 18,000</span>"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">60% of 50,000 = 30,000</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Expense(Health, Education and Transportation) = 24% + 18% + 14% = 56%</p>\n\n<p style=\"color: rgb(33, 37, 41);\">= 56 x 300 = 16,800</p>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "The number of students in school E exceeds the total number of students in schools A and B by x, where x lies between:", "comp": "<p><strong>Directions: </strong>Study the given pie chart and answer the question that follows.</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/20/02/F2_V.K.G_Deepak_25.01.2020_D%208.PNG\" /></p>\n", "opts": ["420 and 440", "440 and 460", "460 and 480", "400 and 420"], "cidx": 1, "sol": "<p>Total number of students in school E exceeds the total number of students in school A and B by = 118.8 &ndash; (36 + 64.8) = 18</p>\n\n<p>So, x = (18/360) &times; 9000 = 450</p>\n450 lies between 440 and 460.", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "<p>Study the given pie chart and answer the question that follows.</p>\n\n<p>The pie chart shows the percentage-wise distribution of teachers who teach six different subjects.</p>\n\n<p>Total number of teachers = 1600</p>\n\n<p><img alt=\"\" src=\"https://storage.googleapis.com/tb-img/production/22/07/F1_sundar_vikash_12.07.2022_graph%203.png\" style=\"width: 180px; height: 178px;\" /></p>\n\n<p>If three-eighth of the teachers who teach Chemistry are females, then the number of male Chemistry teachers is what percentage of the total number of teachers who teach Biology?</p>\n", "comp": "", "opts": ["75%", "45%", "60%", "55%"], "cidx": 0, "sol": "<p style=\"color: rgb(33, 37, 41);\">Total number of Chemistry teachers = 1600\u00a0\u00d7 (18/100) =\u00a0288</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Number of female Chemistry teachers = 288\u00a0\u00d7 (3/8) =\u00a0108</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Male Chemistry teacher = 288 - 108 =\u00a0180</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Total number of Biology teachers = 1600\u00a0\u00d7 (15/100) =\u00a0240</p>\n\n<p style=\"color: rgb(33, 37, 41);\">Required % = (180/240) \u00d7 100 =\u00a075</p>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 162000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

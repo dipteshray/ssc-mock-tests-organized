@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 12</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 12</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> A shopkeeper marks his goods 50% above cost price and gives 20% discount to customers. At the time of buying the goods, he gets 5% more weight instead of 1 kg and at the time of selling the goods, he gives 20% less weight instead of 1 kg. Find his profit percentage.</p><p><br/> </p>",
+      "option1": "<p> 25%</p>",
+      "option2": "<p> 59.8%</p>",
+      "option3": "<p> 57.5%</p>",
+      "option4": "<p> 80%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_5af4cbce1095b3e1.jpg"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> What part of a ditch, 48 meters long, 16.5 meters broad and 4 meters deep can be filled by the earth got by digging a cylindrical tunnel of diameter 4 meters and length 56 meters?</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_464ec97a735cbcfc.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_ee82c9bee2474325.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_3c8feea009fcd025.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_61c1a1d06da7f64e.gif",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_ef90b31e3d9bf4ab.png"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> In how many years will Rs150,000 yield Rs. 21,735 as compound interest at 7% per annum compounded annually?</p><p><br/> </p>",
+      "option1": "<p> 1</p>",
+      "option2": "<p> 1.5</p>",
+      "option3": "<p> 2</p>",
+      "option4": "<p> 2.5</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_f8834afa9893ea0c.png"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> At each corner of a triangular field of sides 26m, 28m and 30m, a cow is tethered by a rope of length 7m. The area (in m2) ungrazed by the cows is:</p><p><br/> </p>",
+      "option1": "<p> 336</p>",
+      "option2": "<p> 259</p>",
+      "option3": "<p> 154</p>",
+      "option4": "<p> 77</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_7afac92afaad0f7.gif"
+    },
+    {
+      "sr_no": 5,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_2144df7c8abc72da.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_bba433365cf7a237.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_dcb31a77e18ac53c.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_2e2b74bb86123b87.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_78c4d7d32aab6496.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_1d47c977b2a67222.png"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> The equation of line passing through (4, -2) and (-1, 3) is</p><p><br/> </p>",
+      "option1": "<p> x+y=0</p>",
+      "option2": "<p> x-y=2</p>",
+      "option3": "<p> x+y+2=0</p>",
+      "option4": "<p> x+y=2</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_8a83a44410ca90d0.png"
+    },
+    {
+      "sr_no": 7,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_bf783ac340fc5765.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_1c26aa5ef4bf483d.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_65816934aff848a2.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_e1d87a5a6d19c484.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_c5947e573b498f80.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_46d85044397a84f5.png"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> A, B and C invested Rs 40000, Rs 48000 and Rs 80000, respectively, for a business at the start of a year. After six months for the remaining time of the year, A and B added Rs 4,000 each while C withdraw Rs 4,000 every month. If the total profit is Rs 6,72,000 then what is C’s share?</p><p><br/> </p>",
+      "option1": "<p> 2,11,200</p>",
+      "option2": "<p> 1,96,750</p>",
+      "option3": "<p> 2,80,320</p>",
+      "option4": "<p> 1,80,480</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_313a5f4ab0248f83.png"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> If a positive number ‘k’ when multiplied by 30% of itself gives a number which is 170% more than the number ‘k’, then the number ‘k’ is equal to:</p><p><br/> </p>",
+      "option1": "<p> 7</p>",
+      "option2": "<p> 5</p>",
+      "option3": "<p> 6</p>",
+      "option4": "<p> 9</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_a50ed1767cfcd0e1.png"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_ca7f507bbed67b7f.gif",
+      "option1": "<p> 8</p>",
+      "option2": "<p> 4</p>",
+      "option3": "<p> 9</p>",
+      "option4": "<p> 16</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_a03e587c5cb47f3b.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_65129b8454d17d9f.gif",
+      "option1": "<p> 300 m/sec</p>",
+      "option2": "<p> 200 m/sec</p>",
+      "option3": "<p> 100 m/sec</p>",
+      "option4": "<p> 150 m/sec</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_cc5d663ca8d271c8.png"
+    },
+    {
+      "sr_no": 12,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_3e2df6d9f5cb303d.gif",
+      "option1": "<p> 149</p>",
+      "option2": "<p> 129 </p>",
+      "option3": "<p> 119 </p>",
+      "option4": "<p> 139</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_54c373503d95ca01.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> If 30% of (A + B) = 40% of B then Find (9A-B) : (A+9B)</p><p><br/> </p>",
+      "option1": "<p> 3 : 14 </p>",
+      "option2": "<p> 9 : 14 </p>",
+      "option3": "<p> 10 : 28 </p>",
+      "option4": "<p> 7 : 14 </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_4ddf73d222a58b05.jpg"
+    },
+    {
+      "sr_no": 14,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_e9d749ab7685b636.gif",
+      "option1": "<p> 21:6:14 </p>",
+      "option2": "<p> 6:14:23 </p>",
+      "option3": "<p> 3:7:12 </p>",
+      "option4": "<p> 12:7:3</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_7cb0991bafd59e73.jpg"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>ABC is a triangle with AB = 5, BC = 8 and AC = √41 . D is a point on BC such that AD is perpendicular to BC, find the area of ABC.</p>",
+      "option1": "<p>6</p>",
+      "option2": "<p>8</p>",
+      "option3": "<p>12</p>",
+      "option4": "<p>16</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_9fb52a1053b5f10b.png"
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_42da5cbb2ba507e9.png",
+      "option1": "<p>10.77% decrease</p>",
+      "option2": "<p>13.84% increase</p>",
+      "option3": "<p>10.77% increase</p>",
+      "option4": "<p>13.84% decrease</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_6a83a22031da4acf.png"
+    },
+    {
+      "sr_no": 17,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_f1b000f7d61aa490.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_f7e219743e8751a.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_66f65fca055e5d66.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_453a71b2ba5fdb01.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_c2e191a5c52383cb.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_426cfac67f597bd2.gif"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> PQ is a chord of length 8 cm, of a circle with centre O and of radius 5 cm. The tangents at P and Q intersect at a point T. The length of TP is:</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_b67bd220b6df8a8.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_24b6a5623cd91add.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_a8226a97cd13a75c.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_a4d4dec8816d1355.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_e6cf8713041f801a.png"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> The ratio of boys and girls in a class is 4:5. If 8 more boys join the class and 6 girls leave the class, then the ratio of boys to total students in the class becomes 1:2. What is the total number of boys and girls initially in the class?</p><p><br/> </p>",
+      "option1": "<p> 117</p>",
+      "option2": "<p> 72</p>",
+      "option3": "<p> 126 </p>",
+      "option4": "<p> 356</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_6cf161b0c03c2996.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p> A wooden box measures 20 cm by 12 cm by 10 cm. The thickness of wood is 1 cm throughout. Volume of the wood required to make the box is (cm3):</p><p><br/> </p>",
+      "option1": "<p> 2400</p>",
+      "option2": "<p> 960</p>",
+      "option3": "<p> 519</p>",
+      "option4": "<p> 1120</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_531ca7f358216a68.png"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> The diameter of each wheel of a car is 49 cm. If each wheel rotates 1000 times per minute, then the speed of the car (in km/hr) is</p><p><br/> </p>",
+      "option1": "<p> 9.24</p>",
+      "option2": "<p> 9240</p>",
+      "option3": "<p> 924</p>",
+      "option4": "<p> 92.4</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_5facc5d72dbefdab.gif"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> A number ‘n’ when divided by 6 leaves remainder 2. What will be the remainder when (n2+n+2) is divided by 6?</p><p><br/> </p>",
+      "option1": "<p> 6</p>",
+      "option2": "<p> 2</p>",
+      "option3": "<p> 4</p>",
+      "option4": "<p> 0</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_5051e3c84637fdc9.gif"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p> A, B and C can individually complete a work in 12,15 and 18 days respectively. C starts working alone and after 2 days B joins him. After 4 days of beginning the work, A also joins them. In how many days the whole work will be completed? </p><p><br/> </p>",
+      "option1": "<p> 116/37</p>",
+      "option2": "<p> 364/37</p>",
+      "option3": "<p> 264/37</p>",
+      "option4": "<p> 8</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_11761a5a08de33ce.jpg"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p>Gopi buys a fish from a shop for his aquarium. The shopkeeper takes out one fish at random from a tank containing 5 male fish and 8 female fish. What is the probability that the fish taken out is a male fish?</p>",
+      "option1": "<p>5/8</p>",
+      "option2": "<p>8/13</p>",
+      "option3": "<p>13/5</p>",
+      "option4": "<p>5/13</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_b208528a7068068d.png"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> The length of the common chord of two circles of radii 15 cm and 20 cm whose centres are 25 cm apart, is (cm):</p><p><br/> </p>",
+      "option1": "<p> 22</p>",
+      "option2": "<p> 26</p>",
+      "option3": "<p> 24</p>",
+      "option4": "<p> 25 </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_6a3695d6bce5997e.png"
+    },
+    {
+      "sr_no": 26,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_9e086c06fc09d049.png",
+      "option1": "<p> 7.7</p>",
+      "option2": "<p> 8.1</p>",
+      "option3": "<p> 12</p>",
+      "option4": "<p> 9.5</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_4a91031da8177ee6.gif"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> If the simple interest for 6.75 years be equal to 27 % of the principal, it will be equal to the principal after:</p><p><br/> </p>",
+      "option1": "<p> 20 years</p>",
+      "option2": "<p> 25 years</p>",
+      "option3": "<p> 30 years</p>",
+      "option4": "<p> 35 years</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_f95582f9a7c2689f.png"
+    },
+    {
+      "sr_no": 28,
+      "question": "<p> A and B together can do a piece of work in 9 days while B and C together can do it in 12 days. A work for 2 days, then B for 5 days and then C finished the work in 8 days. Find the work done by C alone in 5 day:</p><p><br/> </p>",
+      "option1": "<p> 13</p>",
+      "option2": "<p> 12</p>",
+      "option3": "<p> 19</p>",
+      "option4": "<p> 10</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_9f67a100a9c38adf.png"
+    },
+    {
+      "sr_no": 29,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_440b91e91d643565.png",
+      "option1": "<p> 33.3</p>",
+      "option2": "<p> 42.6</p>",
+      "option3": "<p> 36.8</p>",
+      "option4": "<p> 34.5</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_bc9be419fa3f5ea2.png"
+    },
+    {
+      "sr_no": 30,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_b83e8fde2881ff90.gif",
+      "option1": "<p> 702 </p>",
+      "option2": "<p> 77√77 </p>",
+      "option3": "<p> 3√77 </p>",
+      "option4": "<p> 80√77</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1692707039567_html_ec7d87ee9aea4aaa.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Sentence of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) However, with advancements in technology, online learning platforms have gained popularity.</p><p> (B) Traditional education systems have long been the primary mode of acquiring knowledge and skills.</p><p> (C) This shift towards digital learning has led to a transformation in the way education is delivered and accessed.</p><p> (D) Students now have the flexibility to learn at their own pace and access a wide range of resources.</p>",
+      "option1": "<p> BACD</p>",
+      "option2": "<p> DCBA</p>",
+      "option3": "<p> ACBD</p>",
+      "option4": "<p> CABD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option A is correct answer.</p><p> The paragraph discusses the transformation in education due to advancements in technology and the rise of online learning platforms. It begins with the statement (B) that introduces traditional education systems. Sentence (A) follows, introducing advancements in technology and online learning platforms as an alternative to traditional education. Sentence (C) provides further information about the shift towards digital learning and its impact. The paragraph concludes with sentence (D), which emphasizes the advantages of online learning, such as flexibility and access to resources. The correct sequence ensures a logical flow of ideas and coherent paragraph structure.</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> You are paying special attention to the weak students.</p>",
+      "option1": "<p> Special attention is paid to the weak students by you.</p>",
+      "option2": "<p> Special attention is being paid to the weak students by you.</p>",
+      "option3": "<p> Special attention has been paid to the weak students by you.</p>",
+      "option4": "<p> Special attention are paid to the weak students by you.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is correct answer.</p><p> Rule followed here is:</p><p> Active form ---- Passive form</p><p> Subject + is/am/are + V1 + ing + Object ---- Object + is/am/are + being + V3 + by + subject.</p><p> Thus, Passive form: Special attention is being paid to the weak students by you.</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> . Sentence of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) This unique phenomenon is a result of complex atmospheric interactions.</p><p> (B) The colourful display of lights can be observed in polar regions near the magnetic poles.</p><p> (C) These lights, known as auroras, create a mesmerizing visual spectacle in the night sky.</p><p> (D) Solar wind particles collide with gases in Earth's atmosphere, emitting light in various hues.</p><p> (E) Auroras have captivated scientists and enthusiasts alike for centuries, inspiring numerous myths and legends.</p>",
+      "option1": "<p> CBDAE</p>",
+      "option2": "<p> BACDE</p>",
+      "option3": "<p> EXDAB</p>",
+      "option4": "<p> AEDBC</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct order of the sentences to form a meaningful paragraph is: B) BACDE</p><p> Sentence (B) sets the stage by introducing the topic and the phenomenon being discussed. Sentence (A) follows sentence (B) logically. Sentence (C) comes after sentence (A). Sentence (D) is the next one. Sentence (E) is the concluding sentence. </p><p> The correct arrangement is: <i><b>The colourful display of lights can be observed in polar regions near the magnetic poles. This unique phenomenon is a result of complex atmospheric interactions. These lights, known as auroras, create a mesmerizing visual spectacle in the night sky. Solar wind particles collide with gases in Earth's atmosphere, emitting light in various hues. Auroras have captivated scientists and enthusiasts alike for centuries, inspiring numerous myths and legends.</b></i></p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> Uncertain, indefinite, or unclear character or meaning</p>",
+      "option1": "<p> Vogue</p>",
+      "option2": "<p> Vague</p>",
+      "option3": "<p> Illegible</p>",
+      "option4": "<p> Puzzle</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is correct answer.</p><p> <b>Vague</b>: Uncertain, indefinite, or unclear character or meaning.</p><p> <b>Vogue</b>: the prevailing fashion or style at a particular time.</p><p> <b>Illegible</b>: not clear enough to be read.</p><p> <b>Puzzle</b>: a person or thing that is difficult to understand or explain; an enigma.</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate option to replace the highlighted word in the given sentence.</p><p> The new product <b>will be arrive</b> <b>on</b> Dmart shelves only next month.</p>",
+      "option1": "<p> will arrived on</p>",
+      "option2": "<p> will arrive on</p>",
+      "option3": "<p> No improvement</p>",
+      "option4": "<p> will arriving on</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is correct answer.</p><p> The given sentence is grammatically incorrect.</p><p> Here, the use of ‘Be’ is not correct. Be will come with ‘ing’ form. (be + V1 + ing)</p><p> Given sentence is in future indefinite tense. And with future tense we cannot use ‘Ing’ form so option d is not correct.</p><p> Rule of future indefinite tense: Subject + shall/will + V1 + Object.</p><p> Therefore, The new product ‘will arrive on’ Dmart shelves only next month.</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> The following sentence has been divided into parts. One of them may contain an error. Select the part that contains the error from the given options. If you don’t find any error, mark ‘No error’ as your answer.</p><p> Manish doesn’t take/ risk lest he should/ not lose all his saving.</p>",
+      "option1": "<p> risk lest he should</p>",
+      "option2": "<p> No error</p>",
+      "option3": "<p> Manish doesn’t take</p>",
+      "option4": "<p> not lose all his saving.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer.</p><p> The given sentence is grammatically incorrect and error lies in the last segment.</p><p> Rule: </p><p> If should is used after lest, it shows negative purpose.</p><p> ‘Lest’ can also take ‘V1’ but plural form even with singular subjects.</p><p> ‘Lest’ doesn’t take ‘not’ after it.</p><p> Thus, the correct sentence is: <i><b>Manish doesn’t take risk lest he should lose all his saving.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p>Select the option that expresses the given sentence in passive voice.<br/> Rahul bought a new watch last week.</p>",
+      "option1": "<p>Last week a new watch has been bought by Rahul.</p>",
+      "option2": "<p>Last week a new watch is bought by Rahul.</p>",
+      "option3": "<p>Last week a new watch was bought by Rahul.</p>",
+      "option4": "<p>Last week a new shirt had been bought by Rahul.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer.</p><p><strong>Rule to change Active voice into Passive voice: </strong></p><p>Simple past tense</p><p><strong>Subject + V2 + Object ------ Object + was/were + V3 + by + subject.</strong></p><p><strong>Thus, the correct passive form will be:</strong> <strong>Last week a new watch was bought by Rahul.</strong></p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.<br/> The armed forces put up an impressive parade on Republic Day.</p>",
+      "option1": "<p> An impressive parade was being put up on Republic Day by the armed forces.</p>",
+      "option2": "<p> An impressive parade is putting up by the armed forces on Republic Day.</p>",
+      "option3": "<p> An impressive parade was put up by the armed forces on Republic Day.</p>",
+      "option4": "<p> An impressive parade have been put up by the armed forces on Republic Day.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> <b>Active Voice into Passive Voice:</b></p><p> <b>Subject + V2 + Object ---------- Object + was/were + V3 + by + Subject.</b></p><p> Thus, the correct Passive Voice of the given sentence is:</p><p> <b>An impressive parade was put up by the armed forces on Republic Day.</b></p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> One who studies the elections and voting trends</p>",
+      "option1": "<p> Psephologist</p>",
+      "option2": "<p> Reviewer</p>",
+      "option3": "<p> Archaeology</p>",
+      "option4": "<p> Anthropology</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> <b>Psephologist</b>: One who studies the elections and voting trends.</p><p> <b>Reviewer</b>: A person who writes critical appraisals of books, plays, films, etc. for publication.</p><p> <b>Archaeology</b>: the study of human history and prehistory through the excavation of sites and the analysis of artefacts and other physical remains.</p><p> <b>Anthropology</b>: the study of human societies and cultures and their development.</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Given below are four jumbled sentences. Select the option that gives their correct logical sequence.</p><p> (A) This remarkable discovery was the result of years of dedicated research.</p><p> (B) These findings challenge previously held beliefs in the field of astrophysics.</p><p> (C) The new theory proposes a groundbreaking understanding of star formation.</p><p> (D) Observations were made using advanced telescopes and computer simulations.</p><p> (E) Scientists around the world have hailed it as one of the most significant breakthroughs.</p>",
+      "option1": "<p> CEADB</p>",
+      "option2": "<p> BDAEC</p>",
+      "option3": "<p> CADBE</p>",
+      "option4": "<p> ECABD</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> (C) The new theory proposes a groundbreaking understanding of star formation. This sentence introduces the central theme of the paragraph, which is the new theory and its implications.</p><p> (A) This remarkable discovery was the result of years of dedicated research. This sentence provides context and background information about the discovery, establishing that it was the outcome of extensive research efforts.</p><p> (D) Observations were made using advanced telescopes and computer simulations. This sentence adds crucial details about how the discovery was made, emphasizing the methodology used to arrive at the findings.</p><p> (B) These findings challenge previously held beliefs in the field of astrophysics. This sentence highlights the significance of the discovery by indicating that it contradicts established beliefs in the field.</p><p> (E) Scientists around the world have hailed it as one of the most significant breakthroughs. This sentence concludes the paragraph by showcasing the global recognition and importance of the discovery.</p><p> Overall, the paragraph flows logically from introducing the new theory and its groundbreaking nature, to explaining how the discovery was made, to emphasizing its impact on established beliefs, and finally, to highlighting the recognition it has received from the scientific community worldwide.</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the sentence that contains no spelling errors.</p>",
+      "option1": "<p> I spend more time working than socialising with friends or enjoying hobbies or leisure activities.</p>",
+      "option2": "<p> I spend more time working than socialising with friends or enjoying hobbis or leisure activities.</p>",
+      "option3": "<p> I spend more time working than socialising with friends or enjoying hobbies or liesure activities.</p>",
+      "option4": "<p> I spend more time working than socialiesing with friends or enjoying hobbies or leisure activities.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer.</p><p> “I spend more time working than socialising with friends or enjoying hobbies or leisure activities.” </p><p> <b>Hobby: </b>an activity done regularly in one’s leisure time for pleasure.</p><p> <b>Leisure:</b> Time when one is not working or occupied; free time.</p><p> <b>Socialising:</b> Participate in social activities; mix socially with others.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Open the window to make kitchen cooler</p>",
+      "option1": "<p> Let the window be opened to make the Kitchen cooler.</p>",
+      "option2": "<p> Be the window opened to make the kitchen cooler.</p>",
+      "option3": "<p> You should open the window to make the kitchen cooler.</p>",
+      "option4": "<p> The window should be opened by you to make the kitchen cooler.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer. </p><p> <b>Rule of changing of imperative sentence into passive voice:</b></p><p> If the object is present in sentence, then the passive form will be: <b>Let + object + be + V3 + other words.</b></p><p> Thus, active form: <b>Open the window to make kitchen cooler</b></p><p> Passive form: <b>Let the window be opened to make kitchen cooler.</b></p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> Dhruv has a rather <b>lackadaisical</b> approach to his work.</p>",
+      "option1": "<p> Lethargic</p>",
+      "option2": "<p> Half-hearted</p>",
+      "option3": "<p> Jovial</p>",
+      "option4": "<p> Indolent</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> <b>Lackadaisical</b>: lacking enthusiasm and determination; carelessly, lazy.</p><p> <b>Lethargic</b>: sluggish and apathetic</p><p> <b>Half-hearted</b>: without enthusiasm or energy.</p><p> <b>Jovial</b>: cheerful and friendly.</p><p> <b>Indolent</b>: wanting to avoid activity or exertion; lazy.</p><p> Hence, c is the correct antonym of lackadaisical.</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> Rohit could not <b>expunge</b> the incident from his memory.</p>",
+      "option1": "<p> Obliterate</p>",
+      "option2": "<p> Remove</p>",
+      "option3": "<p> Eradicate</p>",
+      "option4": "<p> Conserve</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> Meaning of the given words:</p><p> <b>Expunge:</b> obliterate or remove completely something unwanted or unpleasant.</p><p> <b>Remove:</b> take (something) away or off from the position occupied.</p><p> <b>Eradicate:</b> destroy completely; put an end to.</p><p> <b>Conserve:</b> To avoid the wasteful or destructive use of.</p><p> <br/> <br/> </p><p> Thus, conserve is the correct answer.</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Roshani suffers the same pain ________ as she suffered in her childhood.</p>",
+      "option1": "<p> so</p>",
+      "option2": "<p> now</p>",
+      "option3": "<p> which</p>",
+      "option4": "<p> repeated</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> Adverb will come in the blank.</p><p> So, there is <b>‘Now’</b> which sounds logical in the given sentence.</p><p> Hence, <b>‘now’ </b>is correct answer in blank.</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) Moreover, the survey indicates a potential shift in consumer preferences towards sustainable and locally sourced products.</p><p> (B) This trend has significant implications for domestic industries and international trade.</p><p> (C) The economic survey reveals a steady increase in household savings over the past fiscal year.</p><p> (D) In contrast, the manufacturing sector experienced a slight contraction in growth.</p><p> (E) One of the key highlights of the survey is the surge in e-commerce activities, driven by increased digital adoption during the pandemic.</p><p> <br/> </p>",
+      "option1": "<p> ADEBC</p>",
+      "option2": "<p> CBADE</p>",
+      "option3": "<p> CEDAB</p>",
+      "option4": "<p> ACBFD</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> (C) The economic survey reveals a steady increase in household savings over the past fiscal year. This sentence provides an introductory statement about a key finding of the economic survey.</p><p> (E) One of the key highlights of the survey is the surge in e-commerce activities, driven by increased digital adoption during the pandemic. This sentence presents another significant finding from the survey, emphasizing the rise of e-commerce due to digital adoption during the pandemic.</p><p> (D) In contrast, the manufacturing sector experienced a slight contraction in growth. This sentence introduces a contrast by mentioning a decline in the manufacturing sector's growth, providing additional information on the economic scenario.</p><p> (A) Moreover, the survey indicates a potential shift in consumer preferences towards sustainable and locally sourced products. This sentence connects the previous sentences by discussing changing consumer preferences and their potential impact on various industries.</p><p> (B) This trend has significant implications for domestic industries and international trade. This concluding sentence wraps up the paragraph by discussing the broader implications of changing consumer preferences on both domestic industries and international trade.</p><p> The paragraph flows coherently from introducing the increase in household savings and the surge in e-commerce activities, to contrasting the manufacturing sector's growth, and finally, to discussing the implications of changing consumer preferences on domestic industries and international trade.</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.</p><p> Himanshi says, “She comes here”.</p>",
+      "option1": "<p> Himanshi said that she is coming there.</p>",
+      "option2": "<p> Himanshi says that she comes here.</p>",
+      "option3": "<p> Himanshi said that she was coming there.</p>",
+      "option4": "<p> Himanshi said that she used to come there.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is correct answer.</p><p> Rules:</p><p> <b>If reporting verb is in ‘present’ or ‘future tense’, there shall be no change in the tense of the reported speech.</b></p><p> So, there is no change in the reported speech.</p><p> Thus, <b>Himanshi says, “she comes here”. ------- Himanshi says that she comes here.</b></p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> Select the correct homonym from the given options to fill in the blank.</p><p> It is possible to be ______, and a lot of famous people are.</p>",
+      "option1": "<p> discrete</p>",
+      "option2": "<p> discreet</p>",
+      "option3": "<p> dual</p>",
+      "option4": "<p> duel</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> The correct sentence is “It is possible to be discreet, and a lot of famous people are.</p><p> <b>Discreet:</b> careful and prudent in one’s speech or actions, especially in order to keep something confidential or to avoid embarrassment.</p><p> <b>Discrete:</b> individually separate and distinct.</p><p> <b>Dual:</b> having two parts; double</p><p> <b>Duel:</b> a contest with deadly weapons arranged between two people in order to settle a point of honour.</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> (a) Sita’s separation/(b) was very/(c) painful to Ram. /(d) No error</p>",
+      "option1": "<p> Sita’s separation</p>",
+      "option2": "<p> was very</p>",
+      "option3": "<p> painful to Ram.</p>",
+      "option4": "<p> No error</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is correct answer.</p><p> <br/> <b>We do not use possessive pronouns with separation, leave, excuse, mention, report, pardon, sight, favour.</b></p><p> <b>Sita’s separation ---- separation from Sita.</b></p><p> The correct sentence is: <b>Separation from Sita was very painful to Ram.</b></p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Identify the pair of synonyms from the given word.</p><p> Quash</p>",
+      "option1": "<p> Pledge</p>",
+      "option2": "<p> Validate</p>",
+      "option3": "<p> Reject</p>",
+      "option4": "<p> Assist</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> <b>Quash:</b> reject as invalid, especially by legal procedure.</p><p> <b>Reject:</b> dismiss as inadequate, unacceptable, or fully.</p><p> <b>Pledge:</b> a solemn promise or undertaking.</p><p> <b>Validate:</b> check or prove the validity or accuracy of.</p><p> <b>Assist:</b> help (someone), typically by doing a share of the work.</p><p> Thus, <b>‘Reject’</b> is the correct synonym of <b>‘Quash’.</b></p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the right order to form a meaningful and coherent paragraph.<br/> A. There lived a foolish king in a large kingdom. <br/> B. He thought that it will be a good joke.<br/> C. He did not realise that what he thought of as a joke would cost him heavily.<br/> D. The king once decided to throw all his ministers in prison for a day.</p>",
+      "option1": "<p> ACBD</p>",
+      "option2": "<p> ADBC</p>",
+      "option3": "<p> DABC</p>",
+      "option4": "<p> ABCD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> The correct arrangement is: ADBC: <i><b>There lived a foolish king in a large kingdom. The king once decided to throw all his ministers in prison for a day. He thought that it will be a good joke. He did not realise that what he thought of as a joke would cost him heavily.</b></i></p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> Select the most appropriate word to fill in the blank.</p><p> Garima is one of the noblest women that ____ ever lived on this earth.</p>",
+      "option1": "<p> has</p>",
+      "option2": "<p> have</p>",
+      "option3": "<p> had</p>",
+      "option4": "<p> IS</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> Rule: <b>If a subject and the verb are joined by a relative pronoun, the verb used will agree with the antecedent to the relative pronoun. That’s why here ‘have’ will in the blank.</b></p><p> Hence, the correct sentence is: <i><b>Garima is one of the noblest women that have ever lived on this earth.</b></i></p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the INCORRECT spelt word.</p>",
+      "option1": "<p> fortieth</p>",
+      "option2": "<p> twelfth</p>",
+      "option3": "<p> archaeology</p>",
+      "option4": "<p> liasion</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is correct answer.</p><p> The correct spelling is</p><p> <b>Liaison:</b> communication or cooperation which facilitates a close working relationship between people or organizations.</p><p> <b>Archaeology:</b> the study of human history and prehistory through the excavation of sites and the analysis of artefacts and other physical remains.</p><p> <b>Fortieth:</b> constituting number forty in a sequence; 40th.</p><p> <b>Twelfth:</b> constitution number twelve in a sequence; 12th.</p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the option that expresses the given sentence in direct/indirect speech.</p><p> Sarita said, “The Earth moves round the Sun.”</p>",
+      "option1": "<p> Sarita said that the Earth is moving round the Sun.</p>",
+      "option2": "<p> Sarita said that the Earth moves round the Sun.</p>",
+      "option3": "<p> Sarita said that the Earth moved round the Sun.</p>",
+      "option4": "<p> Sarita said that the Earth was moved round the Sun.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer.</p><p> Rule:</p><p> <b>If the reporting verb is in ‘past’, and the reported speech is a ‘universal truth’ / ‘Phrase’ / ‘idiom’ / ‘habitual action’ or ‘historical fact’, the tense of the reported speech does not change.</b></p><p> S<b>arita said, “The Earth moves round the Sun.” ------ Sarita said that the Earth moves round the Sun.</b></p><p> Hence b is the correct answer.</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the option that will improve the highlighted part of the given sentence. In case no improvement in needed, select ‘No improvement required’.</p><p> Shikha found barely any restaurant to eat, <b>didn’t she</b>?</p>",
+      "option1": "<p> doesn’t she</p>",
+      "option2": "<p> didn’t shikha</p>",
+      "option3": "<p> did she</p>",
+      "option4": "<p> no improvement required</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer.</p><p> <b>Rule of Question tag:</b></p><p> <b>Negative meaning words (hardly, seldom, scarcely, rarely, barely etc) always take positive question tag.</b></p><p> <b>e.g., she seldom dances, is she?</b></p><p> Thus,<b> ‘did she’ </b>is the most appropriate answer.</p><p> Correct sentence: <b>shikha found barely any restaurant to eat, did she?</b></p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Identify the option that arranges the given parts in the correct order to form a meaningful paragraph.</p><p> (A) Furthermore, meditation has been shown to enhance emotional well-being and reduce symptoms of anxiety and depression.</p><p> (B) This practice has been embraced by people from various cultural and spiritual backgrounds.</p><p> (C) Scientific studies have demonstrated that meditation can lead to improvements in cognitive function, such as enhanced attention and concentration.</p><p> (D) Meditation involves the cultivation of mindfulness and self-awareness through techniques like focused breathing and body scanning.</p><p> (E) The benefits of meditation extend beyond the individual, as it has been linked to increased empathy and better interpersonal relationships.</p>",
+      "option1": "<p> CEDAB</p>",
+      "option2": "<p> CBADE</p>",
+      "option3": "<p> DCAEB</p>",
+      "option4": "<p> DAECB</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is correct answer.</p><p> (C) Scientific studies have demonstrated that meditation can lead to improvements in cognitive function, such as enhanced attention and concentration. This sentence provides a strong opening by introducing the scientific basis for the benefits of meditation.</p><p> (E) The benefits of meditation extend beyond the individual, as it has been linked to increased empathy and better interpersonal relationships. This sentence builds on the idea of meditation's effects, showing its broader impact on relationships and empathy.</p><p> (D) Meditation involves the cultivation of mindfulness and self-awareness through techniques like focused breathing and body scanning. This sentence explains what meditation entails and how it is practiced, adding depth to the reader's understanding.</p><p> (A) Furthermore, meditation has been shown to enhance emotional well-being and reduce symptoms of anxiety and depression. This sentence highlights the positive effects of meditation on emotional health and its potential as a remedy for anxiety and depression.</p><p> (B) This practice has been embraced by people from various cultural and spiritual backgrounds. This concluding sentence wraps up the paragraph by mentioning the widespread acceptance of meditation among diverse groups of people.</p><p> The paragraph flows logically from introducing the scientific evidence for meditation's benefits, to discussing its effects on empathy and relationships, explaining the practice of meditation itself, highlighting its emotional well-being benefits, and concluding with its popularity across different cultural and spiritual backgrounds.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom.</p><p> When Athleap was booming, Jim was <b>in for a penny and in for a pound</b>, that’s how much dedicated he was.</p>",
+      "option1": "<p> Committed to a risky endeavour with both a small and large investment.</p>",
+      "option2": "<p> Eager to make profit regardless of the risks.</p>",
+      "option3": "<p> Willing to spend money without considering the consequences.</p>",
+      "option4": "<p> That someone is intentionally investing his time or money for a particular project or task</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> Meaning of the idiom: </p><p> <b>In for a penny in for a pound: used to say that a person should finish what he or she has started to do even though it may be difficult or expensive.</b></p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> Sarah decided to ___________ by investing some money in stocks and some in bonds.</p>",
+      "option1": "<p> double down</p>",
+      "option2": "<p> hedge her bet</p>",
+      "option3": "<p> throw caution to the wind</p>",
+      "option4": "<p> count her chickens before they hatch</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> Let’s discuss the meaning of given idioms:</p><p> <b>Double down:</b> strengthen one’s commitment to a particular strategy or course of action, typically one that is potentially risky.</p><p> <b>Hedge your bet:</b> to protect yourself against loss by supporting more than one possible result or both sides in a competition.</p><p> <b>Throw caution to the wind:</b> act in a completely reckless manner.</p><p> <b>count her chickens before they hatch: </b>someone should not depend on something hoped for until he or she knows for certain that it will happen.</p><p> <br/> <br/> </p><p> Thus, <b>hedge your bet</b> is the most appropriate answer.</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Select the most appropriate One Word Substitution for the given group of words.</p><p> That is lacking in significance or interest.</p>",
+      "option1": "<p> Jejune</p>",
+      "option2": "<p> Jovial</p>",
+      "option3": "<p> Jebel</p>",
+      "option4": "<p> Jurat</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> <b>Jejune:</b> without interest or significance; dull; insipid.</p><p> <b>Jovial:</b> cheerful and friendly</p><p> <b>Jebel:</b> a hill or mountain</p><p> <b>Jurat:</b> a person who has taken an oath or who performs a duty on oath.</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>Q30. In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Technology has (1) __________ transformed the way we live, work, and communicate. It has (2) __________ advancements in various fields, making tasks more efficient and accessible. However, it also comes with its (3) __________ challenges and ethical considerations. As we embrace these innovations, we must (4) __________ their impact on society and ensure responsible usage.</p><p> Select the most appropriate option to fill in the blank 1.</p><p> <br/> </p>",
+      "option1": "<p> gradually</p>",
+      "option2": "<p> significantly</p>",
+      "option3": "<p> occasionally</p>",
+      "option4": "<p> silently</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> The word \"transformed\" in the first sentence suggests a major and impactful change brought about by technology. \"Significantly\" is the appropriate word here as it indicates a substantial and notable transformation. </p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>Q31. In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Technology has (1) __________ transformed the way we live, work, and communicate. It has (2) __________ advancements in various fields, making tasks more efficient and accessible. However, it also comes with its (3) __________ challenges and ethical considerations. As we embrace these innovations, we must (4) __________ their impact on society and ensure responsible usage.</p><p> Select the most appropriate option to fill in the blank 2.</p>",
+      "option1": "<p> hindered</p>",
+      "option2": "<p> disrupted</p>",
+      "option3": "<p> propelled</p>",
+      "option4": "<p> ignored</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is correct answer.</p><p> The context suggests that technology has advanced and driven progress in various fields, making tasks more efficient and accessible. \"Propelled\" means to push forward or drive with force, which fits the idea of technology advancing and contributing to progress.</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>Q32. In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Technology has (1) __________ transformed the way we live, work, and communicate. It has (2) __________ advancements in various fields, making tasks more efficient and accessible. However, it also comes with its (3) __________ challenges and ethical considerations. As we embrace these innovations, we must (4) __________ their impact on society and ensure responsible usage.</p><p> Select the most appropriate option to fill in the blank 3.</p>",
+      "option1": "<p> valuable</p>",
+      "option2": "<p> potential</p>",
+      "option3": "<p> intricate</p>",
+      "option4": "<p> myriad</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> The sentence talks about the challenges and ethical considerations that come with technology. \"Myriad\" means a large and diverse number of things, and it accurately describes the various challenges and considerations associated with technology.</p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>Q33. In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Technology has (1) __________ transformed the way we live, work, and communicate. It has (2) __________ advancements in various fields, making tasks more efficient and accessible. However, it also comes with its (3) __________ challenges and ethical considerations. As we embrace these innovations, we must (4) __________ their impact on society and ensure responsible usage.</p><p> Select the most appropriate option to fill in the blank 4.</p>",
+      "option1": "<p> neglect</p>",
+      "option2": "<p> overlook</p>",
+      "option3": "<p> scrutinize</p>",
+      "option4": "<p> disregard</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> The sentence implies that as we adopt new technological innovations, we need to carefully examine and assess their impact on society and ensure responsible usage. \"Scrutinize\" means to examine closely and critically, which aligns with the idea of evaluating the impact of technology.</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Q34. Read the following passage and answer the questions given after it.</b></p><p> Human beings interact with their physical environment with the help of technology. It is not important what human beings produce and create but it is extremely important ‘with the help of what tools and techniques do they produce and create’. Technology indicates the level of cultural development of society. Human beings were able to develop technology after they developed better understanding of natural laws. For example, the understanding of concepts of friction and heat helped us discover fire. Similarly, understanding of the secrets of DNA and genetics enabled us to conquer many diseases. We use the laws of aerodynamics to develop faster planes. You can see that knowledge about Nature is extremely important to develop technology and technology loosens the shackles of environment on human beings. In the early stages of their interaction with their natural environment humans were greatly influenced by it. They adapted to the dictates of Nature. This is so because the level of technology was very low and the stage of human social development was also primitive. This type of interaction between primitive human society and strong forces of nature was termed as environmental determinism. At that stage of very low technological development, we can imagine the presence of a naturalised human, who listened to Nature, was afraid of its fury and worshipped it for resources which sustain them. The physical environment for such societies becomes the “Mother Nature”. The people begin to understand their environment and the forces of nature with the passage of time. With social and cultural development, humans develop better and more efficient technology. They move from a state of necessity to a state of freedom. They create possibilities with the resources obtained from the environment. The human activities create cultural landscape. The imprints of human activities are created everywhere; health resorts on highlands, huge urban sprawls, fields, orchards and pastures in plains and rolling hills, ports on the coasts, oceanic routes on the oceanic surface and satellites in the space. The earlier scholars termed this as possibilism. Nature provides opportunities and human being make use of these and slowly nature gets humanised and starts bearing the imprints of human endeavour.</p><p> What is the tone of the passage?</p>",
+      "option1": "<p> Critical and argumentative</p>",
+      "option2": "<p> Emotional and persuasive</p>",
+      "option3": "<p> Informative and explanatory</p>",
+      "option4": "<p> Humorous and satirical</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> The passage's tone is primarily focused on providing information and explaining concepts related to the relationship between human beings, technology, and the natural environment. It aims to educate the reader about how technology is developed based on an understanding of natural laws, the evolution of human interaction with the environment, and the concepts of environmental determinism and possibilism. The tone is not critical, emotional, or humorous; rather, it is centered on conveying information in a clear and explanatory manner.</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Q35. Read the following passage and answer the questions given after it.</b></p><p> Human beings interact with their physical environment with the help of technology. It is not important what human beings produce and create but it is extremely important ‘with the help of what tools and techniques do they produce and create’. Technology indicates the level of cultural development of society. Human beings were able to develop technology after they developed better understanding of natural laws. For example, the understanding of concepts of friction and heat helped us discover fire. Similarly, understanding of the secrets of DNA and genetics enabled us to conquer many diseases. We use the laws of aerodynamics to develop faster planes. You can see that knowledge about Nature is extremely important to develop technology and technology loosens the shackles of environment on human beings. In the early stages of their interaction with their natural environment humans were greatly influenced by it. They adapted to the dictates of Nature. This is so because the level of technology was very low and the stage of human social development was also primitive. This type of interaction between primitive human society and strong forces of nature was termed as environmental determinism. At that stage of very low technological development, we can imagine the presence of a naturalised human, who listened to Nature, was afraid of its fury and worshipped it for resources which sustain them. The physical environment for such societies becomes the “Mother Nature”. The people begin to understand their environment and the forces of nature with the passage of time. With social and cultural development, humans develop better and more efficient technology. They move from a state of necessity to a state of freedom. They create possibilities with the resources obtained from the environment. The human activities create cultural landscape. The imprints of human activities are created everywhere; health resorts on highlands, huge urban sprawls, fields, orchards and pastures in plains and rolling hills, ports on the coasts, oceanic routes on the oceanic surface and satellites in the space. The earlier scholars termed this as possibilism. Nature provides opportunities and human being make use of these and slowly nature gets humanised and starts bearing the imprints of human endeavour.</p><p> <br/> <br/> </p><p> As humans develop better technology, what shift occurs in their relationship with the environment?</p>",
+      "option1": "<p> They become more isolated from nature</p>",
+      "option2": "<p> They rely less on the environment for resources</p>",
+      "option3": "<p> They rely less on the environment for resources</p>",
+      "option4": "<p> They create possibilities with environmental resources</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> <br/> </p><p> As humans develop better technology, their relationship with the environment undergoes a shift towards creating possibilities with environmental resources. This means that as technology advances, humans are better able to harness and utilize the resources present in the environment to create new opportunities, innovations, and advancements. Instead of merely relying on the environment for basic resources, improved technology empowers humans to transform and manipulate these resources in novel and beneficial ways. This shift signifies a more proactive and creative interaction with the environment, allowing humans to achieve higher levels of development and innovation.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Q36. Read the following passage and answer the questions given after it.</b></p><p> Human beings interact with their physical environment with the help of technology. It is not important what human beings produce and create but it is extremely important ‘with the help of what tools and techniques do they produce and create’. Technology indicates the level of cultural development of society. Human beings were able to develop technology after they developed better understanding of natural laws. For example, the understanding of concepts of friction and heat helped us discover fire. Similarly, understanding of the secrets of DNA and genetics enabled us to conquer many diseases. We use the laws of aerodynamics to develop faster planes. You can see that knowledge about Nature is extremely important to develop technology and technology loosens the shackles of environment on human beings. In the early stages of their interaction with their natural environment humans were greatly influenced by it. They adapted to the dictates of Nature. This is so because the level of technology was very low and the stage of human social development was also primitive. This type of interaction between primitive human society and strong forces of nature was termed as environmental determinism. At that stage of very low technological development, we can imagine the presence of a naturalised human, who listened to Nature, was afraid of its fury and worshipped it for resources which sustain them. The physical environment for such societies becomes the “Mother Nature”. The people begin to understand their environment and the forces of nature with the passage of time. With social and cultural development, humans develop better and more efficient technology. They move from a state of necessity to a state of freedom. They create possibilities with the resources obtained from the environment. The human activities create cultural landscape. The imprints of human activities are created everywhere; health resorts on highlands, huge urban sprawls, fields, orchards and pastures in plains and rolling hills, ports on the coasts, oceanic routes on the oceanic surface and satellites in the space. The earlier scholars termed this as possibilism. Nature provides opportunities and human being make use of these and slowly nature gets humanised and starts bearing the imprints of human endeavour.</p><p> <br/> <br/> </p><p> How does the passage explain the concept of \"environmental determinism\"?</p>",
+      "option1": "<p> It refers to the stage of low technological development</p>",
+      "option2": "<p> It describes the harmonious relationship between humans and nature</p>",
+      "option3": "<p> It signifies humans adapting to the dictates of nature</p>",
+      "option4": "<p> It highlights the advanced technological progress of human societies</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> The passage explains the concept of \"environmental determinism\" as the stage where primitive human societies were greatly influenced by the strong forces of nature and adapted their way of life according to the demands and constraints imposed by nature. This concept suggests that due to the low level of technology and a less developed social stage, humans had to conform to the limitations and requirements of their natural environment. The term \"environmental determinism\" highlights the idea that the environment played a dominant role in shaping the lives and behaviours of early human societies.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Q37. Read the following passage and answer the questions given after it.</b></p><p> Human beings interact with their physical environment with the help of technology. It is not important what human beings produce and create but it is extremely important ‘with the help of what tools and techniques do they produce and create’. Technology indicates the level of cultural development of society. Human beings were able to develop technology after they developed better understanding of natural laws. For example, the understanding of concepts of friction and heat helped us discover fire. Similarly, understanding of the secrets of DNA and genetics enabled us to conquer many diseases. We use the laws of aerodynamics to develop faster planes. You can see that knowledge about Nature is extremely important to develop technology and technology loosens the shackles of environment on human beings. In the early stages of their interaction with their natural environment humans were greatly influenced by it. They adapted to the dictates of Nature. This is so because the level of technology was very low and the stage of human social development was also primitive. This type of interaction between primitive human society and strong forces of nature was termed as environmental determinism. At that stage of very low technological development, we can imagine the presence of a naturalised human, who listened to Nature, was afraid of its fury and worshipped it for resources which sustain them. The physical environment for such societies becomes the “Mother Nature”. The people begin to understand their environment and the forces of nature with the passage of time. With social and cultural development, humans develop better and more efficient technology. They move from a state of necessity to a state of freedom. They create possibilities with the resources obtained from the environment. The human activities create cultural landscape. The imprints of human activities are created everywhere; health resorts on highlands, huge urban sprawls, fields, orchards and pastures in plains and rolling hills, ports on the coasts, oceanic routes on the oceanic surface and satellites in the space. The earlier scholars termed this as possibilism. Nature provides opportunities and human being make use of these and slowly nature gets humanised and starts bearing the imprints of human endeavour.</p><p> <br/> <br/> </p><p> How does the passage define the relationship between what humans produce and the tools they use?</p>",
+      "option1": "<p> The tools are more important than the products created</p>",
+      "option2": "<p> Both are equally important in cultural development</p>",
+      "option3": "<p> The products created are more important than the tools used</p>",
+      "option4": "<p> The tools and products are unrelated to each other</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option a is the correct answer.</p><p> The passage actually defines the relationship between what humans produce and the tools they use by emphasizing that \"it is not important what human beings produce and create but it is extremely important ‘with the help of what tools and techniques do they produce and create’.\" This implies that the passage highlights the significance of the tools and techniques used in the process of creating products, indicating that the tools and techniques play a crucial role in shaping cultural development.</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> Indian Armed Forces are poised for major modernisation in the next fifteen years. This process would involve upgrades of hardware and systems as well as purchase of new state of art equipment to enable them meet the security challenges in the coming decades; the volumes are high and the financial outlays large. There is substantial scope in the process for Indian industry to harness this market (around US $ 100 billion) to develop indigenous capability; especially in high technology areas. Capacity Building process in the Armed Forces proceeds along a well-crafted path. Perspective plans determine the capability sought by the Armed Forces which in-turn drive the procurement of platforms and equipment and the technology required to attain this capability. The plans focus on bridging the capability gaps and building force levels to ensure that the Armed Forces are optimally structured, equipped and weaponised to achieve the desired combat potential across the entire spectrum of conflict. The Armed Forces Long Term Integrated Perspective Plan (LTIPP) covers a period of 15 years. It identifies the shape and size of the Forces over the designated time period based on foreseeable strategic trends. These 5-year plans run concurrent with the national 5-year plans. More immediate commitments and capital acquisitions are included in the Annual Acquisition Plans (AAP) to enable effective oversight of committed funding vis-a-vis progress. The unpredictability of the global events in an increasingly ‘Flat’ world necessitates a periodic review of the Long-Term Perspective Plans, which is a continuous exercise. It facilitates mid-course corrections based on discernible emerging trends and the need to adapt to newer technologies. However, the fundamental capabilities enumerated in the 15 Year plan remain essentially the same. The future battle space will be shaped by technology and technological superiority will determine the outcome of future battles. It is therefore essential that technological self-reliance remains the mantra for the future and a collective national effort be initiated to achieve this in the quickest possible time ensuring that technological developments are commensurate with our desired military capability.</p><p> <br/> <br/> </p><p> According to the passage, what will determine the outcome of future battles?</p>",
+      "option1": "<p> The size of the Armed Forces</p>",
+      "option2": "<p> The geographic location of the battle space</p>",
+      "option3": "<p> Technological superiority</p>",
+      "option4": "<p> The number of platforms and equipment available</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer</p><p> According to the passage, the outcome of future battles will be determined by technological superiority. The passage emphasizes that the future battle space will be shaped by technology, and having technological superiority will play a crucial role in determining the success or outcome of battles.</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Q39.</b><b> Read the given passage and answer the questions that follow.</b></p><p> Indian Armed Forces are poised for major modernisation in the next fifteen years. This process would involve upgrades of hardware and systems as well as purchase of new state of art equipment to enable them meet the security challenges in the coming decades; the volumes are high and the financial outlays large. There is substantial scope in the process for Indian industry to harness this market (around US $ 100 billion) to develop indigenous capability; especially in high technology areas. Capacity Building process in the Armed Forces proceeds along a well-crafted path. Perspective plans determine the capability sought by the Armed Forces which in-turn drive the procurement of platforms and equipment and the technology required to attain this capability. The plans focus on bridging the capability gaps and building force levels to ensure that the Armed Forces are optimally structured, equipped and weaponised to achieve the desired combat potential across the entire spectrum of conflict. The Armed Forces Long Term Integrated Perspective Plan (LTIPP) covers a period of 15 years. It identifies the shape and size of the Forces over the designated time period based on foreseeable strategic trends. These 5-year plans run concurrent with the national 5-year plans. More immediate commitments and capital acquisitions are included in the Annual Acquisition Plans (AAP) to enable effective oversight of committed funding vis-a-vis progress. The unpredictability of the global events in an increasingly ‘Flat’ world necessitates a periodic review of the Long-Term Perspective Plans, which is a continuous exercise. It facilitates mid-course corrections based on discernible emerging trends and the need to adapt to newer technologies. However, the fundamental capabilities enumerated in the 15 Year plan remain essentially the same. The future battle space will be shaped by technology and technological superiority will determine the outcome of future battles. It is therefore essential that technological self-reliance remains the mantra for the future and a collective national effort be initiated to achieve this in the quickest possible time ensuring that technological developments are commensurate with our desired military capability.</p><p> <br/> <br/> </p><p> What does the term \"mantra\" symbolize in the passage?</p>",
+      "option1": "<p> A mystical ritual practiced by the Armed Forces</p>",
+      "option2": "<p> A traditional song sung during battles</p>",
+      "option3": "<p> A guiding principle or philosophy</p>",
+      "option4": "<p> A guiding principle or philosophy</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> In the passage, the term \"mantra\" is used metaphorically to symbolize a guiding principle or philosophy. It refers to the emphasis on technological self-reliance as a fundamental principle or approach for the future development of the Armed Forces. The passage suggests that this guiding principle is essential to achieving desired military capabilities and ensuring that technological developments align with strategic goals.</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Q40.</b><b> Read the given passage and answer the questions that follow.</b></p><p> Indian Armed Forces are poised for major modernisation in the next fifteen years. This process would involve upgrades of hardware and systems as well as purchase of new state of art equipment to enable them meet the security challenges in the coming decades; the volumes are high and the financial outlays large. There is substantial scope in the process for Indian industry to harness this market (around US $ 100 billion) to develop indigenous capability; especially in high technology areas. Capacity Building process in the Armed Forces proceeds along a well-crafted path. Perspective plans determine the capability sought by the Armed Forces which in-turn drive the procurement of platforms and equipment and the technology required to attain this capability. The plans focus on bridging the capability gaps and building force levels to ensure that the Armed Forces are optimally structured, equipped and weaponised to achieve the desired combat potential across the entire spectrum of conflict. The Armed Forces Long Term Integrated Perspective Plan (LTIPP) covers a period of 15 years. It identifies the shape and size of the Forces over the designated time period based on foreseeable strategic trends. These 5-year plans run concurrent with the national 5-year plans. More immediate commitments and capital acquisitions are included in the Annual Acquisition Plans (AAP) to enable effective oversight of committed funding vis-a-vis progress. The unpredictability of the global events in an increasingly ‘Flat’ world necessitates a periodic review of the Long-Term Perspective Plans, which is a continuous exercise. It facilitates mid-course corrections based on discernible emerging trends and the need to adapt to newer technologies. However, the fundamental capabilities enumerated in the 15 Year plan remain essentially the same. The future battle space will be shaped by technology and technological superiority will determine the outcome of future battles. It is therefore essential that technological self-reliance remains the mantra for the future and a collective national effort be initiated to achieve this in the quickest possible time ensuring that technological developments are commensurate with our desired military capability.</p><p> <br/> <br/> </p><p> What role do the Annual Acquisition Plans (AAP) play in the modernization process?</p>",
+      "option1": "<p> They determine the 15-year perspective plans</p>",
+      "option2": "<p> They ensure efficient utilization of national 5-year plans</p>",
+      "option3": "<p> They provide oversight for funding and progress of acquisitions</p>",
+      "option4": "<p> They focus solely on immediate commitments of the Armed Forces</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> In the passage, it's mentioned that the Annual Acquisition Plans (AAP) are included to enable effective oversight of committed funding vis-a-vis progress. These plans play a role in monitoring and managing the funding allocated for acquisitions and ensuring that the progress of acquisitions is aligned with the available resources. This oversight helps to ensure that the modernization efforts of the Armed Forces are on track and are effectively utilizing the allocated funds.</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Q41. </b><b>Read the given passage and answer the questions that follow.</b></p><p> Indian Armed Forces are poised for major modernisation in the next fifteen years. This process would involve upgrades of hardware and systems as well as purchase of new state of art equipment to enable them meet the security challenges in the coming decades; the volumes are high and the financial outlays large. There is substantial scope in the process for Indian industry to harness this market (around US $ 100 billion) to develop indigenous capability; especially in high technology areas. Capacity Building process in the Armed Forces proceeds along a well-crafted path. Perspective plans determine the capability sought by the Armed Forces which in-turn drive the procurement of platforms and equipment and the technology required to attain this capability. The plans focus on bridging the capability gaps and building force levels to ensure that the Armed Forces are optimally structured, equipped and weaponised to achieve the desired combat potential across the entire spectrum of conflict. The Armed Forces Long Term Integrated Perspective Plan (LTIPP) covers a period of 15 years. It identifies the shape and size of the Forces over the designated time period based on foreseeable strategic trends. These 5-year plans run concurrent with the national 5-year plans. More immediate commitments and capital acquisitions are included in the Annual Acquisition Plans (AAP) to enable effective oversight of committed funding vis-a-vis progress. The unpredictability of the global events in an increasingly ‘Flat’ world necessitates a periodic review of the Long-Term Perspective Plans, which is a continuous exercise. It facilitates mid-course corrections based on discernible emerging trends and the need to adapt to newer technologies. However, the fundamental capabilities enumerated in the 15 Year plan remain essentially the same. The future battle space will be shaped by technology and technological superiority will determine the outcome of future battles. It is therefore essential that technological self-reliance remains the mantra for the future and a collective national effort be initiated to achieve this in the quickest possible time ensuring that technological developments are commensurate with our desired military capability.</p><p> <br/> <br/> </p><p> What could be a suitable title for the passage?</p>",
+      "option1": "<p> \"Advancements in Military Warfare\"</p>",
+      "option2": "<p> \"Technological Self-Reliance in Armed Forces\"</p>",
+      "option3": "<p> \"Global Unpredictability and Défense Strategies\"</p>",
+      "option4": "<p> \"Historical Evolution of Armed Forces\"</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> The passage primarily discusses the importance of technological self-reliance for the Indian Armed Forces, emphasizing modernization, indigenous capability development, and the role of technology in future battles. This title accurately captures the central theme of the passage.</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Q42.</b><b> Read the given passage and answer the questions that follow.</b></p><p> What is a perfectly free person? Evidently a person who can do what he likes, when he likes, and where he likes, or do nothing at all if he prefers it. Well, there is no such person, and there never can be any such person. Whether we like it or not, we must all sleep for one third of our lifetime—wash and dress and undress—we must spend a couple of hours eating and drinking—we must spend nearly as much in getting about from place to place. For half the day we are slaves to necessities which we cannot shirk, whether we are monarchs with a thousand slaves or humble labourers with no servants but their wives. And the wives must undertake the additional heavy slavery of childbearing, if the world is still to be peopled. These natural jobs cannot be shirked. But they involve other jobs which can. As we must eat, we must first provide food; as we must sleep, we must have beds, and bedding in houses with fireplaces and coals; as we must walk through the streets, we must have clothes to cover our nakedness. Now, food and houses and clothes can be produced by human labour. But when they are produced, they can be stolen. If you like honey you can let the bees produce it by their labour, and then steal it from them. If you are too lazy to get about from place to place on your own legs you can make a slave of a horse. And what you do to a horse or a bee, you can also do to a man or woman or a child, if you can get the upper hand of them by force or fraud or trickery of any sort, or even by teaching them that it is their religious duty to sacrifice their freedom to yours.</p><p> <br/> <br/> </p><p> What does the passage suggest about the necessity of certain tasks in human life?</p>",
+      "option1": "<p> They can be avoided with careful planning</p>",
+      "option2": "<p> They are essential and cannot be shirked</p>",
+      "option3": "<p> They are irrelevant to the concept of freedom</p>",
+      "option4": "<p> They can be eliminated through technological advancement</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> The passage suggests that certain tasks in human life, such as sleeping, eating, drinking, and getting about from place to place, are essential and cannot be shirked. It emphasizes that regardless of one's status or position, these tasks are unavoidable and must be fulfilled, which contradicts the notion of complete freedom.</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Q43.</b><b> Read the given passage and answer the questions that follow.</b></p><p> What is a perfectly free person? Evidently a person who can do what he likes, when he likes, and where he likes, or do nothing at all if he prefers it. Well, there is no such person, and there never can be any such person. Whether we like it or not, we must all sleep for one third of our lifetime—wash and dress and undress—we must spend a couple of hours eating and drinking—we must spend nearly as much in getting about from place to place. For half the day we are slaves to necessities which we cannot shirk, whether we are monarchs with a thousand slaves or humble labourers with no servants but their wives. And the wives must undertake the additional heavy slavery of childbearing, if the world is still to be peopled. These natural jobs cannot be shirked. But they involve other jobs which can. As we must eat, we must first provide food; as we must sleep, we must have beds, and bedding in houses with fireplaces and coals; as we must walk through the streets, we must have clothes to cover our nakedness. Now, food and houses and clothes can be produced by human labour. But when they are produced, they can be stolen. If you like honey you can let the bees produce it by their labour, and then steal it from them. If you are too lazy to get about from place to place on your own legs you can make a slave of a horse. And what you do to a horse or a bee, you can also do to a man or woman or a child, if you can get the upper hand of them by force or fraud or trickery of any sort, or even by teaching them that it is their religious duty to sacrifice their freedom to yours.</p><p> <br/> <br/> </p><p> Which of the following best summarizes the central idea of the passage?</p>",
+      "option1": "<p> Complete freedom is attainable through technological advancements.</p>",
+      "option2": "<p> Human necessities and produced goods are intertwined with freedom and exploitation.</p>",
+      "option3": "<p> Only individuals with power can achieve true freedom.</p>",
+      "option4": "<p> The concept of perfect freedom is an unattainable ideal due to inherent obligations and exploitation.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option d is the correct answer.</p><p> The central idea of the passage revolves around the concept that achieving perfect freedom is unattainable due to the inherent necessities and obligations of human life. It emphasizes how essential tasks and responsibilities are intertwined with concepts of freedom and exploitation, ultimately highlighting the impossibility of realizing complete freedom.</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Q44.</b><b> Read the given passage and answer the questions that follow.</b></p><p> What is a perfectly free person? Evidently a person who can do what he likes, when he likes, and where he likes, or do nothing at all if he prefers it. Well, there is no such person, and there never can be any such person. Whether we like it or not, we must all sleep for one third of our lifetime—wash and dress and undress—we must spend a couple of hours eating and drinking—we must spend nearly as much in getting about from place to place. For half the day we are slaves to necessities which we cannot shirk, whether we are monarchs with a thousand slaves or humble labourers with no servants but their wives. And the wives must undertake the additional heavy slavery of childbearing, if the world is still to be peopled. These natural jobs cannot be shirked. But they involve other jobs which can. As we must eat, we must first provide food; as we must sleep, we must have beds, and bedding in houses with fireplaces and coals; as we must walk through the streets, we must have clothes to cover our nakedness. Now, food and houses and clothes can be produced by human labour. But when they are produced, they can be stolen. If you like honey you can let the bees produce it by their labour, and then steal it from them. If you are too lazy to get about from place to place on your own legs you can make a slave of a horse. And what you do to a horse or a bee, you can also do to a man or woman or a child, if you can get the upper hand of them by force or fraud or trickery of any sort, or even by teaching them that it is their religious duty to sacrifice their freedom to yours.</p><p> <br/> <br/> </p><p> What is the primary characteristic of a \"perfectly free person\" according to the passage?</p>",
+      "option1": "<p> Complete autonomy and independence</p>",
+      "option2": "<p> Unrestricted ability to do as one pleases</p>",
+      "option3": "<p> Total freedom from obligations and responsibilities</p>",
+      "option4": "<p> Absolute control over one's environment</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option b is the correct answer.</p><p> According to the passage, a \"perfectly free person\" is described as someone who has the unrestricted ability to do as they please. This means they have complete autonomy and are not bound by any obligations, responsibilities, or external factors that limit their actions. The concept of a \"perfectly free person\" implies a state where there are no constraints on their choices, allowing them to act solely based on their own desires and preferences without any restrictions. However, the passage also highlights that such a person doesn't exist in reality due to the unavoidable necessities and tasks of human life.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Q45.</b><b> Read the given passage and answer the questions that follow.</b></p><p> What is a perfectly free person? Evidently a person who can do what he likes, when he likes, and where he likes, or do nothing at all if he prefers it. Well, there is no such person, and there never can be any such person. Whether we like it or not, we must all sleep for one third of our lifetime—wash and dress and undress—we must spend a couple of hours eating and drinking—we must spend nearly as much in getting about from place to place. For half the day we are slaves to necessities which we cannot shirk, whether we are monarchs with a thousand slaves or humble labourers with no servants but their wives. And the wives must undertake the additional heavy slavery of childbearing, if the world is still to be peopled. These natural jobs cannot be shirked. But they involve other jobs which can. As we must eat, we must first provide food; as we must sleep, we must have beds, and bedding in houses with fireplaces and coals; as we must walk through the streets, we must have clothes to cover our nakedness. Now, food and houses and clothes can be produced by human labour. But when they are produced, they can be stolen. If you like honey you can let the bees produce it by their labour, and then steal it from them. If you are too lazy to get about from place to place on your own legs you can make a slave of a horse. And what you do to a horse or a bee, you can also do to a man or woman or a child, if you can get the upper hand of them by force or fraud or trickery of any sort, or even by teaching them that it is their religious duty to sacrifice their freedom to yours.</p><p> <br/> <br/> </p><p> How does the passage suggest that power dynamics can lead to deprivation of freedom?</p>",
+      "option1": "<p> By encouraging collaboration and teamwork</p>",
+      "option2": "<p> By teaching people to value their own freedom</p>",
+      "option3": "<p> Through force, fraud, and manipulation</p>",
+      "option4": "<p> By promoting the concept of shared responsibility</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> option c is the correct answer.</p><p> The passage suggests that power dynamics can lead to the deprivation of freedom through force, fraud, and manipulation. It mentions that individuals or groups can exert control and dominance over others by using tactics such as force, fraud, or trickery to get the upper hand. This results in some individuals losing their freedom and autonomy, as they are subjected to the will of those in power. The passage implies that when people exploit or manipulate others, it can lead to an imbalance of power and the restriction of individual freedom.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>Which of the following characteristics is INCORRECT about the tropical evergreen forest of India?</p>",
+      "option1": "<p>These Forests are dense.</p>",
+      "option2": "<p>In these forests, trees reach great heights of up to 60m or above.</p>",
+      "option3": "<p>They are found in warm and humid areas.</p>",
+      "option4": "<p>These forests receive annual precipitation of below 150 cm.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The incorrect characteristic about the tropical evergreen forest of India is option (D) - \"These forests receive annual precipitation of below 150 cm.\"</p><p>Tropical evergreen forests in India are known for their lush greenery, rich biodiversity, and high rainfall. These forests receive abundant rainfall throughout the year, typically ranging from 200 cm to 400 cm annually. The regions where tropical evergreen forests are found have a humid and tropical climate, with high temperatures and heavy rainfall.</p><p>The high annual precipitation is a crucial factor that supports the growth of tall and dense trees, as well as a wide variety of plant and animal species. The constant moisture and warmth create an ideal environment for diverse flora and fauna to thrive.</p><p>All other three option are correct. </p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>Which of the following capital city has become the first Indian city to be part of the World Cities Culture Forum (WCCF)?</p>",
+      "option1": "<p>Delhi</p>",
+      "option2": "<p>Mumbai</p>",
+      "option3": "<p>Bangalore</p>",
+      "option4": "<p>Chennai</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Bangalore. </p><p><strong>Bengaluru,</strong> the capital of Karnataka became the first Indian city to be part of the <strong>World Cities Culture Forum (WCCF),</strong> a global network of cities that share research and intelligence to explore the role of culture in future prosperity. Bengaluru became the 41st city to join the forum and the network currently includes 40 cities across six continents. <strong>The forum includes cities like New York, London, Paris, Tokyo, and Dubai. </strong></p><p>Bengaluru is commonly referred to as the ‘Silicon Valley of India’ because of its role as the nation’s leading information technology exporter.</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Which of the following Articles of the Constitution of India provides that there shall be a Legislative Assembly for the National Capital Territory of Delhi?</p>",
+      "option1": "<p>Article 233AA</p>",
+      "option2": "<p>Article 231AA</p>",
+      "option3": "<p>Article 239AA</p>",
+      "option4": "<p>Article 237AA</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>In summary, options (A), (B), and (D) are not valid articles in the Constitution of India. The correct article related to the Legislative Assembly for the National Capital Territory of Delhi is option (C) - Article 239AA.</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>The Bahmani Kingdom was founded by Allaudin Bahman Shah in _______?</p>",
+      "option1": "<p>1345</p>",
+      "option2": "<p>1347</p>",
+      "option3": "<p>1336</p>",
+      "option4": "<p>1346</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 1347. </p><p>Allauddin Bahman Shah established the Bahmani Kingdom in 1347 after revolting against the rule of the Delhi Sultanate. The kingdom was based in the Deccan region of South India and played a significant role in shaping the political landscape of the region during the medieval period. </p><p>The kingdom faced internal conflicts and external threats from the Vijayanagara Empire and the Deccan sultanates, contributing to its eventual decline and division. </p><p><strong>Kingdom</strong></p><p><strong>Capital</strong></p><p><strong>Famous Kings</strong></p><p>Maurya Empire</p><p>Pataliputra</p><p>Chandragupta Maurya, Ashoka</p><p>Gupta Empire</p><p>Pataliputra</p><p>Chandragupta I, Samudragupta</p><p>Chola Dynasty</p><p>Thanjavur</p><p>Rajaraja Chola, Rajendra Chola</p><p>Vijayanagara Empire</p><p>Vijayanagara (Hampi)</p><p>Krishnadevaraya</p><p>Mughal Empire</p><p>Agra, Delhi</p><p>Akbar, Jahangir, Shah Jahan</p><p>Maratha Empire</p><p>Raigad, Pune</p><p>Shivaji, Peshwa Baji Rao</p><p>Bahmani Kingdom</p><p>Gulbarga, Bidar</p><p>Allauddin Bahman Shah</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>Plants which are grown under shade are known as:</p>",
+      "option1": "<p>Sciophytes</p>",
+      "option2": "<p>Psamophytes</p>",
+      "option3": "<p>Helophytes</p>",
+      "option4": "<p>Monocots<br/> </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Sciophytes. </p><p><strong>Sciophytes</strong>: Sciophytes are plants that thrive and prefer to grow in <strong>shady or partially shaded</strong> conditions. These plants have adaptations that allow them to tolerate lower light levels and compete effectively in areas with limited sunlight. </p><p><strong>Psamophytes</strong>: Psamophytes are plants that are well-adapted to grow in sandy or sandy-loam soils. These plants have specific adaptations to cope with the challenges of sandy habitats, such as rapid drainage and low water-holding capacity.</p><p><strong>Helophytes</strong>: Helophytes are plants that are specially adapted to grow in marshy or swampy areas. These plants are well-suited to survive in waterlogged conditions and often have various adaptations to cope with fluctuating water levels. </p><p><strong>Monocots</strong>: Monocots are a class of flowering plants belonging to the group Monocotyledonae, characterized by having one cotyledon (seed leaf) in their seeds. Monocots encompass a vast range of plant species, including grasses, lilies, orchids, and palms, among others.</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Raja and Radha Reddy received the Sangeet Natak Akademi Award for their contribution to _____________ dance.</p>",
+      "option1": "<p>Kuchipudi</p>",
+      "option2": "<p>Sattriya</p>",
+      "option3": "<p>Kathak</p>",
+      "option4": "<p>Kathakali</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Kuchipudi.</p><p><strong>Classical Dance Form</strong></p><p><strong>State</strong></p><p><strong>Famous Dancers</strong></p><p>Bharatanatyam</p><p>Tamil Nadu</p><p>Rukmini Devi Arundale, Alarmel Valli</p><p>Kathak</p><p>Uttar Pradesh</p><p>Birju Maharaj, Shovana Narayan</p><p>Kathakali</p><p>Kerala</p><p>Kalamandalam Gopi, Sadanam Krishnan</p><p>Odissi</p><p>Odisha</p><p>Kelucharan Mohapatra, Sanjukta Panigrahi</p><p>Manipuri</p><p>Manipur</p><p>Guru Bipin Singh, Darshana Jhaveri</p><p>Kuchipudi</p><p>Andhra Pradesh</p><p>Raja and Radha Reddy, Yamini Krishnamurthy</p><p>Mohiniyattam</p><p>Kerala</p><p>Kalamandalam Kshemavathy, Sunanda Nair</p><p>Sattriya</p><p>Assam</p><p>Bhabananda Barbayan, Anwesa Mahanta</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>The Board of Control of Cricket (BCCI) has appointed __________ as the chairman of the Senior Men’s Cricket Selection Committee in 2023.</p>",
+      "option1": "<p>Ajit Agarkar</p>",
+      "option2": "<p>Kapil Dev</p>",
+      "option3": "<p>Sachin Tendulkar</p>",
+      "option4": "<p>MS Dhoni</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Ajit Agarkar.</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Which union territory has the highest sex ratio value according to the 2011 census?</p>",
+      "option1": "<p>Puducherry</p>",
+      "option2": "<p>Delhi</p>",
+      "option3": "<p>Daman and Diu</p>",
+      "option4": "<p>Andaman and Nicobar Islands</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Puducherry. </p><p><strong>Census 2011 Fact</strong></p><p><strong>Description</strong></p><p>Population</p><p>India's total population was 1.21 billion (1,210 million).</p><p>Sex Ratio</p><p>The sex ratio was 943 females per 1000 males.</p><p>Literacy Rate</p><p>The overall literacy rate was 74.04%.</p><p>Male Literacy Rate</p><p>Male literacy rate was 82.14%.</p><p>Female Literacy Rate</p><p>Female literacy rate was 65.46%.</p><p>Urban Population</p><p>The percentage of the urban population was 31.16%.</p><p>Rural Population</p><p>The percentage of the rural population was 68.84%.</p><p>Largest State by Population</p><p>Uttar Pradesh was the most populous state with over 200 million people.</p><p>Highest Literacy Rate</p><p>Kerala had the highest literacy rate at 94.00%.</p><p>Lowest Literacy Rate</p><p>Bihar had the lowest literacy rate at 63.82%.</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Which of the following is the major female hormone?</p>",
+      "option1": "<p>Estrogen</p>",
+      "option2": "<p>Progesterone</p>",
+      "option3": "<p>Testosterone</p>",
+      "option4": "<p>Cortisol</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Estrogen. </p><p><strong>Estrogen</strong>: It is the primary female sex hormone responsible for the development and regulation of the female reproductive system and secondary sexual characteristics. It plays a crucial role in various physiological processes, including the menstrual cycle, pregnancy, and bone health. Estrogen is produced primarily in the ovaries, although small amounts are also produced in other tissues, such as the adrenal glands and fat cells. </p><p><strong>Progesterone</strong>: It is another important female sex hormone. It works in conjunction with estrogen to regulate the menstrual cycle and prepare the uterus for pregnancy. Progesterone is primarily produced by the ovaries after ovulation, and its levels increase during the second half of the menstrual cycle. If pregnancy occurs, progesterone helps maintain the uterine lining and supports the early stages of pregnancy. If pregnancy does not occur, progesterone levels drop, leading to menstruation. </p><p><strong>Testosterone</strong>: It is the major male sex hormone, although females also have small amounts of it in their bodies. It is primarily produced in the testes in males and in small quantities in the ovaries in females. Testosterone plays a crucial role in the development of male reproductive tissues, as well as secondary sexual characteristics such as facial and body hair, deepening of the voice, and muscle mass. In females, testosterone contributes to libido and plays a role in maintaining bone density and muscle mass. </p><p><strong>Cortisol</strong>: It is a steroid hormone produced by the adrenal glands in response to stress. Cortisol plays a significant role in the body's stress response, helping to regulate various physiological processes such as metabolism, immune response, and blood pressure.</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>The Atacama Desert, one of the driest places on Earth, is located in which South American country?</p>",
+      "option1": "<p>Canada</p>",
+      "option2": "<p>Chile</p>",
+      "option3": "<p>Argentina</p>",
+      "option4": "<p>Bolivia</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Chile. </p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>World Breastfeeding week is observe in____________?</p>",
+      "option1": "<p>1-7 July</p>",
+      "option2": "<p>1-7 August</p>",
+      "option3": "<p>1-7 January</p>",
+      "option4": "<p>1-7 November<br/> </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 1-7 August. </p><p>August 1-7 is World Breastfeeding Week, a global annual observance to promote breastfeeding and improve the health of babies, mothers, and families. The week is coordinated by the World Health Organization (WHO) and the United Nations Children’s Fund (UNICEF).</p><p>The theme for World Breastfeeding Week 2023 is <strong>“Protect Breastfeeding: A Shared Responsibility.”</strong> This theme highlights the importance of everyone working together to protect breastfeeding and ensure that all babies have the opportunity to benefit from it.</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Expenditure on military, infrastructure and government institutions are examples of which of the following?</p>",
+      "option1": "<p>Personal expenditure</p>",
+      "option2": "<p>Revenue expenditure</p>",
+      "option3": "<p>Fixed Capital expenditure</p>",
+      "option4": "<p>Private Final Consumption expenditure<br/> </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Fixed Capital expenditure. </p><p><strong>Fixed Capital expenditure</strong> refers to the spending by the government on acquiring or improving long-term assets and capital goods that are used to enhance the productive capacity of the economy. </p><p>These expenditures are considered investments in the country's future and contribute to economic growth and development. </p><p>Expenses on military, infrastructure, and government institutions fall under this category as they involve the acquisition and improvement of long-lasting assets and facilities. </p><p><strong>Revenue</strong> <strong>expenditure</strong>: It refers to the regular recurring expenses of the government that are incurred for the ongoing operation and maintenance of various services and programs. These expenses do not result in the creation of physical assets or reduction in liabilities. Examples of revenue expenditure include salaries of government employees, interest payments, subsidies, and other routine expenses necessary for the functioning of the government. </p><p><strong>Personal expenditure/ Private Final Consumption expenditure:</strong> It refers to the spending by households and individuals on goods and services for their personal consumption.</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>Kelucharan Mohapatra, awarded with the Padma Vibhushan in the year 2000, was a dancer of which of the following classical dance forms?</p>",
+      "option1": "<p>Kathakali</p>",
+      "option2": "<p>Odissi</p>",
+      "option3": "<p>Sattria</p>",
+      "option4": "<p>Bharat Natyam<br/> </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Odissi. </p><p>Kelucharan Mohapatra was a legendary and highly influential figure in the field of Odissi dance. He was a renowned dancer, choreographer, and guru who played a pivotal role in popularizing and preserving the traditional Odissi dance form. </p><p>His contributions to the art form earned him numerous accolades, including the prestigious Padma Vibhushan, which is one of the highest civilian awards in India. </p><p><strong>Classical Dance Form</strong></p><p><strong>State</strong></p><p><strong>Famous Dancers</strong></p><p>Bharatanatyam</p><p>Tamil Nadu</p><p>Rukmini Devi Arundale, Alarmel Valli</p><p>Kathak</p><p>Uttar Pradesh</p><p>Birju Maharaj, Shovana Narayan</p><p>Kathakali</p><p>Kerala</p><p>Kalamandalam Gopi, Sadanam Krishnan</p><p>Odissi</p><p>Odisha</p><p>Kelucharan Mohapatra, Sanjukta Panigrahi</p><p>Manipuri</p><p>Manipur</p><p>Guru Bipin Singh, Darshana Jhaveri</p><p>Kuchipudi</p><p>Andhra Pradesh</p><p>Raja and Radha Reddy, Yamini Krishnamurthy</p><p>Mohiniyattam</p><p>Kerala</p><p>Kalamandalam Kshemavathy, Sunanda Nair</p><p>Sattriya</p><p>Assam</p><p>Bhabananda Barbayan, Anwesa Mahanta</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>The Harike barrage, from where the Indira Gandhi Canal originates, is located in which state?</p>",
+      "option1": "<p>Punjab</p>",
+      "option2": "<p>Rajasthan</p>",
+      "option3": "<p>Haryana</p>",
+      "option4": "<p>Madhya Pradesh<br/> </p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Punjab. </p><p>The Harike barrage is situated in the Tarn Taran district of Punjab, India. It is a significant dam built across the confluence of the Beas and Sutlej rivers and serves as an essential water resource management structure. </p><p><strong>The Indira Gandhi Canal,</strong> one of the largest irrigation canals in India, <strong>originates from the Harike barrage and runs through Rajasthan,</strong> providing much-needed water for irrigation and drinking purposes in the arid regions of the state.</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Which metal is extracted from the ore known as \"Cinnabar\"?</p>",
+      "option1": "<p>Copper</p>",
+      "option2": "<p>Mercury</p>",
+      "option3": "<p>Lead</p>",
+      "option4": "<p>Zinc</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Mercury. </p><p><strong>Metal</strong></p><p><strong>Ore</strong></p><p><strong>Chemical Formula</strong></p><p>Aluminum</p><p>Bauxite</p><p>Al₂O₃·2H₂O</p><p>Copper</p><p>Chalcopyrite</p><p>CuFeS₂</p><p>Iron</p><p>Hematite</p><p>Fe₂O₃</p><p>Zinc</p><p>Sphalerite</p><p>ZnS</p><p>Lead</p><p>Galena</p><p>PbS</p><p>Gold</p><p>Gold</p><p>Au</p><p>Silver</p><p>Silver</p><p>Ag</p><p>Nickel</p><p>Pentlandite</p><p>(Fe,Ni)₉S₈</p><p>Chromium</p><p>Chromite</p><p>FeCr₂O₄</p><p>Titanium</p><p>Ilmenite</p><p>FeTiO₃</p><p>Tin</p><p>Cassiterite</p><p>SnO₂</p><p>Manganese</p><p>Pyrolusite</p><p>MnO₂</p><p>Uranium</p><p>Pitchblende</p><p>U₃O₈</p><p>Cobalt</p><p>Cobaltite</p><p>CoAsS</p><p>Tungsten</p><p>Wolframite</p><p>(Fe,Mn)WO₄</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Which of the following will NOT be classified as revenue receipt in the budget of the union government in India?</p>",
+      "option1": "<p>Dividends and profits on investments made by the Central Government</p>",
+      "option2": "<p>Tax receipts</p>",
+      "option3": "<p>Receipts from sale of shares in Public Sector Undertakings</p>",
+      "option4": "<p>Interest receipt on account of loans by the central Government<br/> </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>Revenue receipts are the receipts that do not create any liability or lead to a reduction in assets. They are recurring in nature and are used for meeting day-to-day expenses and other recurring obligations of the government. The given options, (A) Dividends and profits on investments made by the Central Government, (B) Tax receipts, and (D) Interest receipt on account of loans by the central Government, are all examples of revenue receipts. </p><p>On the other hand, <strong>receipts from the sale of shares in Public Sector Undertakings are considered capital receipts as they involve the disinvestment of government assets and create a liability or reduce the ownership of the government in those undertakings.</strong> These receipts are used for capital investments and not for routine or day-to-day expenses of the government.</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>Which of the following Article is known as the ‘heart and soul of Indian constitution’ According to Dr. B.R. Ambedkar?<br/> </p>",
+      "option1": "<p>Article 19</p>",
+      "option2": "<p>Article 21</p>",
+      "option3": "<p>Article 32</p>",
+      "option4": "<p>Article 40<br/> </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to Dr. B.R. Ambedkar, the 'heart and soul of the Indian constitution' is Article 32</p><p><strong>Article 19:</strong> Article 19 of the Indian Constitution guarantees six fundamental rights related to freedom. </p><p><strong>Article</strong> <strong>40</strong>: Article 40 is a directive principle of state policy enshrined in Part IV of the Indian Constitution. It states that the state shall take steps to organize village panchayats and endow them with such powers and authority as may be necessary to enable them to function as units of self-government. </p><p><strong>Article 21</strong> of the Indian Constitution guarantees the fundamental right to life and personal liberty.</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>Who is the author of the famous book titled “Gitanjali”?</p>",
+      "option1": "<p>Munshi Premchand</p>",
+      "option2": "<p>Rabindranath Tagore</p>",
+      "option3": "<p>Amartya Sen</p>",
+      "option4": "<p>Ramdhari Singh ‘Dinkar’<br/> </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Rabindranath Tagore’. </p><p><strong>Author</strong></p><p><strong>Famous Books</strong></p><p>Rabindranath Tagore</p><p>Gitanjali, The Home and the World, The Post Office</p><p>R.K. Narayan</p><p>Malgudi Days, Swami and Friends, The Guide</p><p>Salman Rushdie</p><p>Midnight's Children, The Satanic Verses</p><p>Arundhati Roy</p><p>The God of Small Things</p><p>Vikram Seth</p><p>A Suitable Boy, An Equal Music</p><p>Jhumpa Lahiri</p><p>Interpreter of Maladies, The Namesake</p><p>Amitav Ghosh</p><p>The Shadow Lines, The Sea of Poppies</p><p>Aravind Adiga</p><p>The White Tiger</p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Which are the most recent landforms in India?</p>",
+      "option1": "<p>Peninsular India</p>",
+      "option2": "<p>East coast of India</p>",
+      "option3": "<p>Deccan Plateau</p>",
+      "option4": "<p>Himalayas and the Northern Plains<br/> </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p><p>The Himalayas and the Northern Plains are relatively recent geological formations in India. </p><p>They were created by the collision of the Indian tectonic plate with the Eurasian tectonic plate. This collision began around 50 million years ago and is still ongoing today, leading to the ongoing <strong>uplift of the Himalayan Mountain range</strong>. </p><p><strong>Peninsular India</strong> (option a) is one of the oldest landforms on Earth, as it was part of the ancient Gondwana supercontinent. <strong>The Deccan Plateau</strong> (option c) is also an ancient landform formed through volcanic activity and other geological processes over hundreds of millions of years.</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>Pierre Agostini won the Nobel Prize 2023 for what?</p>",
+      "option1": "<p>Generating attosecond pulses of light to study electron dynamics</p>",
+      "option2": "<p>For their pioneering work on mRNA vaccines</p>",
+      "option3": "<p>For the discovery and synthesis of quantum dots</p>",
+      "option4": "<p>For his innovative plays and prose which give voice to the unsayable</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in/paperimages/1718264925_1718264925247352_thump.png"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>What is the primary purpose of a transformer in an electrical circuit?</p>",
+      "option1": "<p>To store electrical energy</p>",
+      "option2": "<p>To convert AC to DC current</p>",
+      "option3": "<p>To increase electrical resistance</p>",
+      "option4": "<p>To change the voltage of an alternating current<br/> </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘To change the voltage of an alternating current. </p><p>A transformer's primary purpose in an electrical circuit is to change the voltage of an alternating current (AC). </p><p>It does so through electromagnetic induction, transferring power efficiently from one circuit to another. </p><p>Transformers are crucial components in the transmission and distribution of electrical power. They allow power companies to efficiently step up the voltage for long-distance transmission to reduce power losses and step it down again for safe use in homes, businesses, and various electrical devices.</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Which is NOT a lagoon lake in India?</p>",
+      "option1": "<p>Pullicat Lake</p>",
+      "option2": "<p>Vembanad Lake</p>",
+      "option3": "<p>Chilika Lake</p>",
+      "option4": "<p>Dal Lake<br/> </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Dal Lake. </p><p>Dal Lake is NOT a lagoon lake in India. It is a famous and picturesque freshwater lake located in Srinagar, the summer capital of the union territory of Jammu and Kashmir. Dal Lake is known for its stunning natural beauty, houseboats, and floating gardens.</p><p>The other options, (A) Pullicat Lake, (B) Vembanad Lake, and (C) Chilika Lake, are examples of lagoon lakes in India. Lagoon lakes are typically shallow, coastal or brackish water bodies separated from the open sea by sandbars, spits, or barrier islands. They are often characterized by rich biodiversity and serve as important ecosystems for various aquatic species.</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Which of the following tribes of Nagaland celebrates the ‘Mimkut’ festival?</p>",
+      "option1": "<p>Garo</p>",
+      "option2": "<p>Khasi</p>",
+      "option3": "<p>Kuki’s</p>",
+      "option4": "<p>Santhal<br/> </p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The 'Mimkut' festival is celebrated by the Kuki tribe in Nagaland. </p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>The Sanchi Stupa was built during the reign of the ____________ dynasty?</p>",
+      "option1": "<p>Shishunaga</p>",
+      "option2": "<p>Mauryan</p>",
+      "option3": "<p>Gupta</p>",
+      "option4": "<p>Nanda<br/> </p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Mauryan’. </p><p><strong>Aspect</strong></p><p><strong>Mauryan Empire</strong></p><p>Founder</p><p>Chandragupta Maurya</p><p>Period</p><p>322 BCE - 185 BCE</p><p>Extent</p><p>Covered a large part of the Indian subcontinent</p><p>Capital</p><p>Initially Pataliputra, later Taxila</p><p>Famous Ruler</p><p>Emperor Ashoka (268 BCE - 232 BCE)</p><p>Religion</p><p>Initially Hinduism, later Emperor Ashoka embraced Buddhism</p><p>Administration</p><p>Well-organized administrative system with provinces ruled by viceroys and officials appointed by the emperor</p><p>Military</p><p>Strong military with infantry, cavalry, and war elephants</p><p>Decline</p><p>Internal revolts, succession disputes, and external invasions</p><p>Legacy</p><p>Promotion of Buddhism by Emperor Ashoka, advancements in art, architecture, and trade</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>In Which year was ‘Hindu Swaraj’ published?</p>",
+      "option1": "<p>1920</p>",
+      "option2": "<p>1908</p>",
+      "option3": "<p>1911</p>",
+      "option4": "<p>1909<br/> </p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is 1909. </p><p><strong>Freedom Fighter</strong></p><p><strong>Famous Book</strong></p><p>Mahatma Gandhi</p><p>\"Hind Swaraj\"</p><p>Jawaharlal Nehru</p><p>\"The Discovery of India\"</p><p>Bhagat Singh</p><p>\"Why I Am An Atheist\"</p><p>Subhash Chandra Bose</p><p>\"The Indian Struggle\"</p><p>Maulana Abul Kalam Azad</p><p>\"India Wins Freedom\"</p><p>Sarojini Naidu</p><p>\"The Golden Threshold\"</p><p>Bipin Chandra Pal</p><p>\"The Soul of India\"</p><p>Bal Gangadhar Tilak</p><p>\"Geetarahasya\" (Marathi) / \"Arctic Home in the Vedas\" (English)</p><p>Lala Lajpat Rai</p><p>\"The Story of My Life\"</p><p>Chandrasekhar Azad</p><p>No known book, but he left behind inspiring speeches and writings</p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>REASONABLE</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>BRAIN cannot be formed from the given letter.</p>"
+    },
+    {
+      "sr_no": 102,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image001.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 103,
+      "question": "<p>KNQ, OPR, SRS, ? , AVU</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image002.png"
+    },
+    {
+      "sr_no": 104,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except option (d), all are synonym in the given words.</p><p>Synonym of Dwelling is Abode.</p><p>Synonym of Ban is Prohibit.</p><p>Synonym of Idea is Notion.</p><p>Synonym of Synthetic is authentic.</p><p>Hence, option D is correct answer.</p>"
+    },
+    {
+      "sr_no": 105,
+      "question": "<p>Statements: Government has spoiled many top-ranking medical institutions by appointing bureaucrats as directors of these institutions.</p><p>Conclusions:</p><p>I. Government should appoint Directors of the medical institutes taking into consideration the expertise of the person in the area of medical.</p><p>II. The Director of the medical institute should have expertise commensurate with the medical work carried out by the institute.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to the statement, Government has spoiled medical institutions by appointing bureaucrats as Directors. This means that only those persons should be appointed as Directors who are experts in medical and are acquainted with the medical work of the institute. So, both I and II follow.</p>"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>given in the statement is true, decide which of the given conclusions logically follows</p><p>from the statement.</p><p>Statement:</p><p>India’s largest lender bank has announced that it will be allowing customers to</p><p>exchange ₹2,000 notes without a requisition slip for amounts up to ₹20,000.</p><p>Conclusions:</p><p>I. No one will be allowed to withdraw an amount of more than ₹20,000.</p><p>II. No requisition slip is required for exchange of up to ₹20,000.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Given statement is talking about India’s largest lender bank has announced that it will be allowing customers to exchange ₹2,000 notes without a requisition slip for amounts up to ₹20,000.</p><p>While Conclusion I is talking about “No one will be allowed to withdraw an amount of more than ₹20,000” which is not given in the statement. therefore, conclusion I doesn’t follow the statement.</p><p>Conclusion II is talking about “No requisition slip is required for exchange of up to ₹20,000” and this conclusion sounds logical. So, conclusion II follows the statement.</p><p>Hence, only conclusion II follows the statement.</p>"
+    },
+    {
+      "sr_no": 107,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image003.png"
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image004.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image005.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image006.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image007.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image008.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image008.jpeg"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>Sugarcane : jaggery :: Grapes : ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 110,
+      "question": "<p>(?) in the following series.</p><p>848, 834, ? , 773, 726</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image009.png"
+    },
+    {
+      "sr_no": 111,
+      "question": "<p>B = 1, T = 2, A = 3, R = 4, L = 5, I = 6</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Meaningful word is:</p><p>T R I B A L: 2,4,6,1,3,5</p><p>Hence, the correct answer is B.</p>"
+    },
+    {
+      "sr_no": 112,
+      "question": "<p>Statements:</p><p>Some women are swimmer</p><p>All swimmers are athlete</p><p>Conclusions:</p><p>I. Some athletes are women</p><p>II. No athlete is women</p><p>III. Some athletes are swimmer</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image010.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "<p>Which of the following boxes is placed immediately above box S?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image011.png"
+    },
+    {
+      "sr_no": 114,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image012.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image013.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image014.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image015.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image016.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image014.jpeg"
+    },
+    {
+      "sr_no": 115,
+      "question": "<p>Four number-pairs have been given, out of which three are alike in some manner and one is different. Select the one that is different.</p>",
+      "option1": "<p>6 : 258</p>",
+      "option2": "<p>7 : 301</p>",
+      "option3": "<p>9 : 387</p>",
+      "option4": "<p>11 : 451</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is D.</p><p>6 : 258 (258/6 = 43)</p><p>7 : 301 (301/7 = 43)</p><p>9 : 387 (387/9 = 43)</p><p>11 : 451 (451/11 = 41) </p><p>Except d, all are following same pattern.</p><p>Hence, D is correct answer.</p>"
+    },
+    {
+      "sr_no": 116,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image018.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image019.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image020.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image021.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image022.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image020.jpeg"
+    },
+    {
+      "sr_no": 117,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image023.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "<p>1. Pacificism</p><p>2. Pacifically</p><p>3. Pacificates</p><p>4. Pacificator</p><p>5. Pacificate</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct sequence is ‘2,5,3,4,1’.</p>"
+    },
+    {
+      "sr_no": 119,
+      "question": "<p>In a certain code language, ‘STOREY’ is written as ‘MZTXYT’. How will ‘HARBOR’ be written in that language?</p>",
+      "option1": "<p>GTWMFW</p>",
+      "option2": "<p>WJMMFW</p>",
+      "option3": "<p>WMJMWF</p>",
+      "option4": "<p>GTMWWF</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image024.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image025.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image026.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image027.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image028.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image029.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image027.jpeg"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>84 + 14 − 28 × 25 ÷ 29 =?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image030.png"
+    },
+    {
+      "sr_no": 122,
+      "question": "<p>17 : 971 :: 18 : 387 :: 15 : ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image031.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "<p>Statement: Since its launching in 1988, Aryabhata has so far accumulated losses amounting to Rs 145 crore.</p><p>Course of Action: </p><p>I. Aryabhata should be directed to reduce wasteful expenditure and to increase passenger fare.</p><p>II. An amount of about RS 200 crore should be provided to Aryabhata to make the airliner economically viable.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>According to the given statement, it is clear that for better economic gain, losses should be reduced and income increased. So, only course I follows.</p>"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>Statement: F &gt; B &lt; E ≤ C = D ≥ A &gt; G</p><p>Conclusion I: G &lt; F</p><p>Conclusion II: C &gt; G</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Conclusion:</p><p>I. G &lt; F (False) (There is no relation)</p><p>II. C &gt; G (True) (C = D ≥ A &gt; G)</p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image032.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image033.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image034.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image035.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image036.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image035.jpeg"
+    },
+    {
+      "sr_no": 126,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image037.png"
+    },
+    {
+      "sr_no": 127,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image038.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image039.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image040.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image041.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image042.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image039.jpeg"
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>Statement: M &gt; N = O ≥ P, S ≥ Q ≤ R = P</p><p>Conclusion I: O ≥ P</p><p>Conclusion II: M &gt; R </p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Conclusions:</p><p>I. O ≥ P (True) (O ≥ P)</p><p>II. M &gt; R (True) (M &gt; N = O ≥ P = R)</p>"
+    },
+    {
+      "sr_no": 129,
+      "question": "<p>Event I: The importance of Yoga and meditation is realized by all sections of the society.</p><p>Event II: There is an increasing awareness about health in society particularly among 18 to 50 age group of people.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>As the awareness about health in the society is increasing particularly among 18-to-50-year aged group of people, the importance of Yoga and meditation is being realized by all sections of the society.</p><p>Hence, Statement II is the cause and statement I is its effect.</p>"
+    },
+    {
+      "sr_no": 130,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image043.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711530928674_image044.png"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 12</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

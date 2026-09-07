@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 8</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 8</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_f02a9de4e8bc5fc2.gif",
+      "option1": "<p> Rs.5400</p>",
+      "option2": "<p> Rs.5500</p>",
+      "option3": "<p> Rs.5600</p>",
+      "option4": "<p> Rs.5700</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_92de9e9681ae8b77.gif"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p> In a 100 meter race, A beats B by 20 m and B beats C by 15 m. By how much distance does A beat C.</p><p><br/> </p>",
+      "option1": "<p> 64 m</p>",
+      "option2": "<p> 25 m</p>",
+      "option3": "<p> 24 m</p>",
+      "option4": "<p> 32 m</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_461c971d425aab2b.jpg"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> If A:B=1:2, B:C=3:5, C:D=5:2 and D:E=3:11 then A:B:C:D:E is equal to</p><p><br/> </p>",
+      "option1": "<p> 9:18:30:24:22 </p>",
+      "option2": "<p> 3:8:15:6:22 </p>",
+      "option3": "<p> 9:18:30:12:44 </p>",
+      "option4": "<p> 3:16:30:6:22</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_220f9a3ef3abe4cb.jpg"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p> The perimeter of a non-square rhombus is 20 cm. One of its diagonals is 8 cm. The area of the Rhombus is:</p><p><br/> </p>",
+      "option1": "<p> 28</p>",
+      "option2": "<p> 20</p>",
+      "option3": "<p> 22</p>",
+      "option4": "<p> 24</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_3da8e20e5f00063f.png"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p>A, B and C can complete a work in 9, 18 and 27 days respectively. They start to work together but after 2 days, A left the work and B left the work 2 day before the completion of the work. In how many days total work will be completed?</p>",
+      "option1": "<p>7.6</p>",
+      "option2": "<p>9.6</p>",
+      "option3": "<p>8.6</p>",
+      "option4": "<p>5.6</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> Three friends A, B and C starts walking around a circular path in the same direction whose circumference is 36 Km, with speeds of 3 Km/h, 5 Km/h and 13 Km/h. Then after how much time they will meet at the starting point.</p><p><br/> </p>",
+      "option1": "<p> 9 hrs</p>",
+      "option2": "<p> 18 hrs</p>",
+      "option3": "<p> 15 hrs</p>",
+      "option4": "<p> 36 hrs</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_ef5d8c6b1a89f73f.jpg"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> The ratio of costs of two books is 3:7. If the marked price of the books respectively is 33.33% and 14.28% more than that of cost price. Each book is sold after two successive discounts of 10%. Find the overall loss percentage:</p><p><br/> </p>",
+      "option1": "<p> 3.80%</p>",
+      "option2": "<p> 2.80 %</p>",
+      "option3": "<p> 4.60%</p>",
+      "option4": "<p> 4%</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_755ec8497efbe568.jpg"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p> Find the least number which when divided by 2,7 and 9 leaves remainder 1,6, and 8 respectively?</p><p><br/> </p>",
+      "option1": "<p> 126</p>",
+      "option2": "<p> 125</p>",
+      "option3": "<p> 127</p>",
+      "option4": "<p> 128</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_3c68127225eeb855.gif"
+    },
+    {
+      "sr_no": 9,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_93202a776cd99426.gif",
+      "option1": "<p> 4 cm</p>",
+      "option2": "<p> 7 cm</p>",
+      "option3": "<p> 5 cm</p>",
+      "option4": "<p> 40 cm</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_a0d151d2c0865f15.png"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_555907e08be03e21.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_504b09443943790b.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_6c8b951f0424601d.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_107e118f8c4d783c.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_bbfec716f1c71a87.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_7419d61edf6b38cc.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p> A sum was invested at simple interest at x% per annum for 2 ½ years. Had it been invested at (x +3)% for the same time, it would have fetched Rs 585 more. The simple interest on the same sum for 4 2/3 years at 14% per annum is:</p><p><br/> </p>",
+      "option1": "<p> 5096</p>",
+      "option2": "<p> 4900</p>",
+      "option3": "<p> 5460</p>",
+      "option4": "<p> 4732</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_c797adc28e9f145a.gif"
+    },
+    {
+      "sr_no": 12,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_421847449b6540fb.gif",
+      "option1": "<p> 154</p>",
+      "option2": "<p> 124 </p>",
+      "option3": "<p> 144 </p>",
+      "option4": "<p> 136</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_fdb9a6c602bfb876.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> A person divided a certain sum between his three sons in the ratio 2:3:5. Had he divided the sum in the ratio 1/2 : 1/3: 1/5, the son, who got the highest share earlier, would have got ₹5225 less. The sum (in ₹) was:</p><p><br/> </p>",
+      "option1": "<p> 17500 </p>",
+      "option2": "<p> 16500 </p>",
+      "option3": "<p> 18500 </p>",
+      "option4": "<p> 17050</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_c520cfba2d483ee3.jpg"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> If A is 40% less than B and C is 50% of the sum of A and B, then by what percentage is B greater than C?</p><p><br/> </p>",
+      "option1": "<p> 30% </p>",
+      "option2": "<p> 40%</p>",
+      "option3": "<p> 25%</p>",
+      "option4": "<p> 20%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_5a1a92b89f5534e9.jpg"
+    },
+    {
+      "sr_no": 15,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_bfba2f4335cf8ce7.png",
+      "option1": "<p> 93%</p>",
+      "option2": "<p> 44%</p>",
+      "option3": "<p> 65%</p>",
+      "option4": "<p> 58%</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_ee23e73ee4b77342.png"
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_fd4e64a97b47f1f4.gif",
+      "option1": "<p> 1</p>",
+      "option2": "<p> 3</p>",
+      "option3": "<p> 5</p>",
+      "option4": "<p> 7</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_62ca82718ee7cb33.png"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> The average age of Ram, his wife and their child 3 years ago was 27 years and that of his wife and their child 6 years ago was 20 years. Find the present age of Ram.</p><p><br/> </p>",
+      "option1": "<p> 37 years</p>",
+      "option2": "<p> 38 years</p>",
+      "option3": "<p> 39 years</p>",
+      "option4": "<p> 40 years</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_db1439b96bbd472.jpg"
+    },
+    {
+      "sr_no": 18,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_65129b8454d17d9f.gif",
+      "option1": "<p>3</p>",
+      "option2": "<p>6</p>",
+      "option3": "<p>4</p>",
+      "option4": "<p>5</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_a79f77d9f6a161c7.gif"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p> When x is subtracted to each of 22, 26, 29 and 35, the numbers obtained in this order are in proportion? What is the mean proportional between the numbers (x+1) and (3x+1)?</p><p><br/> </p>",
+      "option1": "<p> 15</p>",
+      "option2": "<p> 16</p>",
+      "option3": "<p> 25</p>",
+      "option4": "<p> 9</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_8de65d6c463f4de1.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p> A sells an article to B at 20% profit. B sells the Article to C at 16 2/3% profit. Find the profit percentage of A if he had sold the article directly to C at the same price at which B sold the article to C?</p><p><br/> </p>",
+      "option1": "<p> 30%</p>",
+      "option2": "<p> 32%</p>",
+      "option3": "<p> 28%</p>",
+      "option4": "<p> 40%</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_20a91ea52f06bd1.gif"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> The height of a triangle is increased by 10%. To retain the original area of the triangle, its corresponding base must be decreased by:</p><p><br/> </p>",
+      "option1": "<p> 10%</p>",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_e120fd19a4e0a0ee.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_8509b8730eb7fcb4.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_a00b2bc5d573a3d1.gif",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_7b768ef1fcef25a4.png"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> The cost price of an article A is 100% more than that of B. A is sold for Rs 5100 at a loss of 15% and B is sold such that there is a profit of 10% on both A and B together. Twice the selling price of B is:</p><p><br/> </p>",
+      "option1": "<p> Rs. 4800</p>",
+      "option2": "<p> Rs. 4400</p>",
+      "option3": "<p> Rs. 9600</p>",
+      "option4": "<p> Rs. 8800</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_f5e0a096efbf070c.jpg"
+    },
+    {
+      "sr_no": 23,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_8cbdd3889ba73578.gif",
+      "option1": "<p> 0</p>",
+      "option2": "<p> 5</p>",
+      "option3": "<p> 6</p>",
+      "option4": "<p> None</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_101841df85711ac2.gif"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p> The coefficient of x³y in (x-4y)(3x+y)³ is:</p><p><br/> </p>",
+      "option1": "<p> 144</p>",
+      "option2": "<p> -81</p>",
+      "option3": "<p> 64</p>",
+      "option4": "<p> -729</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_fa93f5d616105a69.png"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p>If the 9-digit number 45069x4y8 is divisible by 44, then what is the value of (8x+19y) for the minimum value of y?</p>",
+      "option1": "<p>16</p>",
+      "option2": "<p>18</p>",
+      "option3": "<p>24</p>",
+      "option4": "<p>36</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_10f438aebfd20ebe.png"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> In a box, there are 8 red, 7 blue and 6 green balls. One ball is picked up randomly. What is the probability that it is neither red nor green? </p><p><br/> </p>",
+      "option1": "<p> 1/3</p>",
+      "option2": "<p> 3/4</p>",
+      "option3": "<p> 7/19</p>",
+      "option4": "<p> 8/21</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_9f9294470daabc4b.gif"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p> Suresh gets a commission of 6% up to the sale of Rs 10,000 and above this, he get 5% commission on the sale. If after deducting his commission he deposits Rs 75,900 to the company, Find his total sale.</p><p><br/> </p>",
+      "option1": "<p> 81,500 </p>",
+      "option2": "<p> 91,000 </p>",
+      "option3": "<p> 82,500 </p>",
+      "option4": "<p> 80,000</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_a4d539d7ee6d48f8.jpg"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_cb227160d597f3ba.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_67ca860cd556bac7.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_ad8d35f79b14df44.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_7a542d9f326f3aea.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_d38f6c28bd3cf9db.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_9e5a476e578ef438.png"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> Water is mixed with sprite, to gain 20% profit by selling the mixture at the cost price. Find the percentage of water in the sprite solution?</p><p><br/> </p>",
+      "option1": "<p> 14 2/7 %</p>",
+      "option2": "<p> 16 2/3 %</p>",
+      "option3": "<p> 12.5%</p>",
+      "option4": "<p> 10%</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_89443e15fc430c0b.gif"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> A wholesaler sells 20 pens at the cost price of 34 pens and the retailer sells them to customers at a 14.28% profit. Find the profit % of the wholesaler?</p><p><br/> </p>",
+      "option1": "<p> 33.33%</p>",
+      "option2": "<p> 67.50%</p>",
+      "option3": "<p> 50%</p>",
+      "option4": "<p> 70%</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1690268054044_html_d80afd55dc5453a5.gif"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> The given sentence is jumbled. Arrange all of them to make a coherent paragraph. </p><p> A. In fact, India’s crafts communities produced such fine and artistic objects that merchants travelled from far to acquire these goods.</p><p> B. When you see the wonderful displays in the crafts museums of India you will not be surprised to learn that crafts formed a major part of our exports throughout history.</p><p> C. Seventeenth century courtly patronage, trade, the jajmani system and the demand for everyday utility crafts by the rural population (until the second half of the seventeenth century).</p><p> D. Resulted in a steady home market and a worldwide reputation for Indian crafts.</p><p><br/> </p>",
+      "option1": "<p> BACD</p>",
+      "option2": "<p> BADC</p>",
+      "option3": "<p> CBAD</p>",
+      "option4": "<p> BCAD</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> the paragraph flows logically, starting with the mention of crafts' importance in India's exports, followed by their exceptional quality, historical factors influencing their popularity, and finally, the result of a strong domestic market and international reputation for Indian crafts. </p><p> Hence the correct arrangement is: BACD: <i><b>When you see the wonderful displays in the crafts museums of India you will not be surprised to learn that crafts formed a major part of our exports throughout history. In fact, India’s crafts communities produced such fine and artistic objects that merchants travelled from far to acquire these goods. Seventeenth-century courtly patronage, trade, the jajmani system, and the demand for everyday utility crafts by the rural population (until the second half of the seventeenth century) resulted in a steady home market and a worldwide reputation for Indian crafts.</b></i></p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p> Select the most appropriate meaning of the highlighted word in a sentence.</p><p> He was arrested for his <i><b>concealment</b></i> of important evidence during the investigation. </p>",
+      "option1": "<p> Disclosure</p>",
+      "option2": "<p> Discovery</p>",
+      "option3": "<p> Revelation</p>",
+      "option4": "<p> Hiding</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is ‘Hiding’. </p><p> In the sentence, \"He was arrested for his concealment of important evidence during the investigation,\" \"concealment\" means the act of hiding or keeping something secret or not revealing important evidence. </p><p> Therefore, the synonym that best matches the meaning of \"concealment\" is \"hiding,\" which also implies keeping something secret or not making it known. </p><p> The other options, \"disclosure,\" \"discovery,\" and \"revelation,\" have the opposite meaning as they indicate the act of making something known or revealing information.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> A man who hates women</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> Philanthropist</p>",
+      "option2": "<p> Misanthropist</p>",
+      "option3": "<p> Misogamist</p>",
+      "option4": "<p> Misogynist</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Misogynist: a man who hates women. </p><p> Philanthropist: a rich person who helps the poor and those in need, especially by giving money. </p><p> Misanthropist: a person who hates or avoids other people. </p><p>Misogamist: a person who hates, avoids, or opposes marriage.</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that expresses the given sentence in indirect speech.</p><p> My teacher said, “Do you think you can complete the syllabus within five weeks?”</p><p><br/> </p>",
+      "option1": "<p> My teacher asked me whether I thought I could complete the syllabus within five weeks.</p>",
+      "option2": "<p> My teacher says do I thought I could complete the syllabus within five weeks.</p>",
+      "option3": "<p> My teacher said to me if I think I can complete the syllabus within five weeks.</p>",
+      "option4": "<p> My teacher asked me whether I think I could complete the syllabus within five weeks.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The teacher is clearly asking a question so asked will be used. </p><p> Indirect speech contains the past participle form of the verb. So think changes to thought and can changes to could. So, Option a is the correct answer. </p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Select the most appropriate option that can substitute the highlighted segment in the given sentence.<b> </b> </p><p> A lot of people are seen gathering, <i><b>discussing and negotiating</b></i> in front of our stall in the town.</p>",
+      "option1": "<p> Bargaining</p>",
+      "option2": "<p> Collecting</p>",
+      "option3": "<p> Jostling</p>",
+      "option4": "<p> Dealing</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The original sentence mentions that a lot of people are seen gathering, discussing, and negotiating in front of the stall in the town. The term \"bargaining\" captures the idea of negotiating or haggling over prices or terms of a deal, which aligns perfectly with the context of the sentence. </p><p> Option (d) \"dealing\" can also be related to business transactions, but it doesn't specifically capture the act of negotiating or discussing terms.</p><p> On the other hand, option (a) \"bargaining\" directly encompasses the act of negotiating, which is mentioned in the original sentence. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> Select the correct homonym from the given options to fill in the blank.</p><p> The team's performance was __________ by the unexpected rain, leading to their defeat.</p>",
+      "option1": "<p> affected</p>",
+      "option2": "<p> infected</p>",
+      "option3": "<p> reflected</p>",
+      "option4": "<p> deflected</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> In this sentence, \"The team's performance was __________ by the unexpected rain, leading to their defeat,\" we need a verb that indicates how the unexpected rain impacted the team's performance.</p><p> The word \"affected\" fits the context as it means to have an influence on or cause a change in something. So, the sentence would be: \"The team's performance was affected by the unexpected rain, leading to their defeat.\"</p><p> The other options don't appropriately fit the context: [b] infected - This does not convey the idea of how rain affected the team's performance. [c] reflected - This means to show or mirror, which is not relevant to the context of the sentence. [d] deflected - This means to divert or turn aside, which is not the intended meaning in this context.</p><p> Therefore, the most appropriate answer is [a] affected.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the most appropriate ANTONYM of the highlighted word.</p><p> The superhero <i><b>unleashed</b></i> his full power and defeated the supervillain in an epic battle.</p><p><br/> </p>",
+      "option1": "<p> Emancipated</p>",
+      "option2": "<p> Liberate</p>",
+      "option3": "<p> Restrained</p>",
+      "option4": "<p> Larkish</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Unleashed</b>: turn loose or free from restraint. </p><p> <b>Restrained</b>: not showing strong feelings. </p><p> <b>Emancipated</b>: to give somebody the same legal, social and political rights as other people. </p><p> <b>Liberate</b>: to allow somebody/something to be free. </p><p> <b>Larkish</b>: gaily mischievous; frolicsome. a larkish mood.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Sentences of a paragraph are given in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. As a result those in charge of the shawl manufacturing units strongly influenced the economy of this State, as the sale of shawls brought in more money than the entire land revenue of the State! At its peak in 1861 it generated an enormous revenue.</p><p> B. The Kashmiri shawl was the mainstay of the valley’s economy from approximately 1600 to 1860, over 250 years.</p><p> C. By the nineteenth century, it was popular in princely courts and commercial cities all over South Asia, leave alone Europe.</p><p> D. It was a luxury textile, patronised by the Mughal, Afghan, Sikh and Dogra dynasties that ruled Kashmir successively.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> BCAD</p>",
+      "option2": "<p> BDCA</p>",
+      "option3": "<p> DABC</p>",
+      "option4": "<p> BACD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The paragraph flows logically, starting with the importance of the Kashmiri shawl in the region's economy, followed by its luxurious status and popularity across different ruling dynasties and regions, and concluding with the substantial revenue it generated, shaping the state's economic landscape.</p><p> The correct arrangement is: BDCA: <i><b>The Kashmiri shawl was the mainstay of the valley’s economy from approximately 1600 to 1860, over 250 years. It was a luxury textile, patronised by the Mughal, Afghan, Sikh and Dogra dynasties that ruled Kashmir successively. By the nineteenth century, it was popular in princely courts and commercial cities all over South Asia, leave alone Europe. As a result those in charge of the shawl manufacturing units strongly influenced the economy of this State, as the sale of shawls brought in more money than the entire land revenue of the State! At its peak in 1861 it generated an enormous revenue.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the option that expresses the given sentence in active voice.</p><p> The poor will be greatly benefited by this scheme. </p>",
+      "option1": "<p> This scheme has greatly benefitted the poor.</p>",
+      "option2": "<p> This scheme will greatly benefit the poor.</p>",
+      "option3": "<p> This scheme is going to be greatly benefitted the poor.</p>",
+      "option4": "<p> This scheme would greatly benefitted the poor.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rules ---</b></p><p> <b>Sub + will + v1 + obj ------ Obj + will + be + v3 + by + Sub. </b> </p><p> Thus, the correct active voice of the given sentence is: </p><p> <i><b>This scheme will greatly benefit the poor.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p>Her artistic talents __________ over the years, earning her worldwide recognition.</p>",
+      "option1": "<p>have flourished</p>",
+      "option2": "<p>flourished</p>",
+      "option3": "<p>flourishes</p>",
+      "option4": "<p>are flourishing</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In this sentence, \"Her artistic talents __________ over the years, earning her worldwide recognition,\" we need a verb that indicates how her artistic talents have developed or grown over time.</p><p>The correct answer is \"[a] have flourished,\" as it uses the present perfect tense to show that her artistic talents have continued to grow and improve over the years, resulting in worldwide recognition. The present perfect tense is used to describe actions or situations that started in the past and continue into the present or have a connection to the present.</p><p>So, the sentence would be: \"Her artistic talents have flourished over the years, earning her worldwide recognition.\"</p><p>The other options don't appropriately fit the context:</p><p>[b] flourished - This is the simple past tense and does not convey the idea of continued growth over time.</p><p>[c] flourishes - This is the simple present tense and does not show the growth of talents over the years.</p><p>[d] are flourishing - This is the present continuous tense and does not convey the idea of talents developing over time.</p><p>Therefore, the most appropriate answer is [a] have flourished.</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> What do you call a person who is skilled in using words effectively, especially in writing or public speaking?</p>",
+      "option1": "<p> Logophile</p>",
+      "option2": "<p> Orator</p>",
+      "option3": "<p> Altruist</p>",
+      "option4": "<p> Raconteur</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> An \"orator\" is a person who is skilled in using words effectively, especially in public speaking or eloquent writing. Orators are known for their ability to articulate ideas, captivate an audience, and deliver persuasive speeches. They have a talent for communication and often possess charisma that allows them to engage and inspire others through their words.</p><p> The other options are: </p><p> [a] Logophile - A logophile is a person who loves words and enjoys studying and collecting words, but it does not specifically refer to someone skilled in using words effectively in speaking or writing. </p><p> [c] Altruist - An altruist is a person who selflessly cares for the well-being of others, which is unrelated to the skill of using words effectively. </p><p> [d] Raconteur - A raconteur is a person who is skilled in telling entertaining stories or anecdotes, but it does not specifically focus on public speaking or persuasive writing.</p><p> Therefore, the correct answer is [b] Orator, as it precisely identifies a person skilled in using words effectively, especially in writing or public speaking.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. When the villagers heard the cry, they came running up the hill to drive the wolf away.</p><p> B. Once, there was a boy who became bored when he watched over the village sheep grazing on the hillside.</p><p> C. To entertain himself, he sang out, “Wolf! Wolf! The wolf is chasing the sheep!”</p><p> D. But, when they arrived, they saw no wolf. The boy was amused when seeing their angry faces.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> DCAB</p>",
+      "option2": "<p> BCAD</p>",
+      "option3": "<p> CADB</p>",
+      "option4": "<p> BADC</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The correct arrangement is: BCAD: </p><p> <i><b>Once, there was a boy who became bored when he watched over the village sheep grazing on the hillside. To entertain himself, he sang out, “Wolf! Wolf! The wolf is chasing the sheep!”</b></i></p><p> <i><b>When the villagers heard the cry, they came running up the hill to drive the wolf away. But, when they arrived, they saw no wolf. The boy was amused when seeing their angry faces.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> P. All the other plants nearby tried to make the rose see sense, but she was too swayed by her own looks.</p><p> Q. Every day, the beautiful rose would insult and mock the cactus on his looks, all while the cactus remained quiet</p><p> R. Her only complaint was growing next to an ugly cactus.</p><p> S. Once upon a time, in a desert far away, there was a rose who was so proud of her beautiful looks.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> SRPQ</p>",
+      "option2": "<p> SPQR</p>",
+      "option3": "<p> SRQP</p>",
+      "option4": "<p> SPRQ</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The correct arrangement is: SRQP: </p><p> <i><b>Once upon a time, in a desert far away, there was a rose who was so proud of her beautiful looks. Her only complaint was growing next to an ugly cactus.</b></i></p><p> <i><b>Every day, the beautiful rose would insult and mock the cactus on his looks, all while the cactus remained quiet. All the other plants nearby tried to make the rose see sense, but she was too swayed by her own looks.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Select the option that expresses the given sentence in direct speech.</p><p> She says that Aishwarya is a talented actress.</p><p><br/> </p>",
+      "option1": "<p> She says, “Aishwarya is a talented actress.”</p>",
+      "option2": "<p> She said, “Aishwarya was a talented actress.”</p>",
+      "option3": "<p> She told, “Aishwarya is a talented actress.”</p>",
+      "option4": "<p> She asks, “Is Aishwarya a talented actress.”</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> Direct Speech to Indirect Speech transformation rules: </p><p> If the Reporting Verb (R.V) is in present/future tense then tense of Reported Speech (R.S.) is not changed. </p><p> The correct active voice of the given sentence is: </p><p> <i><b>She says, “Aishwarya is a talented actress.”</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> The scientist conducted a __________ experiment to test the new hypothesis.</p>",
+      "option1": "<p> Rigorous</p>",
+      "option2": "<p> Cursory</p>",
+      "option3": "<p> Superficial</p>",
+      "option4": "<p> Exhaustive</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option A is the correct answer. </p><p> In this context, the sentence mentions that the scientist conducted an experiment to test the new hypothesis. The word \"rigorous\" means thorough, precise, and meticulous. Therefore, it is the most appropriate word to indicate that the experiment was conducted with great care, attention to detail, and with a comprehensive approach.</p><p> <br/> <br/> </p><p> The other options don't fit the context as well:</p><p> [b] cursory - This means brief and hasty, which is the opposite of what is required for a thorough experiment.</p><p> [c] superficial - This means shallow and lacking depth, which is not suitable for a comprehensive experiment.</p><p>[d] exhaustive - This means complete and thorough to the fullest extent, but it is too similar in meaning to \"rigorous\" and does not convey a different nuance.</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> The complexity of the situation __________ the need for a thorough analysis.</p><p><br/> </p>",
+      "option1": "<p> Underscores</p>",
+      "option2": "<p> Violates</p>",
+      "option3": "<p> Downstream</p>",
+      "option4": "<p> Highlights</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option A is the correct answer. </p><p> In this context, the sentence mentions that the complexity of the situation requires something to be done. The word \"underscores\" means to emphasize or highlight the importance of something, particularly by drawing attention to it. It fits well in the context of the sentence as it conveys that the complexity of the situation strongly indicates the need for a thorough analysis.</p><p> The other options don't fit the context as well:</p><p> [b] violates - to break a rule, an agreement, etc. </p><p> [c] downstream - in the direction in which a river flows. </p><p> [d] highlights - This means to emphasize or draw attention to something, but \"underscores\" is a more fitting choice for indicating the importance of the thorough analysis.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> A. His swaraj was one where every individual was his or her own ruler, with the capacity to control and regulate his or her own life. This would remove inequalities of power and status in society and enable proper reciprocity.</p><p> B. He wrote about the idea of a self-contained village republic inhabited by individuals whose lives were self-regulated. In Gandhiji’s philosophy, swaraj for the nation did not mean merely political independence from British rule.</p><p> C. Gandhiji described this vision in many of his writings, most notably in Hind Swaraj, a treatise written in 1909 while he was aboard a ship, coming back from Britain.</p><p> D. Swaraj, for him, was something more substantive, involving the freedom of individuals to regulate their own lives without harming one another.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> ABDC</p>",
+      "option2": "<p> CBDA</p>",
+      "option3": "<p> CDBA</p>",
+      "option4": "<p> BCDA</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The paragraph flows logically, starting with the introduction of Gandhiji's vision of \"swaraj,\" followed by the elaboration of the self-contained village republic idea, the deeper meaning of \"swaraj,\" and finally, the essence of individual empowerment and its societal impact. </p><p> The correct arrangement is: CBDA: <i><b>Gandhiji described this vision in many of his writings, most notably in Hind Swaraj, a treatise written in 1909 while he was aboard a ship, coming back from Britain. He wrote about the idea of a self-contained village republic inhabited by individuals whose lives were self-regulated. In Gandhiji’s philosophy, swaraj for the nation did not mean merely political independence from British rule. Swaraj, for him, was something more substantive, involving the freedom of individuals to regulate their own lives without harming one another. His swaraj was one where every individual was his or her own ruler, with the capacity to control and regulate his or her own life. This would remove inequalities of power and status in society and enable proper reciprocity.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> Select the option that expresses the given sentence in active voice.</p><p> The ancient artifact was admired by the archaeologists.</p>",
+      "option1": "<p> The archaeologists had admired the ancient artifact.</p>",
+      "option2": "<p> The archaeologists were admired the ancient artifact.</p>",
+      "option3": "<p> The archaeologists admired the ancient artifact.</p>",
+      "option4": "<p> The archaeologists have admired the ancient artifact.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rules: </b> </p><p> <b>Sub + v2 + Obj ----- Obj + was/were + v3 + by + Sub. </b> </p><p> Thus, the correct passive voice of the given sentence is: <i><b>The archaeologists admired the ancient artifact.</b></i></p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.<br/> Constrict</p>",
+      "option1": "<p> Cramp</p>",
+      "option2": "<p> Choke</p>",
+      "option3": "<p> Smite</p>",
+      "option4": "<p> Stretch</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> <b>Constrict</b>: squeeze or press together/ become tight or as if tight. </p><p> <b>Stretch</b>: extend or stretch out to a greater or the full length. </p><p> <b>Cramp</b>: a painful and involuntary muscular contraction. </p><p> <b>Choke</b>: struggle for breath; have insufficient oxygen intake. </p><p> <b>Smite</b>: inflict a heavy blow on, with the hand, a tool, or a weapon. </p><p>Thus, the correct antonym of the given word ‘Constrict’ is ‘Stretch’.</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Identify the INCORRECTLY spelt word amongst the following.</p><p><br/> </p>",
+      "option1": "<p> Minuscule</p>",
+      "option2": "<p> Mischievous</p>",
+      "option3": "<p> Perseverence</p>",
+      "option4": "<p> Plagiarize</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Minuscule</b>: very small. </p><p> <b>Mischievous</b>: naughtily or annoyingly playful/ deliberately causing harm or damage. </p><p> <b>Perseverance</b>: the act of persisting or persevering; continuing or repeating behavior.</p><p> <b>Plagiarize</b>: take without referencing from someone else's writing or speech; of intellectual property.</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p>Select the option that expresses the given sentence in Indirect speech.</p><p>\"I didn't understand the question,\" said John.</p>",
+      "option1": "<p>John said that he hadn't understood the question.</p>",
+      "option2": "<p>John said, \"I didn't understand the question.\"</p>",
+      "option3": "<p>John says that he didn't understand the question.</p>",
+      "option4": "<p>John says that he hadn't understood the question.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option A is the correct answer.</p><p><strong>Direct Speech to Indirect Speech transformation rules: </strong></p><p><strong>If the Reporting Verb (R.V.) is in the past tense and Reported Speech (R.S.) is also in the past tense then following transformation occurs. </strong></p><p><strong>Simple Past Tense ------ Past Perfect Tense </strong></p><p><strong>Past Continuous Tense --- Past Perfect Continuous. </strong></p><p>Thus, the correct Indirect form of the given sentence is: <strong>John said that he hadn't understood the question.</strong></p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p>The following sentence has been split into four segments. Identify the segment that contains a grammatical error.<br/> Several minutes had passed / before she returned / carry milk / for the dog.</p>",
+      "option1": "<p>carry milk</p>",
+      "option2": "<p>several minutes passed</p>",
+      "option3": "<p>for the dog</p>",
+      "option4": "<p>before she returned</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The given sentence is grammatically incorrect.</p><p>In the given sentence, the usage of \"carry\" is incorrect instead of this we need to use \"carrying\"</p><p>carry is a verb hance, we need to use a present participle form of this i.e. carrying so the main object will be milk. carrying will tell about milk.</p><p>So the correct sentence is: <strong>Several minutes had passed before she returned carrying milk for the dog.</strong></p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> What is the most appropriate meaning of the idiom \"steal someone's thunder\"?</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> To take away someone's belongings forcefully.</p>",
+      "option2": "<p> To imitate someone's actions or behavior.</p>",
+      "option3": "<p> To disrupt a peaceful situation with loud noises.</p>",
+      "option4": "<p> To take credit for someone else's idea, achievement, or success.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> The idiom \"steal someone's thunder\" means to take credit for someone else's idea, achievement, or success, often by presenting it as one's own or overshadowing the person who originally came up with or accomplished it. It implies that someone is trying to claim recognition or praise for something that was actually done by another person. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> The professor's lectures were so __________ that even the most attentive students struggled to understand.</p>",
+      "option1": "<p> esoteric</p>",
+      "option2": "<p> pedantic</p>",
+      "option3": "<p> lucid</p>",
+      "option4": "<p> comprehensible</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> In this context, the sentence mentions that the professor's lectures were challenging to grasp for even the most attentive students. The word \"esoteric\" means intended for or understood by only a small group of people with specialized knowledge. It fits well in the context of the sentence as it conveys that the lectures were difficult and likely contained highly specialized or obscure information.</p><p> The other options don't fit the context as well:</p><p> [b] pedantic - This means overly concerned with minor details and rules, which is not directly related to the difficulty of understanding the lectures.</p><p> [c] lucid - This means clear and easily understood, which is the opposite of what the sentence is expressing.</p><p> [d] comprehensible - This means able to be understood, which does not convey the difficulty or complexity of the lectures.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the most appropriate ANTONYM of the underlined word.</p><p> \"The young entrepreneur started a <i><b>lucrative</b></i> online business, and within a year, it became highly profitable, allowing her to expand her operations and hire more employees.\"</p><p><br/> </p>",
+      "option1": "<p> Unremunerative</p>",
+      "option2": "<p> Beneficial</p>",
+      "option3": "<p> Gainful</p>",
+      "option4": "<p> Advantageous</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> <b>Lucrative</b>: producing a great deal of profit or wealth. </p><p> <b>Unremunerative</b>: not yielding profit or recompense. </p><p> <b>Beneficial</b>: promoting or enhancing well-being. </p><p><b>Advantageous</b>: giving an advantage.</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom in the given sentence.</p><p> The constant threat of impending layoffs at the company hung over the employees like a <b>Damocles sword</b>, causing anxiety and uncertainty in the workplace.</p><p><br/> </p>",
+      "option1": "<p> A powerful weapon used by the ancient Greek warrior Damocles.</p>",
+      "option2": "<p> A dangerous and unpredictable situation that poses a constant threat or impending doom.</p>",
+      "option3": "<p> A famous sword that belongs to a mythical hero from ancient Greek mythology.</p>",
+      "option4": "<p> A symbol of strength and protection that hangs over someone's head.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The idiom \"Damocles sword\" is used to describe any perilous or threatening situation that hangs over someone's head, causing a constant sense of impending doom or danger. It represents the idea that those in positions of power or authority also carry great responsibilities and risks, even if they appear to lead comfortable lives on the surface.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> Neither Kriti nor/ Abhisek are staying with/ his parents in Bangalore. </p><p><br/> </p>",
+      "option1": "<p> Neither Kriti nor</p>",
+      "option2": "<p> Abhisek are staying with</p>",
+      "option3": "<p> his parents in Banglore</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The given sentence is grammatically incorrect. </p><p> When there are 2 diffferent subjects that are joined by either _______ or/ Neither ____ nor/ not only __________ but also/ _____ or _____ and are different in numbers, the subject closer to the verb decides whether the verb will be singular or plural. </p><p> Here, the subject closer to the verb is ‘Abhishek’ and thus the verb ‘are’ will be replaced by ‘is’ to agree with the singular subject. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the option that expresses the given sentence in active voice.</p><p> The story of his uncle’s mysterious disappearance was first heard by Rajesh in his childhood</p>",
+      "option1": "<p> The story uncle heard first time was about Rajesh’s mysterious disappearance in his childhood.</p>",
+      "option2": "<p> Rajesh’s first story that uncle heard in his childhood was about his mysterious disappearance.</p>",
+      "option3": "<p> Rajesh first heard the story of his uncle’s mysterious disappearance in his childhood.</p>",
+      "option4": "<p> The story Rajesh first heard in his childhood was about his uncle’s mysterious disappearance.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> <b>Active Voice to Passive Voice transformation rules: </b> </p><p> <b>Sub + v2 + Obj ----- Obj + was/were + v3 + by + Sub. </b> </p><p> Thus, the correct passive form of the given sentence is: <i><b>Rajesh first heard the story of his uncle’s mysterious disappearance in his childhood.</b></i></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p> Identify the INCORRECTLY spelt word in the given sentence.</p><p> \"The beginning of the movie was captivating, with its stuning visuals and intriguing storyline.\"</p><p><br/> </p>",
+      "option1": "<p> Beginning</p>",
+      "option2": "<p> Captivating</p>",
+      "option3": "<p> Stuning</p>",
+      "option4": "<p> Intriguing</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> Stunning is incorrectly spelt in the given sentence. </p><p> Beginning: the act of starting something. </p><p> Captivating: capturing interest as if by a spell. </p><p> Stunning: Someone who is strikingly beautiful can be described as <i>stunning</i>. There's something magical about weddings that makes every bride look <i>stunning</i>. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> If India is to solve the problem of poverty, it has to find viable and sustainable strategies to address the 1. ____________ of poverty and design schemes to help the poor out of their situation. However, for these schemes to be implemented, the government needs to be able to identify who the poor are. For this there is need to develop a scale to 2. __________ poverty, and the factors that make up the criteria for this measurement or mechanism need to be carefully chosen. In pre-independent India, Dadabhai Naoroji was the first to discuss the concept of a Poverty Line. He used the menu for a prisoner and used appropriate 3. <b>prevailing</b> prices to arrive at what may be called ‘jail cost of living’. However, only adults stay in jail whereas, in an actual society, there are children too. He, therefore, appropriately adjusted this cost of living to arrive at the 4. __________.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 1.</p><p><br/> </p>",
+      "option1": "<p> declare</p>",
+      "option2": "<p> causes</p>",
+      "option3": "<p> solutions</p>",
+      "option4": "<p> hierarchy</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> The sentence states that India needs to find viable and sustainable strategies to address the \"problem of poverty.\" The missing word in the blank should indicate what aspect of poverty needs to be addressed. The context suggests that the strategies should target the reasons or \"causes\" of poverty to effectively alleviate the issue and improve the situation of the poor. Therefore, option [b] \"causes\" is the correct answer.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> If India is to solve the problem of poverty, it has to find viable and sustainable strategies to address the 1. ____________ of poverty and design schemes to help the poor out of their situation. However, for these schemes to be implemented, the government needs to be able to identify who the poor are. For this there is need to develop a scale to 2. __________ poverty, and the factors that make up the criteria for this measurement or mechanism need to be carefully chosen. In pre-independent India, Dadabhai Naoroji was the first to discuss the concept of a Poverty Line. He used the menu for a prisoner and used appropriate 3. <b>prevailing</b> prices to arrive at what may be called ‘jail cost of living’. However, only adults stay in jail whereas, in an actual society, there are children too. He, therefore, appropriately adjusted this cost of living to arrive at the 4. __________.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 2.</p><p> <br/> </p><p><br/> </p>",
+      "option1": "<p> measure</p>",
+      "option2": "<p> ignore</p>",
+      "option3": "<p> exacerbate</p>",
+      "option4": "<p> hypnotize</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option a is the correct answer. </p><p> The sentence mentions that the government's poverty alleviation schemes require \"accurate identification of the poor.\" The missing word in the blank should convey how poverty needs to be handled in this context. The phrase \"developing a scale to ________ poverty\" indicates that the government needs a method or scale to determine or \"measure\" poverty accurately.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> If India is to solve the problem of poverty, it has to find viable and sustainable strategies to address the 1. ____________ of poverty and design schemes to help the poor out of their situation. However, for these schemes to be implemented, the government needs to be able to identify who the poor are. For this there is need to develop a scale to 2. __________ poverty, and the factors that make up the criteria for this measurement or mechanism need to be carefully chosen. In pre-independent India, Dadabhai Naoroji was the first to discuss the concept of a Poverty Line. He used the menu for a prisoner and used appropriate 3. <b>prevailing</b> prices to arrive at what may be called ‘jail cost of living’. However, only adults stay in jail whereas, in an actual society, there are children too. He, therefore, appropriately adjusted this cost of living to arrive at the 4. __________.</p><p> <br/> <br/> </p><p> Select the most appropriate meaning of the highlighted word. </p><p><br/> </p>",
+      "option1": "<p> Excreta</p>",
+      "option2": "<p> Customary</p>",
+      "option3": "<p> Scarce</p>",
+      "option4": "<p> Surrender</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option b is the correct answer. </p><p> Prevailing: Something that is prevalent or most common can be described as prevailing. </p><p> Customary Price: Customary pricing is a pricing method where the price of a good or service is based on consumers' collective perception of its value. </p><p> Scarce: not existing in large quantities; hard to find. </p><p> Surrender: to stop fighting and admit that you have lost. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> <br/> <br/> </p><p> If India is to solve the problem of poverty, it has to find viable and sustainable strategies to address the 1. ____________ of poverty and design schemes to help the poor out of their situation. However, for these schemes to be implemented, the government needs to be able to identify who the poor are. For this there is need to develop a scale to 2. __________ poverty, and the factors that make up the criteria for this measurement or mechanism need to be carefully chosen. In pre-independent India, Dadabhai Naoroji was the first to discuss the concept of a Poverty Line. He used the menu for a prisoner and used appropriate 3. <b>prevailing</b> prices to arrive at what may be called ‘jail cost of living’. However, only adults stay in jail whereas, in an actual society, there are children too. He, therefore, appropriately adjusted this cost of living to arrive at the 4. __________.</p><p> <br/> <br/> </p><p> Select the most appropriate option to fill in blank number 4.</p><p><br/> </p>",
+      "option1": "<p> Cost of luxury</p>",
+      "option2": "<p> Government’s expenditure</p>",
+      "option3": "<p> Poverty line</p>",
+      "option4": "<p> Economic growth rate</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option C is the correct answer. </p><p> The sentence discusses Dadabhai Naoroji's approach to estimating the \"poverty line\" in pre-independent India. The missing word in the blank should refer to the result of adjusting the \"jail cost of living\" after considering the prevailing prices. Dadabhai Naoroji appropriately adjusted this cost of living to arrive at a threshold, known as the \"poverty line,\" which indicates the minimum level of income or resources required to meet the basic needs and avoid poverty. </p><p> Option [a] \"cost of luxury\" does not fit the context because the poverty line represents the bare minimum for survival, not luxury. </p><p> Option [b] \"government's expenditure\" is unrelated to the concept of the poverty line. </p><p> Option [d] \"economic growth rate\" is not relevant to Naoroji's method of determining the poverty line. </p><p> Therefore, option [c] \"poverty line\" is the correct answer, as it accurately reflects the result of Naoroji's calculations.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Construction of stupas and viharas as part of monastic establishments became part of the Buddhist tradition. However, in this period, apart from stupas and viharas, stone pillars, rock-cut caves and monumental figure sculptures were carved at several places. The tradition of constructing pillars is very old and it may be observed that erection of pillars was prevalent in the Achamenian empire as well. But the Mauryan pillars are different from the Achamenian pillars. The Mauryan pillars are rockcut pillars thus displaying the carver’s skills, whereas the Achamenian pillars are constructed in pieces by a mason. Stone pillars were erected by Ashoka, which have been found in the north Indian part of the Mauryan Empire with inscriptions engraved on them. The top portion of the pillar was carved with capital figures like the bull, the lion, the elephant, etc. All the capital figures are vigorous and carved standing on a square or circular abacus. Abacuses are decorated with stylised lotuses. Some of the existing pillars with capital figures were found at Basarah-Bakhira, Lauriya Nandangarh and Rampurva in Bihar, Sankisa and Sarnath in Uttar Pradesh. The Mauryan pillar capital found at Sarnath popularly known as the Lion Capital is the finest example of Mauryan sculptural tradition. It is also our national emblem. It is carved with considerable care—voluminous roaring lion figures firmly standing on a circular abacus which is carved with the figures of a horse, a bull, a lion and an elephant in vigorous movement, executed with precision, showing considerable mastery in the sculptural techniques. This pillar capital symbolising Dhammachakrapravartana (the first sermon by the Buddha) has become a standard symbol of this great historical event in the life of the Buddha. Monumental images of Yaksha, Yakhinis and animals, pillar columns with capital figures, rock-cut caves belonging to the third century BCE have been found in different parts of India. It shows the popularity of Yaksha worship and how it became part of figure representation in Buddhist and Jaina religious monuments. Large statues of Yakshas and Yakhinis are found at many places like Patna, Vidisha and Mathura. These monumental images are mostly in the standing position. One of the distinguishing elements in all these images is their polished surface. The depiction of faces is in full round with pronounced cheeks and physiognomic detail. One of the finest examples is a Yakshi figure from Didarganj, Patna, which is tall and well-built. It shows sensitivity towards depicting the human physique. </p><p> <br/> <br/> </p><p> Which historical event does the Mauryan pillar capital at Sarnath symbolize, as mentioned in the passage?</p><p><br/> </p>",
+      "option1": "<p> The coronation of Ashoka</p>",
+      "option2": "<p> The first sermon by the Buddha</p>",
+      "option3": "<p> The victory of the Mauryan Empire</p>",
+      "option4": "<p> The signing of a peace treaty</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage mentions that the Mauryan pillar capital found at Sarnath, also known as the Lion Capital, symbolizes Dhammachakrapravartana, which represents the first sermon by the Buddha. This event is considered a significant historical moment in the life of the Buddha and is depicted on the pillar capital with figures of a horse, a bull, a lion, and an elephant in vigorous movement.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p><strong>Read the following passage and answer the questions given after it.</strong></p><p><br/> </p><p>Construction of stupas and viharas as part of monastic establishments became part of the Buddhist tradition. However, in this period, apart from stupas and viharas, stone pillars, rock-cut caves and monumental figure sculptures were carved at several places. The tradition of constructing pillars is very old and it may be observed that erection of pillars was prevalent in the Achamenian empire as well. But the Mauryan pillars are different from the Achamenian pillars. The Mauryan pillars are rockcut pillars thus displaying the carver’s skills, whereas the Achamenian pillars are constructed in pieces by a mason. Stone pillars were erected by Ashoka, which have been found in the north Indian part of the Mauryan Empire with inscriptions engraved on them. The top portion of the pillar was carved with capital figures like the bull, the lion, the elephant, etc. All the capital figures are vigorous and carved standing on a square or circular abacus. Abacuses are decorated with stylised lotuses. Some of the existing pillars with capital figures were found at Basarah-Bakhira, Lauriya Nandangarh and Rampurva in Bihar, Sankisa and Sarnath in Uttar Pradesh. The Mauryan pillar capital found at Sarnath popularly known as the Lion Capital is the finest example of Mauryan sculptural tradition. It is also our national emblem. It is carved with considerable care—voluminous roaring lion figures firmly standing on a circular abacus which is carved with the figures of a horse, a bull, a lion and an elephant in vigorous movement, executed with precision, showing considerable mastery in the sculptural techniques. This pillar capital symbolising Dhammachakrapravartana (the first sermon by the Buddha) has become a standard symbol of this great historical event in the life of the Buddha. Monumental images of Yaksha, Yakhinis and animals, pillar columns with capital figures, rock-cut caves belonging to the third century BCE have been found in different parts of India. It shows the popularity of Yaksha worship and how it became part of figure representation in Buddhist and Jaina religious monuments. Large statues of Yakshas and Yakhinis are found at many places like Patna, Vidisha and Mathura. These monumental images are mostly in the standing position. One of the distinguishing elements in all these images is their polished surface. The depiction of faces is in full round with pronounced cheeks and physiognomic detail. One of the finest examples is a Yakshi figure from Didarganj, Patna, which is tall and well-built. It shows sensitivity towards depicting the human physique.</p><p><br/> </p><p> According to the passage, where are large statues of Yakshas and Yakhinis NOT found?</p>",
+      "option1": "<p>Sarnath</p>",
+      "option2": "<p>Patna</p>",
+      "option3": "<p>Mathura</p>",
+      "option4": "<p>Vidisha</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The passage mentions that large statues of Yakshas and Yakhinis are found at many places like Patna, Vidisha, and Mathura.</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Construction of stupas and viharas as part of monastic establishments became part of the Buddhist tradition. However, in this period, apart from stupas and viharas, stone pillars, rock-cut caves and monumental figure sculptures were carved at several places. The tradition of constructing pillars is very old and it may be observed that erection of pillars was prevalent in the Achamenian empire as well. But the Mauryan pillars are different from the Achamenian pillars. The Mauryan pillars are rockcut pillars thus displaying the carver’s skills, whereas the Achamenian pillars are constructed in pieces by a mason. Stone pillars were erected by Ashoka, which have been found in the north Indian part of the Mauryan Empire with inscriptions engraved on them. The top portion of the pillar was carved with capital figures like the bull, the lion, the elephant, etc. All the capital figures are vigorous and carved standing on a square or circular abacus. Abacuses are decorated with stylised lotuses. Some of the existing pillars with capital figures were found at Basarah-Bakhira, Lauriya Nandangarh and Rampurva in Bihar, Sankisa and Sarnath in Uttar Pradesh. The Mauryan pillar capital found at Sarnath popularly known as the Lion Capital is the finest example of Mauryan sculptural tradition. It is also our national emblem. It is carved with considerable care—voluminous roaring lion figures firmly standing on a circular abacus which is carved with the figures of a horse, a bull, a lion and an elephant in vigorous movement, executed with precision, showing considerable mastery in the sculptural techniques. This pillar capital symbolising Dhammachakrapravartana (the first sermon by the Buddha) has become a standard symbol of this great historical event in the life of the Buddha. Monumental images of Yaksha, Yakhinis and animals, pillar columns with capital figures, rock-cut caves belonging to the third century BCE have been found in different parts of India. It shows the popularity of Yaksha worship and how it became part of figure representation in Buddhist and Jaina religious monuments. Large statues of Yakshas and Yakhinis are found at many places like Patna, Vidisha and Mathura. These monumental images are mostly in the standing position. One of the distinguishing elements in all these images is their polished surface. The depiction of faces is in full round with pronounced cheeks and physiognomic detail. One of the finest examples is a Yakshi figure from Didarganj, Patna, which is tall and well-built. It shows sensitivity towards depicting the human physique. </p><p> <br/> <br/> </p><p> Which of the following places is NOT mentioned in the passage as having existing pillars with capital figures?</p><p><br/> </p>",
+      "option1": "<p> Basarah-Bakhira</p>",
+      "option2": "<p> Lauriya Nandangarh</p>",
+      "option3": "<p> Rampurva</p>",
+      "option4": "<p> Taxila</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The passage mentions Basarah-Bakhira, Lauriya Nandangarh, and Rampurva as places where existing pillars with capital figures were found. Taxila is not mentioned in the passage in relation to the existence of such pillars.</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Construction of stupas and viharas as part of monastic establishments became part of the Buddhist tradition. However, in this period, apart from stupas and viharas, stone pillars, rock-cut caves and monumental figure sculptures were carved at several places. The tradition of constructing pillars is very old and it may be observed that erection of pillars was prevalent in the Achamenian empire as well. But the Mauryan pillars are different from the Achamenian pillars. The Mauryan pillars are rockcut pillars thus displaying the carver’s skills, whereas the Achamenian pillars are constructed in pieces by a mason. Stone pillars were erected by Ashoka, which have been found in the north Indian part of the Mauryan Empire with inscriptions engraved on them. The top portion of the pillar was carved with capital figures like the bull, the lion, the elephant, etc. All the capital figures are vigorous and carved standing on a square or circular abacus. Abacuses are decorated with stylised lotuses. Some of the existing pillars with capital figures were found at Basarah-Bakhira, Lauriya Nandangarh and Rampurva in Bihar, Sankisa and Sarnath in Uttar Pradesh. The Mauryan pillar capital found at Sarnath popularly known as the Lion Capital is the finest example of Mauryan sculptural tradition. It is also our national emblem. It is carved with considerable care—voluminous roaring lion figures firmly standing on a circular abacus which is carved with the figures of a horse, a bull, a lion and an elephant in vigorous movement, executed with precision, showing considerable mastery in the sculptural techniques. This pillar capital symbolising Dhammachakrapravartana (the first sermon by the Buddha) has become a standard symbol of this great historical event in the life of the Buddha. Monumental images of Yaksha, Yakhinis and animals, pillar columns with capital figures, rock-cut caves belonging to the third century BCE have been found in different parts of India. It shows the popularity of Yaksha worship and how it became part of figure representation in Buddhist and Jaina religious monuments. Large statues of Yakshas and Yakhinis are found at many places like Patna, Vidisha and Mathura. These monumental images are mostly in the standing position. One of the distinguishing elements in all these images is their polished surface. The depiction of faces is in full round with pronounced cheeks and physiognomic detail. One of the finest examples is a Yakshi figure from Didarganj, Patna, which is tall and well-built. It shows sensitivity towards depicting the human physique. </p><p> <br/> <br/> </p><p> The Mauryan pillar capital found at Sarnath is popularly known as _______.</p><p><br/> </p>",
+      "option1": "<p> The Yaksha Capital</p>",
+      "option2": "<p> The Ashoka Capital</p>",
+      "option3": "<p> The Lion Capital</p>",
+      "option4": "<p> The Bull Capital</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The Mauryan pillar capital found at Sarnath is popularly known as \"The Lion Capital.\" The passage mentions that this pillar capital is the finest example of Mauryan sculptural tradition and has become a standard symbol of a significant historical event in the life of the Buddha, known as Dhammachakrapravartana, which represents the first sermon by the Buddha.</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> The first clear expression of nationalism came with the French Revolution in 1789. France, as you would remember, was a full-fledged territorial state in 1789 under the rule of an absolute monarch. The political and constitutional changes that came in the wake of the French Revolution led to the transfer of sovereignty from the monarchy to a body of French citizens. The revolution proclaimed that it was the people who would henceforth constitute the nation and shape its destiny. From the very beginning, the French revolutionaries introduced various measures and practices that could create a sense of collective identity amongst the French people. The ideas of <i>la patrie </i>(the fatherland) and <i>le citoyen</i> (the citizen) emphasised the notion of a united community enjoying equal rights under a constitution. A new French flag, the tricolour, was chosen to replace the former royal standard. The Estates General was elected by the body of active citizens and renamed the National Assembly. New hymns were composed, oaths taken and martyrs commemorated, all in the name of the nation. A centralised administrative system was put in place and it formulated uniform laws for all citizens within its territory. Internal customs duties and dues were abolished and a uniform system of weights and measures was adopted. Regional dialects were discouraged and French, as it was spoken and written in Paris, became the common language of the nation. The revolutionaries further declared that it was the mission and the destiny of the French nation to liberate the peoples of Europe from despotism, in other words to help other peoples of Europe to become nations. When the news of the events in France reached the different cities of Europe, students and other members of educated middle classes began setting up Jacobin clubs. Their activities and campaigns prepared the way for the French armies which moved into Holland, Belgium, Switzerland and much of Italy in the 1790s. With the outbreak of the revolutionary wars, the French armies began to carry the idea of nationalism abroad.</p><p> <br/> <br/> </p><p> What does the term \"despotism\" mean in the context of the French Revolution?</p><p><br/> </p>",
+      "option1": "<p> A from of government led by elected representatives</p>",
+      "option2": "<p> A system of hereditary monarchy</p>",
+      "option3": "<p> The abuse of power by a ruler with absolute authority</p>",
+      "option4": "<p> A political system based on socialist principles</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is C. \"Despotism\" refers to a system of government where a ruler or authority figure exercises absolute and oppressive power, often without regard for the rights and freedoms of the people.</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> The first clear expression of nationalism came with the French Revolution in 1789. France, as you would remember, was a full-fledged territorial state in 1789 under the rule of an absolute monarch. The political and constitutional changes that came in the wake of the French Revolution led to the transfer of sovereignty from the monarchy to a body of French citizens. The revolution proclaimed that it was the people who would henceforth constitute the nation and shape its destiny. From the very beginning, the French revolutionaries introduced various measures and practices that could create a sense of collective identity amongst the French people. The ideas of <i>la patrie </i>(the fatherland) and <i>le citoyen</i> (the citizen) emphasised the notion of a united community enjoying equal rights under a constitution. A new French flag, the tricolour, was chosen to replace the former royal standard. The Estates General was elected by the body of active citizens and renamed the National Assembly. New hymns were composed, oaths taken and martyrs commemorated, all in the name of the nation. A centralised administrative system was put in place and it formulated uniform laws for all citizens within its territory. Internal customs duties and dues were abolished and a uniform system of weights and measures was adopted. Regional dialects were discouraged and French, as it was spoken and written in Paris, became the common language of the nation. The revolutionaries further declared that it was the mission and the destiny of the French nation to liberate the peoples of Europe from despotism, in other words to help other peoples of Europe to become nations. When the news of the events in France reached the different cities of Europe, students and other members of educated middle classes began setting up Jacobin clubs. Their activities and campaigns prepared the way for the French armies which moved into Holland, Belgium, Switzerland and much of Italy in the 1790s. With the outbreak of the revolutionary wars, the French armies began to carry the idea of nationalism abroad.</p><p> <br/> <br/> </p><p> What was the name of the elected body that replaced the Estates General and represented the sovereignty of the people during the French Revolution?</p><p><br/> </p>",
+      "option1": "<p> National Assembly</p>",
+      "option2": "<p> Revolutionary Council</p>",
+      "option3": "<p> Citizen’s Congress</p>",
+      "option4": "<p> Democratic Parliament</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is A. The National Assembly was the elected body that replaced the Estates General during the French Revolution and represented the sovereignty of the people.</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> The first clear expression of nationalism came with the French Revolution in 1789. France, as you would remember, was a full-fledged territorial state in 1789 under the rule of an absolute monarch. The political and constitutional changes that came in the wake of the French Revolution led to the transfer of sovereignty from the monarchy to a body of French citizens. The revolution proclaimed that it was the people who would henceforth constitute the nation and shape its destiny. From the very beginning, the French revolutionaries introduced various measures and practices that could create a sense of collective identity amongst the French people. The ideas of <i>la patrie </i>(the fatherland) and <i>le citoyen</i> (the citizen) emphasised the notion of a united community enjoying equal rights under a constitution. A new French flag, the tricolour, was chosen to replace the former royal standard. The Estates General was elected by the body of active citizens and renamed the National Assembly. New hymns were composed, oaths taken and martyrs commemorated, all in the name of the nation. A centralised administrative system was put in place and it formulated uniform laws for all citizens within its territory. Internal customs duties and dues were abolished and a uniform system of weights and measures was adopted. Regional dialects were discouraged and French, as it was spoken and written in Paris, became the common language of the nation. The revolutionaries further declared that it was the mission and the destiny of the French nation to liberate the peoples of Europe from despotism, in other words to help other peoples of Europe to become nations. When the news of the events in France reached the different cities of Europe, students and other members of educated middle classes began setting up Jacobin clubs. Their activities and campaigns prepared the way for the French armies which moved into Holland, Belgium, Switzerland and much of Italy in the 1790s. With the outbreak of the revolutionary wars, the French armies began to carry the idea of nationalism abroad.</p><p> <br/> <br/> </p><p> What was the primary impact of the French armies moving into various European territories during the 1790s?</p><p><br/> </p>",
+      "option1": "<p> To spread French cultural practices</p>",
+      "option2": "<p> To establish colonies</p>",
+      "option3": "<p> To impose French language on the conquered territories</p>",
+      "option4": "<p> To carry the idea of nationalism abroad</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is D. The French armies' actions during the revolutionary wars aimed to spread the idea of nationalism beyond France's borders, inspiring nationalist movements in other European territories they occupied.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p> <b>Read the given passage and answer the questions that follow.</b></p><p> <br/> <br/> </p><p> The first clear expression of nationalism came with the French Revolution in 1789. France, as you would remember, was a full-fledged territorial state in 1789 under the rule of an absolute monarch. The political and constitutional changes that came in the wake of the French Revolution led to the transfer of sovereignty from the monarchy to a body of French citizens. The revolution proclaimed that it was the people who would henceforth constitute the nation and shape its destiny. From the very beginning, the French revolutionaries introduced various measures and practices that could create a sense of collective identity amongst the French people. The ideas of <i>la patrie </i>(the fatherland) and <i>le citoyen</i> (the citizen) emphasised the notion of a united community enjoying equal rights under a constitution. A new French flag, the tricolour, was chosen to replace the former royal standard. The Estates General was elected by the body of active citizens and renamed the National Assembly. New hymns were composed, oaths taken and martyrs commemorated, all in the name of the nation. A centralised administrative system was put in place and it formulated uniform laws for all citizens within its territory. Internal customs duties and dues were abolished and a uniform system of weights and measures was adopted. Regional dialects were discouraged and French, as it was spoken and written in Paris, became the common language of the nation. The revolutionaries further declared that it was the mission and the destiny of the French nation to liberate the peoples of Europe from despotism, in other words to help other peoples of Europe to become nations. When the news of the events in France reached the different cities of Europe, students and other members of educated middle classes began setting up Jacobin clubs. Their activities and campaigns prepared the way for the French armies which moved into Holland, Belgium, Switzerland and much of Italy in the 1790s. With the outbreak of the revolutionary wars, the French armies began to carry the idea of nationalism abroad.</p><p> <br/> <br/> </p><p> Which concept from the French Revolution emphasizes the idea of a nation as a united community with shared rights and responsibilities under a constitution?</p><p><br/> </p>",
+      "option1": "<p> Fraternité (Fraternity)</p>",
+      "option2": "<p> Égalité (Equality)</p>",
+      "option3": "<p> La patrie (The fatherland)</p>",
+      "option4": "<p> Liberté (Liberty)</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is C. \"La patrie\" or \"the fatherland\" is a concept that highlights the notion of a united community of citizens with shared rights and responsibilities under a constitution, fostering a sense of national identity during the French Revolution.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Fine arts was seen as European by the British. They felt that Indians lacked training and sensibility to be able to create and appreciate fine arts. By mid and late nineteenth century, art schools were established in major cities like Lahore, Calcutta (now, Kolkata), Bombay (now, Mumbai) and Madras (now, Chennai). These art schools tended to promote traditional Indian crafts, and academic and naturalist art that reflected Victorian tastes. Even the Indian crafts, which received support, were the ones based on European taste and on the demands made by its market. </p><p> it was against this colonial bias that nationalist art emerged, and the Bengal School of Art, as nurtured by Abanindranath Tagore and E. B. Havell, was a prime example. India’s first nationalist art school, Kala Bhavana, was set up in 1919 as part of the newly established Visva-Bharati University in Shantiniketan, conceptualised by poet Rabindranath Tagore. It carried the vision of the Bengal School but also followed its own path in creating art meaningful for Indians. This was the time when the whole world was in a state of intense political turmoil in the wake of World War–I. Apart from the famous Bauhaus exhibition that travelled to Calcutta, modern European art influenced Indian artists through art magazines that were in circulation. Artists from the Tagore family—Gaganendranath and poet–painter Rabindranath, thus, knew about the international trends of Cubism and Expressionism, which had rejected academic realism and experimented with abstraction; They thought that art need not copy the world but create its own world out of forms, lines and colour patches. A landscape, portrait or still life may be called abstract if it draws our attention to an abstract design created by forms, lines and colour patches. Gaganendranath Tagore used the language of Cubism to create a unique style of his own. His paintings of mysterious halls and rooms were made with vertical, horizontal and diagonal lines, which were quite different from the Cubist style of famous artist Pablo Picasso, who invented the style using geometrical facets. Rabindranath Tagore turned to visual art quite late in life. While writing poems, he would often make patterns out of doodles and developed a unique, calligraphic style out of crossed out words. Some of these were turned into human faces and landscapes, which floated captivatingly in his poems. His palette was limited with black, yellow ochre, reds and browns. However, Rabindranath created a small visual world that was a complete departure from the more elegant and delicate style of the Bengal School, which often drew inspiration from Mughal and Pahari miniatures along with Ajanta frescoes.</p><p> <br/> <br/> </p><p> What motivated the emergence of nationalist art, particularly the Bengal School of Art, during the colonial period?</p><p><br/> </p>",
+      "option1": "<p> The desire to promote European art in India</p>",
+      "option2": "<p> The need to preserve traditional Indian crafts</p>",
+      "option3": "<p> The influence of Victorian tastes on Indian artists</p>",
+      "option4": "<p> The colonial bias against Indian artists and their capabilities</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is D. The emergence of nationalist art, such as the Bengal School of Art, was motivated by the colonial bias of the British, who believed that Indians lacked the training and sensibility to create and appreciate fine arts. Nationalist artists aimed to challenge this bias and assert their artistic capabilities.</p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Fine arts was seen as European by the British. They felt that Indians lacked training and sensibility to be able to create and appreciate fine arts. By mid and late nineteenth century, art schools were established in major cities like Lahore, Calcutta (now, Kolkata), Bombay (now, Mumbai) and Madras (now, Chennai). These art schools tended to promote traditional Indian crafts, and academic and naturalist art that reflected Victorian tastes. Even the Indian crafts, which received support, were the ones based on European taste and on the demands made by its market. </p><p> it was against this colonial bias that nationalist art emerged, and the Bengal School of Art, as nurtured by Abanindranath Tagore and E. B. Havell, was a prime example. India’s first nationalist art school, Kala Bhavana, was set up in 1919 as part of the newly established Visva-Bharati University in Shantiniketan, conceptualised by poet Rabindranath Tagore. It carried the vision of the Bengal School but also followed its own path in creating art meaningful for Indians. This was the time when the whole world was in a state of intense political turmoil in the wake of World War–I. Apart from the famous Bauhaus exhibition that travelled to Calcutta, modern European art influenced Indian artists through art magazines that were in circulation. Artists from the Tagore family—Gaganendranath and poet–painter Rabindranath, thus, knew about the international trends of Cubism and Expressionism, which had rejected academic realism and experimented with abstraction; They thought that art need not copy the world but create its own world out of forms, lines and colour patches. A landscape, portrait or still life may be called abstract if it draws our attention to an abstract design created by forms, lines and colour patches. Gaganendranath Tagore used the language of Cubism to create a unique style of his own. His paintings of mysterious halls and rooms were made with vertical, horizontal and diagonal lines, which were quite different from the Cubist style of famous artist Pablo Picasso, who invented the style using geometrical facets. Rabindranath Tagore turned to visual art quite late in life. While writing poems, he would often make patterns out of doodles and developed a unique, calligraphic style out of crossed out words. Some of these were turned into human faces and landscapes, which floated captivatingly in his poems. His palette was limited with black, yellow ochre, reds and browns. However, Rabindranath created a small visual world that was a complete departure from the more elegant and delicate style of the Bengal School, which often drew inspiration from Mughal and Pahari miniatures along with Ajanta frescoes.</p><p> <br/> <br/> </p><p> What does the term \"intense political turmoil\" mean as mentioned in the passage?</p><p><br/> </p>",
+      "option1": "<p> A period of political stability and harmony</p>",
+      "option2": "<p> A time of deep social unrest and conflicts</p>",
+      "option3": "<p> The rise of nationalist movements in India</p>",
+      "option4": "<p> A phase of economic growth and prosperity</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is B. \"Intense political turmoil\" refers to a period of deep social unrest and conflicts, which was prevalent in the whole world in the wake of World War-I, during which India's nationalist art movement also emerged as a response to the colonial bias.</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Fine arts was seen as European by the British. They felt that Indians lacked training and sensibility to be able to create and appreciate fine arts. By mid and late nineteenth century, art schools were established in major cities like Lahore, Calcutta (now, Kolkata), Bombay (now, Mumbai) and Madras (now, Chennai). These art schools tended to promote traditional Indian crafts, and academic and naturalist art that reflected Victorian tastes. Even the Indian crafts, which received support, were the ones based on European taste and on the demands made by its market. </p><p> it was against this colonial bias that nationalist art emerged, and the Bengal School of Art, as nurtured by Abanindranath Tagore and E. B. Havell, was a prime example. India’s first nationalist art school, Kala Bhavana, was set up in 1919 as part of the newly established Visva-Bharati University in Shantiniketan, conceptualised by poet Rabindranath Tagore. It carried the vision of the Bengal School but also followed its own path in creating art meaningful for Indians. This was the time when the whole world was in a state of intense political turmoil in the wake of World War–I. Apart from the famous Bauhaus exhibition that travelled to Calcutta, modern European art influenced Indian artists through art magazines that were in circulation. Artists from the Tagore family—Gaganendranath and poet–painter Rabindranath, thus, knew about the international trends of Cubism and Expressionism, which had rejected academic realism and experimented with abstraction; They thought that art need not copy the world but create its own world out of forms, lines and colour patches. A landscape, portrait or still life may be called abstract if it draws our attention to an abstract design created by forms, lines and colour patches. Gaganendranath Tagore used the language of Cubism to create a unique style of his own. His paintings of mysterious halls and rooms were made with vertical, horizontal and diagonal lines, which were quite different from the Cubist style of famous artist Pablo Picasso, who invented the style using geometrical facets. Rabindranath Tagore turned to visual art quite late in life. While writing poems, he would often make patterns out of doodles and developed a unique, calligraphic style out of crossed out words. Some of these were turned into human faces and landscapes, which floated captivatingly in his poems. His palette was limited with black, yellow ochre, reds and browns. However, Rabindranath created a small visual world that was a complete departure from the more elegant and delicate style of the Bengal School, which often drew inspiration from Mughal and Pahari miniatures along with Ajanta frescoes.</p><p> <br/> <br/> </p><p> What is the predominant tone of the passage?</p><p><br/> </p>",
+      "option1": "<p> Argumentative</p>",
+      "option2": "<p> Persuasive</p>",
+      "option3": "<p> Informative</p>",
+      "option4": "<p> Critical</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is C. The passage primarily provides information and historical context without trying to argue, persuade, or criticize. Its tone is neutral and objective, focused on presenting facts about the colonial perspective on Indian fine arts, the establishment of art schools, the emergence of nationalist art, and the influence of modern European art trends on Indian artists.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> Fine arts was seen as European by the British. They felt that Indians lacked training and sensibility to be able to create and appreciate fine arts. By mid and late nineteenth century, art schools were established in major cities like Lahore, Calcutta (now, Kolkata), Bombay (now, Mumbai) and Madras (now, Chennai). These art schools tended to promote traditional Indian crafts, and academic and naturalist art that reflected Victorian tastes. Even the Indian crafts, which received support, were the ones based on European taste and on the demands made by its market. </p><p> it was against this colonial bias that nationalist art emerged, and the Bengal School of Art, as nurtured by Abanindranath Tagore and E. B. Havell, was a prime example. India’s first nationalist art school, Kala Bhavana, was set up in 1919 as part of the newly established Visva-Bharati University in Shantiniketan, conceptualised by poet Rabindranath Tagore. It carried the vision of the Bengal School but also followed its own path in creating art meaningful for Indians. This was the time when the whole world was in a state of intense political turmoil in the wake of World War–I. Apart from the famous Bauhaus exhibition that travelled to Calcutta, modern European art influenced Indian artists through art magazines that were in circulation. Artists from the Tagore family—Gajendranath and poet–painter Rabindranath, thus, knew about the international trends of Cubism and Expressionism, which had rejected academic realism and experimented with abstraction; They thought that art need not copy the world but create its own world out of forms, lines and colour patches. A landscape, portrait or still life may be called abstract if it draws our attention to an abstract design created by forms, lines and colour patches. Gajendranath Tagore used the language of Cubism to create a unique style of his own. His paintings of mysterious halls and rooms were made with vertical, horizontal and diagonal lines, which were quite different from the Cubist style of famous artist Pablo Picasso, who invented the style using geometrical facets. Rabindranath Tagore turned to visual art quite late in life. While writing poems, he would often make patterns out of doodles and developed a unique, calligraphic style out of crossed out words. Some of these were turned into human faces and landscapes, which floated captivatingly in his poems. His palette was limited with black, yellow ochre, reds and browns. However, Rabindranath created a small visual world that was a complete departure from the more elegant and delicate style of the Bengal School, which often drew inspiration from Mughal and Pahari miniatures along with Ajanta frescoes.</p><p> <br/> <br/> </p><p> How did Gajendranath Tagore's Cubist style differ from Pablo Picasso's Cubism?</p><p><br/> </p>",
+      "option1": "<p> Gajendranath used more vivid colors.</p>",
+      "option2": "<p> Gajendranath’s style was influenced by Mughal miniatures.</p>",
+      "option3": "<p> Gajendranath used vertical, horizontal, and diagonal lines.</p>",
+      "option4": "<p> Gajendranath’s style was based on academic realism.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is C. Gajendranath Tagore's Cubist style utilized vertical, horizontal, and diagonal lines in his paintings of mysterious halls and rooms, which set his work apart from Picasso's Cubism, who used geometrical facets to represent objects.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p> Which of the following is not a tributary of Godavari river?</p><p><br/> </p>",
+      "option1": "<p> Wardha</p>",
+      "option2": "<p> Penganga</p>",
+      "option3": "<p> Tawa</p>",
+      "option4": "<p> Manjira</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Tawa. It is not a tributary of Godavari river, it is the largest tributary of river Narmada. </p><p> Godavari is the longest river in peninsular India. It is also called Ganges of South India. Famous tributaries of Godavari: the Pravara, the Purna, the Manjra, the Penganga, the Wardha,the Wainganga the Pranhita (combined flow of Wainganga, Penganga, Wardha), the Indravati, the Maner and the Sabri.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p> Which of the following states has achieved 100 percent household coverage under the Pradhan Mantri Jan Dhan Yojana (PMJDY)?</p><p><br/> </p>",
+      "option1": "<p> Andhra Pradesh</p>",
+      "option2": "<p> Karnataka</p>",
+      "option3": "<p> Telangana</p>",
+      "option4": "<p> Tamil Nadu</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Telangana. Telangana State has achieved a significant milestone in financial inclusion by attaining 100% coverage of the Pradhan Mantri Jan Dhan Yojana (PMJDY). </p><p> <br/> </p><p> Empowering Every Unbanked Adult The PMJDY is a National Mission for <b>Financial Inclusion</b> that aims to provide affordable access to financial services such as banking, savings and deposit accounts, remittance, credit, insurance, and pension. The primary objective of PMJDY is to ensure that every adult in India has a bank account, facilitating their participation in the formal financial system.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p> From which of the following constitutional amendment Tenth Schedule was added to our constitution?</p><p><br/> </p>",
+      "option1": "<p> 42nd Amendment</p>",
+      "option2": "<p> 44th Amendment</p>",
+      "option3": "<p> 50th Amendment</p>",
+      "option4": "<p> 52nd Amendment</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 52nd Amendment. The reason for the amendment was to stop defection and the politics of ‘Aaya Ram, Gaya Ram’. And this amendment provided for disqualification of members of Parliament and state legislatures on the ground of defection and <b>added a new Tenth Schedule</b> containing the details in this regard.</p><p> <br/> </p><p> 42nd Amendment highlights: Added three new words (i.e., socialist, secular and integrity) in the preamble. Added Fundamental duties by the citizens. Made the president bound by the advice of the cabinet. Provided for administrative tribunals and tribunals for other matters (Added Part XIV A). Froze the seats in the Lok Sabha and state legislative assemblies on the basis of 1971 census till 2001 - Population Controlling Measure. Made the constitutional amendments beyond judicial scrutiny.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p> Who amongst the following died while playing Chaugan or Polo?</p><p><br/> </p>",
+      "option1": "<p> Qutbuddin Aibak</p>",
+      "option2": "<p> Iltutmish</p>",
+      "option3": "<p> Firoj Sah Tughlaq</p>",
+      "option4": "<p> Alaudin Khilji</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Qutbuddin Aibak. He died in 1210 while playing Chaugan or Polo. He was slave of Mohammad Ghori who later made him his Governor. After the death of Ghori, Aibak became the founder of ‘Slave Dynasty’. He constructed two mosques- Quwat-ul-Islam at Delhi and Adhai din ka Jhopara at Ajmer. He also began the construction of Qutub Minar, in the honour of famous Sufi Saint Khwaja Qutubuddin Bakhtiyar Kaki.</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p> Which group of animals are named because of their spiny skin and have a peculiar water-driven tube system that they use for moving around?</p><p><br/> </p>",
+      "option1": "<p> Echinodermata</p>",
+      "option2": "<p> Hemichordata</p>",
+      "option3": "<p> Aschelminthes</p>",
+      "option4": "<p> Mollusca</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Echinodermata. Echinoderms have a spiny endoskeleton. They have radial symmetry as adults but bilateral symmetry as larvae. Echinoderms have a unique water vascular system with tube feet. This allows slow but powerful movement. </p><p> <br/> </p><p> Hemichrodata: Hemichordates are distinguished by a tripartite (threefold) division of the body. At the forward end of the body is a preoral lobe, behind this is a collar, and last comes a trunk. </p><p> Aschelminthes: Aschelminthes are commonly known as roundworms. They are characterized by the presence of a pseudocoelom. It is now an obsolete phylum of invertebrates and the animals grouped under this are now kept in ten different phyla.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p> Mohiniyattam is a classical dance of which state?</p><p><br/> </p>",
+      "option1": "<p> Tamil Nadu</p>",
+      "option2": "<p> Andhra Pradesh</p>",
+      "option3": "<p> Kerala</p>",
+      "option4": "<p> Odisha</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Kerala. Mohiniyattam is one of the two classical dance forms that originated in Kerala, the other one being Kathakali. Mohiniyattam gets its name from the word ‘Mohini’, the feminine form of Lord Vishnu; the word means ‘dance of Mohini’. It is based on Natya Shastra’s Lasya Style. It has delicate movements and more feminine facial expressions. More emphasis is on facial expressions and hand gestures. It is traditionally performed only by women. </p><p> Famous dancers of Mohiniyattam: Sunanda Nair, Kalamandalam Kalyanikutty amma, Jayaprabha Menon, Pallavi Krishnan, Gopika Varma, Vijayalakshmi, Radha Dutta and Rema Shrikant. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p> Recently PM SVANidhi mobile app has been launched by which of the following ministry?</p><p><br/> </p>",
+      "option1": "<p> Ministry of Telecommunication</p>",
+      "option2": "<p> Ministry of Social Justice</p>",
+      "option3": "<p> Ministry of Housing and Urban Affairs</p>",
+      "option4": "<p> Ministry of Rural Development</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Ministry of Housing and Urban Affairs. Housing and Urban Affairs Minister Hardeep Singh Puri launched a PM SVANidhi mobile app for street vendors, to ease the loan application process and provide various information to them regarding the scheme.</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p> Which of the following is caused by Myopia?</p><p> A. Elongation of eye ball along the axis.</p><p> B. Shortening of focal length of eye lens.</p><p> C. Over stretching of ciliary muscle beyond the elastic limit. </p><p><br/> </p>",
+      "option1": "<p> Only A and B</p>",
+      "option2": "<p> Only B and C</p>",
+      "option3": "<p> Only A and C</p>",
+      "option4": "<p> All A, B and C</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option d is the correct answer. </p><p> Myopia/Short Sightedness: A person suffering from myopia can see the near objects clearly while far objects are not clear. It causes- </p><p> Elongation of eye ball along the axis.</p><p> Shortening of focal length of eye lens. </p><p> Over stretching of ciliary muscles beyond the elastic limit. </p><p> Remedy: Diverging lens is used. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p> Which of the following is essential to form haemoglobin in blood?</p><p><br/> </p>",
+      "option1": "<p> Iron</p>",
+      "option2": "<p> Calcium</p>",
+      "option3": "<p> Fats</p>",
+      "option4": "<p> Protein</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is iron. Iron is an essential element for blood production. About 70 percent of your body's iron is found in the red blood cells of your blood called hemoglobin and in muscle cells called myoglobin.</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Which of the following states hold the maximum number of Geographical Indication (GI)-tagged goods as of Sep 2024?</p>",
+      "option1": "<p>Tamil Nadu</p>",
+      "option2": "<p>Uttar Pradesh</p>",
+      "option3": "<p>Bihar</p>",
+      "option4": "<p>West Bengal</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 86,
+      "question": "<p> Chief Minister of which of the following states has declared the state as a total-e-governance state?</p><p><br/> </p>",
+      "option1": "<p> Bihar</p>",
+      "option2": "<p> Kerala</p>",
+      "option3": "<p> Mizoram</p>",
+      "option4": "<p> Tamil Nadu</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Kerala. </p><p> Kerala has become India’s first “total e-governed state.” Building upon its reputation as the first fully-literate state in India. Kerala is referred to as ‘God’s own country. Alappuzha, a city in Kerala, is known as ‘Venice of East. Vasco Da Gama landed in the Kozhikode city of Kerala. The literacy rate of Kerala is 94% and is the highest of all of India. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p> Which of the following is an indirect tax?</p><p><br/> </p>",
+      "option1": "<p> Goods and services tax</p>",
+      "option2": "<p> Capital gains tax</p>",
+      "option3": "<p> Wealth tax</p>",
+      "option4": "<p> Gift tax</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Good and Service Tax (GST). </p><p> Indirect Tax: Indirect tax is the tax levied on the consumption of goods and services. It is not directly levied on the income of a person. Instead, he/she has to pay the tax along with the price of goods or services bought by the seller. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p> Yakshagana is a famous folk dance of which state?</p><p><br/> </p>",
+      "option1": "<p> Odisha</p>",
+      "option2": "<p> Karnataka</p>",
+      "option3": "<p> Kerala</p>",
+      "option4": "<p> Assam</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Karnataka. Yakshagana is a traditional folk dance popular in the coastal districts of Karnataka. This is a distinctive dance form representing mythological and historical stories of India. A lot of effort and details go into the performance of the Yakshagana dance.</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>Which of the following country doesn’t share its border with Iran?</p>",
+      "option1": "<p>Turkmenistan</p>",
+      "option2": "<p>Afghanistan</p>",
+      "option3": "<p>Pakistan</p>",
+      "option4": "<p>Kyrgyzstan</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Kyrgyzstan. It doesn’t share its border with Iran.</p><p>Iran is bounded to the north by Azerbaijan, Armenia, Turkmenistan, and the Caspian Sea; to the east by Pakistan and Afghanistan; to the south by the Persian Gulf and the Gulf of Oman; and to the west by Turkey and Iraq.</p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p> Which of the following is not an ore of Aluminium?</p><p><br/> </p>",
+      "option1": "<p> Bauxite</p>",
+      "option2": "<p> Corundum</p>",
+      "option3": "<p> Cryolite</p>",
+      "option4": "<p> Dolomite</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Dolomite. Dolomite is an ore of Magnesium. </p><p> Bauxite, Corundum, Felspar, Cryolite, Alunite, Kaolin are ores of Aluminium.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p> Which article is related to the Annual Financial Budget?</p><p><br/> </p>",
+      "option1": "<p> Article 110</p>",
+      "option2": "<p> Article 112</p>",
+      "option3": "<p> Article 114</p>",
+      "option4": "<p> Article 124</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Article 112. It is related to the Annual financial budget. </p><p> Article 110: Definition of “Money Bills”. </p><p> Article 114: Appropriation Bills. </p><p> Article 124: Establishment of Supreme court. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p> Which of the following statement is correct?</p><p> <br/> </p><p> The Article 23 of the Indian Constitution forbids employment of children below the age of 14 years in dangerous jobs like factories and mines.</p><p>The Article 24 of the Indian constitution forbids human trafficking and begar (forced labour without payment) to protect the millions of underprivileged and deprived people of the country.</p>",
+      "option1": "<p> Only Statement A</p>",
+      "option2": "<p> Only Statement B</p>",
+      "option3": "<p> Both Statement A and B</p>",
+      "option4": "<p> Neither A Nor B</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Neither A nor B. </p><p> Article 23: It prohibits human trafficking and begar (forced labour without payment) to protect the millions of underprivileged and deprived people of the country. </p><p> Article 24: It forbids employment of children below the age of 14 years in dangerous jobs like factories and mines.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p> Who is the author of the famous book titled “The God of Small Things”?</p><p><br/> </p>",
+      "option1": "<p> Arundhati Roy</p>",
+      "option2": "<p> Sashi Tharoor</p>",
+      "option3": "<p> Ruskin Bond</p>",
+      "option4": "<p> J.K. Rowling</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Arundhati Roy. Her famous books are: The God of Small Things, Azadi, The Algebra of Infinite Justice, The cost of Living, Capitalism: A Ghost Story, Walking With Comrades, Things that can and cannot Be Said, etc. </p><p> Sashi Tharoor Books: An Era of Darkness, Pax Indica, Why I am a Hindu, Nehru: The Invention of India, The great Indian Novel, Pride Prejudice and Punditry, etc. <br/> <br/> </p><p> Ruskin Bond Famous books: The Room on the Roof, The Blue Umbrella, Angry River, Vagrants in the Valley, A Flight of Pigeons, Book of Humour, A Little Book of India: Celebrating 75 years of Independence, The Golden Years: The Many Joys of Living a Good Long Life, etc. </p><p> J.K Rowling Famous Books: Harry Potter, The Ink black Heart, The Christmas Pig. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p> Identify which of the following statements are correct.</p><p> <br/> </p><p> 1.The headquarter of ICAR-Directorate of Groundnut Research is located in Junagarh. </p><p> 2.The headquarter of ICAR-Directorate of Rapeseed &amp; Mustard Research is located in Bharatpur. </p><p> 3.The headquarter of ICAR-Directorate of Soybean Research is located in Indore.</p><p><br/> </p>",
+      "option1": "<p> 2 and 3 only</p>",
+      "option2": "<p> 1 and 3 only</p>",
+      "option3": "<p> 1, 2 and 3</p>",
+      "option4": "<p> 1 and 2 only</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> Option c is the correct answer. </p><p> The headquarter of ICAR-Directorate of Groundnut Research is located in Junagarh. The headquarter of ICAR-Directorate of Rapeseed &amp; Mustard Research is located in Bharatpur. The headquarter of ICAR-Directorate of Soybean Research is located in Indore. </p><p> <br/> </p><p> ICAR, Formerly known as Imperial Council of Agricultural Research, it was established on 16 July 1929 as a registered society under the Societies Registration Act, 1860 in pursuance of the report of the Royal Commission on Agriculture. The ICAR has its headquarters at New Delhi.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p> International Yoga day is observed on which day?</p><p><br/> </p>",
+      "option1": "<p> 2nd February</p>",
+      "option2": "<p> 1st March</p>",
+      "option3": "<p> 20th October</p>",
+      "option4": "<p> 21st June</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 21st June. International Yoga Day is celebrated annually on June 21 with a motive to promote Yoga across the world. J&amp;K Lieutenant Governor Manoj Sinha led the celebrations at the Botanical Garden on the banks of Dal Lake in Srinagar.</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p> Which of the following is the study of insects and their relationship to humans, the environment, and other organisms?</p><p><br/> </p>",
+      "option1": "<p> Entomology</p>",
+      "option2": "<p> Ethology</p>",
+      "option3": "<p> Ornithology</p>",
+      "option4": "<p> Mycology</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Entomology. It is the study of insects and encompasses the biological, agricultural, and environmental sciences related to insects and their interaction with humans and other organisms. </p><p> Ethology: Ethology is the scientific study of animal behavior—including animal communication, predation, defense, aggression, mating, imprinting, fixed action patterns and releasers, and migration—most often in their natural conditions. </p><p> <br/> </p><p> Ornithology: It is a branch of zoology which deals with the study of birds. </p><p> Mycology: <b>Mycology</b> is the branch of biology concerned with the study of fungi, including their genetic and biochemical properties, their taxonomy and their use to humans, including as a source for tinder, traditional medicine, food, and entheogens, as well as their dangers, such as toxicity or infection.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p> Girnar Hills is located in which of the following state?</p><p><br/> </p>",
+      "option1": "<p> Gujarat</p>",
+      "option2": "<p> Himachal Pradesh</p>",
+      "option3": "<p> Uttarakhand</p>",
+      "option4": "<p> Jharkhand</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Gujarat. Famous hills in Gujarat are: Satpura, Wilson Hills, Don Hills, Girnar hills. </p><p> <br/> </p><p> Himachal Pradesh: Dalhousie, Dharamshala, Kasauli, Kullu valley, Manali, Shimla, Solan, Keylong, Khajjiar, Kufri, Kiarighat, Chail, Chamba, Chitkul. </p><p> <br/> </p><p> Uttarakhand: Almora, Lansdowne, Mussoorie, Nainital. </p><p> Jharkhand: Netarhat, Sati Hills, Ranchi, Parasnath Hills, Khandoli Pahari.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p> Bordo Cham is a famous folk dance of which state?</p><p><br/> </p>",
+      "option1": "<p> Arunachal Pradesh</p>",
+      "option2": "<p> Nagaland</p>",
+      "option3": "<p> Meghalaya</p>",
+      "option4": "<p> Manipur</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Arunachal Pradesh. Bordo Cham is a famous dance of Arunachal Pradesh. </p><p> Famous dance of Arunachal Pradesh: Bordo Cham, Buiya, Wancho Dance, Ponung. </p><p> Nagaland: Chang Lo</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p> Ibn Batuta is a famous traveller who came to India, He was from which country?</p><p><br/> </p>",
+      "option1": "<p> Damascus</p>",
+      "option2": "<p> Moroccan</p>",
+      "option3": "<p> Portugal</p>",
+      "option4": "<p> Iran</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is Moroccan. He was a Morrish traveller, he visited India during the reign of Muhammad-bin-Tughlaq. His book ‘Rehla’ (the Travelogue) throws a lot of light on the reign of Muhammad-bin-Tughlaq and the geographical, economic and social conditions in India.</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p> Boycott of Simon Commission and broadcasting started in India in which of the following year?</p><p><br/> </p>",
+      "option1": "<p> 1920</p>",
+      "option2": "<p> 1927</p>",
+      "option3": "<p> 1942</p>",
+      "option4": "<p> 1945</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is 1927. Boycott of Simon Commission and broadcasting started in India in 1927. </p><p> Khilafat Movement was launched in 1920. </p><p> In 1942 Cripps mission arrived in India, Quit India Movement launched (August 8). </p><p> In 1945: Trial of Indian National Army at Red Fort; Shimla Conference; World War II ends. </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image001.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image002.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image003.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image004.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image005.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image002.jpeg"
+    },
+    {
+      "sr_no": 102,
+      "question": "<p>Kishna is uncle of Sandhya who is only daughter of Mahesh. Durgesh is brother of Mahesh who is husband of Minakshi. Raksha has only two sons. Sandhya is granddaughter of Tushar. Raksha is wife of Tushar. How Raksha is related to Minakshi?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image006.png"
+    },
+    {
+      "sr_no": 103,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image007.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image008.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image009.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image010.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image011.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image012.jpeg"
+    },
+    {
+      "sr_no": 104,
+      "question": "<p>Statement: The significant decline in sale of a specific product has raised significant concerns within the company.</p><p>Course of action:</p><p>I. The company ought to conduct a thorough analysis of competing products in the market.</p><p>II. To enhance the product, there should be a reduction in price accompanied by an improvement in quality.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Clearly, a study of rival products in the market will help assess the cause for the lowering down of sales and then a suitable action can be taken. Thus, only I follow.</p><p>Hence, option C is correct answer.</p>"
+    },
+    {
+      "sr_no": 105,
+      "question": "<p>Q. Six people, M, N, O, P, Q, and R are sitting in a straight line, facing south. Who is sitting at the second to the right of Q?</p><p>Statements:</p><p>(I) Q sits between M and O. O is not sitting beside P who is sitting on extreme right.</p><p>(II) M is not sitting beside R and P. N is between R and P.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image013.png"
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>264, 310, ?, 414, 472</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image014.png"
+    },
+    {
+      "sr_no": 107,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image015.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image016.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image017.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image018.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image019.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image020.jpeg"
+    },
+    {
+      "sr_no": 108,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image021.jpeg",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image022.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image023.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image024.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image025.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image023.jpeg"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>eight people – Divya, Dev, Piyush, Shiv, Nisha, Geeta, Bhavna, and Govinda are sitting around a circular table facing the centre. Who sits forth to the left of Divya?</p><p>(I) Nisha is third to the left of Bhavna. Dev and Piyush are neighbours. Divya is sitting opposite to Geeta. Shiv is an immediate neighbour of Bhavna.</p><p>(II) Dev and Govinda are sitting opposite to each other. There are two people sitting between Nisha and Geeta.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image026.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "<p>Statement:</p><p>Some Earrings are Pendant.</p><p>All Lockers are key.</p><p>Some Pendants are key.</p><p>Conclusions:</p><p>(I) Some Earring are key.</p><p>(II) Some Lockers are Earring.</p><p>(III) Some keys are Pendant.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image027.png"
+    },
+    {
+      "sr_no": 111,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image028.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image029.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image030.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image031.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image032.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image032.jpeg"
+    },
+    {
+      "sr_no": 112,
+      "question": "<p># : PMV :: KJE : %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image033.png"
+    },
+    {
+      "sr_no": 113,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image034.png"
+    },
+    {
+      "sr_no": 114,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image035.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image036.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image037.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image038.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image039.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image037.jpeg"
+    },
+    {
+      "sr_no": 115,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image040.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image041.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image042.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image043.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image044.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image044.jpeg"
+    },
+    {
+      "sr_no": 116,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Except Mysore, all are the capitals</p>"
+    },
+    {
+      "sr_no": 117,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image045.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image046.png"
+    },
+    {
+      "sr_no": 119,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image047.png"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>I. Over the last five years 42% of the Company R’s manpower was laid off.</p><p>II. Over the past five years Company R has sold off many of their major assets.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>I. Over the last five years 42% of the Company R’s manpower was laid off. This statement talk about negative outcomes that the company R’s manpower was laid off due to various reason like financial difficulty, and management changes. </p><p>II. Over the past five years Company R has sold off many of their major assets. This statement is also talk about negative outcomes that the company R has sold off many of their major assets due to various reason like financial difficulty, management changes. </p><p>So, Both I and II are effects of a common cause.</p><p>Hence, option b is correct answer. </p>"
+    },
+    {
+      "sr_no": 121,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image048.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image049.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image050.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image051.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image052.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image050.jpeg"
+    },
+    {
+      "sr_no": 122,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>If Y % W # B @ U &amp; A @ M, then how is Y related to A?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image053.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "<p>R B Q _ V R _ Q _ V _ B _ F V R _ Q G _</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>R B Q D V/ R B Q E V/ R B Q F V/ R B Q G V.</p>"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>Statement: “If you are a software engineer, we want you as our developer.” An advertisement by company Y.</p><p>Inferences:</p><p>I. Software engineer are expected to be better performers by company Y.</p><p>II. The company Y needs developer.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>I is not implicit. The company wants software engineers. One reason could be that the company excepts software engineers to be good performers, as I suggest. But there could be another reason; for example, the company’s developer job could be such that only a software engineer could perform it. But one thing is certain. The advertisement was for developers; this means developers are needed. Hence II is implicit.</p><p>Hence, option B is correct.</p>"
+    },
+    {
+      "sr_no": 125,
+      "question": "<p>11 * 8 * 375 * 5 * 41 = 122</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image054.png"
+    },
+    {
+      "sr_no": 126,
+      "question": "<p>56 ÷ 16 + 4 – 111 × 37 = ?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image055.png"
+    },
+    {
+      "sr_no": 127,
+      "question": "<p>(NOTE): Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g. 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(28, 49, 70), (31, 54, 77)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image056.png"
+    },
+    {
+      "sr_no": 128,
+      "question": "<p>P = 1, C = 2, T = 3, M = 4, R = 5, O = 6, E = 7, U = 8</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image057.png"
+    },
+    {
+      "sr_no": 129,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image058.png"
+    },
+    {
+      "sr_no": 130,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image059.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711523273478_image059.png"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 8</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

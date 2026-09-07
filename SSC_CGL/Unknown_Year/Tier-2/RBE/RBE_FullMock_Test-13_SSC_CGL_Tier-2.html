@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL T-2 Mock 13</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL T-2 Mock 13</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 30,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "<p> If a sum of money compounded annually becomes 1.4161 times of itself in 2 years, then the rate on interest per half year is</p><p><br/> </p>",
+      "option1": "<p> 19% </p>",
+      "option2": "<p> 20% </p>",
+      "option3": "<p> 9.5% </p>",
+      "option4": "<p> 10%</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_581827fe9c080fcd.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_139342604a7b707a.gif",
+      "option1": "<p> 1 : abc </p>",
+      "option2": "<p> abc : 1 </p>",
+      "option3": "<p> 1 : 1 </p>",
+      "option4": "<p> ab : c</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_94ac0ec0903c72e4.gif"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p> What is to be subtracted from 44% of 250 so that the sum is equal to one-third of 12% of 625?</p><p><br/> </p>",
+      "option1": "<p> 65 </p>",
+      "option2": "<p> 85</p>",
+      "option3": "<p> 75</p>",
+      "option4": "<p> 55</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_87c196e32387869c.jpg"
+    },
+    {
+      "sr_no": 4,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_4954ad72c002102.gif",
+      "option1": "<p> 270 m</p>",
+      "option2": "<p> 276 m</p>",
+      "option3": "<p> 272 m</p>",
+      "option4": "<p> 275 m</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_fa09cd4be6cee848.png"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p> A does one third as much work as B in 4/9th of the time. If together they can complete a work in 16 days, in how many days B alone can complete the work:</p><p><br/> </p>",
+      "option1": "<p> 28 days</p>",
+      "option2": "<p> 15 days</p>",
+      "option3": "<p> 20 days</p>",
+      "option4": "<p> 36 days</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_81836d67f4e176b5.jpg"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p> By selling an article for Rs.600, a person gains 33.33% of its selling price. At what price (in Rs.) should he sell it to gain 25% on its cost price?</p><p><br/> </p>",
+      "option1": "<p> 500</p>",
+      "option2": "<p> 525</p>",
+      "option3": "<p> 475</p>",
+      "option4": "<p> 550</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_390db6f2f42f5e09.png"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p> Find the variance of the given data.</p><p> 6, 7, 10, 12, 13, 4, 8, 12</p><p><br/> </p>",
+      "option1": "<p> 10.5</p>",
+      "option2": "<p> 9.25</p>",
+      "option3": "<p> 5.5</p>",
+      "option4": "<p> 5.25</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_d2085a934844bf9a.png"
+    },
+    {
+      "sr_no": 8,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_b2f0d4a926f0756c.gif",
+      "option1": "<p>4</p>",
+      "option2": "<p>12</p>",
+      "option3": "<p>1/4</p>",
+      "option4": "<p>6</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.securevideo.in/paperimages/1727678862_1727678862395391_thump.png"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p> ABCDEF is a regular hexagon of side 12 cm. What is the area of the triangle ECD (cm2)?</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_bdd5331ff86f145e.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_bdd5331ff86f145e.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_bdd5331ff86f145e.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_bdd5331ff86f145e.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_f00097650a856e58.gif"
+    },
+    {
+      "sr_no": 10,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_b468317dd065f9c2.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_c5d7e99dfed0f799.gif",
+      "option2": "<p> 1</p>",
+      "option3": "<p> 0</p>",
+      "option4": "<p> 2</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_53c5b8744823b5ba.png"
+    },
+    {
+      "sr_no": 11,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_1692c07efafe40cc.png",
+      "option1": "<p> only I</p>",
+      "option2": "<p> only II</p>",
+      "option3": "<p> I and II both</p>",
+      "option4": "<p> neither I nor II</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_6d732d1417f4dee.gif"
+    },
+    {
+      "sr_no": 12,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_574a2f467b2c52f1.gif",
+      "option1": "<p> 980</p>",
+      "option2": "<p> 1180 </p>",
+      "option3": "<p> 820 </p>",
+      "option4": "<p> 1000</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_c00ad58f7f87cdc0.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p> A money lender find that due to fall in the annual interest rate from 8 (1/4)% to 7(3/4)%, his yearly income diminishes by Rs 61.50. His capital is?</p><p><br/> </p>",
+      "option1": "<p> 11300</p>",
+      "option2": "<p> 11600</p>",
+      "option3": "<p> 11900</p>",
+      "option4": "<p> 12300</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_76ed6beaf396aa19.png"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p> Shubham can complete a work in 14 days working 3hr/day. Ravi can finish the same work in 7 days working 9hrs/day. In how many days, they together can finish 200% the work, working 2 hours/ day.</p><p><br/> </p>",
+      "option1": "<p> 25.2</p>",
+      "option2": "<p> 27.6</p>",
+      "option3": "<p> 22.6</p>",
+      "option4": "<p> 24.2</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_ff4fe66c69bf2d12.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p> The average age of Ram, his wife and their child 3 years ago was 27 years and that of his wife and their child 6 years ago was 20 years. Find the present age of Ram.</p><p><br/> </p>",
+      "option1": "<p> 37 years</p>",
+      "option2": "<p> 38 years</p>",
+      "option3": "<p> 39 years</p>",
+      "option4": "<p> 40 years</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_db1439b96bbd472.jpg"
+    },
+    {
+      "sr_no": 16,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_83eade9a18dc29c4.gif",
+      "option1": "<p> 4/3 </p>",
+      "option2": "<p> 0</p>",
+      "option3": "<p> 2/3 </p>",
+      "option4": "<p> 1/3</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_a677565ef6ff785a.gif"
+    },
+    {
+      "sr_no": 17,
+      "question": "<p> If a number is 40% more than that of the second number and the second number is 20 % less than that of the third number. Find how much percent is the 60% of the third number less than the sum of the first and the second number?</p><p><br/> </p>",
+      "option1": "<p> 68.75</p>",
+      "option2": "<p> 37.5</p>",
+      "option3": "<p> 33.33 </p>",
+      "option4": "<p> 20.83</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_b5eb1ac98f228922.jpg"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p> Given that the lengths of the paths of a ball thrown with different speeds by two boys are the same, if they take 0.615 seconds and 3 second respectively to cover the said length, what is the average speed of travel for the first throw, if the same for the second is 54.53 km/h?</p><p><br/> </p>",
+      "option1": "<p> 216 km/h </p>",
+      "option2": "<p> 224 km/h</p>",
+      "option3": "<p> 256 km/h</p>",
+      "option4": "<p> 266 km/h</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_885bb473e7ecf65a.gif"
+    },
+    {
+      "sr_no": 19,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_94491e5e7c2f9891.gif",
+      "option1": "<p> 1:1:2 </p>",
+      "option2": "<p> 3:1:2 </p>",
+      "option3": "<p> 3:2:1 </p>",
+      "option4": "<p> 1:2:3</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_d6dcbf1fa473dd44.jpg"
+    },
+    {
+      "sr_no": 20,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_b52a9aee76753981.gif",
+      "option1": "<p> 198 </p>",
+      "option2": "<p> 200 </p>",
+      "option3": "<p> 204 </p>",
+      "option4": "<p> 208</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_118f851b952b076a.png"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p> Six coins each of radius r cm are kept close to each other. A rubber binds them as tightly as possible. What is the length of fully stretched rubber?</p><p><br/> </p>",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_dda7a2b3de5a35c3.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_980bcc795167835c.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_67fee322a9bad360.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_f9784c267995d4fe.gif",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_c519637cf14d1d23.png"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p> The average of 71 consecutive natural numbers is N. Dropping the first 12 numbers and including the next 12 numbers, the average is changed to M. If the value of M2 – N2 = 360, then find (M/N)?</p><p><br/> </p>",
+      "option1": "<p> 5/3</p>",
+      "option2": "<p> 7/3</p>",
+      "option3": "<p> 10/3</p>",
+      "option4": "<p> 11/3</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_aa69b60cf69e3179.gif"
+    },
+    {
+      "sr_no": 23,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_db0bab760f8b4499.gif",
+      "option1": "<p> 25/77</p>",
+      "option2": "<p> 35/73</p>",
+      "option3": "<p> 35/77</p>",
+      "option4": "<p> 25/73</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_93147094ec7a0533.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_a0fa21055e8c6bac.gif",
+      "option1": "<p> 196 </p>",
+      "option2": "<p> 194 </p>",
+      "option3": "<p> 206 </p>",
+      "option4": "<p> 182</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_c677e6f0ccca7fd7.png"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p> Two cards are drawn at random and without replacement from a pack of 52 playing cards. Find the probability that both the cards are black.</p><p><br/> </p>",
+      "option1": "<p> 1/26</p>",
+      "option2": "<p> 1/13</p>",
+      "option3": "<p> 23/102</p>",
+      "option4": "<p> 25/102</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_80525b169307f211.png"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p> A and B together can complete a work in 9/4 days. However, A alone completes the 1/3 work and leaves then B completes the remaining work alone. Thus, it took 5 days in all to complete the work. If B is more efficient than A, then in how many days he will complete the whole work alone?</p><p><br/> </p>",
+      "option1": "<p> 4</p>",
+      "option2": "<p> 6</p>",
+      "option3": "<p> 3</p>",
+      "option4": "<p> 5</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_69f3634cfcb82e76.png"
+    },
+    {
+      "sr_no": 27,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_ff6768d03f4df584.png",
+      "option1": "<p> 31</p>",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_cb2dd33c313ec5fe.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_cb2dd33c313ec5fe.gif",
+      "option4": "<p> 25</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_563bd6e7bebf3111.gif"
+    },
+    {
+      "sr_no": 28,
+      "question": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_8924de6aa6303f3a.gif",
+      "option1": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_4aa767fb748190c5.gif",
+      "option2": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_b9c914abaea825a7.gif",
+      "option3": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_51a66f1983c9915c.gif",
+      "option4": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_b1ea71ebfa7e1800.gif",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_370e99245e8035ef.png"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p> In an examination the no. of students who passed and the number of students who failed were in the ratio 22:3. If 5 more student had appeared and the number of failed students was 5 less than earlier, the ratio of passed students to failed students would have become 12:1. What is the difference between the number of students who, initially, passed the examination and the number of students who failed the examination?</p><p><br/> </p>",
+      "option1": "<p> 82 </p>",
+      "option2": "<p> 76 </p>",
+      "option3": "<p> 125 </p>",
+      "option4": "<p> 95</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_787c6c900d808409.jpg"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p> Ajay sold an article for Rs 4,400 and incurred a loss. Had he sold it for Rs 6050, his gain would have been half of the amount of loss that he incurred. At what price should he sell the article to get a 9 1/11% profit?</p><p><br/> </p>",
+      "option1": "<p> Rs. 6500</p>",
+      "option2": "<p> Rs. 5500</p>",
+      "option3": "<p> Rs. 6000</p>",
+      "option4": "<p> Rs. 5000</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appxcontent.kaxa.in//bulk_uploader_images/1693307902676_html_25ba06fa1f5599dc.png"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p> Select the option that expresses the given sentence in Active/Passive voice.</p><p> This matchstick box contains forty matchsticks.</p>",
+      "option1": "<p> forty matchsticks are contained in this matchstick box.</p>",
+      "option2": "<p> forty matchsticks is contained in this matchstick box.</p>",
+      "option3": "<p> forty matchsticks are contained this matchstick box.</p>",
+      "option4": "<p> forty matchsticks is contained this matchstick box.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is option a.</p><p> Rule:</p><p> Certain verbs take fixed preposition after them that replaces the ‘by’ of ‘by + sub’.</p><p> <b>Known to, surprised at/by, astonished at, startled at, amazed at, vexed at, annoyed with somebody, annoyed at something, </b><i><u><b>contained in,</b></u></i><b> embodied in, crammed with, decorated with, filled with, ornamented with, thronged with, tired of, engulfed in.</b></p><p> Hence, the correct passive of the given sentence is:</p><p> <b>This matchstick box contains forty matchsticks. ------ forty matchsticks are contained in this matchstick box.</b></p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p>Sentence of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p>(A) The city's rich history is evident in its architecture and landmarks.</p><p>(B) Many tourists visit the city to explore its cultural heritage.</p><p>(C) Its museums, theaters, and historic sites offer a glimpse into the past.</p><p>(D) In recent years, the city has also become a hub for technology and innovation.</p><p>(E) This blend of tradition and modernity makes the city a captivating destination.</p>",
+      "option1": "<p>BACED</p>",
+      "option2": "<p>BACDE</p>",
+      "option3": "<p>ACBDE</p>",
+      "option4": "<p>ECABD</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is c.</p><p><strong>Explanation:</strong></p><p>This arrangement flows logically, starting with the city’s historical aspects and moving towards its modern developments, concluding with the unique blend that makes the city appealing.</p><p>So, the correct order is: ACBDE. Option C) is the correct answer.</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p> Select the option that expresses the given sentence in reported speech. </p><p> She says, “I am going to the movie now.”</p>",
+      "option1": "<p> She says that she is going to the movie then.</p>",
+      "option2": "<p> She said that she was going to the movie then.</p>",
+      "option3": "<p> She says that she is going to the movie now.</p>",
+      "option4": "<p> She said that she was going to the movie now.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is option c.</p><p> <b>Rule for converting Direct into Indirect speech:</b></p><p> <b>If the reporting verb is in ‘present’ or ‘future tense’, there shall be no change in the tense of the reported speech.</b></p><p> ‘<b>Comma’</b> and <b>‘inverted commas’</b> are removed and <b>‘that’</b> is used while changing the sentence into <b>indirect speech</b>.</p><p> <b>Says/ said remains unchanged in indirect speech.</b></p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p> Select the option that expresses the given sentence in active/passive voice.</p><p> Let Shreya’s cousin be given a chance</p>",
+      "option1": "<p> Give a chance for Shreya’s cousin</p>",
+      "option2": "<p> Give Shreyas’ cousin a chance.</p>",
+      "option3": "<p> Shreya’s cousin will give a chance </p>",
+      "option4": "<p> Let a chance be given to Shreya’s cousin.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Rule of Imperative sentence with object:</b></p><p> <b>Let + object + be + V3</b></p><p> <b>Give Shreya’s cousin a chance. ------- Let Shreya’s cousin be given a chance.</b></p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p> Sentence of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) This seamless connectivity has transformed the way we share information and stay connected with each other.</p><p> (B) In the past, communication was limited by distance and time constraints.</p><p> (C) Additionally, advancements in artificial intelligence have led to more personalized and efficient communication platforms.</p><p> (D) The widespread use of smartphones and the internet has revolutionized the field of communication.</p><p> (E) Nowadays, instant messaging, social media, and video conferencing have become integral parts of our daily lives.</p>",
+      "option1": "<p> BDACE</p>",
+      "option2": "<p> DBACE</p>",
+      "option3": "<p> BDEAC</p>",
+      "option4": "<p> DCABE</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Explanation:</b></p><p> The paragraph discusses the impact of technology on modern communication.</p><p> Sentence D introduces the idea that smartphones and the internet have revolutionized communication.</p><p> Sentence B explains that in the past, communication was limited by distance and time constraints.</p><p> Sentence A talks about how seamless connectivity has transformed the sharing of information and staying connected.</p><p> Sentence C elaborates on advancements in artificial intelligence leading to more personalized and efficient communication platforms.</p><p> Sentence E concludes by mentioning that instant messaging, social media, and video conferencing are now integral to daily life.</p><p> So, the correct order is: DBACE. Option (b) is the correct answer. </p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p> Sentence of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) However, there are also concerns about income inequality and the disparity between urban and rural areas.</p><p> (B) The Indian economy has shown remarkable growth in recent years, becoming one of the world's fastest-growing economies.</p><p> (C) India's diverse workforce and expanding middle class present opportunities for sustained economic development.</p><p> (D) The government has implemented various reforms to attract foreign investment and promote industrial growth.</p><p> (E) Despite these achievements, the country faces challenges such as unemployment and inflation.</p>",
+      "option1": "<p> BDCEA</p>",
+      "option2": "<p> BDCAE</p>",
+      "option3": "<p> BACDE</p>",
+      "option4": "<p> DBCAE</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a.</p><p> <b>Explanation:</b></p><p> The paragraph discusses the challenges and prospects of the Indian economy.</p><p> Sentence B introduces the topic by mentioning the remarkable growth of the Indian economy.</p><p> Sentence D follows by explaining that the government has implemented reforms to attract foreign investment and promote industrial growth.</p><p> Sentence C elaborates on India's diverse workforce and expanding middle class, which offer opportunities for economic development.</p><p> Sentence E highlights the challenges the country faces, including unemployment and inflation.</p><p> Sentence A concludes by mentioning concerns about income inequality and urban-rural disparity.</p><p> So, the correct order is: BDCEA. Option (a) is the correct answer.</p><p> <i><b>The Indian economy has shown remarkable growth in recent years, becoming one of the world's fastest-growing economies. The government has implemented various reforms to attract foreign investment and promote industrial growth. India's diverse workforce and expanding middle class present opportunities for sustained economic development. Despite these achievements, the country faces challenges such as unemployment and inflation. However, there are also concerns about income inequality and the disparity between urban and rural areas.</b></i></p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p> Select the option that expresses the given sentence in direct speech.</p><p> Abhishek said to Sunita, “are you coming?”</p><p> <br/> </p>",
+      "option1": "<p> Abhishek asked Sunita whether are you coming.</p>",
+      "option2": "<p> Abhishek asked Sunita whether she was coming.</p>",
+      "option3": "<p> Abhishek asked Sunita that she was coming.</p>",
+      "option4": "<p> Abhishek asked Sunita that was she coming.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Rule of interrogative sentence:</b></p><p> <b>Change ‘said to’ into asked, question, inquired or interrogated.</b></p><p> ‘<b>Question mark (?)’ should be changed into ‘full stop’</b></p><p> <b>The given sentence will not be in interrogative form in Indirect Speech. </b> </p><p> <b>If question can be answered in ‘yes or no’ ‘if/whether’ will be used. But if question is of ‘wh family’ no conjunction will be used.</b></p><p> <b>Thus, Abhishek said to Sunita, “are you coming?” ------ Abhishek asked Sunita whether she was coming.</b></p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p> Select the sentence which has CORRECTLY spelt word.</p>",
+      "option1": "<p> The movie eventually became a cultural phenomen.</p>",
+      "option2": "<p> The movie eventually became a cultural phenomenon.</p>",
+      "option3": "<p> The movie eventualy became a cultural phenomenon.</p>",
+      "option4": "<p> The movie eventually became a culturl phenomenon.</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is b.</p><p> <b>Phenomenon:</b> a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question.</p><p> <b>Eventually:</b> in the end, especially after a long delay, dispute, or series of problems.</p><p> <b>Cultural: </b>relating to the ideas, customs, and social behaviour of a society.</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p> Select the most appropriate One Word Substitution of the given group of words.</p><p> Indifferent to pleasure and pain</p>",
+      "option1": "<p> Cynic</p>",
+      "option2": "<p> Stoic</p>",
+      "option3": "<p> Lusty</p>",
+      "option4": "<p> Prudent</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is b. </p><p> <b>Stoic: </b>a person who can endure pain or hardship without showing their feelings or complaining.</p><p> <b>Cynic: </b>a person who believes that people are motivated purely self-interest rather than acting for honourable or unselfish reasons.</p><p> <b>Lusty: </b>healthy and strong; full of vigour.</p><p> <b>Prudent: </b>acting with or showing care and thought for the future.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> He ______ complained and was always in a bad mood.</p><p> <br/> </p>",
+      "option1": "<p> Constantly</p>",
+      "option2": "<p> Competency</p>",
+      "option3": "<p> Commonly</p>",
+      "option4": "<p> mostly</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is A.</p><p> <b>Constantly: </b>continuously over a period of time; always.</p><p> <b>Competency: </b>the ability to do something successfully or efficiently.</p><p> <b>Commonly: </b>very often; frequently.</p><p> <b>Mostly:</b> usually; generally.</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p> Select the option that will improve the underlined part of the given sentence. In case no improvement is needed, select ‘No improvement required’.</p><p> <i><b>It has been announcing</b></i> that the train will be late by an hour.</p>",
+      "option1": "<p> It is announcing</p>",
+      "option2": "<p> It has announced</p>",
+      "option3": "<p> It has been announced</p>",
+      "option4": "<p> No Improvement required</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is c.</p><p> ‘<b>It has been announcing’</b> is incorrectly used.</p><p> ‘<b>Has been’</b> is used in <b>present perfect tense</b>. With <b>present perfect tense third form of verd is used</b>.</p><p> Thus, ‘<b>announced’</b> must be replaced with <b>‘announcing’.</b></p><p> Hence the correct sentence will be: <b>It has been announced that the train will be late by an hour.</b></p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p> Select the most appropriate idiom of the given sentence.</p><p> Challenging situations, there is often a positive or hopeful aspect to be found</p>",
+      "option1": "<p> Every cloud has a silver lining.</p>",
+      "option2": "<p> birds of a feather flock together.</p>",
+      "option3": "<p> Don’t cry over spilled milk.</p>",
+      "option4": "<p> Barking up the wrong tree.</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a.</p><p> <b>Every cloud has a silver lining: </b>every difficult or sad situation has a comforting or more hopeful aspect, even though this may not be immediately apparent.</p><p> <b>Birds of a feather flock together:</b> people of the same sort or with same tastes and interests will be found together.</p><p> <b>Don’t cry over spilled milk:</b> there is no use in worrying over past events which cannot be changed.</p><p> <b>Barking up the wrong tree:</b> trying to do something in a way that will not work.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the correct order to form a meaningful and coherent paragraph.</p><p> (A) Consumers now have the convenience of shopping from the comfort of their homes and accessing a wide range of products online.</p><p> (B) Traditional brick-and-mortar stores have faced increasing competition from e-commerce platforms.</p><p> (C) Additionally, e-commerce has opened up opportunities for small businesses and entrepreneurs to reach a global customer base.</p><p> (D) The rise of e-commerce has led to changes in consumer behaviour, with more people opting for online shopping.</p><p> (E) This shift towards online shopping has prompted retailers to enhance their digital presence and offer seamless shopping experiences.</p><p> <br/> </p>",
+      "option1": "<p> BDAEC</p>",
+      "option2": "<p> DBAEC</p>",
+      "option3": "<p> BADEC</p>",
+      "option4": "<p> DBEAC</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Explanation:</b></p><p> The paragraph discusses the impact of e-commerce on modern retail.</p><p> Sentence D introduces the idea that the rise of e-commerce has changed consumer behaviour and led to more online shopping.</p><p> Sentence B follows by explaining the increasing competition traditional brick-and-mortar stores face from e-commerce platforms.</p><p> Sentence A elaborates on the convenience for consumers to shop online and access a wide range of products.</p><p> Sentence E discusses how this shift towards online shopping has prompted retailers to enhance their digital presence.</p><p> Sentence C concludes by mentioning that e-commerce has also provided opportunities for small businesses to reach a global customer base.</p><p> So, the correct order is: DBAEC. Option (b) is the correct answer.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p> Select the option that expresses the given sentence in passive voice.</p><p> Prepare yourself for the worst.</p><p> <br/> </p>",
+      "option1": "<p> The worst should be prepared by yourself.</p>",
+      "option2": "<p> You be prepared for the worst</p>",
+      "option3": "<p> you should be prepared for the worst.</p>",
+      "option4": "<p> Be prepared for the worst.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> the correct answer is d.</p><p> The question is in imperative form. Hence, (Be + V3) form is the correct answer.</p><p> <b>Prepare yourself for the worst</b> ------ <b>be prepare for the worst.</b></p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom in the given sentence.</p><p> Further success came <b>hot on the heels of</b> her first best-selling novel.</p>",
+      "option1": "<p> unexpected and sudden</p>",
+      "option2": "<p> with a lot of effort and hard work</p>",
+      "option3": "<p> To happen very soon after something</p>",
+      "option4": "<p> feeling of pride and accomplishment.</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is C.</p><p> <b>Hot on the heels of:</b> it is often used to convey the idea that one event or situation is closely following another, typically in a rapid or immediate manner. </p><p> In the given sentence, the author is describing how additional success followed very closely after the initial success of her first best-selling novel.</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p> Select the most appropriate ANTONYM of the given word.</p><p> Demur</p>",
+      "option1": "<p> Comply</p>",
+      "option2": "<p> Balk</p>",
+      "option3": "<p> Resist</p>",
+      "option4": "<p> Protest</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a.</p><p> <b>Demur:</b> raise objections or show reluctance.</p><p> <b>Comply:</b> act in accordance with a wish or command.</p><p> <b>Balk:</b> hesitate or be unwilling to accept an idea or undertaking.</p><p> <b>Resist:</b> refrain from doing or having (something tempting or unwise).</p><p> <b>Protest:</b> a statement or action expressing disapproval of or objection to something.</p><p> Hence, <b>‘comply’</b> is the antonym of <b>‘Demur’.</b></p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p> Select the most appropriate meaning of the highlighted idiom.</p><p> I am afraid of nothing because I drink <b>Adam’s ale.</b></p>",
+      "option1": "<p> Wine</p>",
+      "option2": "<p> Protein shake</p>",
+      "option3": "<p> Water</p>",
+      "option4": "<p> Juice</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is c.</p><p> <b>Adam’s ale:</b> water.</p><p> <b>Example:</b> If Rishi tired, let him have a glass of <b>Adam’s ale</b> from the tap.</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> Riches are uncertain things, and the fame/ that power give or is won by foul means/ is as short-lived as the dewdrop. / No error.</p>",
+      "option1": "<p> Riches are uncertain things, and the fame</p>",
+      "option2": "<p> that power give or is won by foul means</p>",
+      "option3": "<p> is as short-lived as the dewdrop</p>",
+      "option4": "<p> No error</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> Rule:</p><p> Here, Power is Singular and hence it should be followed by a Singular verb.</p><p> ‘<b>Power give’</b> should be changed to <b>‘Power gives.’</b></p><p> <b>Correct sentence: Riches are uncertain things, and the fame that power ‘gives’ or is won by foul means is as short-lived as the dewdrop.</b></p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p> The following sentence has been split into four segments. Identify the segment that contains a grammatical error.</p><p> The results/ of the survey were/ fairly disappointing. / No error.</p><p> <br/> </p>",
+      "option1": "<p> The results</p>",
+      "option2": "<p> of the survey were</p>",
+      "option3": "<p> fairly disappointing</p>",
+      "option4": "<p> No error</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is C.</p><p> <b>Rule of fairly and Rather:</b></p><p> <b>Use of fairly</b></p><p> Fairly is used with positive degree (example: fairly good, fairly wise)</p><p> Fairly is used after ‘Desirable Adjectives’.</p><p> ‘Fairly’ is not followed by too. Rather is used with too.</p><p> <b>Use of rather </b> </p><p> Rather is used with positive and comparative degree. (Example: rather bad, rather difficult, rather cooler, rather hotter).</p><p> Unpleasant adjectives are used after ‘rather’. (Example: rather wicked, rather difficult, rather dull) but (rather amusing, rather good, rather pretty, rather beautiful)</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p> Select the most appropriate ANTONYM of the underlined word.</p><p> Sinuous</p>",
+      "option1": "<p> Serpentine</p>",
+      "option2": "<p> Uncomplicated</p>",
+      "option3": "<p> Tortuous</p>",
+      "option4": "<p> Circuitous</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Sinuous:</b> having many curves and turns</p><p> <b>Uncomplicated:</b> simple and straightforward.</p><p> <b>Serpentine:</b> curving and twisting like a snake.</p><p> <b>Tortuous:</b> full of twists and turns.</p><p> <b>Circuitous:</b> (of a route or journey) longer than the most direct way.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p> Select the most appropriate option to fill in the blank.</p><p> We _____ not hurry, we have got plenty of time.</p>",
+      "option1": "<p> would</p>",
+      "option2": "<p> should</p>",
+      "option3": "<p> must</p>",
+      "option4": "<p> need</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is d.</p><p> The sentence is expressing that there is no requirement or necessity for hurrying because there is plenty of time available. The word <b>\"need\"</b> is used to convey this sense of lack of necessity or obligation. The other options have different implications:</p><p> <br/> <br/> </p><p> (a) <b>\"would\"</b> is used to express a future action in the past or a condition that is likely to be fulfilled.</p><p> (b) <b>\"should\"</b> suggests a recommendation or advice, which does not fit the context of the sentence.</p><p> (c) <b>\"must\"</b> indicates a strong obligation or requirement, which contradicts the idea that there is no need to hurry.</p><p> Therefore, the best choice is D) <b>\"need,\"</b> as it appropriately conveys the lack of urgency in the given situation.</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p> The give sentences are jumbled. Arrange them in the correct order to form a meaningful and coherent sentence/paragraph.</p><p> <br/> <br/> </p><p> (A) Coral reefs, essential marine ecosystems, are under threat due to rising ocean temperatures and increased ocean acidity.</p><p> (B) The disruption of ecosystems can lead to loss of biodiversity and impact the delicate balance of species.</p><p> (C) Rising global temperatures contribute to the melting of glaciers and polar ice, affecting sea levels and coastal ecosystems.</p><p> (D) Forests play a crucial role in absorbing carbon dioxide and regulating the climate, but deforestation intensifies the effects of climate change.</p><p> (E) Climate change has resulted in shifts in weather patterns, leading to extreme events such as hurricanes, droughts, and heavy rainfall.</p>",
+      "option1": "<p> BDAEC</p>",
+      "option2": "<p> DBAEC</p>",
+      "option3": "<p> CADEB</p>",
+      "option4": "<p> CBEAD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Explanation:</b></p><p> The paragraph discusses the impact of e-commerce on modern retail.</p><p> Sentence D introduces the idea that the rise of e-commerce has changed consumer behavior and led to more online shopping.</p><p> Sentence B follows by explaining the increasing competition traditional brick-and-mortar stores face from e-commerce platforms.</p><p> Sentence A elaborates on the convenience for consumers to shop online and access a wide range of products.</p><p> Sentence E discusses how this shift towards online shopping has prompted retailers to enhance their digital presence.</p><p> Sentence C concludes by mentioning that e-commerce has also provided opportunities for small businesses to reach a global customer base.</p><p> So, the correct order is: DBAEC. Option (b) is the correct answer.</p><p> <br/> <br/> </p><p> <i><b>Forests play a crucial role in absorbing carbon dioxide and regulating the climate, but deforestation intensifies the effects of climate change. The disruption of ecosystems can lead to loss of biodiversity and impact the delicate balance of species. Coral reefs, essential marine ecosystems, are under threat due to rising ocean temperatures and increased ocean acidity. Climate change has resulted in shifts in weather patterns, leading to extreme events such as hurricanes, droughts, and heavy rainfall. Rising global temperatures contribute to the melting of glaciers and polar ice, affecting sea levels and coastal ecosystems.</b></i></p>"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p> Select the most appropriate synonym of the underlined word.</p><p> Shekhar set up institutions of international <b>repute.</b></p>",
+      "option1": "<p> Obscurity</p>",
+      "option2": "<p> Notoriety</p>",
+      "option3": "<p> Infamy</p>",
+      "option4": "<p> Cachet</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is d.</p><p> <b>Repute:</b> the opinion generally held of someone or something; the state of being regarded in a particular way.</p><p> <b>Cachet:</b> the state of being respected or admired; prestige.</p><p> <b>Obscurity:</b> the state of being unknown. Inconspicuous or unimportant.</p><p> <b>Notoriety:</b> the state of being famous or well known for some bad quality or dead.</p><p> <b>Infamy:</b> the state of being well known for some bad quality or deed.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p> Select the correct collocation from the options and complete and the sentence.</p><p> The noise of the drum beats ______ and frightened the tiger.</p>",
+      "option1": "<p> pertained</p>",
+      "option2": "<p> persisted</p>",
+      "option3": "<p> prevented</p>",
+      "option4": "<p> perplexed</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is d.</p><p> <b>Pertained:</b> to appropriate, related, or applicable to.</p><p> <b>Persisted:</b> continue in an opinion or course of action in spite of difficulty or opposition.</p><p> <b>Prevented: </b>keep (something) from happening</p><p> <b>Perplexed:</b> completely baffled; very puzzled.</p>"
+    },
+    {
+      "sr_no": 55,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> A statement in which you say the same thing twice in different words.</p>",
+      "option1": "<p> Tautology</p>",
+      "option2": "<p> Temerity</p>",
+      "option3": "<p> Repetition</p>",
+      "option4": "<p> Tarragon</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a.</p><p> <b>Tautology:</b> A statement in which you say the same thing twice in different words.</p><p> <b>Temerity:</b> excessive confidence or boldness; audacity.</p><p> <b>Repetition:</b> the action of repeating something that has already been said or written.</p><p> <b>Tarragon:</b> a perennial plant of the daisy family, with narrow aromatic leaves that are used as a culinary herb.</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p> Select the option that expresses the given sentence in Direct/Indirect speech.</p><p> He said to his father, “Shall I go to market now?</p>",
+      "option1": "<p> He asked his father if he shall go to market now.</p>",
+      "option2": "<p> He asked his father if he will go to market then.</p>",
+      "option3": "<p> He asked his father if he would go to market now.</p>",
+      "option4": "<p> He asked his father if he should go to market then.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is d.</p><p> <b>Rule:</b></p><p> Change of modals:</p><p> Shall/will --- should/would</p><p> May ---- might </p><p> Can ---- could</p><p> If the <b>reporting verb</b> <b>is in ‘present’</b> or <b>‘future tense’</b>, there shall be <b>no change</b> in the tense of the <b>reported speech.</b></p><p> <b>Hence, He said to his father, “Shall I go to market now? ---- He asked his father if he should go to market then. </b> </p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p> Sentences of a paragraph are given below in jumbled order. Arrange the sentences in the right order to form a meaningful and coherent paragraph.<br/> <br/> <br/> </p><p> A. Indeed, polymers such as regenerated cellulose, which have become familiar household materials under the trade names rayon and nylon, are also made into numerous non-fibre products, ranging from cellophane envelope windows to clear plastic soft-drink bottles.<br/> B. The chemical compounds from which man-made fibres are produced are known as polymers, a class of compounds characterised by long, chain-like molecules of great size and molecular weight.<br/> C. As fibres, these materials are prized for their strength, toughness, resistance to heat and mildew, and ability to hold a pressed form.<br/> D. Many of the polymers that constitute man-made fibres are the same as or similar to compounds that make up plastics, rubbers, adhesives and surface coatings.</p>",
+      "option1": "<p> BDAC</p>",
+      "option2": "<p> BCDA</p>",
+      "option3": "<p> ACDB</p>",
+      "option4": "<p> CBAD</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>The correct arrangement is: BCDA: </b><i><b>The chemical compounds from which man-made fibres are produced are known as polymers, a class of compounds characterised by long, chain-like molecules of great size and molecular weight. As fibres, these materials are prized for their strength, toughness, resistance to heat and mildew, and ability to hold a pressed form. Many of the polymers that constitute man-made fibres are the same as or similar to compounds that make up plastics, rubbers, adhesives and surface coatings. Indeed, polymers such as regenerated cellulose, which have become familiar household materials under the trade names rayon and nylon, are also made into numerous non-fibre products, ranging from cellophane envelope windows to clear plastic soft-drink bottles.</b></i></p>"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p> Select the option that can be used as a one-word substitute for the given group of words.</p><p> A song sung at the death of a person</p>",
+      "option1": "<p> Ode</p>",
+      "option2": "<p> Liturgy</p>",
+      "option3": "<p> Elegy</p>",
+      "option4": "<p> Sonnet</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is c.</p><p> <b>Elegy:</b> A song sung at the death of a person</p><p> <b>Ode:</b> a lyric poem, typically one in the form of an address to a particular subject, written in varied or irregular metre.</p><p> <b>Liturgy:</b> a form of public worship; ritual.</p><p> <b>Sonnet:</b> a poem of fourteen lines using any of a number of formal rhyme schemes, in English typicall having ten syllables per line.</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p>Choose the correctly spelt word amongst the following.</p>",
+      "option1": "<p>Curricullum</p>",
+      "option2": "<p>Aggreable</p>",
+      "option3": "<p>Professor</p>",
+      "option4": "<p>Reffresher</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is c.</p><p>Professor: a university academic of the highest rank</p><p>Curriculum: The subject comprising a course of study in a school or college.</p><p>Agreeable: quite enjoyable and pleasurable; pleasant.</p><p>Refresher: an activity that refreshes one’s skills or knowledge.</p>"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Ananda, the famous disciple of the Buddha, was one day returning from a visit when he felt thirsty and, approaching a well on the way, asked for water (1) _____<i><b> </b></i>a chandalika, a girl belonging to the lowest untouchable caste. The girl gave him water and fell in love with the beautiful monk. Unable to (2) ________ herself, she made her mother, who knew the art of magic, work her spell on him. The spell proved stronger than Ananda’s will and the spell-bound monk (3) _____himself at their house at night; but, as he saw the girl spread the couch for him, he was overcome with shame and <b>remorse </b>and prayed inwardly to his master to save him. The Buddha heard the prayer and broke the magic spell and Ananda went away, as pure as he came. </p><p> Select the most appropriate option to fill in the blank number 1.</p><p> <br/> </p>",
+      "option1": "<p> to</p>",
+      "option2": "<p> by</p>",
+      "option3": "<p> from</p>",
+      "option4": "<p> with</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option c.</p><p> The sentence describes Ananda's interaction with a girl from the chandalika caste. The preposition \"from\" is used to indicate the source or origin of the person from whom Ananda asked for water.</p><p> So, the sentence should read: \"We asked for water from a chandalika, a girl belonging to the lowest untouchable caste.\"</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Ananda, the famous disciple of the Buddha, was one day returning from a visit when he felt thirsty and, approaching a well on the way, asked for water (1) _____<i><b> </b></i>a chandalika, a girl belonging to the lowest untouchable caste. The girl gave him water and fell in love with the beautiful monk. Unable to (2) ________ herself, she made her mother, who knew the art of magic, work her spell on him. The spell proved stronger than Ananda’s will and the spell-bound monk (3) _____himself at their house at night; but, as he saw the girl spread the couch for him, he was overcome with shame and <b>remorse </b>and prayed inwardly to his master to save him. The Buddha heard the prayer and broke the magic spell and Ananda went away, as pure as he came. </p><p> Select the most appropriate option to fill in blank number 2.</p>",
+      "option1": "<p> persist</p>",
+      "option2": "<p> forbid</p>",
+      "option3": "<p> handle</p>",
+      "option4": "<p> restrain</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is d.</p><p> In the context of the sentence, the girl was unable to restrain herself, indicating that she couldn't control or hold back her emotions and desires. The word \"restrain\" implies a lack of self-control and the inability to prevent certain actions or reactions.</p><p> So, the sentence should read: \"Unable to restrain herself, she made her mother, who knew the art of magic, work her spell on him.\"</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Ananda, the famous disciple of the Buddha, was one day returning from a visit when he felt thirsty and, approaching a well on the way, asked for water (1) _____<i><b> </b></i>a chandalika, a girl belonging to the lowest untouchable caste. The girl gave him water and fell in love with the beautiful monk. Unable to (2) ________ herself, she made her mother, who knew the art of magic, work her spell on him. The spell proved stronger than Ananda’s will and the spell-bound monk (3) _____himself at their house at night; but, as he saw the girl spread the couch for him, he was overcome with shame and <b>remorse </b>and prayed inwardly to his master to save him. The Buddha heard the prayer and broke the magic spell and Ananda went away, as pure as he came. </p><p> Select the most appropriate option to fill in blank 3.</p>",
+      "option1": "<p> Presenting</p>",
+      "option2": "<p> Presentation</p>",
+      "option3": "<p> Present</p>",
+      "option4": "<p> Presented</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is d.</p><p> In the given context, the phrase \"spell-bound monk presented himself at their house at night\" suggests that the monk, influenced by the magic spell, presented himself at their house. The word \"presented\" conveys the idea of showing up or appearing, indicating his physical presence.</p><p> So, the sentence should read: \"The spell proved stronger than Ananda’s will and the spell-bound monk presented himself at their house at night...\"</p>"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p> <b>In the following passage, some words have been deleted. Read the passage carefully and select the most appropriate option to fill in each blank.</b></p><p> Ananda, the famous disciple of the Buddha, was one day returning from a visit when he felt thirsty and, approaching a well on the way, asked for water (1) _____<i><b> </b></i>a chandalika, a girl belonging to the lowest untouchable caste. The girl gave him water and fell in love with the beautiful monk. Unable to (2) ________ herself, she made her mother, who knew the art of magic, work her spell on him. The spell proved stronger than Ananda’s will and the spell-bound monk (3) _____himself at their house at night; but, as he saw the girl spread the couch for him, he was overcome with shame and <b>remorse </b>and prayed inwardly to his master to save him. The Buddha heard the prayer and broke the magic spell and Ananda went away, as pure as he came. </p><p> Select the most appropriate SYNONYMS of the highlighted word.</p>",
+      "option1": "<p> Defiance</p>",
+      "option2": "<p> Contrition</p>",
+      "option3": "<p> Unconcern</p>",
+      "option4": "<p> Indifference</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is b.</p><p> <b>Remorse</b>: deep regret or guilt for a wrong committed.</p><p> <b>Contrition</b>: the state of feeling remorseful and penitent.</p><p> <b>Defiance</b>: open resistance; blood disobedience.</p><p> <b>Unconcern</b>: a lack of worry or interest, especially when surprising or callous.</p><p> <b>Indifference</b>: lack of interest, concern, sympathy.</p>"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> India, often referred to as the “land of diversity”, is a unique amalgamation of various cultures, religions, languages, and traditions. This diversity, deeply embedded in the country’s historical roots and societal fabric, is what makes India a vibrant and dynamic nation.</p><p> Cultural diversity is one of the most striking features of India. The country is home to numerous ethnic groups, each with its distinct customs, traditions, and languages. The coexistence of these diverse cultures under one political and geographical entity is a testament to India’s pluralistic society. From the folk dances of Punjab to the martial arts of Kerala, from the sand art of Odisha to the bamboo dance of Mizoram, each region contributes to the cultural mosaic of the country.</p><p> India is the birthplace of four major world religions: Hinduism, Buddhism, Jainism, and Sikhism. It also embraces other religions such as Islam, Christianity, Zoroastrianism, Judaism, and Baha’i, demonstrating the nation’s religious tolerance and acceptance. This religious diversity is reflected in the myriad of festivals celebrated throughout the year, such as Diwali, Eid, Christmas, and Paryushan, each marking a unique blend of customs, traditions, and rituals.</p><p> Linguistic diversity is another defining characteristic of India. With over 2,000 distinct languages spoken across the country, India stands as one of the most linguistically diverse nations globally. Each language, with its unique script and literature, adds to the rich tapestry of Indian culture.</p><p> From the snow-capped peaks of the Himalayas to the serene backwaters of Kerala, from the deserts of Rajasthan to the dense forests of the Northeast, India’s geographical diversity is unparalleled. This geographical variance has given rise to diverse ecosystems and biodiversity, making India one of the 17 mega-diverse countries in the world.</p><p> Indian cuisine is a gastronomic reflection of the country’s diversity. Each region has its unique culinary tradition, influenced by local produce, culture, and history. The rich and spicy curries of Rajasthan, the seafood-centric cuisine of Bengal, the coconut-infused dishes of Kerala, and the simple yet flavourful food of Gujarat are just a few examples of India’s diverse culinary landscape.</p><p> <br/> <br/> </p><p> What title best captures the essence of the passage?</p>",
+      "option1": "<p> \"India: A Tapestry of Cultures and Traditions\"</p>",
+      "option2": "<p> \"Exploring India's Diverse Geography and Cuisine\"</p>",
+      "option3": "<p> \"Unveiling India's Rich Religious Heritage\"</p>",
+      "option4": "<p> \"The Complex Linguistic Landscape of India\"</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is a.</p><p> The suggested title \"India: A Tapestry of Cultures and Traditions\" is the most suitable option because it encompasses the central theme and content of the passage. The passage discusses various aspects of India's diversity, including its cultural variety, religious coexistence, linguistic differences, geographical heterogeneity, and culinary distinctiveness. The term \"tapestry\" metaphorically reflects the intricate interweaving of these diverse elements into a unified whole, which is a fundamental characteristic of India.</p>"
+    },
+    {
+      "sr_no": 65,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> India, often referred to as the “land of diversity”, is a unique amalgamation of various cultures, religions, languages, and traditions. This diversity, deeply embedded in the country’s historical roots and societal fabric, is what makes India a vibrant and dynamic nation.</p><p> Cultural diversity is one of the most striking features of India. The country is home to numerous ethnic groups, each with its distinct customs, traditions, and languages. The coexistence of these diverse cultures under one political and geographical entity is a testament to India’s pluralistic society. From the folk dances of Punjab to the martial arts of Kerala, from the sand art of Odisha to the bamboo dance of Mizoram, each region contributes to the cultural mosaic of the country.</p><p> India is the birthplace of four major world religions: Hinduism, Buddhism, Jainism, and Sikhism. It also embraces other religions such as Islam, Christianity, Zoroastrianism, Judaism, and Baha’i, demonstrating the nation’s religious tolerance and acceptance. This religious diversity is reflected in the myriad of festivals celebrated throughout the year, such as Diwali, Eid, Christmas, and Paryushan, each marking a unique blend of customs, traditions, and rituals.</p><p> Linguistic diversity is another defining characteristic of India. With over 2,000 distinct languages spoken across the country, India stands as one of the most linguistically diverse nations globally. Each language, with its unique script and literature, adds to the rich tapestry of Indian culture.</p><p> From the snow-capped peaks of the Himalayas to the serene backwaters of Kerala, from the deserts of Rajasthan to the dense forests of the Northeast, India’s geographical diversity is unparalleled. This geographical variance has given rise to diverse ecosystems and biodiversity, making India one of the 17 mega-diverse countries in the world.</p><p> Indian cuisine is a gastronomic reflection of the country’s diversity. Each region has its unique culinary tradition, influenced by local produce, culture, and history. The rich and spicy curries of Rajasthan, the seafood-centric cuisine of Bengal, the coconut-infused dishes of Kerala, and the simple yet flavourful food of Gujarat are just a few examples of India’s diverse culinary landscape.</p><p> <br/> <br/> </p><p> What is one of the defining characteristics of India's linguistic diversity?</p>",
+      "option1": "<p> Less than 100 languages spoken</p>",
+      "option2": "<p> Fewer than 10 languages spoken</p>",
+      "option3": "<p> Over 2,000 distinct languages spoken</p>",
+      "option4": "<p> Only one official language spoken</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is C</p><p> The defining characteristic of India's linguistic diversity is that over 2,000 distinct languages are spoken across the country. This means that India is home to a vast array of languages, each with its own unique grammar, vocabulary, and script. These languages belong to different language families, and many of them have their own rich literary traditions.</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> <br/> <br/> </p><p> India, often referred to as the “land of diversity”, is a unique amalgamation of various cultures, religions, languages, and traditions. This diversity, deeply embedded in the country’s historical roots and societal fabric, is what makes India a vibrant and dynamic nation.</p><p> Cultural diversity is one of the most striking features of India. The country is home to numerous ethnic groups, each with its distinct customs, traditions, and languages. The coexistence of these diverse cultures under one political and geographical entity is a testament to India’s pluralistic society. From the folk dances of Punjab to the martial arts of Kerala, from the sand art of Odisha to the bamboo dance of Mizoram, each region contributes to the cultural mosaic of the country.</p><p> India is the birthplace of four major world religions: Hinduism, Buddhism, Jainism, and Sikhism. It also embraces other religions such as Islam, Christianity, Zoroastrianism, Judaism, and Baha’i, demonstrating the nation’s religious tolerance and acceptance. This religious diversity is reflected in the myriad of festivals celebrated throughout the year, such as Diwali, Eid, Christmas, and Paryushan, each marking a unique blend of customs, traditions, and rituals.</p><p> Linguistic diversity is another defining characteristic of India. With over 2,000 distinct languages spoken across the country, India stands as one of the most linguistically diverse nations globally. Each language, with its unique script and literature, adds to the rich tapestry of Indian culture.</p><p> From the snow-capped peaks of the Himalayas to the serene backwaters of Kerala, from the deserts of Rajasthan to the dense forests of the Northeast, India’s geographical diversity is unparalleled. This geographical variance has given rise to diverse ecosystems and biodiversity, making India one of the 17 mega-diverse countries in the world.</p><p> Indian cuisine is a gastronomic reflection of the country’s diversity. Each region has its unique culinary tradition, influenced by local produce, culture, and history. The rich and spicy curries of Rajasthan, the seafood-centric cuisine of Bengal, the coconut-infused dishes of Kerala, and the simple yet flavourful food of Gujarat are just a few examples of India’s diverse culinary landscape.</p><p> <br/> <br/> </p><p> What makes India one of the 17 mega-diverse countries in the world?</p>",
+      "option1": "<p> Its population size</p>",
+      "option2": "<p> Its geographical size</p>",
+      "option3": "<p> Its ecosystems and biodiversity</p>",
+      "option4": "<p> Its religious diversity</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> India is considered one of the 17 mega-diverse countries in the world due to its remarkable ecosystems and biodiversity. This term refers to countries that harbor a significant proportion of Earth's species and are recognized for their high levels of biological diversity.</p><p> India's diverse geographical features, ranging from the Himalayas to the Western Ghats, and from the Thar Desert to the Sundarbans mangroves, have created a wide range of ecosystems. These ecosystems support an incredible variety of flora and fauna, including numerous endemic species found only in specific regions of India.</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p><strong>Read the following passage and answer the questions given after it.</strong></p><p>India, often referred to as the “land of diversity”, is a unique amalgamation of various cultures, religions, languages, and traditions. This diversity, deeply embedded in the country’s historical roots and societal fabric, is what makes India a vibrant and dynamic nation.</p><p>Cultural diversity is one of the most striking features of India. The country is home to numerous ethnic groups, each with its distinct customs, traditions, and languages. The coexistence of these diverse cultures under one political and geographical entity is a testament to India’s pluralistic society. From the folk dances of Punjab to the martial arts of Kerala, from the sand art of Odisha to the bamboo dance of Mizoram, each region contributes to the cultural mosaic of the country.</p><p>India is the birthplace of four major world religions: Hinduism, Buddhism, Jainism, and Sikhism. It also embraces other religions such as Islam, Christianity, Zoroastrianism, Judaism, and Baha’i, demonstrating the nation’s religious tolerance and acceptance. This religious diversity is reflected in the myriad of festivals celebrated throughout the year, such as Diwali, Eid, Christmas, and Paryushan, each marking a unique blend of customs, traditions, and rituals.</p><p>Linguistic diversity is another defining characteristic of India. With over 2,000 distinct languages spoken across the country, India stands as one of the most linguistically diverse nations globally. Each language, with its unique script and literature, adds to the rich tapestry of Indian culture.</p><p>From the snow-capped peaks of the Himalayas to the serene backwaters of Kerala, from the deserts of Rajasthan to the dense forests of the Northeast, India’s geographical diversity is unparalleled. This geographical variance has given rise to diverse ecosystems and biodiversity, making India one of the 17 mega-diverse countries in the world.</p><p>Indian cuisine is a gastronomic reflection of the country’s diversity. Each region has its unique culinary tradition, influenced by local produce, culture, and history. The rich and spicy curries of Rajasthan, the seafood-centric cuisine of Bengal, the coconut-infused dishes of Kerala, and the simple yet flavourful food of Gujarat are just a few examples of India’s diverse culinary landscape.</p><p>Which of the following is NOT a feature of India's cultural diversity?</p>",
+      "option1": "<p>Folk dances of Punjab</p>",
+      "option2": "<p>Martial art of Kerala</p>",
+      "option3": "<p>Bamboo dance of Mizoram</p>",
+      "option4": "<p>Modern art of Delhi</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option D.</p><p>India's cultural diversity is characterized by a wide range of traditional and contemporary elements that encompass various art forms, practices, customs, and traditions. The options (a), (b), and (c) all represent specific cultural elements that contribute to India's diversity</p>"
+    },
+    {
+      "sr_no": 68,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The concept of index investing has long been a favored strategy in traditional markets, such as stocks and mutual funds. However, as the world of cryptocurrencies continues to evolve, a new wave of investors is gravitating towards a similar approach within the crypto realm. Crypto index investing, although relatively nascent, has quickly gained traction among both retail and institutional investors. This investment strategy involves building a diversified portfolio of cryptocurrencies based on predetermined criteria, such as market capitalization or trading volume.</p><p> By investing in a crypto index fund, investors can gain exposure to a diversified portfolio of cryptocurrencies, which can help to reduce risk and volatility when compared to investing in one single crypto. This diversification strategy helps cushion against market downturns and minimizes the risk associated with investing in a single cryptocurrency. Additionally, by spreading investments across various cryptocurrencies, investors can potentially tap into the overall growth of the crypto market.</p><p> The crypto market is constantly evolving, with new and promising digital currencies entering the scene. However, identifying and investing in these emerging cryptocurrencies can be challenging for individual investors. Crypto index funds offer a solution by providing exposure to a wide range of digital assets, including both established cryptocurrencies and those with immense growth potential. By leveraging the expertise of fund managers and market research, investors can access up-and-coming cryptocurrencies without the need for in-depth knowledge or extensive research. This accessibility enables investors to participate in the growth of the overall crypto ecosystem, potentially capturing significant returns.</p><p> <br/> <br/> </p><p> What is the primary concept discussed in the passage?</p>",
+      "option1": "<p> Traditional stock market investing</p>",
+      "option2": "<p> The evolution of cryptocurrencies</p>",
+      "option3": "<p> Strategies for individual cryptocurrency investment</p>",
+      "option4": "<p> The emergence of crypto index investing</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> The primary concept discussed in the passage is the emergence of crypto index investing. The passage focuses on introducing and explaining the concept of investing in cryptocurrency index funds, which is a strategy gaining popularity in the world of cryptocurrencies. It discusses how this approach is similar to traditional index investing seen in stock markets and mutual funds.</p>"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The concept of index investing has long been a favored strategy in traditional markets, such as stocks and mutual funds. However, as the world of cryptocurrencies continues to evolve, a new wave of investors is gravitating towards a similar approach within the crypto realm. Crypto index investing, although relatively nascent, has quickly gained traction among both retail and institutional investors. This investment strategy involves building a diversified portfolio of cryptocurrencies based on predetermined criteria, such as market capitalization or trading volume.</p><p> By investing in a crypto index fund, investors can gain exposure to a diversified portfolio of cryptocurrencies, which can help to reduce risk and volatility when compared to investing in one single crypto. This diversification strategy helps cushion against market downturns and minimizes the risk associated with investing in a single cryptocurrency. Additionally, by spreading investments across various cryptocurrencies, investors can potentially tap into the overall growth of the crypto market.</p><p> The crypto market is constantly evolving, with new and promising digital currencies entering the scene. However, identifying and investing in these emerging cryptocurrencies can be challenging for individual investors. Crypto index funds offer a solution by providing exposure to a wide range of digital assets, including both established cryptocurrencies and those with immense growth potential. By leveraging the expertise of fund managers and market research, investors can access up-and-coming cryptocurrencies without the need for in-depth knowledge or extensive research. This accessibility enables investors to participate in the growth of the overall crypto ecosystem, potentially capturing significant returns.</p><p> <br/> <br/> </p><p> The term \"nascent\" in the passage means:</p>",
+      "option1": "<p> No longer in use</p>",
+      "option2": "<p> Recently established or developed</p>",
+      "option3": "<p> Highly regulated</p>",
+      "option4": "<p> Traditional and outdated</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option B</p><p> The term \"nascent\" in the passage refers to something that is in its early stages of development or existence. It means something that is newly emerging, growing, or evolving. In the context of the passage, \"crypto index investing, although relatively nascent\" indicates that this investment strategy is still in its early stages of development within the world of cryptocurrencies.</p><p> <br/> </p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The concept of index investing has long been a favored strategy in traditional markets, such as stocks and mutual funds. However, as the world of cryptocurrencies continues to evolve, a new wave of investors is gravitating towards a similar approach within the crypto realm. Crypto index investing, although relatively nascent, has quickly gained traction among both retail and institutional investors. This investment strategy involves building a diversified portfolio of cryptocurrencies based on predetermined criteria, such as market capitalization or trading volume.</p><p> By investing in a crypto index fund, investors can gain exposure to a diversified portfolio of cryptocurrencies, which can help to reduce risk and volatility when compared to investing in one single crypto. This diversification strategy helps cushion against market downturns and minimizes the risk associated with investing in a single cryptocurrency. Additionally, by spreading investments across various cryptocurrencies, investors can potentially tap into the overall growth of the crypto market.</p><p> The crypto market is constantly evolving, with new and promising digital currencies entering the scene. However, identifying and investing in these emerging cryptocurrencies can be challenging for individual investors. Crypto index funds offer a solution by providing exposure to a wide range of digital assets, including both established cryptocurrencies and those with immense growth potential. By leveraging the expertise of fund managers and market research, investors can access up-and-coming cryptocurrencies without the need for in-depth knowledge or extensive research. This accessibility enables investors to participate in the growth of the overall crypto ecosystem, potentially capturing significant returns.</p><p> <br/> <br/> </p><p> What role do crypto index funds play in investing in emerging cryptocurrencies?</p>",
+      "option1": "<p> They limit investment to well-known cryptocurrencies</p>",
+      "option2": "<p> They facilitate direct investment in individual cryptocurrencies</p>",
+      "option3": "<p> They provide exposure to a wide range of digital assets</p>",
+      "option4": "<p> They exclusively focus on market research and analysis</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct option is C</p><p> Crypto index funds play a role in providing exposure to a wide range of digital assets, including both established cryptocurrencies and those that are emerging. The passage explains that these funds allow investors to build a diversified portfolio based on predetermined criteria. This diversification enables investors to benefit from the growth potential of the overall cryptocurrency market, including those cryptocurrencies that are new or have significant growth potential. While the fund managers and market research contribute to the fund's management, the primary function is to provide investors with broader exposure to the evolving crypto ecosystem.</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p><strong>Read the following passage and answer the questions given after it.</strong></p><p>The concept of index investing has long been a favored strategy in traditional markets, such as stocks and mutual funds. However, as the world of cryptocurrencies continues to evolve, a new wave of investors is gravitating towards a similar approach within the crypto realm. Crypto index investing, although relatively nascent, has quickly gained traction among both retail and institutional investors. This investment strategy involves building a diversified portfolio of cryptocurrencies based on predetermined criteria, such as market capitalization or trading volume.</p><p>By investing in a crypto index fund, investors can gain exposure to a diversified portfolio of cryptocurrencies, which can help to reduce risk and volatility when compared to investing in one single crypto. This diversification strategy helps cushion against market downturns and minimizes the risk associated with investing in a single cryptocurrency. Additionally, by spreading investments across various cryptocurrencies, investors can potentially tap into the overall growth of the crypto market.</p><p>The crypto market is constantly evolving, with new and promising digital currencies entering the scene. However, identifying and investing in these emerging cryptocurrencies can be challenging for individual investors. Crypto index funds offer a solution by providing exposure to a wide range of digital assets, including both established cryptocurrencies and those with immense growth potential. By leveraging the expertise of fund managers and market research, investors can access up-and-coming cryptocurrencies without the need for in-depth knowledge or extensive research. This accessibility enables investors to participate in the growth of the overall crypto ecosystem, potentially capturing significant returns.</p><p>What advantage does leveraging the expertise of fund managers and market research provide to investors?</p>",
+      "option1": "<p>It eliminates the need for investment</p>",
+      "option2": "<p>It ensures guaranteed returns</p>",
+      "option3": "<p>It reduces the overall cost of investment</p>",
+      "option4": "<p>It enables access to emerging cryptocurrencies without extensive research</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is option d</p><p>Leveraging the expertise of fund managers and market research provides investors with the advantage of gaining access to emerging cryptocurrencies without the need for extensive individual research. This means that investors can benefit from the knowledge and analysis of professionals who are well-versed in the cryptocurrency market. By relying on their expertise, investors can make informed decisions about investing in promising digital currencies, even if they don't have in-depth knowledge about each specific cryptocurrency. This advantage simplifies the investment process and potentially allows investors to capture significant returns without conducting exhaustive research on their own.</p>"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The third Khanda of the Vishnudharmottara Purana, a fifth century text has a chapter Chitrasutra, which should be considered as a source book of Indian art in general and painting specifically. It talks about the art of image making called pratima lakshana, which are canons of painting. The Khanda also deals with the techniques, tools, material(s), surface (wall), perception, perspective and three-dimensionality of human figures. Different limbs of painting, such as roopbheda or looks and appearance; pramana or measurements, proportion and structure; bhava or expressions; lavanya yojana or aesthetic composition; sadrishya or resemblance; and varnikabhanga or use of brush and colours have been explained at length with examples. Each of these have many sub-sections. These canons were read and understood by artists and followed through centuries, thus, becoming the basis of all styles and schools of painting in India. Paintings from the medieval period have earned a generic name, for example miniature paintings, owing to their relatively smaller size. These miniature paintings were hand-held and observed from a closer distance due to their minutiae. The walls of a patron’s mansions were often decorated with mural paintings. Hence, these miniatures were never intended to be put up on the walls. A large section of paintings are appropriately referred to as manuscript illustrations as they are pictorial translations of poetic verses from epics and various canonical, literary, bardic or music texts (manuscripts), with verses handwritten on the topmost portion of the painting in clearly demarcated box–like space. Sometimes, one finds the text not in the front but behind the work of art. </p><p> Manuscript illustrations were methodically conceived in thematic sets (each set comprising several loose paintings or folios). Each folio of painting has its corresponding text inscribed either in the demarcated space on the upper portion of the painting or on its reverse. Accordingly, one would have sets of the Ramayana paintings, or Bhagavata Purana, or Mahabharata, or Gita Govinda, Ragamala, etc. Each set was wrapped up in a piece of cloth and stored as a bundle in the library of the king or patron. The most important folio-page of the set would be the colophon page, which would furnish information regarding the names of the patron, artist or scribe, date and place of commission or completion of the work, and other such important details.</p><p> <br/> <br/> </p><p> Q. The Chitrasutra discusses various limbs of painting. Which of the following is NOT mentioned in the passage?</p>",
+      "option1": "<p> Looks and appearance</p>",
+      "option2": "<p> Measurements and proportion</p>",
+      "option3": "<p> Musical compositions</p>",
+      "option4": "<p> Expressions and resemblance</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> In the passage, the Chitrasutra discusses various limbs of painting, including \"Looks and appearance,\" \"Measurements and proportion,\" \"Expressions,\" and \"Resemblance.\" However, there is no mention of \"Musical compositions\" in relation to the limbs of painting. The passage focuses on the technical aspects and principles of visual art rather than musical elements. </p>"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The third Khanda of the Vishnudharmottara Purana, a fifth century text has a chapter Chitrasutra, which should be considered as a source book of Indian art in general and painting specifically. It talks about the art of image making called pratima lakshana, which are canons of painting. The Khanda also deals with the techniques, tools, material(s), surface (wall), perception, perspective and three-dimensionality of human figures. Different limbs of painting, such as roopbheda or looks and appearance; pramana or measurements, proportion and structure; bhava or expressions; lavanya yojana or aesthetic composition; sadrishya or resemblance; and varnikabhanga or use of brush and colours have been explained at length with examples. Each of these have many sub-sections. These canons were read and understood by artists and followed through centuries, thus, becoming the basis of all styles and schools of painting in India. Paintings from the medieval period have earned a generic name, for example miniature paintings, owing to their relatively smaller size. These miniature paintings were hand-held and observed from a closer distance due to their minutiae. The walls of a patron’s mansions were often decorated with mural paintings. Hence, these miniatures were never intended to be put up on the walls. A large section of paintings are appropriately referred to as manuscript illustrations as they are pictorial translations of poetic verses from epics and various canonical, literary, bardic or music texts (manuscripts), with verses handwritten on the topmost portion of the painting in clearly demarcated box–like space. Sometimes, one finds the text not in the front but behind the work of art. </p><p> Manuscript illustrations were methodically conceived in thematic sets (each set comprising several loose paintings or folios). Each folio of painting has its corresponding text inscribed either in the demarcated space on the upper portion of the painting or on its reverse. Accordingly, one would have sets of the Ramayana paintings, or Bhagavata Purana, or Mahabharata, or Gita Govinda, Ragamala, etc. Each set was wrapped up in a piece of cloth and stored as a bundle in the library of the king or patron. The most important folio-page of the set would be the colophon page, which would furnish information regarding the names of the patron, artist or scribe, date and place of commission or completion of the work, and other such important details.</p><p> <br/> <br/> </p><p> What purpose did mural paintings serve in the context of the passage?</p>",
+      "option1": "<p> They were portable and hand-held</p>",
+      "option2": "<p> They were intended for manuscript illustrations</p>",
+      "option3": "<p> They decorated the walls of mansions</p>",
+      "option4": "<p> They were used as colophon pages</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> In the context of the passage, mural paintings served the purpose of decorating the walls of mansions. These large-scale paintings adorned the walls of patrons' mansions, contributing to the aesthetic appeal and ambiance of the living spaces. Unlike portable and hand-held artworks, mural paintings were intended to be fixed installations on architectural surfaces. The passage mentions that mural paintings were a significant form of decoration for the walls of wealthy patrons' residences.</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The third Khanda of the Vishnudharmottara Purana, a fifth century text has a chapter Chitrasutra, which should be considered as a source book of Indian art in general and painting specifically. It talks about the art of image making called pratima lakshana, which are canons of painting. The Khanda also deals with the techniques, tools, material(s), surface (wall), perception, perspective and three-dimensionality of human figures. Different limbs of painting, such as roopbheda or looks and appearance; pramana or measurements, proportion and structure; bhava or expressions; lavanya yojana or aesthetic composition; sadrishya or resemblance; and varnikabhanga or use of brush and colours have been explained at length with examples. Each of these have many sub-sections. These canons were read and understood by artists and followed through centuries, thus, becoming the basis of all styles and schools of painting in India. Paintings from the medieval period have earned a generic name, for example miniature paintings, owing to their relatively smaller size. These miniature paintings were hand-held and observed from a closer distance due to their minutiae. The walls of a patron’s mansions were often decorated with mural paintings. Hence, these miniatures were never intended to be put up on the walls. A large section of paintings are appropriately referred to as manuscript illustrations as they are pictorial translations of poetic verses from epics and various canonical, literary, bardic or music texts (manuscripts), with verses handwritten on the topmost portion of the painting in clearly demarcated box–like space. Sometimes, one finds the text not in the front but behind the work of art. </p><p> Manuscript illustrations were methodically conceived in thematic sets (each set comprising several loose paintings or folios). Each folio of painting has its corresponding text inscribed either in the demarcated space on the upper portion of the painting or on its reverse. Accordingly, one would have sets of the Ramayana paintings, or Bhagavata Purana, or Mahabharata, or Gita Govinda, Ragamala, etc. Each set was wrapped up in a piece of cloth and stored as a bundle in the library of the king or patron. The most important folio-page of the set would be the colophon page, which would furnish information regarding the names of the patron, artist or scribe, date and place of commission or completion of the work, and other such important details.</p><p> <br/> <br/> </p><p> What does \"pratima lakshana\" refer to in the context of the passage?</p>",
+      "option1": "<p> Historical events</p>",
+      "option2": "<p> Architectural designs</p>",
+      "option3": "<p> Canons of painting</p>",
+      "option4": "<p> Religious rituals</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option C</p><p> In the context of the passage, \"pratima lakshana\" refers to the canons or principles of painting. The passage mentions that the Chitrasutra discusses the art of image-making called \"pratima lakshana,\" which encompasses various aspects of painting. This includes techniques, tools, materials, surface, perception, perspective, and the portrayal of three-dimensional human figures. The term refers specifically to the principles and guidelines that artists follow when creating images or paintings.</p>"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p> <b>Read the following passage and answer the questions given after it.</b></p><p> The third Khanda of the Vishnudharmottara Purana, a fifth century text has a chapter Chitrasutra, which should be considered as a source book of Indian art in general and painting specifically. It talks about the art of image making called pratima lakshana, which are canons of painting. The Khanda also deals with the techniques, tools, material(s), surface (wall), perception, perspective and three-dimensionality of human figures. Different limbs of painting, such as roopbheda or looks and appearance; pramana or measurements, proportion and structure; bhava or expressions; lavanya yojana or aesthetic composition; sadrishya or resemblance; and varnikabhanga or use of brush and colours have been explained at length with examples. Each of these have many sub-sections. These canons were read and understood by artists and followed through centuries, thus, becoming the basis of all styles and schools of painting in India. Paintings from the medieval period have earned a generic name, for example miniature paintings, owing to their relatively smaller size. These miniature paintings were hand-held and observed from a closer distance due to their minutiae. The walls of a patron’s mansions were often decorated with mural paintings. Hence, these miniatures were never intended to be put up on the walls. A large section of paintings are appropriately referred to as manuscript illustrations as they are pictorial translations of poetic verses from epics and various canonical, literary, bardic or music texts (manuscripts), with verses handwritten on the topmost portion of the painting in clearly demarcated box–like space. Sometimes, one finds the text not in the front but behind the work of art. </p><p> Manuscript illustrations were methodically conceived in thematic sets (each set comprising several loose paintings or folios). Each folio of painting has its corresponding text inscribed either in the demarcated space on the upper portion of the painting or on its reverse. Accordingly, one would have sets of the Ramayana paintings, or Bhagavata Purana, or Mahabharata, or Gita Govinda, Ragamala, etc. Each set was wrapped up in a piece of cloth and stored as a bundle in the library of the king or patron. The most important folio-page of the set would be the colophon page, which would furnish information regarding the names of the patron, artist or scribe, date and place of commission or completion of the work, and other such important details.</p><p> <br/> <br/> </p><p> Why are paintings from the medieval period often referred to as \"miniature paintings\"?</p>",
+      "option1": "<p> They are painted on small pieces of paper</p>",
+      "option2": "<p> They depict miniature objects only</p>",
+      "option3": "<p> They were created using miniature brushes</p>",
+      "option4": "<p> They were hand-held and observed closely due to their size</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p> The correct answer is option D</p><p> Paintings from the medieval period are often referred to as \"miniature paintings\" because they were hand-held and observed closely due to their small size. The passage explains that these paintings were relatively smaller in size and were designed to be observed up close, as opposed to larger paintings that might be displayed on walls. The term \"miniature\" in this context does not refer to the size of objects depicted in the paintings but rather to the size of the artworks themselves.</p>"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>The Vikramshila University was built during the rule of which of the following dynasties?</p>",
+      "option1": "<p>Chola Dynasty</p>",
+      "option2": "<p>Pallava Dynasty</p>",
+      "option3": "<p>Chalukya Dynasty</p>",
+      "option4": "<p>Pala Dynasty</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Pala Dynasty’. </p><p><strong>Dynasty</strong></p><p><strong>Period</strong></p><p><strong>Important Works and Contributions</strong></p><p>Maurya Dynasty</p><p>322-185 BCE</p><p>Chandragupta Maurya - Unified much of the Indian subcontinent. Ashoka - Promoted Buddhism and spread his message through edicts.</p><p>Gupta Dynasty</p><p>320-550 CE</p><p>Golden Age of India - Flourishing of arts, sciences, and literature. Development of the decimal numeral system and concept of zero.</p><p>Chola Dynasty</p><p>9th-13th century CE</p><p>Maritime trade, administrative efficiency, temple architecture, literature, and arts.</p><p>Pallava Dynasty</p><p>3rd-9th century CE</p><p>Architecture, rock-cut temples, and patronage of the arts.</p><p>Chalukya Dynasty</p><p>6th-12th century CE</p><p>Rock-cut cave temples, temple architecture, and art.</p><p>Rashtrakuta Dynasty</p><p>8th-10th century CE</p><p>Art, architecture, and patronage of learning.</p><p>Pala Dynasty</p><p>8th-12th century CE</p><p>Promotion of Buddhism, establishment of Nalanda and Vikramshila Universities.</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>Which Article of the Constitution of India guarantees equality of opportunity in matter of public employment?</p>",
+      "option1": "<p>Article 14</p>",
+      "option2": "<p>Article 15</p>",
+      "option3": "<p>Article 16</p>",
+      "option4": "<p>Article 17</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>Article 16 of the Constitution of India guarantees equality of opportunity in matters of public employment. It prohibits discrimination on grounds of religion, race, caste, sex, descent, place of birth, or residence in the matters of public employment. It ensures that all citizens have equal access to employment opportunities under the State, subject to reasonable exceptions and qualifications.</p><p><strong>Article</strong></p><p><strong>Title</strong></p><p><strong>Content</strong></p><p>Article 14</p><p>Right to Equality</p><p>The State shall not deny to any person equality before the law or equal protection of the laws within India.</p><p>Article 15</p><p>Prohibition of Discrimination</p><p>The State shall not discriminate against any citizen on grounds of religion, race, caste, sex, or place of birth.</p><p>Article 16</p><p>Equality of Opportunity in Public Employment</p><p>There shall be equality of opportunity for all citizens in matters of public employment under the State.</p><p>Article 17</p><p>Abolition of Untouchability</p><p>\"Untouchability\" is abolished, and its practice in any form is forbidden.</p><p>Article 18</p><p>Abolition of Titles</p><p>The State shall not confer titles except military and academic distinctions.</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Who among the following musicians was awarded India’s highest civilian honour, the Bharat Ratna, in 1999?</p>",
+      "option1": "<p>Ustad Zakir Hussain</p>",
+      "option2": "<p>Ustad Amjad Ali Khan</p>",
+      "option3": "<p>Pandit Ram Narayan</p>",
+      "option4": "<p>Pandit Ravi Shankar</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Pandit Ravi Shankar. </p><p><strong>Additional Information: </strong></p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>What is the basic requirement for an ecosystem to function and sustain?</p>",
+      "option1": "<p>Micro-organism</p>",
+      "option2": "<p>Organisms</p>",
+      "option3": "<p>Soil structure</p>",
+      "option4": "<p>Input of solar energy</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>Which of the following is considered as small earthquakes in underground caves and mines which are caused by the seismic waves produced by the eruption of rock on the surface?</p>",
+      "option1": "<p>Collapse earthquake</p>",
+      "option2": "<p>Explosion earthquake</p>",
+      "option3": "<p>Volcanic earthquake</p>",
+      "option4": "<p>Reservoir induced earthquakes</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Collapse Earthquake’. </p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>The world’s first 3D printed Hindu temple is being built in which of the following states?</p>",
+      "option1": "<p>Telangana</p>",
+      "option2": "<p>Tamil Nadu</p>",
+      "option3": "<p>Karnataka</p>",
+      "option4": "<p>Madhya Pradesh</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Telangana’.</p><p>World's first 3D-printed temple is currently taking shape in Telangana. This architectural marvel is being built inside Charvitha Meadows, a gated villa community at Burugupally in Siddipet.</p><p>The 3D printed temple is a three-part structure being built in an area of 3,800 square feet by city-based Apsuja Infratech. </p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>When was the first time that Mahatma Gandhi appeared on a Congress platform?</p>",
+      "option1": "<p>1904 Bombay Session</p>",
+      "option2": "<p>1915 Bombay Session</p>",
+      "option3": "<p>1899 Lucknow Session</p>",
+      "option4": "<p>1901 Calcutta Session</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘1901 Calcutta Session’. </p><p>The 1901 Calcutta Session was the first time Mahatma Gandhi appeared on the Congress platform. Then a lawyer based in South Africa, Gandhi ji urged the Congress to support the struggle against racial discrimination and exploitation in the country.</p><p><strong>Important facts: </strong></p><p><strong>Satyagraha</strong></p><p><strong>Year</strong></p><p><strong>Aim</strong></p><p>Champaran Satyagraha</p><p>1917</p><p>Protest against the forced indigo cultivation and exploitation of farmers in Champaran, Bihar.</p><p>Kheda Satyagraha</p><p>1918</p><p>Protest against the oppressive land revenue policy and demand for relief during a famine in Kheda, Gujarat.</p><p>Non-Cooperation Movement</p><p>1920-1922</p><p>Boycott of British goods, institutions, and withdrawal of support to the British government to demand self-governance.</p><p>Civil Disobedience Movement</p><p>1930-1934</p><p>Campaign against British salt laws, and civil disobedience against various unjust British policies and taxes.</p><p>Quit India Movement</p><p>1942</p><p>Demand for immediate British withdrawal from India during World War II.</p><p>Noakhali Riots</p><p>1946</p><p>Gandhi's effort to bring peace and communal harmony in Noakhali district, which experienced violent riots between Hindus and Muslims.</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Which of the following gases are greenhouse gases?<br/> A. Water Vapour (H2O)<br/> B. Carbon dioxide (CO2)<br/> C. Methane (CH4)<br/> D. Nitrous Oxide (N2O)<br/> </p>",
+      "option1": "<p>A and B</p>",
+      "option2": "<p>A, B, C and D</p>",
+      "option3": "<p>A and C</p>",
+      "option4": "<p>A, B and C</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option b is the correct answer. </p><p><strong>Water vapor (H2O), carbon dioxide (CO2), Nitrous Oxide (N2O), and methane (CH4) are all greenhouse gases</strong>. </p><p>These gases trap heat in the Earth's atmosphere, leading to the greenhouse effect, which is essential for maintaining a stable climate. </p><p>However, human activities, such as the burning of fossil fuels and deforestation, have led to an increase in the concentration of these greenhouse gases, contributing to global warming and climate change.</p><p>Major Greenhouse Gases: </p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Who amongst the following is author of the book titled “Four Stars of Destiny”?</p>",
+      "option1": "<p>Shashi Tharoor</p>",
+      "option2": "<p>MJ Akbar</p>",
+      "option3": "<p>MM Naravane</p>",
+      "option4": "<p>Dr Vijay Darda</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is MM Naravane.</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Triple point can be defined as:</p>",
+      "option1": "<p>the condition of temperature under which the gaseous and liquid phases of a substance can exist in equilibrium</p>",
+      "option2": "<p>the temperature at which solid is converted into liquid</p>",
+      "option3": "<p>the condition of pressure under which the solid and liquid phases of a substance can exist in equilibrium</p>",
+      "option4": "<p>the condition of temperature and pressure under which the gaseous, liquid and solid phases of a substance can exist in equilibrium</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p><p>The triple point of a substance is a specific temperature and pressure at which the solid, liquid, and gas phases of that substance coexist in equilibrium. </p><p>At the triple point, all three phases have the same unique vapor pressure, and any change in temperature or pressure will cause a phase transition between these three states. It is a critical point on the phase diagram of a substance.</p><p>The concept of the triple point is essential in understanding phase diagrams of substances and provides valuable information about the behavior of substances at different temperatures and pressures.</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>Which of the following is NOT correct about Fundamental Duties?</p>",
+      "option1": "<p>These are not enforceable</p>",
+      "option2": "<p>They are primarily moral duties.</p>",
+      "option3": "<p>They are not related to any legal rights.</p>",
+      "option4": "<p>These duties were added by 44th constitutional Amendment.</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option d is the correct answer. </p><p>The Fundamental Duties were added by the 42nd Constitutional Amendment, not the 44th. The 42nd Amendment, enacted in 1976, introduced the provisions related to Fundamental Duties in Article 51A of the Constitution of India. </p><p>The other statements are correct: </p><p>(A) These are not enforceable. While Fundamental Duties are an essential part of the Constitution, there is no specific provision for their direct enforcement through legal sanctions. However, they are considered moral and ethical obligations for citizens to uphold the values enshrined in the Constitution.</p><p>(B) They are primarily moral duties. Fundamental Duties emphasize the moral and ethical responsibilities of citizens towards the nation and society. These duties are intended to foster a sense of responsible citizenship and promote the welfare of the nation.</p><p>(C) They are not related to any legal rights. Fundamental Duties are separate from Fundamental Rights, which are justiciable and can be legally enforced through courts. Fundamental Duties, on the other hand, serve as guiding principles for citizens' conduct and are non-justiciable.</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>The election commission of India was established in_______?</p>",
+      "option1": "<p>1953</p>",
+      "option2": "<p>1950</p>",
+      "option3": "<p>1951</p>",
+      "option4": "<p>1952</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘1950’. </p><p>The Election Commission of India was established on <strong>25th January 1950</strong>, with the appointment of the Chief Election Commissioner and two Election Commissioners. </p><p>However, the Election Commission conducted its <strong>first general elections in India in 1951-1952.</strong></p><p>The constitutional provision for the Election Commission of India can be found in Article 324 of the Indian Constitution. <strong>Article 324 empowers the President of India to establish an Election Commission and also outlines its composition and powers</strong>. </p><p>Therefore, the correct answer is 1951.</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>What is the strength of a hydrogen bond determined by?</p>",
+      "option1": "<p>Interaction between the lone-pair electrons of the polar molecule and the hydrogen atom of another molecule</p>",
+      "option2": "<p>Interaction between the lone-pair electrons of the electropositive atom of one molecule and the hydrogen atom of another molecule</p>",
+      "option3": "<p>Interaction between the lone-pair electrons of the electronegative atom of one molecule and the hydrogen atomof another molecule</p>",
+      "option4": "<p>Interaction between the lone-pair electrons of the electronegative atom of one molecule and the oxygen atom of another molecule</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>The strength of a hydrogen bond is determined by the interaction between the lone-pair electrons of an electronegative atom (usually nitrogen, oxygen, or fluorine) in one molecule and the hydrogen atom attached to an electronegative atom (usually nitrogen, oxygen, or fluorine) in another molecule. </p><p>This electrostatic interaction results in a relatively strong bond compared to other intermolecular forces, such as van der Waals forces. Hydrogen bonding plays a crucial role in various chemical and biological processes and is responsible for many unique properties of substances like water.</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>Union Ministry of Home Affairs has formed a three-member judicial inquiry panel to probe ethnic violence in Manipur. Who amongst the following will chair the inquiry panel?</p>",
+      "option1": "<p>Ajai Lamba</p>",
+      "option2": "<p>Sanjay Baru</p>",
+      "option3": "<p>Himanshu Shekhar Das</p>",
+      "option4": "<p>Ritu Raj Awasthi</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Ajai Lamba.</p><p>The ministry of home affairs (MHA) has formed a three-member judicial inquiry panel led by former chief justice of Gauhati high court Ajai Lamba to probe the ethnic violence in Manipur. </p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Dholavira, a Harappan Site is presently located in which state?</p>",
+      "option1": "<p> Gujarat</p>",
+      "option2": "<p> Uttar Pradesh</p>",
+      "option3": "<p>Maharashtra</p>",
+      "option4": "<p>Punjab</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Gujarat’. </p><p>Dholavira, a Harappan archaeological site, is presently located in the state of Gujarat, India. </p><p>It is one of the most important and well-preserved Harappan (Indus Valley Civilization) sites in the Indian subcontinent. </p><p>Dholavira is known for its impressive urban planning, sophisticated water management system, and unique artifacts that provide valuable insights into the ancient civilization that thrived there around 4500 years ago.</p><p><strong>Harappan Site</strong></p><p><strong>Current Location</strong></p><p><strong>Nearby River</strong></p><p>Harappa</p><p>Punjab, Pakistan</p><p>Ravi River</p><p>Mohenjo-daro</p><p>Sindh, Pakistan</p><p>Indus River</p><p>Lothal</p><p>Gujarat, India</p><p>Bhogavo River</p><p>Dholavira</p><p>Gujarat, India</p><p>Manhar River</p><p>Kalibangan</p><p>Rajasthan, India</p><p>Ghaggar River</p><p>Rakhigarhi</p><p>Haryana, India</p><p>Drishadvati River</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Which of the following is associated with the origin of the Sutlej river?<br/> </p>",
+      "option1": "<p>Panchnad</p>",
+      "option2": "<p>Milam</p>",
+      "option3": "<p>Rakshas Tal</p>",
+      "option4": "<p>Gaumukh</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>Match the following</p>",
+      "option1": "<p>A-IV, B-III, C-II, D-I</p>",
+      "option2": "<p>A-I, B-II, C-IV, D-III</p>",
+      "option3": "<p>A-IV, B-III, C-I, D-II</p>",
+      "option4": "<p>A-I, B-II, C-III, D-IV</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option a is the correct answer. </p><p><strong>Buddhist Council</strong></p><p><strong>Location</strong></p><p><strong>King (Ruling at the time)</strong></p><p>1st </p><p>Rajagriha (Rajgir), Bihar (483BC)</p><p>King Ajatshatru </p><p>2nd </p><p>Vaishali, Bihar (383 BC)</p><p>Kalashoka</p><p>3rd </p><p>Patliputra , Bihar (250 BC)</p><p>Ashoka</p><p>4th </p><p>Kundalvana (Kashmir)</p><p>Kanishka </p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>Which of the following players is associated with billiards?</p>",
+      "option1": "<p>Saurabh Chaudhari</p>",
+      "option2": "<p>Manika Batra</p>",
+      "option3": "<p>Pankaj Advani</p>",
+      "option4": "<p>Sankalp Gupta</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Pankaj Advani. </p><p><strong>Pankaj Advani</strong> is associated with billiards. He is an Indian professional cueist and one of the most successful players in the sport of cue sports, particularly in billiards and snooker. </p><p><strong>Saurabh Chaudhari</strong>: Saurabh Chaudhari is a young Indian shooter and is associated with shooting sports. </p><p><strong>Manika Batra:</strong> Manika Batra is an Indian table tennis player. </p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Makaravilakku festival is celebrated in which of the following Indian states?</p>",
+      "option1": "<p>Andhra Pradesh</p>",
+      "option2": "<p>Tamil Nadu</p>",
+      "option3": "<p>Karnataka</p>",
+      "option4": "<p>Kerala</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is Kerala. </p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>What is the correct order of radiations in descending order of frequencies?</p>",
+      "option1": "<p>Infrared &gt; Microwaves &gt; Radio waves &gt; X-rays</p>",
+      "option2": "<p>Radio waves &gt; X-rays &gt; Microwaves &gt; Infrared</p>",
+      "option3": "<p>X-rays &gt; Infrared &gt; Microwaves &gt; Radio waves</p>",
+      "option4": "<p>Infrared &gt; Microwaves &gt; X-rays &gt; Radio waves</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>The correct order of radiations in descending order of frequencies is as follows:</p><p>So, the correct order of radiations in descending order of frequencies is:</p><p><strong> X-rays &gt; Infrared &gt; Microwaves &gt; Radio waves.</strong></p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>Which of the following statement is correct regarding large dams?<br/> I. They have social problems because they displace large number of peasants and tribals without adequate compensation or rehabilitation.<br/> II. They have Environmental problems because they contribute enormously to deforestation and the loss of biological diversity.</p>",
+      "option1": "<p>Only I correct</p>",
+      "option2": "<p>Only II correct</p>",
+      "option3": "<p>Both I and II correct</p>",
+      "option4": "<p>Neither I nor II correct</p>",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option c is the correct answer. </p><p>Both statements are correct regarding large dams.</p><p>I. Large dams often lead to social problems because they require the displacement of a significant number of people, including peasants and tribal communities, from their homes and lands to make way for the reservoirs. In many cases, the displaced people are not adequately compensated or rehabilitated, leading to social and economic hardships for them.</p><p>II. Large dams also have environmental problems because the construction of dams can lead to deforestation and the loss of biological diversity in the area. The creation of large reservoirs can submerge forests and wildlife habitats, leading to ecological imbalances and negative impacts on the local flora and fauna.</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>In India, the executive power of the union is vested with the ___________.</p>",
+      "option1": "<p>Vice President</p>",
+      "option2": "<p>Chief Justice</p>",
+      "option3": "<p>Prime Minister</p>",
+      "option4": "<p>President</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘President’.</p><p><strong>The executive power of the Union is vested with the President of India. </strong></p><p>The President is the head of the state and the commander-in-chief of the Indian Armed Forces.</p><p><strong>All the important articles related to the president.</strong></p><p>Article 53</p><p>Executive power of the Union</p><p>Outlines the President's executive powers and vests the executive authority in the President.</p><p>Article 54</p><p>Election of President</p><p>Describes the process of electing the President and the manner of voting by an Electoral College.</p><p>Article 55</p><p>Manner of election of President</p><p>Details the method of voting in the presidential election and how the votes are counted.</p><p>Article 56</p><p>Term of office of President</p><p>Specifies the term of the President, which is five years, and the eligibility for re-election.</p><p>Article 57</p><p>Eligibility for re-election</p><p>Clarifies that a President can be re-elected for a second term if eligible.</p><p>Article 58</p><p>Qualifications for election as President</p><p>Lists the qualifications that a person must possess to be eligible for election as President.</p><p>Article 59</p><p>Conditions of President's office</p><p>Lays down the oath or affirmation that the President takes before entering upon the office.</p><p>Article 60</p><p>Oath or affirmation by the President</p><p>Details the conditions under which the President can be impeached for violation of the Constitution.</p><p>Article 61</p><p>Procedure for impeachment</p><p>Outlines the procedure for the impeachment of the President by Parliament.</p><p>Article 62</p><p>Time of holding election of President</p><p>Specifies the time frame for holding a presidential election in case of a vacancy.</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Which of the following pairs of ‘mineral – source’ is correct?<br/> 1. Vitamin A - Papaya<br/> 2. Iron – Spinach</p>",
+      "option1": "<p>Both 1 and 2</p>",
+      "option2": "<p>Only 1</p>",
+      "option3": "<p>Only 2</p>",
+      "option4": "<p>Neither 1 nor 2</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option A is the correct answer. </p><p>Both the statements are correct. </p><p><strong>Vitamin A</strong> - Papaya: Vitamin A is indeed found in papaya. Papaya is a good source of beta-carotene, a provitamin A compound that gets converted into vitamin A in the body. Vitamin A is essential for maintaining healthy vision, immune system function, and skin health. </p><p><strong>Iron</strong> - Spinach: Spinach is a well-known source of iron. It is a leafy green vegetable that contains a significant amount of iron, which is a crucial mineral for the formation of hemoglobin in red blood cells and for transporting oxygen throughout the body. </p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>Which of the following organization has launched the “100 Days 100 Pays” campaign?</p>",
+      "option1": "<p>Security and Exchange Board of India (SEBI)</p>",
+      "option2": "<p>Reserve Bank of India (RBI)</p>",
+      "option3": "<p>Ministry of Finance</p>",
+      "option4": "<p>National Payments Corporation of India (NPCI)</p>",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The correct answer is ‘Reserve Bank of India (RBI)’. </p><p>The Reserve Bank of India (RBI) has recently initiated the '100 Days 100 Pays' campaign, aimed at tracing and settling the top 100 unclaimed deposits of every bank in every district within a span of 100 days.</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>Which of the following statement is NOT correct with respect to the poverty line?<br/> 1. In India, it is normally estimated after every ten years.<br/> 2. The proportion of people below poverty line is not same for all social groups and economic categories in India.</p>",
+      "option1": "<p>Only 1</p>",
+      "option2": "<p>Only 2</p>",
+      "option3": "<p>Both 1 and 2</p>",
+      "option4": "<p>Neither 1 nor 2</p>",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Option A is the correct answer. </p>"
+    },
+    {
+      "sr_no": 101,
+      "question": "<p>64, 121, ? ,256, 334, 419</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image001.png"
+    },
+    {
+      "sr_no": 102,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image002.png"
+    },
+    {
+      "sr_no": 103,
+      "question": "<p>301 * 7 * 18 * 6 * 8 = 73</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image003.png"
+    },
+    {
+      "sr_no": 104,
+      "question": "<p>Statement: Nowadays, the sale of laptops of Dell company has increased.</p><p>I. Sale of laptops of other companies has decreased.</p><p>II. Sale of laptops of Dell company was nil earlier.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In the statement, nothing is said about the sale of television sets of the other companies. Hence, inference I is not true. The second inference is not related to the statement as none of it has been talked about in the statement. So, it is also not valid.</p><p>Hence, both inferences don’t follow.</p>"
+    },
+    {
+      "sr_no": 105,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image004.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image005.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image006.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image007.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image008.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": ""
+    },
+    {
+      "sr_no": 106,
+      "question": "<p>I. The government has recently fixed the fees for Medical professional courses offered by the unaided institutions which are much lower than the fees charged last year.</p><p>II. The parents of the students who aspiring medical course launched a severe agitation last year protesting against the high fees charged by the unaided medical institutions.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>The parents’ protest against high fees being charged by the medical institutions led the government to interfere and fix the fees at a more affordable level.</p><p>Hence, Statement II is the cause and statement I is its effect.</p>"
+    },
+    {
+      "sr_no": 107,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image009.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image010.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image011.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image012.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image013.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image010.jpeg"
+    },
+    {
+      "sr_no": 108,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image014.png"
+    },
+    {
+      "sr_no": 109,
+      "question": "<p>(NOTE: Operations should be performed on the whole numbers, without breaking down the numbers into its constituent digits. E.g., 13 – Operations on 13 such as adding /deleting /multiplying etc. to 13 can be performed. Breaking down 13 into 1 and 3 and then performing mathematical operations on 1 and 3 is NOT allowed)</p><p>(8, 2, 41)</p><p>(9, 2, 54)</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image015.png"
+    },
+    {
+      "sr_no": 110,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image016.png",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>In figures 1, 3 and 6 are following same pattern.</p>"
+    },
+    {
+      "sr_no": 111,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image017.png"
+    },
+    {
+      "sr_no": 112,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image018.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image019.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image020.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image021.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image022.jpeg",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image020.jpeg"
+    },
+    {
+      "sr_no": 113,
+      "question": "<p>Statement: S &gt; J = O &gt; Q, Z ≥ S &gt; L, O ≤ F &lt; A</p><p>Conclusions:</p><p>I. L &gt; J</p><p>II. J &lt; A</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Conclusions:</p><p>I. L &gt; J (False) (S &gt; J, S &gt; L)</p><p>II. J &lt; A (True) (J = O ≤ F &lt; A)</p>"
+    },
+    {
+      "sr_no": 114,
+      "question": "<p>Q. Seven person A, B, C, D, E, F, and G are sitting around a circular table facing towards the centre (not necessarily in the same order). Who is to the immediate right of D.</p><p>(I) F is second to the right of G. D is the immediate neighbour of both A and G.</p><p>(II) E is second to the right of F. B sits immediate right of G. C sits immediate left of F.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image023.png"
+    },
+    {
+      "sr_no": 115,
+      "question": "<p>I = 1, A = 2, G = 3, N = 4, V = 5, S = 6</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "2",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>right word is 6,2,5,1,4,3 = SAVING.</p>"
+    },
+    {
+      "sr_no": 116,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image024.png"
+    },
+    {
+      "sr_no": 117,
+      "question": "<p>‘A @ B’ means ‘A is the daughter of B’.</p><p>‘A &amp; B’ means ‘A is the husband of B’.</p><p>‘A % B’ means ‘A is the wife of B’.</p><p>If C % A # F @ Y &amp; D @ Q, then how is F related to D?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image025.png"
+    },
+    {
+      "sr_no": 118,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image026.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image027.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image028.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image029.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image030.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image027.jpeg"
+    },
+    {
+      "sr_no": 119,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image031.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image032.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image033.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image034.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image035.jpeg",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image035.jpeg"
+    },
+    {
+      "sr_no": 120,
+      "question": "<p>Situation: Since the past 20 years, 68% of the products in the world’s coal market comes from Country Y. However, the employment in the coal industry of Country Y has been consistently declining by 7-12% every year since the past 3 years.</p><p>Conclusions:</p><p>I. Even after declining employment, Country Y has enough coals to continue contributing equally to the international market.</p><p>II. The local demand of coal in Country Y has substantially decreased leading to less interest among coals.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Given statement is talking about Since the past 20 years, 68% of the products in the world’s coal market comes from Country Y. However, the employment in the coal industry of Country Y has been consistently declining by 7-12% every year since the past 3 years.</p><p>We can conclude from the given statement that despite declining of employment in coal industry of country Y their contribution to the world’s coal market is 68% since last 20 years. Therefore, Conclusion I “Even after declining employment, Country Y has enough coal to continue contributing equally to the international market” is absolutely correct.</p><p>Conclusion II is talking about the local demand of Coal in Country Y has substantially decreased leading to less interest among coals which is not mention in the given statement. Therefore, we cannot conclude it from the given statement.</p>"
+    },
+    {
+      "sr_no": 121,
+      "question": "<p>Q. G, H, I, J, K, L and M are 7 people standing in a row all facing North (not necessarily in the same order). Who is standing second to the right of K?</p><p>Statements:</p><p>(I) L is standing 3rd from the right end and 2nd to the left of I.</p><p>(II) H is standing to the immediate right of K. H is standing 2nd to the left of G.</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image036.png"
+    },
+    {
+      "sr_no": 122,
+      "question": "<p>Four statements are given, followed by Four conclusions numbered I, II and III. Assuming the statements to be true, even if they seem to be at variance with commonly known facts, decide which of the conclusions logically follow(s) from the statements.</p><p>Statements:</p><p>l. All Pens are compasses</p><p>II. All compasses are Scale</p><p>III. Some Scales are Notebooks</p><p>IV. All Notebooks are Ball</p><p>Conclusions:</p><p>I. All Balls are Pen</p><p>II. At least some Scales are Ball</p><p>III. All Compasses are not Pens</p><p>IV. All Pens being Scale is a possibility</p>",
+      "option1": "<p>All conclusion follows</p>",
+      "option2": "<p>Only conclusions II and III follow</p>",
+      "option3": "<p>Only conclusions I and II follow</p>",
+      "option4": "<p>Only conclusions II follows</p>",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image037.png"
+    },
+    {
+      "sr_no": 123,
+      "question": "",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image038.png"
+    },
+    {
+      "sr_no": 124,
+      "question": "<p>118 ÷ 62 × 24 – 76 + 19 =?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image039.png"
+    },
+    {
+      "sr_no": 125,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image040.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image041.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image042.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image043.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image044.jpeg",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image043.jpeg"
+    },
+    {
+      "sr_no": 126,
+      "question": "<p>T M V _ _ J O H T _ _ J D J O H _ _ V J D J O _ _ M V J D J _ _</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "<p>Correct sequence is:</p><p>T M V J D J O H T M V J D J O H T M V J D J O H T M V J D J O H.</p>"
+    },
+    {
+      "sr_no": 127,
+      "question": "<p>C is immediate to the right of F. A sit third to the right of the H. Only two persons sit between G and B. E is to the immediate right of B and to the immediate left of F. H sits second to the right of the E. What is the position of A with respect to D?</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "4",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image045.png"
+    },
+    {
+      "sr_no": 128,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image046.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image050.png",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image050.png",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image051.png",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image050.png",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image052.png"
+    },
+    {
+      "sr_no": 129,
+      "question": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image053.png",
+      "option1": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image054.jpeg",
+      "option2": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image055.jpeg",
+      "option3": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image056.jpeg",
+      "option4": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image057.jpeg",
+      "answer": "1",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image054.jpeg"
+    },
+    {
+      "sr_no": 130,
+      "question": "<p># : HKC :: OZS : %</p>",
+      "option1": "",
+      "option2": "",
+      "option3": "",
+      "option4": "",
+      "answer": "3",
+      "negative_marking": "1.00",
+      "positive_marking": "3.00",
+      "solution": "https://appx-db.akamai.net.in/bulk_uploader_images/1711531385284_image058.png"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL T-2 Mock 13</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

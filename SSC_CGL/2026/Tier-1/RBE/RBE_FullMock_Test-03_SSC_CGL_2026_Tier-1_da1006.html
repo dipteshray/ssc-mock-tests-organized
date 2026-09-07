@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CGL 2026 Live Mock 3</title>
+<style>
+:root {
+  --primary-color: #007bff;
+  --primary-hover: #0069d9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --secondary-color: #6c757d;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+  --overlay: rgba(0,0,0,0.5);
+  --nav-height: 80px;
+}
+
+[data-theme="dark"] {
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --success-color: #51cf66;
+  --success-hover: #40c057;
+  --danger-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --secondary-color: #868e96;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --border-color: #495057;
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  --overlay: rgba(0,0,0,0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+body.palette-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-primary);
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.header h1 {
+  font-size: 28px;
+  color: var(--primary-color);
+  font-weight: 700;
+  user-select: none;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.theme-toggle, .fullscreen-btn {
+  background: var(--bg-tertiary);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.3s;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+}
+
+.theme-toggle:active, .fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle:hover, .fullscreen-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.timer {
+  background: var(--warning-color);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  min-width: 100px;
+  text-align: center;
+  user-select: none;
+}
+
+.timer.warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.palette-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 20px);
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+  transition: all 0.3s ease;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-fab:active {
+  transform: scale(0.9);
+}
+
+.palette-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.6);
+}
+
+.palette-fab.active {
+  background: var(--danger-color);
+}
+
+.palette-fab .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-secondary);
+  pointer-events: none;
+}
+
+.palette-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  touch-action: none;
+}
+
+.palette-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.question-palette {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-primary);
+  box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.question-palette.active {
+  right: 0;
+}
+
+.palette-header {
+  padding: 20px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.palette-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.palette-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+.palette-close:active {
+  transform: scale(0.9);
+}
+
+.palette-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.palette-stats {
+  padding: 15px 20px;
+  background: var(--bg-tertiary);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.palette-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.palette-stat .number {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.palette-stat.answered .number { color: var(--success-color); }
+.palette-stat.unanswered .number { color: var(--secondary-color); }
+.palette-stat.bookmarked .number { color: var(--warning-color); }
+
+.palette-search {
+  padding: 15px 20px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.palette-search input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.palette-search input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.palette-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+}
+
+.palette-btn {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.palette-btn:active {
+  transform: scale(0.9);
+}
+
+.palette-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.palette-btn.current {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  animation: currentPulse 2s infinite;
+}
+
+@keyframes currentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,123,255,0.7); }
+  50% { box-shadow: 0 0 0 8px rgba(0,123,255,0); }
+}
+
+.palette-btn.answered {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.palette-btn.bookmarked::after {
+  content: '🔖';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.palette-btn.bookmarked.answered {
+  background: var(--success-color);
+}
+
+.palette-legend {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.question-image, .option-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 10px 0;
+  display: block;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.quiz-container {
+  background: var(--bg-primary);
+  border-radius: 15px;
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  scroll-margin-top: 20px;
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.marking-info {
+  display: inline-block;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-section {
+  margin-bottom: 25px;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.progress-bar-container {
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  transition: width 0.4s ease;
+  border-radius: 12px;
+}
+
+.question-section {
+  min-height: 300px;
+  scroll-margin-top: 80px;
+  margin-bottom: 20px;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  user-select: none;
+}
+
+.bookmark-btn {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bookmark-btn:active {
+  transform: scale(0.95);
+}
+
+.bookmark-btn.active {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.question {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--text-primary);
+  user-select: text;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg-secondary);
+  min-height: 60px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.option-label:active {
+  transform: scale(0.98);
+}
+
+.option-label:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+.option-label.selected {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.option-label input[type="radio"] {
+  margin-right: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.option-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--bg-primary);
+  padding: 10px;
+}
+
+.option-label.selected .option-image {
+  background: rgba(255,255,255,0.1);
+}
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 997;
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.nav-btn {
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.nav-btn:active {
+  transform: scale(0.97);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn.prev {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.nav-btn.prev:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.nav-btn.next {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nav-btn.next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.nav-btn.clear {
+  background: var(--danger-color);
+  color: white;
+}
+
+.nav-btn.clear:hover {
+  background: #c82333;
+}
+
+.nav-btn.submit {
+  background: var(--success-color);
+  color: white;
+  grid-column: 1 / -1;
+}
+
+.nav-btn.submit:hover {
+  background: var(--success-hover);
+}
+
+.result-section {
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.score-card h2 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.score-card p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  user-select: none;
+}
+
+.stat-card h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.stat-card.correct h3 { color: var(--success-color); }
+.stat-card.wrong h3 { color: var(--danger-color); }
+.stat-card.unattempted h3 { color: var(--secondary-color); }
+
+.question-review {
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: var(--bg-secondary);
+}
+
+.question-review h4 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.review-option {
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-option .option-image {
+  max-width: 150px;
+  max-height: 100px;
+}
+
+.review-option.correct {
+  background: #d4edda;
+  border-color: var(--success-color);
+  color: #155724;
+}
+
+.review-option.wrong {
+  background: #f8d7da;
+  border-color: var(--danger-color);
+  color: #721c24;
+}
+
+.review-option.user-selected {
+  border-width: 3px;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  padding: 14px 30px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  min-width: 150px;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.restart {
+  background: var(--danger-color);
+  color: white;
+}
+
+.action-btn.restart:hover {
+  background: #c82333;
+}
+
+.action-btn.download {
+  background: var(--primary-color);
+  color: white;
+}
+
+.action-btn.download:hover {
+  background: var(--primary-hover);
+}
+
+.action-btn.print {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.action-btn.print:hover {
+  background: #5a6268;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.palette-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.palette-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.palette-content::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.palette-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .quiz-container {
+    padding: 20px 15px;
+  }
+
+  .question-palette {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  .palette-btn {
+    font-size: 13px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 10px);
+    right: 15px;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .navigation {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+
+  .nav-btn {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-btn.clear {
+    order: 3;
+  }
+
+  .nav-btn.submit {
+    grid-column: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-label {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .option-image {
+    max-height: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .palette-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .palette-btn {
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .timer {
+    font-size: 16px;
+    padding: 8px 16px;
+  }
+
+  .option-image {
+    max-height: 120px;
+  }
+}
+
+@media (max-width: 360px) {
+  .palette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .header-controls, .navigation, .palette-fab, .palette-overlay, .question-palette, .action-buttons, .bookmark-btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    padding-bottom: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .palette-fab {
+    bottom: calc(var(--nav-height) + 5px);
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .palette-fab .badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎯 CGL 2026 Live Mock 3</h1>
+    <div class="header-controls">
+      <div class="timer" id="timer">00:00</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle Theme">🌙</button>
+      <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+      <div class="marking-info" id="markingInfo">Marking: +1, -0</div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-stats">
+        <span>Progress: <strong id="progressText">1/2</strong></span>
+        <span>Attempted: <strong id="attemptedText">0</strong></span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="question-section" id="questionSection">
+      <div class="question-header">
+        <div class="question-number" id="questionNumber">Question 1 of 2</div>
+        <button class="bookmark-btn" id="bookmarkBtn" aria-label="Bookmark question">
+          <span>🔖</span> <span>Bookmark</span>
+        </button>
+      </div>
+      
+      <div class="question" id="questionText"></div>
+      
+      <div class="options" id="optionsContainer"></div>
+    </div>
+
+    <div class="result-section hidden" id="resultSection"></div>
+  </div>
+</div>
+
+<button class="palette-fab" id="paletteFab" aria-label="Toggle question palette" title="Question Palette">
+  📋
+  <span class="badge" id="answeredBadge">0</span>
+</button>
+
+<div class="palette-overlay" id="paletteOverlay"></div>
+
+<div class="question-palette" id="questionPalette">
+  <div class="palette-header">
+    <h3>Question Palette</h3>
+    <button class="palette-close" id="paletteClose" aria-label="Close palette">×</button>
+  </div>
+
+  <div class="palette-stats">
+    <div class="palette-stat answered">
+      <div class="number" id="paletteAnswered">0</div>
+      <div>Answered</div>
+    </div>
+    <div class="palette-stat unanswered">
+      <div class="number" id="paletteUnanswered">2</div>
+      <div>Not Answered</div>
+    </div>
+    <div class="palette-stat bookmarked">
+      <div class="number" id="paletteBookmarked">0</div>
+      <div>Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="palette-search">
+    <input type="number" id="paletteSearch" placeholder="Jump to question number..." aria-label="Search questions" inputmode="numeric" pattern="[0-9]*">
+  </div>
+
+  <div class="palette-content">
+    <div class="palette-grid" id="paletteGrid"></div>
+  </div>
+
+  <div class="palette-legend">
+    <div class="legend-grid">
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--success-color)"></div>
+        <span>Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--bg-secondary); border: 2px solid var(--border-color)"></div>
+        <span>Not Answered</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--primary-color)"></div>
+        <span>Current Question</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: var(--warning-color)"></div>
+        <span>🔖 Bookmarked</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navigation" id="navigation">
+  <button class="nav-btn prev" id="prevBtn" aria-label="Previous question">
+    <span>←</span> Previous
+  </button>
+  <button class="nav-btn clear" id="clearBtn" aria-label="Clear answer">Clear</button>
+  <button class="nav-btn next" id="nextBtn" aria-label="Next question">
+    Next <span>→</span>
+  </button>
+  <button class="nav-btn submit hidden" id="submitBtn" aria-label="Submit quiz">Submit Quiz</button>
+</div>
+
+<script>
+// MODIFIED: Quiz data structure with time_minutes
+const quizData = {
+  "time_minutes": 60,
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image001.png",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image002.png",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image003.png",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image004.png",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image005.png",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image006.png"
+    },
+    {
+      "sr_no": 2,
+      "question": "<p>In a certain code language.<br/>'Y + F' means 'Y is the daughter of F',<br/>'Y - F' means 'Y is the son of F',<br/>'Y @ F' means 'Y is the sister of F' and<br/>'Y # F' means 'Y is the father of F'.</p><p>Based on the above, how is S related to A if 'A + H @ S - C'</p>",
+      "option1": "<p>Sister's daughter</p>",
+      "option2": "<p>Mother's sister</p>",
+      "option3": "<p>Sister</p>",
+      "option4": "<p>Mother's brother</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image007.png"
+    },
+    {
+      "sr_no": 3,
+      "question": "<p>Select the option in which the numbers share the same relationship as that shared by the pair of numbers.</p><p>53: 151</p>",
+      "option1": "<p>68 :197</p>",
+      "option2": "<p>71: 204</p>",
+      "option3": "<p>72: 211</p>",
+      "option4": "<p>46: 128</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Logic: Multiply by 3 and subtract the sum of digits.</p><p>53 → 53×3 = 159; 5+3 = 8; 159−8 = 151 ✔<br/>68 → 68×3 = 204; 6+8 = 14; 204−14 = 190 ✘<br/>71 → 71×3 = 213; 7+1 = 8; 213−8 = 205 ✘<br/>72 → 72×3 = 216; 7+2 = 9; 216−9 = 207 ✘<br/>46 → 46×3 = 138; 4+6 = 10; 138−10 = 128 ✔</p>"
+    },
+    {
+      "sr_no": 4,
+      "question": "<p>Select the word that is related to the third word in the same way as the second word is related to the first word.</p><p>Ornithology : Birds:: Malacology : ?</p>",
+      "option1": "<p>Fungi</p>",
+      "option2": "<p>Mollusca</p>",
+      "option3": "<p>Plants<br/> </p>",
+      "option4": "<p>Insects</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Explanation:</p><p>Checking options:</p><p>Final Answer: Mollusca</p>"
+    },
+    {
+      "sr_no": 5,
+      "question": "<p>A, B, E, F, J, M and N are sitting around a circular table facing the centre of the table (but not necessarily in the same order). Only three people sit between J and N when counted from the left of J. Only three people sit between M and F when counted from the left of F. A sits to the immediate left of M.E is an immediate neighbour of B as well as N. Who sits third to the right of B?</p>",
+      "option1": "<p>A</p>",
+      "option2": "<p>F</p>",
+      "option3": "<p>E</p>",
+      "option4": "<p>N</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image008.png"
+    },
+    {
+      "sr_no": 6,
+      "question": "<p>What will come in place of question mark (?) in each of the following number series?</p><p>37, 41, 43, 47, 53, 59, ?</p>",
+      "option1": "<p>67</p>",
+      "option2": "<p>69</p>",
+      "option3": "<p>63</p>",
+      "option4": "<p>61</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Logic:</p><p>Next term: 👉 61</p>"
+    },
+    {
+      "sr_no": 7,
+      "question": "<p>If BRH is coded as 288 and is CJN coded as 420, then which of the following will be the code for RED?</p>",
+      "option1": "<p>342</p>",
+      "option2": "<p>360</p>",
+      "option3": "<p>378</p>",
+      "option4": "<p>396</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Pattern:<br/>👉 Code = product of alphabetical positions of letters</p><p>Proof (given example):<br/>BRH → B = 2, R = 18, H = 8<br/>2 × 18 × 8 = 288 ✔</p><p>Now find the code for RED:<br/>R = 18, E = 5, D = 4<br/>18 × 5 × 4 = 360</p><p>Answer: 360</p>"
+    },
+    {
+      "sr_no": 8,
+      "question": "<p>If A ≥ B &lt; C ≤ D = E, then which of the following is definitely true?</p>",
+      "option1": "<p>A &gt; C</p>",
+      "option2": "<p>B &lt; E</p>",
+      "option3": "<p>A = D</p>",
+      "option4": "<p>C &gt; E</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Given:<br/>A ≥ B &lt; C ≤ D = E</p><p>Check options:</p><p>✅ Answer: B &lt; E</p>"
+    },
+    {
+      "sr_no": 9,
+      "question": "<p>Consider the following number sequence:<br/>3 8 5 6 1 4 9 2 7 6 8 5 4 2 9</p><p>If all the odd numbers are eliminated from the sequence, which number is 3rd to the left of the 4th number from the extreme right end?</p>",
+      "option1": "<p>8</p>",
+      "option2": "<p>6</p>",
+      "option3": "<p>2</p>",
+      "option4": "<p>4</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>After eliminating odd numbers:<br/>8 6 4 2 6 8 4 2</p><p>4th from the extreme right:<br/>2(1), 4(2), 8(3), 6(4)</p><p>3rd to the left of 6:<br/>2(1), 4(2), 6(3)</p><p>✅ Answer: 6</p>"
+    },
+    {
+      "sr_no": 10,
+      "question": "<p>Which two signs and two numbers should be interchanged in the following equation to make it correct?</p><p>98 − 9 × 42 ÷ 7 + 56 = 96</p>",
+      "option1": "<p>56 and 21, + and ×</p>",
+      "option2": "<p>56 and 9, + and ×</p>",
+      "option3": "<p>98 and 9, + and ×</p>",
+      "option4": "<p>42 and 7, + and −</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Given:<br/>98 − 9 × 42 ÷ 7 + 56 = 96</p><p>(a) 56 and 21, + and × → 21 not present ❌<br/>(b) 56 and 9, + and × → 98 − 56 + 42 ÷ 7 × 9 = 96 ✔<br/>(c) 98 and 9, + and × → 9 − 98 × 42 ÷ 7 + 56 ≠ 96 ❌<br/>(d) 42 and 7, + and − → 98 + 9 × 7 ÷ 42 − 56 ≠ 96 ❌</p><p>Answer: (b)</p>"
+    },
+    {
+      "sr_no": 11,
+      "question": "<p>Select the correct option that indicates the arrangement of the given words in the order in which they appear in an English dictionary. </p><p>1.Arrange 2.Arrangement 3.Arranged 4. Arranging 5.Arranger </p>",
+      "option1": "<p>1, 3, 5, 4, 2</p>",
+      "option2": "<p>1, 3, 2, 5, 4</p>",
+      "option3": "<p>1, 3, 4, 5, 2</p>",
+      "option4": "<p>1, 5, 3, 4, 2</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>All words start with the common prefix “arrange”, so compare letters after it.<br/>Arrange (1) comes first as the base and shortest word.<br/>Between the remaining words, Arranged (3) comes before Arrangement (2) due to d &lt; m.<br/>Then Arranger (5) comes before Arranging (4) as r &lt; i is considered later in sequence.</p><p>Answer: (b) 1, 3, 2, 5, 4</p>"
+    },
+    {
+      "sr_no": 12,
+      "question": "<p>Pointing towards Arjun, Pooja said, “He is my mother’s brother’s wife’s son.” If Kavita is the mother of Pooja, then how is Kavita related to Arjun?</p>",
+      "option1": "<p>Sister </p>",
+      "option2": "<p>Aunt </p>",
+      "option3": "<p>Mother </p>",
+      "option4": "<p>Grandmother</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image009.png"
+    },
+    {
+      "sr_no": 13,
+      "question": "<p>Select the Venn diagram that best illustrates the relationship between the following classes.</p><p>Cats, Animals, Boxes</p>",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image010.png",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image011.png",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image012.png",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image013.png",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image014.png"
+    },
+    {
+      "sr_no": 14,
+      "question": "<p>Read the given statements and conclusions carefully. Assuming that the information given in the statements is true, even if it appears to be at variance with commonly known facts, decide which of the given conclusions logically follow(s) from the statements.</p><p>Statements:</p><p>Some saucers are plates.</p><p>No plate is a bowl.</p><p>No plate is a fork.</p><p>Conclusions:</p><p>(I): No saucer is a bowl.</p><p>(II): Some forks are bowls.</p>",
+      "option1": "<p>Only conclusion (II) follows.</p>",
+      "option2": "<p>Neither conclusion (I) nor (II) follows.</p>",
+      "option3": "<p>Only conclusion (I) follows.</p>",
+      "option4": "<p>Both conclusions I &amp; II follow</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image015.png"
+    },
+    {
+      "sr_no": 15,
+      "question": "<p>Four letter-clusters have been given, out of which three are alike in some manner, while one is different. Select the odd letter-cluster.</p>",
+      "option1": "<p>GHJMQ</p>",
+      "option2": "<p>NOQTX</p>",
+      "option3": "<p>KMPTY</p>",
+      "option4": "<p>XYADH</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Explanation:</p><p>Let’s check the alphabetical position pattern in each letter-cluster.</p><p>All the above follow the pattern: +1, +2, +3, +4</p><p>Final Answer: KMPTY (Option 3)</p>"
+    },
+    {
+      "sr_no": 16,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image016.png",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image017.png",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image018.png",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image019.png",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image020.png",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image021.png"
+    },
+    {
+      "sr_no": 17,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image022.png",
+      "option1": "<p>M</p>",
+      "option2": "<p>P</p>",
+      "option3": "<p>T</p>",
+      "option4": "<p>A</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>From the first position, face T is adjacent to P and M (T is on a different visible face, not confirmed adjacent).</p><p>From the second position, T is adjacent to D and A.</p><p>Combining both views, T is adjacent to P, M, D, and A (four faces).</p><p>A dice face can have only four adjacent faces.</p><p>Hence, the only remaining face is I, so T is opposite to I.</p>"
+    },
+    {
+      "sr_no": 18,
+      "question": "<p>Select the letter-cluster from among the given options that can replace the question mark (?) in the following series.</p><p>ANK, EPN, IRQ, OTT, UVW, ?</p>",
+      "option1": "<p>ZXZ</p>",
+      "option2": "<p>AXY</p>",
+      "option3": "<p>AXZ</p>",
+      "option4": "<p>ZXY</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>The first letter follows the vowel sequence → A, E, I, O, U, next vowel = A.<br/>The second letter increases by +2 each time → K, N, Q, T, W, next = X.<br/>The third letter increases by +3 each time → K, N, Q, T, W, next = Z.<br/>Thus, all three positions follow a fixed pattern.<br/>So, the missing letter-cluster is AXZ.</p>"
+    },
+    {
+      "sr_no": 19,
+      "question": "<p>Neeraj Chopra is related to Javelin Throw in the same way Abhinav Bindra is related to ______.</p>",
+      "option1": "<p>Archery</p>",
+      "option2": "<p>Shooting</p>",
+      "option3": "<p>Wrestling</p>",
+      "option4": "<p>Boxing</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>👉 Hence, the correct answer is (b) Shooting.</p>"
+    },
+    {
+      "sr_no": 20,
+      "question": "<p>Find the next term of the following series.</p><p>2, 3, 6, 13, 28, 59, ?</p>",
+      "option1": "<p>128</p>",
+      "option2": "<p>124</p>",
+      "option3": "<p>122</p>",
+      "option4": "<p>123</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Pattern: (2¹ − 0), (2² − 1), (2³ − 2), (2⁴ − 3), …</p><p>Next term:<br/>2⁷ − 6 = 128 − 6 = 122</p>"
+    },
+    {
+      "sr_no": 21,
+      "question": "<p>If M denotes ‘+’, N denotes ‘×’, O denotes ‘−’, and P denotes ‘÷’, then what will come in place of ‘?’ in the following equation?</p><p>7 N 3 M 4 O 5 P 2 = ?</p>",
+      "option1": "<p>20.25</p>",
+      "option2": "<p>21.5</p>",
+      "option3": "<p>22.5</p>",
+      "option4": "<p>23.5</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Replace letters with operators → 7 × 3 + 4 − 5 ÷ 2<br/>Multiplication: 7 × 3 = 21 → 21 + 4 − 5 ÷ 2<br/>Division: 5 ÷ 2 = 2.5 → 21 + 4 − 2.5<br/>Addition: 21 + 4 = 25 → 25 − 2.5<br/>Subtraction: 25 − 2.5 = 22.5<br/>Answer: 22.5</p>"
+    },
+    {
+      "sr_no": 22,
+      "question": "<p>You are supposed to submit an assignment today, but your computer stops working just before submission. The best thing for you is to:</p>",
+      "option1": "<p>Argue with the authority for extra time</p>",
+      "option2": "<p>Inform the concerned person and seek a genuine solution</p>",
+      "option3": "<p>Copy someone else’s work quickly</p>",
+      "option4": "<p>Decide not to submit the assignment</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Informing the concerned person honestly shows responsibility and integrity. Seeking a genuine solution (extra time / alternative submission) is practical and ethical. Other options involve arguing, dishonesty, or giving up, which are not appropriate.</p>"
+    },
+    {
+      "sr_no": 23,
+      "question": "<p>How many such pairs of letters are there in the word PLANET (both in the forward and backward directions) which have as many letters between them as there are in the English alphabetical order?</p>",
+      "option1": "<p>0</p>",
+      "option2": "<p>1</p>",
+      "option3": "<p>2</p>",
+      "option4": "<p>3</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363747658_image023.png"
+    },
+    {
+      "sr_no": 24,
+      "question": "<p>In a code language, ‘FRIEND’ is written as ‘JNMARZ’. In the same language, ‘SCHOOL’ will be written as:</p>",
+      "option1": "<p>WYLKHS</p>",
+      "option2": "<p>WYLKSH</p>",
+      "option3": "<p>WYLISH</p>",
+      "option4": "<p>WYKLIS</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Logic: +4, −4 alternately</p><p>S(+4)=W, C(−4)=Y, H(+4)=L, O(−4)=K, O(+4)=S, L(−4)=H</p><p>Answer: WYLKSH</p>"
+    },
+    {
+      "sr_no": 25,
+      "question": "<p>In a certain code language, BRIGHT is written as FVOKLX, FUTURE is written as JAXAVI. How MINISTER is written in that code?</p>",
+      "option1": "<p>QMRMWXIV</p>",
+      "option2": "<p>QOROWXIF</p>",
+      "option3": "<p>QOROWXIV</p>",
+      "option4": "<p>QPROWXIV</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Logic: Consonant → +4, vowel → next vowel</p><p>MINISTER<br/>M→Q, I→O<br/>N→R, I→O<br/>S→W, T→X<br/>E→I, R→V</p><p>Answer: QOROWXIV</p>"
+    },
+    {
+      "sr_no": 26,
+      "question": "<p>Which of the following soils is best suited for Cashew Nut cultivation?</p>",
+      "option1": "<p>Alluvial Soil</p>",
+      "option2": "<p>Black Soil </p>",
+      "option3": "<p>Red Laterite Soil </p>",
+      "option4": "<p>Arid Soil</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Red Laterite Soil ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 27,
+      "question": "<p>In a pressure cooker, cooking is faster because:</p>",
+      "option1": "<p>Specific heat increases </p>",
+      "option2": "<p>Boiling point of water increases</p>",
+      "option3": "<p>Boiling point decreases</p>",
+      "option4": "<p>Heat capacity decreases</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Boiling point of water increases ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 28,
+      "question": "<p>In human physiology, which hormone deficiency leads to altitude sickness due to impaired oxygen transport?</p>",
+      "option1": "<p> Erythropoietin</p>",
+      "option2": "<p>Thyroxine</p>",
+      "option3": "<p>Insulin</p>",
+      "option4": "<p>Adrenaline</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Erythropoietin ✅</p><p>Explanation:</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 29,
+      "question": "<p>Who was the founder of the \"Indian Home Rule Society\" in London (1905)?</p>",
+      "option1": "<p>V.D. Savarkar</p>",
+      "option2": "<p>Lala Hardayal</p>",
+      "option3": "<p>Bhikaiji Cama </p>",
+      "option4": "<p>Shyamji Krishna Varma</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Shyamji Krishna Varma ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 30,
+      "question": "<p>The \"Contempt of Court\" is mentioned in which Article?</p>",
+      "option1": "<p>Art. 125</p>",
+      "option2": "<p>Art. 127</p>",
+      "option3": "<p>Art. 129</p>",
+      "option4": "<p>Art. 131</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Article 129 ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 31,
+      "question": "<p>Match the following Coal Fields with their States:</p><p>P: Korba</p><p>1. Odisha</p><p>Q: Talcher </p><p>2. Chhattisgarh</p><p>R: Neyveli </p><p>3. Tamil Nadu</p>",
+      "option1": "<p>P-2, Q-1, R-3</p>",
+      "option2": "<p>P-3, Q-1, R-2</p>",
+      "option3": "<p>P-2, Q-3, R-1</p>",
+      "option4": "<p>P-1, Q-2, R-3</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: P-2, Q-1, R-3 ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 32,
+      "question": "<p>With reference to the \"Pala Empire\" of Ancient India, which among the following statements is/are correct?</p><p>1- The Palas were the first to introduce a centralized bureaucracy in Eastern India.</p><p>2- The Buddhist University of Vikramshila was founded by Dharmapala.</p>",
+      "option1": "<p>1 only</p>",
+      "option2": "<p>2 only</p>",
+      "option3": "<p>Both 1 &amp; 2</p>",
+      "option4": "<p>Neither 1 &amp; 2</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: 2 only ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 33,
+      "question": "<p>In the context of Geography, the \"Thermocline\" layer refers to?</p>",
+      "option1": "<p>High salinity zone</p>",
+      "option2": "<p>Rapid temperature change zone</p>",
+      "option3": "<p>High pressure zone</p>",
+      "option4": "<p>Sunlight zone</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Rapid temperature change zone ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 34,
+      "question": "<p>Which Indian state has the maximum forest cover by percentage of its total area?</p>",
+      "option1": "<p>Madhya Pradesh</p>",
+      "option2": "<p>Arunachal Pradesh</p>",
+      "option3": "<p>Chhattisgarh</p>",
+      "option4": "<p>Mizoram</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Mizoram ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 35,
+      "question": "<p>Which mirror is used by dentists to see a large image of teeth?</p>",
+      "option1": "<p>Parabolic mirror</p>",
+      "option2": "<p>Convex mirror</p>",
+      "option3": "<p>Concave mirror</p>",
+      "option4": "<p>Plane mirror</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Concave mirror ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 36,
+      "question": "<p>Which among the following options has the lowest coal content?</p>",
+      "option1": "<p>Anthracite</p>",
+      "option2": "<p>Bituminous</p>",
+      "option3": "<p>Lignite</p>",
+      "option4": "<p>Peat</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Peat ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 37,
+      "question": "<p>Regarding \"Mitochondria,\" which among the following statements is/are correct?</p><p>1- They have their own DNA and Ribosomes.</p><p>2- They are the site of anaerobic respiration.</p>",
+      "option1": "<p>1 only</p>",
+      "option2": "<p>2 only</p>",
+      "option3": "<p>Both 1 &amp; 2</p>",
+      "option4": "<p>Neither 1 &amp; 2</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: 1 only ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 38,
+      "question": "<p>The \"Linguistic Provinces Commission\" (1948) was headed by:</p>",
+      "option1": "<p>Fazl Ali </p>",
+      "option2": "<p>S.K. Dhar</p>",
+      "option3": "<p>Jawaharlal Nehru </p>",
+      "option4": "<p>H.N. Kunzru</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: S.K. Dhar ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 39,
+      "question": "<p>Consider the following statements regarding the \"Cabinet Mission\" of 1946 and answer which of them is/are correct?</p><p>1. It proposed a three-tier structure of the Union and the Provinces.</p><p>2. It recommended that the Princely States should be under the direct control of the British Crown until 1950.</p>",
+      "option1": "<p>1 only</p>",
+      "option2": "<p>2 only</p>",
+      "option3": "<p>Both 1 &amp; 2</p>",
+      "option4": "<p>Neither 1 &amp; 2</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: 1 only ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 40,
+      "question": "<p>\"Mission Mausam\", approved in 2025, will deploy which technology for weather modification?</p>",
+      "option1": "<p>Use of drones in farming</p>",
+      "option2": "<p>Ionospheric heating </p>",
+      "option3": "<p>Solar Geoengineering </p>",
+      "option4": "<p>Cloud Seeding</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Cloud Seeding ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 41,
+      "question": "<p>\"Mritchakatika,\" an ancient Indian play, was authored by?</p>",
+      "option1": "<p>Vishakhadatta</p>",
+      "option2": "<p>Kalidasa</p>",
+      "option3": "<p>Shudraka</p>",
+      "option4": "<p>Varahamihira</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Shudraka ✅</p><p>Explanation:<br/>\"Mṛcchakaṭika\" (The Little Clay Cart) is a classical Sanskrit play attributed to King Shudraka.</p>"
+    },
+    {
+      "sr_no": 42,
+      "question": "<p>The \"India-Middle East-Europe Economic Corridor\" (IMEC) aims to bypass which chokepoint?</p>",
+      "option1": "<p>Strait of Hormuz</p>",
+      "option2": "<p>Bab-el-Mandeb</p>",
+      "option3": "<p>Malacca Strait</p>",
+      "option4": "<p>Suez Canal </p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Suez Canal ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 43,
+      "question": "<p>Regarding the \"Gram Nyayalayas Act, 2008 (Amended 2025) which among the following statements is/are correct?</p><p>1. Gram Nyayalayas have both civil and criminal jurisdiction.</p><p>2. The Nyayadhikari is appointed by the State Government in consultation with the High Court.</p>",
+      "option1": "<p>1 only</p>",
+      "option2": "<p>2 only</p>",
+      "option3": "<p>Both 1 &amp; 2</p>",
+      "option4": "<p>Neither 1 &amp; 2</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Both 1 &amp; 2 ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 44,
+      "question": "<p>Hikat is a folk dance of which Indian province?</p>",
+      "option1": "<p>Punjab</p>",
+      "option2": "<p>Kerela</p>",
+      "option3": "<p>Jammu &amp; Kashmir</p>",
+      "option4": "<p>Madhya Pradesh</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Jammu &amp; Kashmir ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 45,
+      "question": "<p>\"Fiat Money\" is money that:</p>",
+      "option1": "<p>Has intrinsic value</p>",
+      "option2": "<p>Is used only in international trade.</p>",
+      "option3": "<p>Is backed by a physical commodity.</p>",
+      "option4": "<p>Has value because the government declares it to be legal tender.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Has value because the government declares it to be legal tender ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 46,
+      "question": "<p>Which of the following is NOT a \"Maharatna\" company?</p>",
+      "option1": "<p>ONGC</p>",
+      "option2": "<p>BHEL </p>",
+      "option3": "<p>SJVN</p>",
+      "option4": "<p>NTPC</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>SJVN is NOT a Maharatna company.</p><p>ONGC, BHEL, and NTPC qualify as Maharatna Central Public Sector Enterprises, granting them extensive operational autonomy. </p><p>Satluj Jal Vidyut Nigam (SJVN) Limited holds Navratna status, focusing on hydroelectric power projects, but does not meet the elevated financial thresholds for Maharatna designation as of January 2026.</p>"
+    },
+    {
+      "sr_no": 47,
+      "question": "<p>\"Sanjhi Art\", used for temple decorations, belongs to which region?</p>",
+      "option1": "<p>Mathura</p>",
+      "option2": "<p>Kangra</p>",
+      "option3": "<p>Mithila</p>",
+      "option4": "<p>Kutch</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Mathura ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 48,
+      "question": "<p>Which instrument is known as the \"Mother of all string instruments\" in Indian Classical Music?</p>",
+      "option1": "<p>Sitar</p>",
+      "option2": "<p>Veena</p>",
+      "option3": "<p>Sarangi</p>",
+      "option4": "<p>Tanpura</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Veena ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 49,
+      "question": "<p>Consider the following statements about \"Cotton\" cultivation and answer which of them is/are correct?</p><p>1- It requires high temperature and light rainfall.</p><p>2- It requires 210 frost-free days.</p>",
+      "option1": "<p>1 only</p>",
+      "option2": "<p>2 only</p>",
+      "option3": "<p>Both 1 &amp; 2</p>",
+      "option4": "<p>Neither 1 &amp; 2</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Both 1 &amp; 2 ✅</p><p>Explanation:</p>"
+    },
+    {
+      "sr_no": 50,
+      "question": "<p>The temple of \"Kailashnatha\" at Ellora was built by which Rashtrakuta King?</p>",
+      "option1": "<p>Dantidurga </p>",
+      "option2": "<p>Krishna I</p>",
+      "option3": "<p>Amoghavarsha</p>",
+      "option4": "<p>Govinda III</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Krishna I ✅</p><p>The Kailashnatha (Kailasa) temple at Ellora was built by Rashtrakuta King Krishna I (756–773 CE). It is one of the most remarkable rock-cut temples in the world, carved out of a single monolithic rock, and represents the pinnacle of Rashtrakuta architecture</p>"
+    },
+    {
+      "sr_no": 51,
+      "question": "<p>A shopkeeper marks his goods at 50% above the cost price. He allows a 20% discount on the marked price. If he also gives an additional cash discount of ₹200 and still makes a profit of 12% on the cost price, what is the cost price of the goods?</p>",
+      "option1": "<p>₹2550</p>",
+      "option2": "<p>₹2500</p>",
+      "option3": "<p>₹2510</p>",
+      "option4": "<p>₹2530</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Let Cost Price = ₹100x</p><p>Marked Price = 150% of CP = ₹150x</p><p>After 20% discount → SP = 80% of 150x = ₹120x</p><p>After cash discount ₹200 → Final SP = 120x − 200</p><p>Given profit = 12%<br/>⇒ Final SP = 112x</p><p>So,<br/>120x − 200 = 112x<br/>⇒ 8x = 200<br/>⇒ x = 25</p><p>Cost Price = 100x = ₹2500</p>"
+    },
+    {
+      "sr_no": 52,
+      "question": "<p>A person travels from town X to town Y. If he travels at a speed of 60 km/h, he reaches 30 minutes early. If he travels at a speed of 40 km/h, he reaches 30 minutes late. What is the distance (in km) between town X and town Y?</p>",
+      "option1": "<p>125 km</p>",
+      "option2": "<p>120 km</p>",
+      "option3": "<p>122 km</p>",
+      "option4": "<p>128 km</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image001.png"
+    },
+    {
+      "sr_no": 53,
+      "question": "<p>How many kilograms of wheat costing ₹55 per kg should be mixed with 25 kg of wheat costing ₹35 per kg so that the mixture can be sold at ₹45 per kg and an overall 20% profit is obtained?</p>",
+      "option1": "<p>3.47 kg</p>",
+      "option2": "<p>3.57 kg</p>",
+      "option3": "<p>3.37 kg</p>",
+      "option4": "<p>3.27 kg</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image004.png"
+    },
+    {
+      "sr_no": 54,
+      "question": "<p>(secθ + tanθ)/(secθ − tanθ) is equal to:</p>",
+      "option1": "<p>1/(secθ − tanθ)</p>",
+      "option2": "<p>1/(secθ + tanθ)</p>",
+      "option3": "<p>(secθ + tanθ)²</p>",
+      "option4": "<p>(secθ − tanθ)²</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image005.png"
+    },
+    {
+      "sr_no": 55,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image006.png",
+      "option1": "<p>10%</p>",
+      "option2": "<p>15%</p>",
+      "option3": "<p>25%</p>",
+      "option4": "<p>20%</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Increase in height = 150 − 125 = 25 cm</p><p>Percentage increase<br/>= (Increase ÷ Original height) × 100<br/>= (25 ÷ 125) × 100<br/>= 20%</p>"
+    },
+    {
+      "sr_no": 56,
+      "question": "<p>In triangles DEF and PQR, if the lengths of the sides are such that DE = PQ, EF = QR, and FD = RP, which congruence rule proves that triangle DEF is congruent to triangle PQR?</p>",
+      "option1": "<p>SAS</p>",
+      "option2": "<p>SSS</p>",
+      "option3": "<p>ASA</p>",
+      "option4": "<p>AAS</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>All three corresponding sides of the two triangles are equal.</p><p>When three sides of one triangle are equal to three sides of another triangle, the triangles are congruent by the SSS (Side–Side–Side) rule.</p>"
+    },
+    {
+      "sr_no": 57,
+      "question": "<p>A lends ₹6000 to P for 3 years and ₹4000 to Q for 5 years at the same rate of simple interest. At the end of the respective periods, the total interest received from both borrowers is ₹2700. What is the rate of interest per annum?</p>",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image007.png",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image008.png",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image009.png",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image010.png",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image011.png"
+    },
+    {
+      "sr_no": 58,
+      "question": "<p>If a + b = 14 and ab = 45, find the value of a³ + b³ − 12ab.</p>",
+      "option1": "<p>314</p>",
+      "option2": "<p>316</p>",
+      "option3": "<p>315</p>",
+      "option4": "<p>312</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Given<br/>a + b = 14, ab = 45</p><p>a³ + b³ − 12ab<br/>= (a + b)³ − 3ab(a + b) − 12ab<br/>= 14³ − 3×45×14 − 12×45<br/>= 2744 − 1890 − 540<br/>= 314</p>"
+    },
+    {
+      "sr_no": 59,
+      "question": "<p>What is the average of all integers between 200 and 500 that are exactly divisible by 17?</p>",
+      "option1": "<p>346.5</p>",
+      "option2": "<p>348.5</p>",
+      "option3": "<p>347.5</p>",
+      "option4": "<p>349.5</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image016.png"
+    },
+    {
+      "sr_no": 60,
+      "question": "<p>What is the radian measure of 210°?</p>",
+      "option1": "<p>π/6</p>",
+      "option2": "<p>5π/6</p>",
+      "option3": "<p>7π/6</p>",
+      "option4": "<p>4π/3</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>We know,<br/>180° = π radians</p><p>So,<br/>210° = (210/180)π<br/>= 7π/6</p><p>Answer: 7π/6</p>"
+    },
+    {
+      "sr_no": 61,
+      "question": "<p>Which of the following lines is parallel to 4x − 3y = 8 ?</p>",
+      "option1": "<p>4x − 3y = 5 </p>",
+      "option2": "<p>3x − 4y = 8</p>",
+      "option3": "<p>4x + 3y = 8</p>",
+      "option4": "<p>x − y = 2</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Check options:<br/>4x − 3y = 5 → ratio = 4 : −3 ✔<br/>3x − 4y = 8 → ratio = 3 : −4 ✘<br/>4x + 3y = 8 → ratio = 4 : 3 ✘<br/> x − y = 2 → ratio = 1 : −1 ✘</p><p>Answer: 4x − 3y = 5</p>"
+    },
+    {
+      "sr_no": 62,
+      "question": "<p>If x² + 1/x² = 10, where x &gt; 0, find the value of (x − 1/x)².</p>",
+      "option1": "<p>√8 </p>",
+      "option2": "<p>√6</p>",
+      "option3": "<p>6</p>",
+      "option4": "<p>8</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image018.png"
+    },
+    {
+      "sr_no": 63,
+      "question": "<p>Two individuals, P and Q, rent a grazing field. P uses 12 cows for 5 months and 18 sheep for 4 months. Q uses 40 sheep for 6 months. If 3 cows are equivalent to 6 sheep, find P’s share of the total rent.</p>",
+      "option1": "<p>7/9</p>",
+      "option2": "<p>5/9</p>",
+      "option3": "<p>4/9</p>",
+      "option4": "<p>2/3</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image021.png"
+    },
+    {
+      "sr_no": 64,
+      "question": "<p>If cosec²θ + cot²θ = 1/5, where 0 ≤ θ ≤ π/2, then the value of cosec⁴θ − cot⁴θ is:</p>",
+      "option1": "<p>1/5</p>",
+      "option2": "<p>1/6</p>",
+      "option3": "<p>2/5</p>",
+      "option4": "<p>5/5</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image022.png"
+    },
+    {
+      "sr_no": 65,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image023.png",
+      "option1": "<p>14 : 15</p>",
+      "option2": "<p>13 : 14</p>",
+      "option3": "<p>15 : 17</p>",
+      "option4": "<p>17 : 13</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>2020 average = (6 + 12 + 14 + 20 + 13) ÷ 5 = 65 ÷ 5 = 13<br/>2021 average = (16 + 17 + 14 + 15 + 23) ÷ 5 = 85 ÷ 5 = 17</p><p>Required ratio = 17 : 13</p>"
+    },
+    {
+      "sr_no": 66,
+      "question": "<p>The present population of a town is 62,000. If the number of males increases by 20% and the number of females increases by 10%, the total population becomes 70,200. What is the difference between the number of males and females in the present population of the town?</p>",
+      "option1": "<p>42,000</p>",
+      "option2": "<p>20,000</p>",
+      "option3": "<p>22,000</p>",
+      "option4": "<p>36,000</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Present population = 62,000<br/>Total increase = 70,200 − 62,000 = 8,200</p><p>10% increase is common to both (minimum increase)<br/>⇒ 10% of 62,000 = 6,200</p><p>Remaining increase = 8,200 − 6,200 = 2,000</p><p>This extra 2,000 comes from extra 10% increase on males only</p><p>⇒ 10% of males = 2,000<br/>⇒ Males = 20,000</p><p>Females = 62,000 − 20,000 = 42,000</p><p>Required Difference</p><p>= 42,000 − 20,000<br/>= 22,000</p>"
+    },
+    {
+      "sr_no": 67,
+      "question": "<p>A, B, and C are three points on a circle such that the angles subtended by the chord AB and AC at the centre O are 105° and 125°, respectively. Then the value of ∠BAC is:</p>",
+      "option1": "<p>65° </p>",
+      "option2": "<p>60° </p>",
+      "option3": "<p>75° </p>",
+      "option4": "<p>70° </p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image024.png"
+    },
+    {
+      "sr_no": 68,
+      "question": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image025.png",
+      "option1": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image026.png",
+      "option2": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image027.png",
+      "option3": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image028.png",
+      "option4": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image029.png",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image030.png"
+    },
+    {
+      "sr_no": 69,
+      "question": "<p>A and B invested ₹15,000 and ₹25,000 respectively in a business. A invested his money for 8 months, while B invested his money for 12 months. If B’s share of the profit is ₹18,000, what is the total profit earned?</p>",
+      "option1": "<p>₹25,300</p>",
+      "option2": "<p>₹25,200</p>",
+      "option3": "<p>₹25,400</p>",
+      "option4": "<p>₹25,500</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>A : B = (15000×8) : (25000×12)<br/>= 120000 : 300000<br/>= 2 : 5</p><p>B’s 5 parts = 18,000<br/>1 part = 18,000 ÷ 5 = 3,600</p><p>Total profit = (2 + 5) × 3,600<br/>= ₹25,200</p>"
+    },
+    {
+      "sr_no": 70,
+      "question": "<p>A farmer has 80 m of fencing wire. He can use it to enclose either a square field or a circular field. If he wants to obtain the maximum possible enclosed area, what is the approximate ratio of the area of the circular field to the area of the square field, using the entire 80 m of wire?</p>",
+      "option1": "<p>1.87 : 1</p>",
+      "option2": "<p>1.67 : 1</p>",
+      "option3": "<p>1.27 : 1</p>",
+      "option4": "<p>1.17 : 1</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>For a given perimeter, a circle encloses the maximum area; among rectangles, a square gives the maximum area.</p><p>Circle (perimeter = 80 m):<br/> 2πr = 80 ⇒ r = 40/π<br/> Area = πr² = 1600/π ≈ 509</p><p>Square (perimeter = 80 m):<br/> Side = 80/4 = 20<br/> Area = 20² = 400</p><p>Required ratio = 509 : 400 ≈ 1.27 : 1</p>"
+    },
+    {
+      "sr_no": 71,
+      "question": "<p>A trader sold three items P, Q, and R such that their selling prices were in the ratio 3 : 5 : 7. He incurred a loss of 20% on item P, earned a profit of 40% on item Q, and sold item R at no profit and no loss. What was the approximate overall percentage gain or loss in the entire transaction?</p>",
+      "option1": "<p>3.25% gain</p>",
+      "option2": "<p>3.75% gain</p>",
+      "option3": "<p>4.25% gain</p>",
+      "option4": "<p>4.75% gain</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image038.png"
+    },
+    {
+      "sr_no": 72,
+      "question": "<p>The average marks obtained by 100 students in an examination are 40. If the average marks of the students who passed are 45, and the average marks of the students who failed are 25, how many students passed the examination?</p>",
+      "option1": "<p>35</p>",
+      "option2": "<p>35.5</p>",
+      "option3": "<p>75</p>",
+      "option4": "<p>37</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/paperimages/1770894565_1770894565831988_thump.png"
+    },
+    {
+      "sr_no": 73,
+      "question": "<p>A rectangular prism has a base area of 40 cm². If its height is increased by 25%, find the new volume of the prism, given that the original height was 12 cm.</p>",
+      "option1": "<p>580 cm³</p>",
+      "option2": "<p>600 cm³</p>",
+      "option3": "<p>610 cm³</p>",
+      "option4": "<p>590 cm³</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Original height = 12 cm</p><p>Increase = 25% of 12 = 3 cm</p><p>New height = 12 + 3 = 15 cm</p><p>Volume = Base area × Height</p><p>New volume = 40 × 15 = 600 cm³</p>"
+    },
+    {
+      "sr_no": 74,
+      "question": "<p>A can complete a certain construction work in 18 days, while B can complete the same work in 12 days. When C joins A and B, all three together finish the work in 6 days. How many days will C alone take to complete the same work?</p>",
+      "option1": "<p>24 days</p>",
+      "option2": "<p>18 days</p>",
+      "option3": "<p>36 days</p>",
+      "option4": "<p>28 days</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image042.png"
+    },
+    {
+      "sr_no": 75,
+      "question": "<p>A 25 m long ladder is placed against a vertical wall such that the angle between the ladder and the ground is 30°.How far (in metres) is the base of the ladder from the wall?</p>",
+      "option1": "<p>20.35 m</p>",
+      "option2": "<p>21.65 m</p>",
+      "option3": "<p>22.55 m</p>",
+      "option4": "<p>20.95 m</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "https://static-appxdb-v2.akamai.net.in/website/bulk_uploader_images/1770363862473_image043.png"
+    },
+    {
+      "sr_no": 76,
+      "question": "<p>Read the following passage and answer the respective questions accordingly:</p><p>The Arctic tundra is often perceived as a desolate, frozen wasteland, but to ecologists, it is a high-stakes laboratory for climate change. At the heart of this research is the permafrost—ground that remains frozen for at least two consecutive years. This frozen layer acts as a massive carbon sink, trapping the remains of ancient plants and animals.</p><p>As global temperatures rise, the permafrost is beginning to thaw at an unprecedented rate. This \"thawing\" is not a simple melting of ice; it is a biological awakening. When the ground warms, microbes within the soil begin to decompose the organic matter that has been locked away for millennia. This process releases significant amounts of methane and carbon dioxide into the atmosphere.</p><p>The danger lies in a positive feedback loop: as these greenhouse gases are released, they trap more heat in the atmosphere, which leads to further warming and more thawing. Furthermore, the physical degradation of the land—known as thermokarst—creates sinkholes and \"drunken forests\" where trees lean at erratic angles due to the unstable ground. While the Arctic may seem remote, the structural and atmospheric changes occurring there serve as a sentinel, warning of the shifting equilibrium of the entire planet.</p><p>Q- According to the passage, why is permafrost considered a \"carbon sink\"?</p>",
+      "option1": "<p>It actively absorbs carbon dioxide from the current atmosphere.</p>",
+      "option2": "<p>It contains ancient organic matter that has been prevented from decomposing.</p>",
+      "option3": "<p>It provides the necessary nutrients for new forests to grow in the Arctic.</p>",
+      "option4": "<p>It reflects sunlight away from the Earth’s surface, cooling the ground.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: It contains ancient organic matter that has been prevented from decomposing ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 77,
+      "question": "<p>Read the following passage and answer the respective questions accordingly:</p><p>The Arctic tundra is often perceived as a desolate, frozen wasteland, but to ecologists, it is a high-stakes laboratory for climate change. At the heart of this research is the permafrost—ground that remains frozen for at least two consecutive years. This frozen layer acts as a massive carbon sink, trapping the remains of ancient plants and animals.</p><p>As global temperatures rise, the permafrost is beginning to thaw at an unprecedented rate. This \"thawing\" is not a simple melting of ice; it is a biological awakening. When the ground warms, microbes within the soil begin to decompose the organic matter that has been locked away for millennia. This process releases significant amounts of methane and carbon dioxide into the atmosphere.</p><p>The danger lies in a positive feedback loop: as these greenhouse gases are released, they trap more heat in the atmosphere, which leads to further warming and more thawing. Furthermore, the physical degradation of the land—known as thermokarst—creates sinkholes and \"drunken forests\" where trees lean at erratic angles due to the unstable ground. While the Arctic may seem remote, the structural and atmospheric changes occurring there serve as a sentinel, warning of the shifting equilibrium of the entire planet.</p><p>Q- What is the primary cause of the release of methane from thawing permafrost?</p>",
+      "option1": "<p>The physical evaporation of frozen gases trapped in ice crystals.</p>",
+      "option2": "<p>Increased volcanic activity beneath the Arctic shelf.</p>",
+      "option3": "<p>The reactivation of microbes that break down organic material.</p>",
+      "option4": "<p>The chemical reaction between saltwater and frozen soil.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: The reactivation of microbes that break down organic material ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 78,
+      "question": "<p>Read the following passage and answer the respective questions accordingly:</p><p>The Arctic tundra is often perceived as a desolate, frozen wasteland, but to ecologists, it is a high-stakes laboratory for climate change. At the heart of this research is the permafrost—ground that remains frozen for at least two consecutive years. This frozen layer acts as a massive carbon sink, trapping the remains of ancient plants and animals.</p><p>As global temperatures rise, the permafrost is beginning to thaw at an unprecedented rate. This \"thawing\" is not a simple melting of ice; it is a biological awakening. When the ground warms, microbes within the soil begin to decompose the organic matter that has been locked away for millennia. This process releases significant amounts of methane and carbon dioxide into the atmosphere.</p><p>The danger lies in a positive feedback loop: as these greenhouse gases are released, they trap more heat in the atmosphere, which leads to further warming and more thawing. Furthermore, the physical degradation of the land—known as thermokarst—creates sinkholes and \"drunken forests\" where trees lean at erratic angles due to the unstable ground. While the Arctic may seem remote, the structural and atmospheric changes occurring there serve as a sentinel, warning of the shifting equilibrium of the entire planet.</p><p>Q- Which of the following best describes the \"positive feedback loop\" mentioned in the text?</p>",
+      "option1": "<p>The stabilization of Arctic temperatures through natural atmospheric venting.</p>",
+      "option2": "<p>A beneficial cycle where plants grow faster due to increased CO2.</p>",
+      "option3": "<p>The way scientists share data to improve climate models.</p>",
+      "option4": "<p>A process where the effect of a change reinforces the cause of that change.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: A process where the effect of a change reinforces the cause of that change ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 79,
+      "question": "<p>Read the following passage and answer the respective questions accordingly:</p><p>The Arctic tundra is often perceived as a desolate, frozen wasteland, but to ecologists, it is a high-stakes laboratory for climate change. At the heart of this research is the permafrost—ground that remains frozen for at least two consecutive years. This frozen layer acts as a massive carbon sink, trapping the remains of ancient plants and animals.</p><p>As global temperatures rise, the permafrost is beginning to thaw at an unprecedented rate. This \"thawing\" is not a simple melting of ice; it is a biological awakening. When the ground warms, microbes within the soil begin to decompose the organic matter that has been locked away for millennia. This process releases significant amounts of methane and carbon dioxide into the atmosphere.</p><p>The danger lies in a positive feedback loop: as these greenhouse gases are released, they trap more heat in the atmosphere, which leads to further warming and more thawing. Furthermore, the physical degradation of the land—known as thermokarst—creates sinkholes and \"drunken forests\" where trees lean at erratic angles due to the unstable ground. While the Arctic may seem remote, the structural and atmospheric changes occurring there serve as a sentinel, warning of the shifting equilibrium of the entire planet.</p><p>Q- Based on the passage, \"drunken forests\" are a symptom of:</p>",
+      "option1": "<p>Soil instability caused by the melting of subsurface ice.</p>",
+      "option2": "<p>Genetic mutations in trees caused by ancient microbes.</p>",
+      "option3": "<p>The lack of sunlight during the long polar winters.</p>",
+      "option4": "<p>High-velocity Arctic winds pushing trees over.</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Soil instability caused by the melting of subsurface ice ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 80,
+      "question": "<p>Read the following passage and answer the respective questions accordingly:</p><p>The Arctic tundra is often perceived as a desolate, frozen wasteland, but to ecologists, it is a high-stakes laboratory for climate change. At the heart of this research is the permafrost—ground that remains frozen for at least two consecutive years. This frozen layer acts as a massive carbon sink, trapping the remains of ancient plants and animals.</p><p>As global temperatures rise, the permafrost is beginning to thaw at an unprecedented rate. This \"thawing\" is not a simple melting of ice; it is a biological awakening. When the ground warms, microbes within the soil begin to decompose the organic matter that has been locked away for millennia. This process releases significant amounts of methane and carbon dioxide into the atmosphere.</p><p>The danger lies in a positive feedback loop: as these greenhouse gases are released, they trap more heat in the atmosphere, which leads to further warming and more thawing. Furthermore, the physical degradation of the land—known as thermokarst—creates sinkholes and \"drunken forests\" where trees lean at erratic angles due to the unstable ground. While the Arctic may seem remote, the structural and atmospheric changes occurring there serve as a sentinel, warning of the shifting equilibrium of the entire planet.</p><p>Q- What is the author’s primary purpose in calling the Arctic a \"sentinel\"?</p>",
+      "option1": "<p>To suggest that the Arctic is a protector of the Earth’s climate.</p>",
+      "option2": "<p>To argue that the Arctic should be more heavily guarded by international law.</p>",
+      "option3": "<p>To highlight the isolation of the North Pole from the rest of human civilization.</p>",
+      "option4": "<p>To emphasize that changes in the Arctic signal broader environmental dangers for the world.</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: To emphasize that changes in the Arctic signal broader environmental dangers for the world ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 81,
+      "question": "<p>Identify the Sentence Type based on its structure. </p><p>Not only did the rainfall damage the crops, but it also caused the river to overflow its banks.</p>",
+      "option1": "<p>Simple Sentence</p>",
+      "option2": "<p>Compound Sentence</p>",
+      "option3": "<p>Complex Sentence</p>",
+      "option4": "<p>Compound-Complex Sentence</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Compound Sentence</p><p>📘 Explanation</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 82,
+      "question": "<p>Select the most appropriate Synonym of the given word. LOQUACIOUS </p>",
+      "option1": "<p>Garrulous</p>",
+      "option2": "<p>Reticent</p>",
+      "option3": "<p>Prolific</p>",
+      "option4": "<p>Magnanimous</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Garrulous</p><p>📘 Explanation</p><p>📖 Vocabulary (Hindi Meaning in your required format)</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 83,
+      "question": "<p>Choose the homonym that fits both blanks:</p>",
+      "option1": "<p>ribbon</p>",
+      "option2": "<p>knot</p>",
+      "option3": "<p>bow</p>",
+      "option4": "<p>band</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: bow</p><p>📘 Explanation</p><p>The word bow fits both sentences but with different meanings (homonym).</p><p>📖 Vocabulary (Hindi Meaning in your required format)</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 84,
+      "question": "<p>Convert the following to active voice: </p><p>\"It was eventually decided by the board of directors that the annual bonus would be distributed among the employees by the end of the month.\"</p>",
+      "option1": "<p>The employees eventually decided with the board that the bonus would be distributed.</p>",
+      "option2": "<p>The board of directors eventually decided that they would distribute the annual bonus among the employees by the end of the month.</p>",
+      "option3": "<p>The board of directors has eventually decided that the annual bonus would be distributed by them.</p>",
+      "option4": "<p>The board of directors eventually decides that the annual bonus will be distributed among the employees.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: The board of directors eventually decided that they would distribute the annual bonus among the employees by the end of the month. ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 85,
+      "question": "<p>Choose the option that best replaces the bolded portion of the sentence to make it grammatically correct and concise:</p><p>Not only the scientist did discover a new species of marine life, but also documented its unique behavioral patterns in the journal.</p>",
+      "option1": "<p>but he also documented</p>",
+      "option2": "<p>but also documenting</p>",
+      "option3": "<p>but also he did document</p>",
+      "option4": "<p>No Improvement</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: but he also documented ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 86,
+      "question": "<p>The idiom \"Biting off more than you can chew\" implies:</p>",
+      "option1": "<p>Having a very large appetite.</p>",
+      "option2": "<p>Taking on a task that is way too big or difficult.</p>",
+      "option3": "<p>Being greedy in business dealings.</p>",
+      "option4": "<p>Talking too much during a formal meeting.</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Taking on a task that is way too big or difficult ✅</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 87,
+      "question": "<p>Arrange the following sentences to form a coherent paragraph:</p><p>P: The restoration project took nearly a decade to complete due to a lack of funding. <br/>Q: Yesterday, the historic cathedral finally reopened its doors to the public. <br/>R: Despite the delays, the craftsmanship of the new stained-glass windows is breathtaking. <br/>S: Crowds gathered from early morning to catch a glimpse of the interior.</p>",
+      "option1": "<p>QRPS</p>",
+      "option2": "<p>SQRP</p>",
+      "option3": "<p>QSPR</p>",
+      "option4": "<p>SPRQ</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Order</p><p>Q → S → P → R</p><p>📘 Explanation</p><p>📝 Final Coherent Paragraph</p><p>Yesterday, the historic cathedral finally reopened its doors to the public. Crowds gathered from early morning to catch a glimpse of the interior. The restoration project took nearly a decade to complete due to a lack of funding. Despite the delays, the craftsmanship of the new stained-glass windows is breathtaking.</p>"
+    },
+    {
+      "sr_no": 88,
+      "question": "<p>Find the antonym for: </p><p>RELINQUISH</p>",
+      "option1": "<p>Abandon</p>",
+      "option2": "<p>Retain</p>",
+      "option3": "<p>Yield</p>",
+      "option4": "<p>Resign</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Retain</p><p>📘 Explanation:</p><p>📖 Vocabulary</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 89,
+      "question": "<p>Select the correct one-word substitution for the given sentence:</p><p>A person who insists on absolute adherence to formal rules or literary meaning.</p>",
+      "option1": "<p>Pedant</p>",
+      "option2": "<p>Purist</p>",
+      "option3": "<p>Scholar</p>",
+      "option4": "<p>Bibliophile</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p><b>Correct Answer is: Pedant</b></p><p><b>All Words with English and Hindi Meaning:</b></p>"
+    },
+    {
+      "sr_no": 90,
+      "question": "<p>Select the most appropriate Synonym of the highlighted word: </p><p>The diplomat’s trenchant remarks during the summit left the opposition with no room for rebuttal. </p>",
+      "option1": "<p>Incisive</p>",
+      "option2": "<p>Vague</p>",
+      "option3": "<p>Frivolous</p>",
+      "option4": "<p>Verbose</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Incisive</p><p>📘 Explanation:</p><p>📖 Vocabulary:</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 91,
+      "question": "<p>Select the correct one-word substitution for the given sentence:</p><p>The practice of spying or using spies, typically by governments to obtain political or military information.</p>",
+      "option1": "<p>Embezzlement</p>",
+      "option2": "<p>Sabotage</p>",
+      "option3": "<p>Sedition</p>",
+      "option4": "<p>Espionage</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Espionage</p><p>📘 Explanation:</p><p>📖 Vocabulary:</p>"
+    },
+    {
+      "sr_no": 92,
+      "question": "<p>Identify the word that functions as both a noun and a verb in these contexts:</p>",
+      "option1": "<p>Light</p>",
+      "option2": "<p>Torch</p>",
+      "option3": "<p>Match</p>",
+      "option4": "<p>Stick</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Light</p><p>📘 Explanation:</p><p>📖 Vocabulary:</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 93,
+      "question": "<p>Find the synonym for: </p><p>ELUCIDATE</p>",
+      "option1": "<p>Confuse</p>",
+      "option2": "<p>Complicate</p>",
+      "option3": "<p>Clarify</p>",
+      "option4": "<p>Summarize</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Clarify</p><p>📘 Explanation:</p><p>📖 Vocabulary:</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 94,
+      "question": "<p>Arrange the following sentences to form a coherent paragraph:</p><p>P. This rapid urbanization has led to several environmental challenges, including air pollution and waste management issues.<br/>Q. Global migration patterns suggest that by 2050, nearly 70% of the world's population will reside in urban centers. <br/>R. Furthermore, the lack of planned infrastructure in these cities exacerbates the pressure on existing public utilities. <br/>S. Governments, therefore, need to prioritize sustainable urban planning to mitigate these looming crises. </p>",
+      "option1": "<p>RQPS</p>",
+      "option2": "<p>QSRP</p>",
+      "option3": "<p>RSPQ</p>",
+      "option4": "<p>QPRS</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Order: Q → P → R → S</p><p>📘 Explanation</p><p>📝 Final Coherent Paragraph</p><p>Global migration patterns suggest that by 2050, nearly 70% of the world's population will reside in urban centers. This rapid urbanization has led to several environmental challenges, including air pollution and waste management issues. Furthermore, the lack of planned infrastructure in these cities exacerbates the pressure on existing public utilities. Governments, therefore, need to prioritize sustainable urban planning to mitigate these looming crises.</p>"
+    },
+    {
+      "sr_no": 95,
+      "question": "<p>Choose the option that best replaces the bolded portion of the sentence to make it grammatically correct and concise:</p><p>Despite the heavy rainfall and the fact that the roads were flooded, the delivery truck managed in arriving at the warehouse on time.</p>",
+      "option1": "<p>managed in arrival</p>",
+      "option2": "<p>managed to arrive</p>",
+      "option3": "<p>managed for arriving</p>",
+      "option4": "<p>No improvement</p>",
+      "answer": "2",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: managed to arrive ✅</p><p>Explanation</p><p>Other Options (Incorrect)</p>"
+    },
+    {
+      "sr_no": 96,
+      "question": "<p>Fill in the blanks: </p><p>The principal together with (A) ________ teachers (B) ________ attended the ceremony yesterday.</p>",
+      "option1": "<p>their / has</p>",
+      "option2": "<p>his / have</p>",
+      "option3": "<p>his / has</p>",
+      "option4": "<p>its / have</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: his / has ✅</p><p>Explanation</p><p>So, the correct sentence is: “The principal together with his teachers has attended the ceremony yesterday.”</p>"
+    },
+    {
+      "sr_no": 97,
+      "question": "<p>Change to passive voice: </p><p>\"By next summer, the government will have completed the new highway that connects the northern provinces to the capital city.\"</p>",
+      "option1": "<p>By next summer, the new highway that connects the northern provinces will be completed by the government.</p>",
+      "option2": "<p>The northern provinces will have been connected to the capital by the new highway by next summer.</p>",
+      "option3": "<p>By next summer, the new highway that connects the northern provinces to the capital city will have been completed by the government.</p>",
+      "option4": "<p>The new highway will be being completed by the government by next summer.</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: By next summer, the new highway that connects the northern provinces to the capital city will have been completed by the government. ✅</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 98,
+      "question": "<p>Select the most appropriate Antonym of the given word. ENERVATE</p>",
+      "option1": "<p>Debilitate</p>",
+      "option2": "<p>Mitigate</p>",
+      "option3": "<p>Exacerbate</p>",
+      "option4": "<p>Fortify</p>",
+      "answer": "4",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>✅ Correct Answer: Fortify</p><p>📘 Explanation</p><p>📖 Vocabulary (Hindi Meaning in your required format)</p><p>❌ Why other options are incorrect</p>"
+    },
+    {
+      "sr_no": 99,
+      "question": "<p>Select the correctly spelt word. </p>",
+      "option1": "<p>Connoisseur </p>",
+      "option2": "<p>Connoissure</p>",
+      "option3": "<p>Conoisseur</p>",
+      "option4": "<p>Connoisser</p>",
+      "answer": "1",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Connoisseur ✅</p><p>Explanation</p>"
+    },
+    {
+      "sr_no": 100,
+      "question": "<p>Identify the type of Clause highlighted in the following sentence:</p><p>The report, which was submitted by the committee last Friday, contains several discrepancies.</p>",
+      "option1": "<p>Noun Clause</p>",
+      "option2": "<p>Adverb Clause </p>",
+      "option3": "<p>Adjective Clause </p>",
+      "option4": "<p>Independent Clause</p>",
+      "answer": "3",
+      "negative_marking": "0.50",
+      "positive_marking": "2.00",
+      "solution": "<p>Correct Answer: Adjective Clause ✅</p><p>Explanation</p>"
+    }
+  ]
+};
+
+// Extract questions and time from new structure
+const questions = quizData.questions;
+const totalTimeMinutes = quizData.time_minutes;
+
+let currentQuestion = 0;
+let answers = {};
+let bookmarks = new Set();
+let timerSeconds = totalTimeMinutes * 60;
+let timerInterval = null;
+let isPaletteOpen = false;
+
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https'));
+}
+
+function createOptionContent(optionText) {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'option-content';
+    
+    if (isImageURL(optionText)) {
+        const img = document.createElement('img');
+        img.src = optionText;
+        img.className = 'option-image';
+        img.alt = 'Option image';
+        img.loading = 'lazy';
+        img.onerror = function() {
+            this.style.display = 'none';
+            const errorText = document.createTextNode('Image failed to load');
+            contentDiv.appendChild(errorText);
+        };
+        contentDiv.appendChild(img);
+    } else {
+        contentDiv.innerHTML = optionText;  // FIXED: Use innerHTML
+    }
+    
+    return contentDiv;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initQuiz();
+  initEventListeners();
+  loadFromLocalStorage();
+  startTimer();
+  createPalette();
+  preventDoubleTapZoom();
+});
+
+function preventDoubleTapZoom() {
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('quizTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) {
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('quizTheme', newTheme);
+  updateThemeIcon();
+}
+
+function initQuiz() {
+  loadQuestion(currentQuestion);
+  updateMarkingInfo();
+}
+
+function initEventListeners() {
+  const themeBtn = document.getElementById('themeToggle');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    themeBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+  
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+  
+  addButtonListener('prevBtn', prevQuestion);
+  addButtonListener('nextBtn', nextQuestion);
+  addButtonListener('clearBtn', clearAnswer);
+  addButtonListener('submitBtn', confirmSubmit);
+  addButtonListener('bookmarkBtn', toggleBookmark);
+  
+  addButtonListener('paletteFab', togglePalette);
+  addButtonListener('paletteClose', closePalette);
+  
+  const overlay = document.getElementById('paletteOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', closePalette);
+    overlay.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      closePalette();
+    });
+  }
+  
+  const searchInput = document.getElementById('paletteSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('change', jumpToQuestion);
+  }
+  
+  document.addEventListener('keydown', handleKeyPress);
+  
+  setInterval(saveToLocalStorage, 5000);
+  
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updatePalette();
+    }
+  });
+}
+
+function addButtonListener(id, handler) {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', handler);
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+
+function jumpToQuestion(e) {
+  const questionNum = parseInt(e.target.value);
+  if (questionNum >= 1 && questionNum <= questions.length) {
+    goToQuestion(questionNum - 1);
+    closePalette();
+    e.target.value = '';
+  }
+}
+
+function togglePalette() {
+  isPaletteOpen = !isPaletteOpen;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (isPaletteOpen) {
+    palette.classList.add('active');
+    overlay.classList.add('active');
+    fab.classList.add('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+    document.body.classList.add('palette-open');
+  } else {
+    closePalette();
+  }
+}
+
+function closePalette() {
+  isPaletteOpen = false;
+  const palette = document.getElementById('questionPalette');
+  const overlay = document.getElementById('paletteOverlay');
+  const fab = document.getElementById('paletteFab');
+  
+  if (palette) palette.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+  if (fab) {
+    fab.classList.remove('active');
+    fab.innerHTML = `📋 <span class="badge" id="answeredBadge">${Object.keys(answers).length}</span>`;
+  }
+  document.body.classList.remove('palette-open');
+}
+
+function handleSearch(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.style.display = '';
+    });
+    return;
+  }
+  
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    const questionNum = (index + 1).toString();
+    if (questionNum.includes(searchTerm)) {
+      btn.style.display = '';
+    } else {
+      btn.style.display = 'none';
+    }
+  });
+}
+
+function handleKeyPress(e) {
+  if (document.getElementById('resultSection').classList.contains('hidden')) {
+    if (e.key === 'Escape') {
+      if (isPaletteOpen) {
+        closePalette();
+      }
+    } else if (!isPaletteOpen && e.target.tagName !== 'INPUT') {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (e.key === 'b' || e.key === 'B') {
+        e.preventDefault();
+        toggleBookmark();
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        togglePalette();
+      } else if (e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        selectOption(parseInt(e.key));
+      }
+    }
+  }
+}
+
+function selectOption(optionNum) {
+  const q = questions[currentQuestion];
+  const radio = document.querySelector(`input[name="q${q.sr_no}"][value="${optionNum}"]`);
+  if (radio) {
+    radio.checked = true;
+    const label = radio.closest('.option-label');
+    if (label) {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    }
+  }
+}
+
+function toggleFullscreen() {
+  try {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  } catch (err) {
+    console.log('Fullscreen not supported');
+  }
+}
+
+function startTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimer();
+    
+    // Auto-submit when time runs out
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up! Submitting quiz automatically.');
+      submitQuiz();
+      return;
+    }
+    
+    if (timerSeconds <= 120) {
+      const timer = document.getElementById('timer');
+      if (timer) timer.classList.add('warning');
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timerSeconds / 60);
+  const seconds = timerSeconds % 60;
+  const timer = document.getElementById('timer');
+  if (timer) {
+    timer.textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+function createPalette() {
+  const grid = document.getElementById('paletteGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  questions.forEach((q, index) => {
+    const btn = document.createElement('button');
+    btn.textContent = index + 1;
+    btn.className = 'palette-btn';
+    btn.setAttribute('aria-label', `Go to question ${index + 1}`);
+    btn.setAttribute('type', 'button');
+    
+    btn.addEventListener('click', () => {
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      goToQuestion(index);
+      closePalette();
+    });
+    
+    grid.appendChild(btn);
+  });
+  updatePalette();
+}
+
+function updatePalette() {
+  const buttons = document.querySelectorAll('.palette-btn');
+  buttons.forEach((btn, index) => {
+    btn.className = 'palette-btn';
+    if (index === currentQuestion) btn.classList.add('current');
+    if (answers[questions[index].sr_no]) btn.classList.add('answered');
+    if (bookmarks.has(questions[index].sr_no)) btn.classList.add('bookmarked');
+  });
+  
+  updatePaletteStats();
+}
+
+function updatePaletteStats() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const bookmarkedCount = bookmarks.size;
+  
+  const answeredEl = document.getElementById('paletteAnswered');
+  const unansweredEl = document.getElementById('paletteUnanswered');
+  const bookmarkedEl = document.getElementById('paletteBookmarked');
+  
+  if (answeredEl) answeredEl.textContent = answered;
+  if (unansweredEl) unansweredEl.textContent = unanswered;
+  if (bookmarkedEl) bookmarkedEl.textContent = bookmarkedCount;
+  
+  const badge = document.querySelector('.palette-fab .badge');
+  if (badge) badge.textContent = answered;
+}
+
+function goToQuestion(index) {
+  if (index < 0 || index >= questions.length) return;
+  saveAnswer();
+  currentQuestion = index;
+  loadQuestion(currentQuestion);
+  
+  const questionSection = document.getElementById('questionSection');
+  if (questionSection) {
+    setTimeout(() => {
+      questionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function loadQuestion(index) {
+  const q = questions[index];
+  
+  const questionNumber = document.getElementById('questionNumber');
+  const questionText = document.getElementById('questionText');
+  
+  if (questionNumber) {
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+  
+  if (questionText) {
+    questionText.innerHTML = '';
+    const questionContent = createOptionContent(q.question);
+    questionText.appendChild(questionContent);
+  }
+  
+  const container = document.getElementById('optionsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const label = document.createElement('label');
+    label.className = 'option-label';
+    if (answers[q.sr_no] == i) label.classList.add('selected');
+    
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${q.sr_no}`;
+    radio.value = i;
+    radio.checked = answers[q.sr_no] == i;
+    
+    const changeHandler = () => {
+      document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+      label.classList.add('selected');
+      saveAnswer();
+    };
+    
+    radio.addEventListener('change', changeHandler);
+    label.addEventListener('click', (e) => {
+      if (e.target !== radio) {
+        radio.checked = true;
+        changeHandler();
+      }
+    });
+    
+    label.appendChild(radio);
+    
+    const optionContent = createOptionContent(q[`option${i}`]);
+    label.appendChild(optionContent);
+    
+    container.appendChild(label);
+  }
+  
+  const bookmarkBtn = document.getElementById('bookmarkBtn');
+  if (bookmarkBtn) {
+    if (bookmarks.has(q.sr_no)) {
+      bookmarkBtn.classList.add('active');
+    } else {
+      bookmarkBtn.classList.remove('active');
+    }
+  }
+  
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  
+  if (prevBtn) prevBtn.disabled = index === 0;
+  
+  if (index === questions.length - 1) {
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (submitBtn) submitBtn.classList.remove('hidden');
+  } else {
+    if (nextBtn) nextBtn.classList.remove('hidden');
+    if (submitBtn) submitBtn.classList.add('hidden');
+  }
+  
+  updateProgress();
+  updatePalette();
+}
+
+function updateMarkingInfo() {
+  const q = questions[0];
+  const markingInfo = document.getElementById('markingInfo');
+  if (markingInfo) {
+    markingInfo.textContent = `Marking: +${q.positive_marking}, -${q.negative_marking}`;
+  }
+}
+
+function updateProgress() {
+  const attempted = Object.keys(answers).length;
+  const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const attemptedText = document.getElementById('attemptedText');
+  
+  if (progressBar) progressBar.style.width = `${currentProgress}%`;
+  if (progressText) progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
+  if (attemptedText) attemptedText.textContent = attempted;
+}
+
+function saveAnswer() {
+  const q = questions[currentQuestion];
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  
+  if (selected) {
+    answers[q.sr_no] = selected.value;
+  }
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function clearAnswer() {
+  const q = questions[currentQuestion];
+  delete answers[q.sr_no];
+  
+  const selected = document.querySelector(`input[name="q${q.sr_no}"]:checked`);
+  if (selected) selected.checked = false;
+  
+  document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+  
+  updateProgress();
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function toggleBookmark() {
+  const q = questions[currentQuestion];
+  const btn = document.getElementById('bookmarkBtn');
+  
+  if (bookmarks.has(q.sr_no)) {
+    bookmarks.delete(q.sr_no);
+    if (btn) btn.classList.remove('active');
+  } else {
+    bookmarks.add(q.sr_no);
+    if (btn) btn.classList.add('active');
+  }
+  
+  updatePalette();
+  saveToLocalStorage();
+}
+
+function nextQuestion() {
+  saveAnswer();
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function prevQuestion() {
+  saveAnswer();
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion(currentQuestion);
+  }
+}
+
+function confirmSubmit() {
+  const unattempted = questions.length - Object.keys(answers).length;
+  let message = 'Are you sure you want to submit the quiz?';
+  
+  if (unattempted > 0) {
+    message = `You have ${unattempted} unanswered questions. ${message}`;
+  }
+  
+  if (confirm(message)) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  saveAnswer();
+  closePalette();
+  
+  let correct = 0, wrong = 0, unattempted = 0, score = 0;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    const posMark = parseFloat(q.positive_marking) || 0;
+    const negMark = parseFloat(q.negative_marking) || 0;
+    
+    if (!userAns) {
+      unattempted++;
+    } else if (userAns == q.answer) {
+      correct++;
+      score += posMark;
+    } else {
+      wrong++;
+      score -= negMark;
+    }
+  });
+  
+  displayResults(correct, wrong, unattempted, score);
+  
+  const fab = document.getElementById('paletteFab');
+  const nav = document.getElementById('navigation');
+  if (fab) fab.style.display = 'none';
+  if (nav) nav.style.display = 'none';
+  
+  document.body.style.paddingBottom = '20px';
+  
+  clearLocalStorage();
+}
+
+function displayResults(correct, wrong, unattempted, score) {
+  const totalQuestions = questions.length;
+  const percentage = ((correct / totalQuestions) * 100).toFixed(1);
+  const timerEl = document.getElementById('timer');
+  const timeText = timerEl ? timerEl.textContent : '00:00';
+  const timeTaken = (totalTimeMinutes * 60) - timerSeconds;
+  const minutesTaken = Math.floor(timeTaken / 60);
+  const secondsTaken = timeTaken % 60;
+  const timeTakenText = `${minutesTaken}m ${secondsTaken}s`;
+  
+  let html = `
+    <div class="score-card">
+      <h2>${score}/${totalQuestions}</h2>
+      <p>Your Score: ${percentage}%</p>
+      <p>Time Taken: ${timeTakenText}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card correct">
+        <h3>${correct}</h3>
+        <p>Correct</p>
+      </div>
+      <div class="stat-card wrong">
+        <h3>${wrong}</h3>
+        <p>Wrong</p>
+      </div>
+      <div class="stat-card unattempted">
+        <h3>${unattempted}</h3>
+        <p>Unattempted</p>
+      </div>
+      <div class="stat-card">
+        <h3>${totalQuestions}</h3>
+        <p>Total</p>
+      </div>
+    </div>
+  `;
+  
+  questions.forEach(q => {
+    const userAns = answers[q.sr_no];
+    let questionDisplay = '';
+    if (isImageURL(q.question)) {
+      questionDisplay = `<img src="${q.question}" class="question-image" alt="Question ${q.sr_no}">`;
+    } else {
+      questionDisplay = q.question;
+    }
+    html += `<div class="question-review">
+      <h4>Q${q.sr_no}: ${questionDisplay}</h4>`;
+    
+    for (let i = 1; i <= 4; i++) {
+      const isCorrect = i.toString() === q.answer;
+      const isUserAnswer = userAns == i.toString();
+      
+      let className = 'review-option';
+      if (isCorrect) className += ' correct';
+      if (isUserAnswer && !isCorrect) className += ' wrong';
+      if (isUserAnswer) className += ' user-selected';
+      
+      const optionValue = q[`option${i}`];
+      
+      if (isImageURL(optionValue)) {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''} 
+          <img src="${optionValue}" class="option-image" alt="Option ${i}">
+        </div>`;
+      } else {
+        html += `<div class="${className}">
+          ${isCorrect ? '✓ ' : ''}${isUserAnswer ? '➤ ' : ''}${optionValue}
+        </div>`;
+      }
+    }
+    
+    if (q.solution && q.solution.trim() !== '') {
+      let solutionDisplay = '';
+      if (isImageURL(q.solution)) {
+        solutionDisplay = `<img src="${q.solution}" class="solution-image" alt="Solution" style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;">`;
+      } else {
+        solutionDisplay = q.solution;
+      }
+      
+      html += `<div class="solution-section" style="margin-top: 15px; padding: 15px; background: #f0f8ff; border-left: 4px solid #007bff; border-radius: 8px;">
+        <strong style="color: #007bff;">💡 Solution:</strong>
+        <div style="margin-top: 8px; color: #333;">${solutionDisplay}</div>
+      </div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  html += `
+    <div class="action-buttons">
+      <button class="action-btn restart" onclick="restartQuiz()">Restart Quiz</button>
+      <button class="action-btn download" onclick="downloadResults()">Download Results</button>
+      <button class="action-btn print" onclick="window.print()">Print Results</button>
+    </div>
+  `;
+  
+  const resultSection = document.getElementById('resultSection');
+  const questionSection = document.getElementById('questionSection');
+  const progressSection = document.querySelector('.progress-section');
+  
+  if (resultSection) {
+    resultSection.innerHTML = html;
+    resultSection.classList.remove('hidden');
+  }
+  if (questionSection) questionSection.classList.add('hidden');
+  if (progressSection) progressSection.classList.add('hidden');
+  
+  const quizContainer = document.getElementById('quizContainer');
+  if (quizContainer) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+  }
+}
+function isImageURL(str) {
+  return str && (str.startsWith('http') || str.startsWith('https')) &&
+    (str.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i));
+}
+function restartQuiz() {
+  if (confirm('Are you sure you want to restart? All progress will be lost.')) {
+    currentQuestion = 0;
+    answers = {};
+    bookmarks.clear();
+    timerSeconds = totalTimeMinutes * 60;
+    
+    const resultSection = document.getElementById('resultSection');
+    const questionSection = document.getElementById('questionSection');
+    const progressSection = document.querySelector('.progress-section');
+    const fab = document.getElementById('paletteFab');
+    const nav = document.getElementById('navigation');
+    
+    if (resultSection) {
+      resultSection.classList.add('hidden');
+      resultSection.innerHTML = '';
+    }
+    if (questionSection) questionSection.classList.remove('hidden');
+    if (progressSection) progressSection.classList.remove('hidden');
+    if (fab) fab.style.display = 'flex';
+    if (nav) nav.style.display = 'grid';
+    
+    document.body.style.paddingBottom = 'var(--nav-height)';
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    updateTimer();
+    startTimer();
+    
+    loadQuestion(currentQuestion);
+    createPalette();
+  }
+}
+
+function downloadResults() {
+  const resultSection = document.getElementById('resultSection');
+  if (!resultSection) return;
+  
+  const resultHTML = resultSection.innerHTML;
+  const fullHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGL 2026 Live Mock 3</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; max-width: 900px; margin: 0 auto; }
+    .score-card { background: linear-gradient(135deg, #007bff, #28a745); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .score-card h2 { font-size: 48px; margin-bottom: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #ddd; }
+    .stat-card h3 { font-size: 32px; margin-bottom: 8px; }
+    .stat-card.correct h3 { color: #28a745; }
+    .stat-card.wrong h3 { color: #dc3545; }
+    .stat-card.unattempted h3 { color: #6c757d; }
+    .question-review { background: white; border: 2px solid #ddd; border-radius: 10px; padding: 20px; margin-bottom: 15px; }
+    .question-review h4 { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
+    .review-option { padding: 10px 15px; margin: 8px 0; border-radius: 8px; border: 2px solid #ddd; display: flex; align-items: center; gap: 10px; }
+    .option-image { max-width: 150px; max-height: 100px; border-radius: 8px; }
+    .review-option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .review-option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .review-option.user-selected { border-width: 3px; font-weight: bold; }
+    @media print { body { background: white; } }
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #007bff;">MOTION 3.0 - Quiz Results</h1>
+  <p style="text-align: center; color: #666; margin-bottom: 30px;">Generated on: ${new Date().toLocaleString()}</p>
+  ${resultHTML.replace(/<div class="action-buttons">[\s\S]*?<\/div>/, '')}
+</body>
+</html>
+  `;
+  
+  try {
+    const blob = new Blob([fullHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Quiz_Results_${new Date().getTime()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Download failed. Please try using the Print option instead.');
+    console.error('Download error:', err);
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    const state = {
+      currentQuestion,
+      answers,
+      bookmarks: Array.from(bookmarks),
+      timerSeconds,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('quizState', JSON.stringify(state));
+  } catch (err) {
+    console.error('Save error:', err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem('quizState');
+    if (saved) {
+      const state = JSON.parse(saved);
+      if (Date.now() - state.timestamp < 24 * 60 * 60 * 1000) {
+        if (confirm('Resume previous quiz session?')) {
+          currentQuestion = state.currentQuestion || 0;
+          answers = state.answers || {};
+          bookmarks = new Set(state.bookmarks || []);
+          timerSeconds = state.timerSeconds || (totalTimeMinutes * 60); // MODIFIED
+          updateTimer();
+          loadQuestion(currentQuestion);
+        }
+      } else {
+        clearLocalStorage();
+      }
+    }
+  } catch (err) {
+    console.error('Load error:', err);
+    clearLocalStorage();
+  }
+}
+
+function clearLocalStorage() {
+  try {
+    localStorage.removeItem('quizState');
+  } catch (err) {
+    console.error('Clear storage error:', err);
+  }
+}
+
+window.addEventListener('beforeunload', (e) => {
+  const resultSection = document.getElementById('resultSection');
+  if (resultSection && !resultSection.classList.contains('hidden')) {
+    return;
+  }
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<title>Microsoft Office</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif;
+  background:#f5f5f5;color:#1a1a1a;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE — BLACK HEADER (exact)
+   ════════════════════════════════════ */
+#hdr-attempt{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)
+}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-pause{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid #fff;background:transparent;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0
+}
+.hdr-timer{font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.hdr-testname{font-size:13px;color:#ccc;max-width:200px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-hamburger{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   VIEW MODE — WHITE HEADER
+   ════════════════════════════════════ */
+#hdr-view{
+  display:none;
+  align-items:center;
+  background:#1a1a2e;color:#fff;
+  height:56px;padding:0 14px;gap:12px;
+  position:sticky;top:0;z-index:600;
+  box-shadow:0 2px 6px rgba(0,0,0,.3)
+}
+.hdr-back{background:transparent;border:none;color:#fff;
+  font-size:22px;cursor:pointer;padding:4px 6px}
+.hdr-vtitle{font-size:15px;font-weight:600;color:#fff;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-lang-icon{
+  width:34px;height:34px;border-radius:4px;
+  background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#fff;cursor:pointer
+}
+.hdr-hamburger2{
+  width:34px;height:34px;background:transparent;
+  border:none;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px
+}
+.hdr-hamburger2 span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+
+/* ════════════════════════════════════
+   SECTION TABS (both modes)
+   ════════════════════════════════════ */
+.sec-tabs{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;
+  position:sticky;top:56px;z-index:500;
+  scrollbar-width:none
+}
+.sec-tabs::-webkit-scrollbar{display:none}
+.stab{
+  padding:0 18px;height:48px;
+  border:none;background:transparent;
+  font-size:14px;font-weight:500;color:#666;
+  cursor:pointer;white-space:nowrap;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1px;transition:color .15s
+}
+.stab.active{color:#1a1a2e;border-bottom-color:#1a1a2e;font-weight:700}
+.stab:hover{color:#1a1a2e}
+
+/* ════════════════════════════════════
+   ATTEMPT MODE LAYOUT — single column
+   ════════════════════════════════════ */
+#mode-attempt{display:block}
+#mode-view{display:none}
+.attempt-body{max-width:780px;margin:0 auto;padding:12px 12px 80px}
+
+/* ── per-question header row (Q number + time + marks + icons) ── */
+.qrow-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 0 6px;
+  border-bottom:1px solid #ebebeb;
+  margin-bottom:0
+}
+.qnum-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:#bbb;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;
+  transition:background .2s
+}
+.qnum-circle.attempted{background:#2196f3}
+.qnum-circle.marked{background:#ff9800}
+.qnum-circle.correct{background:#4caf50}
+.qnum-circle.wrong{background:#f44336}
+.qtimer{display:flex;align-items:center;gap:4px;font-size:12px;color:#888}
+.qtimer svg{opacity:.6}
+.badge-pos{
+  background:#e8f5e9;color:#388e3c;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #c8e6c9
+}
+.badge-neg{
+  background:#fce4ec;color:#c62828;
+  font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:4px;border:1px solid #f8bbd0
+}
+.qicons{margin-left:auto;display:flex;align-items:center;gap:14px}
+.qicon-btn{background:none;border:none;cursor:pointer;color:#aaa;
+  display:flex;align-items:center;font-size:18px;padding:2px}
+.qicon-btn.star-on{color:#f59e0b}
+.qicon-btn.bookmark-on{color:#2196f3}
+
+/* ── question card (attempt) ── */
+.qcard-attempt{
+  background:#fff;
+  border-radius:0;
+  margin-bottom:0;
+  padding-bottom:14px;
+  border-bottom:6px solid #f5f5f5;
+  display:none
+}
+.qcard-attempt.active-card{
+  display:block
+}
+.qcard-body-a{padding:14px 0 0}
+.qtext{font-size:15px;line-height:1.9;word-break:break-word;color:#1a1a1a}
+.qtext img{max-width:100%;height:auto;display:block;margin:8px 0;border-radius:4px}
+.passage{
+  background:#fff8e1;border-left:3px solid #fbc02d;
+  padding:10px 12px;margin-bottom:12px;
+  border-radius:0 4px 4px 0;font-size:14px;line-height:1.8
+}
+.passage img{max-width:100%;height:auto}
+
+/* ── options (attempt) ── */
+.opts-wrap{margin-top:14px;display:flex;flex-direction:column;gap:0}
+.opt-a{
+  display:flex;align-items:center;
+  padding:13px 14px;
+  border:1px solid #e0e0e0;
+  border-radius:6px;
+  margin-bottom:8px;
+  cursor:pointer;
+  background:#fff;
+  transition:border-color .12s,background .12s;
+  position:relative
+}
+.opt-a:hover{border-color:#aaa}
+.opt-num{
+  font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0
+}
+.opt-body-a{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-body-a img{max-width:100%;height:auto}
+
+/* selected (blue border + light blue bg) */
+.opt-a.sel{
+  border-color:#2196f3;
+  background:#e3f2fd
+}
+/* after submit — correct */
+.opt-a.reveal-correct{
+  border-color:#4caf50;background:#e8f5e9
+}
+/* after submit — user wrong */
+.opt-a.reveal-wrong{
+  border-color:#f44336;background:#fce4ec
+}
+.opt-a .opt-icon{
+  margin-left:10px;flex-shrink:0;
+  font-size:18px
+}
+
+/* ── bottom 3-button bar (attempt) ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;
+  border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;gap:0;
+  padding:8px 12px;z-index:550;
+  box-shadow:0 -2px 8px rgba(0,0,0,.07)
+}
+.btn-mark-next{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-clear{
+  flex:1;padding:11px 4px;
+  border:1.5px solid #888;border-radius:6px;
+  background:#fff;color:#333;
+  font-size:13px;font-weight:600;cursor:pointer;
+  margin-right:8px
+}
+.btn-save-next{
+  flex:1;padding:11px 4px;
+  border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;
+  font-size:13px;font-weight:600;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   SIDE PANEL (hamburger drawer)
+   ════════════════════════════════════ */
+#side-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:700
+}
+#side-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:#fff;z-index:800;
+  transform:translateX(100%);transition:transform .25s ease;
+  display:flex;flex-direction:column;overflow:hidden
+}
+#side-panel.open{transform:translateX(0)}
+.sp-tabs{
+  display:flex;border-bottom:2px solid #f0f0f0;flex-shrink:0
+}
+.sp-tab{
+  flex:1;padding:14px;border:none;background:transparent;
+  font-size:14px;font-weight:600;cursor:pointer;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px
+}
+.sp-tab.active{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.sp-body{flex:1;overflow-y:auto;padding:0}
+.sp-body::-webkit-scrollbar{width:4px}
+.sp-body::-webkit-scrollbar-thumb{background:#ddd}
+.sp-instructions{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0;
+  cursor:pointer;font-size:14px;color:#555
+}
+/* legend */
+.sp-legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  padding:12px 16px;border-bottom:1px solid #f0f0f0
+}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:#555}
+.leg-dot{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px
+}
+.leg-star{background:transparent;font-size:18px;color:#f44336}
+.leg-grey{background:#bbb}
+.leg-blue{background:#2196f3}
+.leg-white{background:#fff;border:1.5px solid #ccc}
+/* section block */
+.sp-sec-block{border-bottom:1px solid #f0f0f0}
+.sp-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;cursor:pointer;font-weight:700;font-size:14px
+}
+.sp-sec-stats{
+  display:flex;align-items:center;gap:12px;
+  padding:4px 16px 10px;font-size:13px
+}
+.sp-stat{display:flex;align-items:center;gap:5px}
+.sp-stat .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.sp-pal{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:4px 16px 14px
+}
+.pal-btn{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid #ccc;background:#fff;
+  font-size:13px;font-weight:600;color:#555;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0
+}
+.pal-btn:hover{border-color:#2196f3;color:#2196f3}
+.pal-btn.p-attempted{background:#2196f3;border-color:#2196f3;color:#fff}
+.pal-btn.p-marked{background:#ff9800;border-color:#ff9800;color:#fff}
+.pal-btn.p-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.pal-btn.p-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.pal-btn.p-current{box-shadow:0 0 0 3px rgba(33,150,243,.4)}
+/* submit btn */
+.sp-submit{
+  flex-shrink:0;padding:14px 16px;
+  border-top:1px solid #e0e0e0
+}
+.sp-submit-btn{
+  width:100%;padding:13px;
+  background:#78909c;color:#fff;
+  border:none;border-radius:6px;
+  font-size:15px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;text-transform:uppercase
+}
+.sp-submit-btn:hover{background:#546e7a}
+
+/* submit confirm modal */
+#submit-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.5);z-index:900;
+  align-items:center;justify-content:center
+}
+#submit-modal.show{display:flex}
+.modal-box{
+  background:#fff;border-radius:12px;
+  padding:24px;width:320px;max-width:90vw
+}
+.modal-row{display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-label{color:#555}
+.modal-val{font-weight:700;color:#333}
+.modal-timer{color:#2196f3;font-weight:700}
+.modal-q{font-weight:700;font-size:15px;margin:16px 0 14px;text-align:center}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+.modal-yes{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#4a6cf7;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+.modal-no{
+  flex:1;padding:12px;border:none;border-radius:6px;
+  background:#90a4ae;color:#fff;font-size:14px;font-weight:700;cursor:pointer
+}
+
+/* ════════════════════════════════════
+   VIEW / SOLUTIONS MODE
+   ════════════════════════════════════ */
+.view-body{padding:0}
+/* top Q-number filter row */
+.sol-qrow{
+  background:#fff;
+  border-bottom:1px solid #e0e0e0;
+  display:flex;overflow-x:auto;gap:8px;
+  padding:10px 12px;
+  position:sticky;top:104px;z-index:490;
+  scrollbar-width:none
+}
+.sol-qrow::-webkit-scrollbar{display:none}
+.sol-qbtn{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid #ccc;background:#f5f5f5;
+  font-size:12px;font-weight:600;color:#555;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-qbtn.sq-correct{background:#4caf50;border-color:#4caf50;color:#fff}
+.sol-qbtn.sq-wrong{background:#f44336;border-color:#f44336;color:#fff}
+.sol-qbtn.sq-skip{background:#bbb;border-color:#bbb;color:#fff}
+/* solution question card */
+.sol-card{
+  background:#fff;
+  border-bottom:6px solid #f5f5f5
+}
+.sol-card-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 8px;border-bottom:1px solid #f0f0f0
+}
+.sol-card-body{padding:12px 14px}
+/* option in solution view */
+.opt-sol{
+  display:flex;align-items:center;
+  padding:12px 14px;
+  border:1px solid #e8e8e8;border-radius:6px;
+  margin-bottom:8px;background:#fff;position:relative
+}
+.opt-sol.sol-correct{
+  border-color:#4caf50;background:#f1f8e9
+}
+.opt-sol.sol-wrong-sel{
+  border-color:#f44336;background:#fce4ec
+}
+.your-answer-badge{
+  display:inline-block;
+  background:#2196f3;color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.3px;
+  padding:3px 8px;border-radius:10px;
+  margin-left:8px;text-transform:uppercase;flex-shrink:0
+}
+.status-badge{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:3px 10px;border-radius:4px;border:1px solid transparent;
+  margin-right:6px
+}
+.status-skip{background:#eceff1;color:#546e7a;border-color:#cfd8dc}
+.status-ok{background:#e8f5e9;color:#388e3c;border-color:#c8e6c9}
+.status-err{background:#fce4ec;color:#c62828;border-color:#f8bbd0}
+.opt-sol-num{font-size:13px;color:#888;font-style:italic;
+  margin-right:12px;min-width:18px;flex-shrink:0}
+.opt-sol-body{flex:1;font-size:15px;line-height:1.7;word-break:break-word}
+.opt-sol-body img{max-width:100%;height:auto}
+.opt-sol-icon{
+  margin-left:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:4px
+}
+/* "Correct Answers Is: X" bar */
+.correct-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;font-size:13px;font-weight:600;color:#333;
+  border-top:1px solid #e8e8e8
+}
+.correct-pct{color:#888;font-weight:400}
+/* SOLUTION section */
+.solution-section{padding:12px 14px 4px}
+.sol-heading{
+  font-size:13px;font-weight:700;
+  letter-spacing:.5px;color:#333;
+  text-transform:uppercase;margin-bottom:10px
+}
+.sol-text{font-size:14px;line-height:1.9;word-break:break-word}
+.sol-text img{max-width:100%;height:auto;display:block;margin:8px 0}
+/* bottom bar solutions */
+.sol-bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e0e0e0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;z-index:550;gap:10px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.07)
+}
+.sol-reattempt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#333}
+.toggle-wrap{position:relative;width:44px;height:24px;cursor:pointer}
+.toggle-track{
+  width:44px;height:24px;border-radius:12px;
+  background:#4a6cf7;transition:background .2s
+}
+.toggle-track.off{background:#ccc}
+.toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;transition:left .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.3)
+}
+.toggle-track:not(.off) + .toggle-thumb,
+.toggle-thumb.on{left:23px}
+.sol-nav{display:flex;gap:8px}
+.sol-nav-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:#4a6cf7;border:none;color:#fff;
+  font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.sol-nav-btn:disabled{background:#ccc;cursor:default}
+
+/* ── section filter in solutions header ── */
+.sol-sec-dropdown{
+  font-size:13px;color:#4a6cf7;font-weight:600;
+  display:flex;align-items:center;gap:4px;cursor:pointer;
+  padding:4px 0
+}
+
+/* ════════════════════════════════════
+   ANALYSIS / RESULTS PAGE
+   ════════════════════════════════════ */
+#mode-analysis{display:none}
+.analysis-body{max-width:600px;margin:0 auto;padding:16px 14px 80px}
+.analysis-header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;border-radius:12px;padding:20px;margin-bottom:16px;
+  text-align:center
+}
+.analysis-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.analysis-subtitle{font-size:13px;color:#aaa;margin-bottom:16px}
+.analysis-score-big{font-size:42px;font-weight:800;color:#4a6cf7}
+.analysis-score-max{font-size:16px;color:#aaa;font-weight:400}
+.analysis-stats-row{
+  display:flex;justify-content:space-around;
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.15)
+}
+.analysis-stat{text-align:center}
+.analysis-stat-val{font-size:22px;font-weight:700}
+.analysis-stat-label{font-size:11px;color:#aaa;margin-top:2px}
+.analysis-card{
+  background:#fff;border-radius:10px;
+  padding:16px;margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.08)
+}
+.analysis-card-title{font-size:14px;font-weight:700;color:#333;margin-bottom:12px}
+.rank-row{display:flex;justify-content:space-around;gap:10px}
+.rank-box{flex:1;text-align:center;background:#f4f6ff;border:1px solid #e2e8ff;
+  border-radius:10px;padding:12px 6px}
+.rank-val{font-size:22px;font-weight:800;color:#4a6cf7}
+.rank-label{font-size:11px;color:#888;margin-top:3px}
+.rank-meta{font-size:11.5px;color:#999;margin-top:10px;line-height:1.5}
+.analysis-bar-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px
+}
+.analysis-bar-label{font-size:13px;color:#555;min-width:80px}
+.analysis-bar-track{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.analysis-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.analysis-bar-val{font-size:13px;font-weight:600;min-width:30px;text-align:right}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.analysis-grid-item{
+  background:#f8f9fa;border-radius:8px;padding:12px;text-align:center
+}
+.analysis-grid-val{font-size:20px;font-weight:700}
+.analysis-grid-label{font-size:11px;color:#888;margin-top:2px}
+.analysis-grid-item.ag-correct .analysis-grid-val{color:#4caf50}
+.analysis-grid-item.ag-wrong .analysis-grid-val{color:#f44336}
+.analysis-grid-item.ag-skip .analysis-grid-val{color:#ff9800}
+.analysis-grid-item.ag-total .analysis-grid-val{color:#2196f3}
+.btn-view-solutions{
+  width:100%;padding:14px;border:none;border-radius:8px;
+  background:#4a6cf7;color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;margin-top:16px;letter-spacing:.3px
+}
+.btn-view-solutions:hover{background:#3d5ce0}
+
+/* section filter circles (solutions view) */
+.sol-sec-circles{
+  display:flex;gap:6px;align-items:center;padding:2px 0
+}
+.sol-sec-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid #ccc;background:transparent;
+  font-size:11px;font-weight:700;color:#aaa;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s
+}
+.sol-sec-circle.sec-active{border-color:#4a6cf7;color:#4a6cf7;background:rgba(74,108,247,.1)}
+.sol-sec-circle.sec-all{font-size:9px;min-width:32px;border-radius:12px;padding:0 6px}
+
+/* offline notice */
+.offline-notice{
+  background:#fff3cd;color:#856404;border-bottom:1px solid #ffc107;
+  padding:6px 14px;font-size:12px;text-align:center;
+  display:none
+}
+
+/* ── responsive ── */
+@media(min-width:780px){
+  .attempt-body{padding:12px 20px 80px}
+  .bottom-bar{padding:8px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="offline-notice" id="offline-notice">
+  ⚠ Offline Mode — Images won't load. Everything else works normally.
+</div>
+
+<!-- ════════ ATTEMPT MODE HEADER ════════ -->
+<header id="hdr-attempt">
+  <div class="hdr-left">
+    <button class="hdr-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+    <div>
+      <div class="hdr-timer" id="hdr-timer">35:00:00</div>
+      <div class="hdr-testname">Microsoft Office</div>
+    </div>
+  </div>
+  <button class="hdr-hamburger" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ VIEW MODE HEADER ════════ -->
+<header id="hdr-view">
+  <button class="hdr-back" onclick="switchMode('attempt')">‹</button>
+  <div>
+    <div class="hdr-vtitle">Microsoft Office</div>
+    <div class="sol-sec-circles" id="sol-sec-circles"></div>
+  </div>
+  <div class="hdr-lang-icon">E अ</div>
+  <button class="hdr-hamburger2" onclick="openPanel()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ════════ SECTION TABS ════════ -->
+<nav class="sec-tabs" id="sec-tabs"></nav>
+
+<!-- ════════ ATTEMPT MODE ════════ -->
+<div id="mode-attempt">
+  <div class="attempt-body" id="attempt-body"></div>
+</div>
+
+<!-- ════════ VIEW / SOLUTIONS MODE ════════ -->
+<div id="mode-view">
+  <div class="sol-qrow" id="sol-qrow"></div>
+  <div class="view-body" id="view-body"></div>
+</div>
+
+<!-- ════════ ANALYSIS / RESULTS PAGE ════════ -->
+<div id="mode-analysis">
+  <header id="hdr-analysis" style="display:flex;align-items:center;background:#1a1a2e;color:#fff;height:56px;padding:0 14px;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,.3)">
+    <button class="hdr-back" onclick="switchMode('attempt')">&#8249;</button>
+    <div class="hdr-vtitle">Microsoft Office</div>
+  </header>
+  <div class="analysis-body">
+    <div class="analysis-header">
+      <div class="analysis-title">Microsoft Office</div>
+      <div class="analysis-subtitle">QUICK SUMMARY</div>
+      <div class="analysis-score-big"><span id="ana-score">0</span><span class="analysis-score-max"> / <span id="ana-max">0</span></span></div>
+      <div class="analysis-stats-row">
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-accuracy">0%</div>
+          <div class="analysis-stat-label">Accuracy</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" id="ana-attempted">0</div>
+          <div class="analysis-stat-label">Qs. Attempted</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#4caf50" id="ana-correct-count">0</div>
+          <div class="analysis-stat-label">Correct</div>
+        </div>
+        <div class="analysis-stat">
+          <div class="analysis-stat-val" style="color:#f44336" id="ana-wrong-count">0</div>
+          <div class="analysis-stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+    <!-- Rank / percentile — shown only when Testbook attempt stats are present -->
+    <div class="analysis-card" id="ana-rank-card" style="display:none">
+      <div class="analysis-card-title">Rank &amp; Percentile <span style="font-size:11px;color:#999;font-weight:400">(estimated)</span></div>
+      <div class="rank-row">
+        <div class="rank-box">
+          <div class="rank-val" id="ana-rank">-</div>
+          <div class="rank-label">Est. Rank</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-percentile">-</div>
+          <div class="rank-label">Percentile</div>
+        </div>
+        <div class="rank-box">
+          <div class="rank-val" id="ana-attempts">-</div>
+          <div class="rank-label">Total Attempts</div>
+        </div>
+      </div>
+      <div class="rank-meta" id="ana-rank-meta"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Question Analysis</div>
+      <div class="analysis-grid" id="ana-grid"></div>
+    </div>
+    <div class="analysis-card">
+      <div class="analysis-card-title">Section-wise Performance</div>
+      <div id="ana-sections"></div>
+    </div>
+    <button class="btn-view-solutions" onclick="switchMode('view')">Solutions &#8594;</button>
+  </div>
+</div>
+
+<!-- ════════ ATTEMPT BOTTOM BAR ════════ -->
+<div class="bottom-bar" id="attempt-bar">
+  <button class="btn-mark-next" onclick="prevQ()" id="btn-prevq" style="flex:0.6">&#8592; Prev</button>
+  <button class="btn-mark-next" onclick="markAndNext()">Mark &amp; Next</button>
+  <button class="btn-clear" onclick="clearCurrent()">Clear</button>
+  <button class="btn-save-next" onclick="saveAndNext()">Save &amp; Next</button>
+</div>
+
+<!-- ════════ SOLUTIONS BOTTOM BAR ════════ -->
+<div class="sol-bottom-bar" id="sol-bar" style="display:none">
+  <div class="sol-reattempt">
+    <div class="toggle-wrap" onclick="toggleReattempt()">
+      <div class="toggle-track" id="rt-track"></div>
+      <div class="toggle-thumb" id="rt-thumb"></div>
+    </div>
+    Reattempt Mode
+  </div>
+  <div class="sol-nav">
+    <button class="sol-nav-btn" id="btn-prev" onclick="solNav(-1)">←</button>
+    <button class="sol-nav-btn" id="btn-next" onclick="solNav(1)">→</button>
+  </div>
+</div>
+
+<!-- ════════ SIDE PANEL ════════ -->
+<div id="side-overlay" onclick="closePanel()"></div>
+<div id="side-panel">
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="spTab(0)">Grid View</button>
+    <button class="sp-tab" onclick="spTab(1)">List View</button>
+  </div>
+  <div class="sp-body" id="sp-body">
+    <div class="sp-instructions">
+      <span style="font-size:18px;color:#555">ℹ</span>
+      <span>View Instructions</span>
+    </div>
+    <div class="sp-legend">
+      <div class="leg-item"><span class="leg-dot leg-star">★</span> Marked for Review</div>
+      <div class="leg-item"><div class="leg-dot leg-grey"></div> Unattempted</div>
+      <div class="leg-item"><div class="leg-dot leg-blue"></div> Attempted</div>
+      <div class="leg-item"><div class="leg-dot leg-white"></div> Unseen</div>
+    </div>
+    <div id="sp-sections"></div>
+  </div>
+  <div class="sp-submit">
+    <button class="sp-submit-btn" onclick="openSubmitModal()">Submit Test</button>
+  </div>
+</div>
+
+<!-- ════════ SUBMIT CONFIRM MODAL ════════ -->
+<div id="submit-modal">
+  <div class="modal-box">
+    <div class="modal-row">
+      <span class="modal-label">Time Left</span>
+      <span class="modal-val modal-timer" id="modal-timer">35:00:00</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Attempted</span>
+      <span class="modal-val" id="modal-attempted">0</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Unattempted</span>
+      <span class="modal-val" id="modal-unattempted">50</span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Marked</span>
+      <span class="modal-val" id="modal-marked">0</span>
+    </div>
+    <div class="modal-q">Are you sure you want to submit the test?</div>
+    <div class="modal-btns">
+      <button class="modal-yes" onclick="confirmSubmit()">Yes</button>
+      <button class="modal-no" onclick="closeSubmitModal()">No</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+var Q_MAP      = {"1": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "2": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "3": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "4": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "5": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "6": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "7": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "8": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "9": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "10": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "11": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "12": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "13": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "14": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "15": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "16": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "17": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "18": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "19": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "20": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "21": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "22": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "23": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "24": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "25": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "26": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "27": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "28": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "29": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "30": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "31": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "32": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "33": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "34": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "35": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "36": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "37": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "38": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "39": {"correct": 2, "pos": 1, "neg": 0, "si": 0}, "40": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "41": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "42": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "43": {"correct": 0, "pos": 1, "neg": 0, "si": 0}, "44": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "45": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "46": {"correct": 3, "pos": 1, "neg": 0, "si": 0}, "47": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "48": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "49": {"correct": 1, "pos": 1, "neg": 0, "si": 0}, "50": {"correct": 1, "pos": 1, "neg": 0, "si": 0}};
+var Q_DATA     = [{"n": 1, "si": 0, "text": "Which of the following displays both the name of the application and the name of the spreadsheet in MS-Excel?", "comp": "", "opts": ["Title bar", "Tool bar", "Task bar", "Menu bar"], "cidx": 0, "sol": "<p>Microsoft Excel\u00a0consists of\u00a0basic components\u00a0like\u00a0an\u00a0Active cell, title bar\u00a0Column headings, a Formula bar, a Name box, a mouse pointer, Row headings, Sheet tabs, a Taskbar, Tab scrolling buttons, and Toolbars.\u00a0The title bar displays both the name of the application and the name of the spreadsheet.\u200b</p>\n", "pos": 0, "neg": 0}, {"n": 2, "si": 0, "text": "In MS Excel, which of the following is the correct cell address of the second column and third row?&nbsp;&nbsp;", "comp": "", "opts": ["3A&nbsp;", "3B", "A3", "B3"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>B3</strong></u><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>In MS Excel, cell addresses are specified by a combination of column letters and row numbers:</li>\n\t<li><strong>Columns</strong> are labeled alphabetically (A, B, C, D, etc.).</li>\n\t<li>The <strong>first column</strong> is &quot;A,&quot; the <strong>second column</strong> is &quot;B,&quot; and so on.</li>\n\t<li><strong>Rows</strong> are numbered starting from 1, going downwards (1, 2, 3, 4, etc.).</li>\n\t<li><strong>Second column</strong>: As mentioned, the second column is labeled <strong>B</strong>.</li>\n\t<li><strong>Third row</strong>: The third row is labeled as <strong>3</strong>.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span>&nbsp;In Excel, you can use <strong>three types of cell references</strong>:</p>\n\n<ul>\n\t<li><strong>Relative Reference</strong> (e.g., A1):\n\n\t<ul>\n\t\t<li>The most common type of reference.</li>\n\t\t<li>When you copy a formula with a relative reference, the reference adjusts based on the position of the new cell.</li>\n\t\t<li>Example: If you copy a formula from cell B2 (where the formula is referencing cell A1), and paste it into B3, the reference will automatically adjust to A2.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Absolute Reference</strong> (e.g., $A$1):\n\t<ul>\n\t\t<li>An absolute reference locks the column and row in place, meaning that when you copy the formula, the reference will not change.</li>\n\t\t<li>Example: If you copy a formula from cell B2 with the reference $A$1, it will always reference cell A1, no matter where you paste the formula.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Mixed Reference</strong> (e.g., $A1 or A$1):\n\t<ul>\n\t\t<li>In a mixed reference, either the column (e.g., $A1) or the row (e.g., A$1) is fixed, while the other part is relative.</li>\n\t\t<li>Example: If you copy a formula from B2 with the reference $A1, the row (1) remains fixed, but the column (A) will change when copied across columns.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 3, "si": 0, "text": "Which of the following is a function in MS Excel 365 that returns the sum of the values in a range of cells?&nbsp;&nbsp;", "comp": "", "opts": ["COUNT&nbsp;", "AVERAGE&nbsp;", "SUM&nbsp;", "MAX"], "cidx": 2, "sol": "<p>The correct answer is&nbsp;<u><strong>SUM</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>The <strong>SUM function</strong> in MS Excel 365 is used to add the values in a range of cells.</li>\n\t<li>It is one of the most commonly used functions for performing arithmetic operations in Excel.</li>\n\t<li>The syntax for the SUM function is <code>=SUM(number1, [number2], ...)</code>, where <code>number1</code> and <code>number2</code> are the numbers to be added.</li>\n\t<li>It can handle individual numbers, cell references, ranges, or a combination of all.</li>\n\t<li>Using the SUM function enhances the efficiency of data analysis and ensures accuracy in calculations.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>COUNT function:</strong>\n\n\t<ul>\n\t\t<li>The <strong>COUNT function</strong> is used to count the number of cells that contain numbers in a range.</li>\n\t\t<li>It does not sum the values but provides the count of numeric entries.</li>\n\t\t<li>The syntax is <code>=COUNT(value1, [value2], ...)</code>.</li>\n\t</ul>\n\t</li>\n\t<li><strong>AVERAGE function:</strong>\n\t<ul>\n\t\t<li>The <strong>AVERAGE function</strong> calculates the average of the numbers provided as arguments.</li>\n\t\t<li>The syntax is <code>=AVERAGE(number1, [number2], ...)</code>.</li>\n\t</ul>\n\t</li>\n\t<li><strong>MAX function:</strong>\n\t<ul>\n\t\t<li>The <strong>MAX function</strong> returns the largest number in a set of values.</li>\n\t\t<li>The syntax is <code>=MAX(number1, [number2], ...)</code>.</li>\n\t</ul>\n\t</li>\n\t<li><strong>MIN function:</strong>\n\t<ul>\n\t\t<li>The <strong>MIN function</strong> returns the smallest number in a set of values.</li>\n\t\t<li>The syntax is <code>=MIN(number1, [number2], ...)</code>.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 4, "si": 0, "text": "What does the cell address &lsquo;C10&rsquo; represent in an electronic spreadsheet?&nbsp;", "comp": "", "opts": ["The cell in the twelfth column and the third row", "The cell in the tenth column and the third row", "The cell in the third column and the tenth row", "The cell in the third column and the twelfth row"], "cidx": 2, "sol": "<p>The correct answer is&nbsp;<u><strong><span style=\"color: rgb(33, 37, 41);\">The cell in the third column and the tenth row</span></strong></u><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>In an electronic spreadsheet like Microsoft Excel or Google Sheets, <strong>each cell is identified by a unique address,</strong> which is a combination of a column letter and a row number.</li>\n\t<li><strong>Columns</strong> are labeled with letters (A, B, C, D, etc.). After Z, the labels go to double letters (AA, AB, AC, etc.).</li>\n\t<li><strong>Rows</strong> are numbered (1, 2, 3, 4, etc.)</li>\n\t<li>So, &quot;C&quot; refers to the third column, and &quot;10&quot; refers to the tenth row</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul style=\"color: rgb(33, 37, 41);\">\n\t<li>&nbsp;<span style=\"font-weight: bolder;\">The CELL function returns information about the formatting, location, or contents of a cell.</span></li>\n</ul>\n\n<p style=\"color: rgb(33, 37, 41);\"><span style=\"font-weight: bolder;\">MS-Excel Worksheets</span></p>\n\n<ul style=\"color: rgb(33, 37, 41);\">\n\t<li>The term<span style=\"font-weight: bolder;\">&nbsp;Worksheet used in Excel documents is a collection of cells organized in rows and columns</span>.</li>\n\t<li><span style=\"font-weight: bolder;\">It is the working surface you interact with to enter data.</span></li>\n\t<li><span style=\"font-weight: bolder;\">Each worksheet contains 1048576 rows and 16384 columns and serves as a giant table that allows you to organize information.</span></li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 5, "si": 0, "text": "<p>What will be the result of the following MS Excel formula?</p>\n\n<p>= FACT(5-4)</p>\n", "comp": "", "opts": ["120", "1", "96", "24"], "cidx": 1, "sol": "<ul>\n\t<li><span style=\"font-weight: 700;\">FACT(5-4) = FACT(1) = 1</span></li>\n\t<li>The Excel Fact function returns the\u00a0<span style=\"font-weight: 700;\">factorial of a given\u00a0number.</span></li>\n\t<li>The FACT function is a\u00a0<span style=\"font-weight: 700;\">built-in function in Excel</span>\u00a0that is categorized as a\u00a0Math/Trig Function.</li>\n\t<li>It can be used as a\u00a0<span style=\"font-weight: 700;\">worksheet function</span>\u00a0in Excel.</li>\n\t<li>As a worksheet function, the FACT function can be entered as part of a formula in a cell of a worksheet.</li>\n\t<li>The factorial of a number is equal to\u00a0<span style=\"font-weight: 700;\">1*2*3*....*number.</span></li>\n\t<li>The syntax of the function is\u00a0<span style=\"font-weight: 700;\">FACT(number).</span></li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 6, "si": 0, "text": "In MS Excel 365, what is the shortcut to move to the last cell on a worksheet, to the lowest used row of the rightmost used column?&nbsp;", "comp": "", "opts": ["Ctrl + Home", "Shift + Home", "Ctrl + End", "Shift + End"], "cidx": 2, "sol": "<p>The correct answer is <u><strong>Ctrl + End</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li><strong>Ctrl + End</strong> is used to move to the last cell on a worksheet, to the lowest used row of the rightmost used column.</li>\n\t<li>It helps users quickly navigate to the end of the data, which is useful for large worksheets.</li>\n\t<li>This shortcut works in all versions of Excel, including Excel 365.</li>\n\t<li>It ensures that users can efficiently manage and analyze data by quickly reaching the end of the data set.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Ctrl + Home:</strong> This shortcut moves the cursor to the beginning of the worksheet (cell A1).</li>\n\t<li><strong>Shift + Home:</strong> This shortcut is used to extend the selection of cells to the beginning of the row.</li>\n\t<li><strong>Ctrl + Shift + End:</strong> This shortcut extends the selection of cells to the last used cell on the worksheet (lower-right corner).</li>\n\t<li><strong>Shift + End:</strong> This shortcut extends the selection of cells to the last cell in the current row that contains data.</li>\n\t<li>Using these shortcuts can greatly enhance productivity and efficiency when working with large datasets in Excel.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 7, "si": 0, "text": "Which option in Microsoft Word 365 allows you to search for a specific word or phrase in the document and replace it with another?", "comp": "", "opts": ["Font Formatting", "Cut and Paste", "Spelling &amp; Grammar", "Find and Replace&nbsp;"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>Find and Replace</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The &quot;Find and Replace&quot; option in Microsoft Word 365 allows users to search for a specific word or phrase in the document.</li>\n\t<li>It also allows users to replace the found word or phrase with another specified word or phrase.</li>\n\t<li>This feature is extremely useful for quickly correcting repetitive mistakes or making multiple changes throughout a document.</li>\n\t<li>The &quot;Find and Replace&quot; functionality can be accessed by pressing &quot;Ctrl + H&quot; on the keyboard.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Font Formatting:</strong> This option allows users to change the appearance of the text, including font type, size, color, and style (bold, italic, underline).</li>\n\t<li><strong>Cut and Paste:</strong> This feature enables users to remove selected text or objects from one part of a document and insert them into another location within the same or different document.</li>\n\t<li><strong>Spelling &amp; Grammar:</strong> This tool helps users check the spelling and grammatical accuracy of the text within the document, providing suggestions for corrections.</li>\n\t<li><strong>Find and Replace:</strong> A versatile tool that lets users locate specific words or phrases in a document and replace them with new text. This is especially useful for editing large documents.</li>\n\t<li><strong>Additional Information:</strong> The &quot;Find and Replace&quot; feature can be found under the &quot;Home&quot; tab in the &quot;Editing&quot; group. It can also be accessed through the &quot;Navigation Pane&quot; for more advanced search options.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 8, "si": 0, "text": "Which of the following is NOT a type of paragraph formatting in MS-Word 365?", "comp": "", "opts": ["<span style=\"\">Right</span>", "<span style=\"\">Precise</span>", "<span style=\"\">Justify</span>", "<span style=\"\">Centre</span>"], "cidx": 1, "sol": "Precise is not a type of paragraph formatting option in MS Word 365. The available options for paragraph formatting are Alignment (left, center, right, justified), Indentation, Spacing, and Pagination under Line and Page Breaks. These options can be accessed through the Paragraph setting window and can be used to customize the appearance and layout of paragraphs in a Word document.", "pos": 0, "neg": 0}, {"n": 9, "si": 0, "text": "In Microsoft Excel 365, which tool should we use for creating or editing formulas in a worksheet?", "comp": "", "opts": ["Formula bar&nbsp;", "Watch window&nbsp;", "Precedents", "Auditing toolbar&nbsp;"], "cidx": 0, "sol": "<p>The correct answer is <u><strong>Formula bar</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The <strong>Formula bar</strong> in Microsoft Excel is the place where you can see and edit the formula for the currently selected cell.</li>\n\t<li>It is located directly above the worksheet area and below the Ribbon, making it easily accessible while working on the spreadsheet.</li>\n\t<li>The Formula bar displays both the formula and the result of the formula, offering a clear understanding of how the result is derived.</li>\n\t<li>Using the Formula bar allows you to easily modify existing formulas without having to re-enter them completely, thus saving time and reducing errors.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Watch Window:</strong>\n\n\t<ul>\n\t\t<li>The Watch Window in Excel is a feature that allows you to monitor the values of specific cells while working in different parts of your workbook. This is particularly useful in large workbooks where the cells you need to monitor are not visible on the screen.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Precedents:</strong>\n\t<ul>\n\t\t<li>Precedent cells are those cells that are referred to by a formula in another cell. In Excel, you can use the &#39;Trace Precedents&#39; feature to show arrows that indicate which cells affect the value of the currently selected cell.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Auditing Toolbar:</strong>\n\t<ul>\n\t\t<li>The Auditing Toolbar in Excel contains tools that help you to trace errors and understand the relationship between cells in a formula. It includes features like &#39;Trace Precedents&#39;, &#39;Trace Dependents&#39;, &#39;Evaluate Formula&#39;, and &#39;Error Checking&#39;.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 10, "si": 0, "text": "Which of the following is true with reference to opening and closing documents in MS Word 2007?", "comp": "", "opts": ["To close a document, click &#39;-&#39; in the upper right corner of the window.", "For opening a new file, click on &#39;New&#39; in Windows button.", "The shortcut key for opening a document is Ctrl + F.", "By default, MS Word document contains no pages when it is opened."], "cidx": 1, "sol": "<p>\u00a0</p>\n\n<ul>\n\t<li>Click the File tab.</li>\n\t<li><strong>Click New.</strong></li>\n\t<li>Under Available Templates, double-click Blank Workbook. Keyboard shortcut To quickly create a new, blank workbook, you can also press CTRL+N.\u00a0 \u00a0</li>\n\t<li>Click the File tab.</li>\n\t<li><span style=\"font-weight: 700;\">Click New.</span></li>\n\t<li>Under Available Templates, double-click Blank Workbook. Keyboard shortcut To quickly create a new, blank workbook, you can also press CTRL+N.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0\u00a0\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0\u00a0</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 11, "si": 0, "text": "Among the following, under which tab will you find the Start Mail Merge in the Microsoft Office Professional Plus 2016?&nbsp;", "comp": "", "opts": ["References&nbsp;", "Insert&nbsp;", "Mailings&nbsp;", "Home"], "cidx": 2, "sol": "<p>The correct answer is <u><strong>Mailings</strong></u><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>In Microsoft Office Professional Plus 2016, the <strong>Mail Merge</strong> feature is used to create personalized documents such as letters, labels, envelopes, and emails by merging a data source (like a spreadsheet) with a template document.</li>\n\t<li>It will find the &quot;Start Mail Merge&quot; option under the <strong>Mailings</strong> tab.</li>\n\t<li>This tab specifically contains all the options related to creating and managing mail merges.</li>\n\t<li>After clicking <strong>Start Mail Merge</strong>, you&#39;ll be prompted to select the document type you want to create (e.g., <strong>Letters</strong>, <strong>Envelopes</strong>, <strong>Labels</strong>, <strong>Email Messages</strong>).</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span><span style=\"font-weight: bolder;\">Types of Mail Merge</span>:</p>\n\n<ul>\n\t<li><strong>Letters</strong>: Personalized letters for each individual based on the data.</li>\n\t<li><strong>Envelopes</strong>: Personalized address information for each recipient on different envelopes.</li>\n\t<li><strong>Labels</strong>: Personalized labels, often used for bulk mailing.</li>\n\t<li><strong>Email Messages</strong>: Used to send personalized emails to each recipient from your data source.</li>\n\t<li><strong>Directory</strong>: A document listing personal details for multiple people, like a phonebook.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 12, "si": 0, "text": "In Microsoft Word 365, on which page is the header or the footer displayed by default?&nbsp;", "comp": "", "opts": ["On first page", "On every page", "On last page", "On middle page"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong>On every page</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li>In Microsoft Word 365, by default, headers and footers are displayed on every page of the document, including the first page.</li>\n\t<li>This default behavior ensures consistency throughout the document.</li>\n\t<li><strong>Display different headers and footers on the first page: </strong>This is often useful for documents like reports or essays where the first page may have a different format or require unique information (like a title page). You can achieve this by checking the &quot;Different First Page&quot; option within the Header &amp; Footer Tools.&nbsp; &nbsp;</li>\n\t<li><strong>Display headers and footers on specific pages or sections:</strong> You can control the appearance of headers and footers more precisely by using section breaks. By inserting section breaks, you can create different sections within your document, each with its own header and footer settings.&nbsp; &nbsp;</li>\n\t<li><strong>Suppress headers and footers altogether on certain pages: </strong>If you need to remove headers and footers from specific pages, you can do so by accessing the Header &amp; Footer options for that particular section and making the necessary adjustments.&nbsp; &nbsp;</li>\n\t<li>These customization options provide flexibility in designing your document layout and ensuring that headers and footers are displayed appropriately on each page.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 13, "si": 0, "text": "<p>State whether the following statements are true or false.</p>\n\n<p>(i) In MS Word, all paragraphs can have the right alignment.</p>\n\n<p>(ii) In MS Word, all paragraphs cannot have the same hanging position.</p>\n", "comp": "", "opts": ["(i) False, (ii) False", "(i) True, (ii) False", "(i) True, (ii) True", "(i) False, (ii) True"], "cidx": 1, "sol": "<ul>\n\t<li>In MS Word, all paragraphs can have the right alignment is a\u00a0<span style=\"font-weight: 700;\">TRUE statement.</span></li>\n\t<li>A paragraph's text in MS Word is<span style=\"font-weight: 700;\">\u00a0right-aligned</span>\u00a0when it is aligned evenly along the right margin.</li>\n\t<li>A justified paragraph alignment aligns both the left and right sides.</li>\n\t<li>In MS Word, all paragraphs cannot have the same hanging position is a\u00a0<span style=\"font-weight: 700;\">FALSE statement.</span></li>\n\t<li>Every line of the paragraph except the first one is indented.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 14, "si": 0, "text": "If the custom format of a number is XX,XX,XXX then how will 4482023 be displayed in Microsoft Excel 365?", "comp": "", "opts": ["448,20,23", "4,48,2023", "44,82,023", "4482,02,3"], "cidx": 2, "sol": "<p>The correct answer is <u><strong>44,82,023</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>In Microsoft Excel, custom number formats allow you to format numbers in a specific way, enhancing readability.</li>\n\t<li>The format XX,XX,XXX is a custom format that groups digits in the 2-2-3 pattern, commonly used in certain locales for displaying large numbers.</li>\n\t<li>When the number 4482023 is formatted with the custom format XX,XX,XXX, it will be displayed as 44,82,023.</li>\n\t<li>This type of formatting is particularly useful in financial data representation, where clarity in large numbers is crucial.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Custom Number Formats in Excel</strong>\n\n\t<ul>\n\t\t<li>Custom number formats in Excel allow users to display numbers in various ways, including currency, percentages, dates, times, and more.</li>\n\t\t<li>Custom formats are created using a combination of symbols and placeholders. For example, &quot;#&quot; is a digit placeholder, &quot;,&quot; adds a thousand separator, and &quot;0&quot; forces a digit to display even if it&#39;s zero.</li>\n\t\t<li>To create a custom number format, you can go to the &quot;Format Cells&quot; dialog box (Ctrl+1), choose &quot;Custom,&quot; and then enter the desired format in the &quot;Type&quot; field.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Importance of Proper Number Formatting</strong>\n\t<ul>\n\t\t<li>Proper number formatting enhances the readability and comprehension of data, particularly in reports and financial statements.</li>\n\t\t<li>It ensures consistency and professionalism in data presentation, which is vital for accurate interpretation and decision-making.</li>\n\t\t<li>Using appropriate number formats can also help in avoiding errors and misinterpretations, especially in large datasets.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Examples of Custom Number Formats</strong>\n\t<ul>\n\t\t<li>###,### - Displays numbers with comma separators for thousands. E.g., 1234567 will be displayed as 1,234,567.</li>\n\t\t<li>0.00% - Displays numbers as percentages with two decimal places. E.g., 0.1234 will be displayed as 12.34%.</li>\n\t\t<li>[$$-409]#,##0.00 - Displays numbers as currency in US dollars with two decimal places. E.g., 1234.56 will be displayed as $1,234.56.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 15, "si": 0, "text": "In MS Excel 365, which of the following is the correct option to open an existing spread sheet in MS-Excel?", "comp": "", "opts": ["Click on File tab&lt;&lt;Click on Open", "Click on File tab&lt;&lt;Click on New", "Click on Home tab&lt;&lt;Click on New", "Click on Home tab&lt;&lt;Click on Open"], "cidx": 0, "sol": "<p>The correct answer is <u><strong>Click on File tab&lt;&lt;Click on Open.</strong></u></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>Opening an existing spreadsheet in MS Excel 365 begins with clicking on the <strong>File tab</strong>.</li>\n\t<li>After clicking the File tab, users should then select <strong>Open</strong> from the menu options.</li>\n\t<li>The Open option allows users to access and choose from recently opened files or browse their computer for the desired spreadsheet.</li>\n\t<li>The File tab is located at the top-left corner of the Excel interface, providing a gateway to various file-related operations.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>File Tab in MS Excel</strong>\n\n\t<ul>\n\t\t<li>The File tab is part of the Ribbon interface introduced in Microsoft Office 2007.</li>\n\t\t<li>It provides access to the Backstage view, where users can perform file management tasks like saving, opening, and printing documents.</li>\n\t\t<li>The Backstage view also includes options for account settings, managing document properties, and Excel options.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Excel Ribbon Interface</strong>\n\t<ul>\n\t\t<li>The Ribbon is a set of toolbars at the top of the Excel window, designed to help users quickly find commands they need to complete tasks.</li>\n\t\t<li>It includes multiple tabs such as Home, Insert, Page Layout, Formulas, Data, Review, and View.</li>\n\t\t<li>Each tab contains related command groups, making it easier to access various functionalities.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Opening Files in Excel</strong>\n\t<ul>\n\t\t<li>Users can open files stored locally on their computer, on OneDrive, or other cloud storage services integrated with Excel.</li>\n\t\t<li>Excel supports various file formats, including .xlsx, .xls, .csv, and more.</li>\n\t\t<li>In addition to the File tab, users can open files by dragging and dropping them into the Excel window.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 16, "si": 0, "text": "What will happen when you select the cell contents of a particular row in MS-Excel and then click the Delete button?", "comp": "", "opts": ["Entries in all the selected cells will be deleted", "First five cell entries will be deleted", "Only first three cells will be deleted", "Entire row will be deleted"], "cidx": 0, "sol": "When you select the cell contents of a particular row in MS-Excel and click the Delete button, entries in all the selected cells will be deleted, but the row itself will not be removed. To delete an entire row, right-click on the row number and choose \"Delete\" from the context menu. The Delete button only clears cell content, not the worksheet structure. MS-Excel offers various methods to delete data, including the Delete key, context menu, and ribbon options. Differentiate between deleting cell contents and rows or columns for effective data management. Use the Clear options under the Home tab for additional clearing tasks.", "pos": 0, "neg": 0}, {"n": 17, "si": 0, "text": "<p>Which of the following is FALSE with reference to cell editing in MS-Excel?</p>\n", "comp": "", "opts": ["Select the cell, click on the formula bar and edit the content", "Edit the cell by double clicking the cell where the content is located", "Select the cell and press the F2 function key on the keyboard to edit the content of the cell", "Select the cell and press the F5 function key on the keyboard to edit the content of the cell"], "cidx": 3, "sol": "<ul>\n\t<li>Select the cell and press the F5 function key on the keyboard to edit the content of the cell\u00a0as FALSE with reference to cell editing in MS-Excel.</li>\n\t<li><span style=\"font-weight: 700;\">F5 key displays the \"Go-To\" dialogue box</span>.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 18, "si": 0, "text": "Which of the following function keys can be used to edit a cell of an MS-Excel worksheet?", "comp": "", "opts": ["F3", "F5", "F2", "F4"], "cidx": 2, "sol": "<ul>\n\t<li>An MS Excel worksheet contains rows 1,048,576 rows and 16,384 columns to store the text and numbers and merged into a single workbook knows as a File.\u00a0\u200bWorkbooks are the Excel files that one can open and share, while Excel worksheets are individual spreadsheets within them.\u00a0<span style=\"font-weight: 700;\">Function Key Shortcuts:</span></li>\n\t<li><span style=\"font-weight: 700;\">F2:</span>\u00a0Edit Cells</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 19, "si": 0, "text": "In Microsoft Excel, which chart type is best suited for comparing proportions or percentages of a whole?&nbsp;&nbsp;", "comp": "", "opts": ["Pie Chart&nbsp;", "Line Chart&nbsp;", "Bar Chart&nbsp;", "Scatter Chart"], "cidx": 0, "sol": "A Pie Chart in Microsoft Excel is best for comparing proportions or percentages of a whole, as it displays data as slices of a circle, with each slice representing a category's contribution to the total. In contrast, a Line Chart shows trends over time or continuous data, a Bar Chart compares discrete categories or groups, and a Scatter Chart reveals relationships between two variables. Excel, a powerful spreadsheet software first released in 1985 for the Apple Macintosh and in 1987 for Windows, supports extensive data analysis, visualization, and calculation capabilities with up to 1,048,576 rows and 16,384 columns per worksheet.", "pos": 0, "neg": 0}, {"n": 20, "si": 0, "text": "Which of the following shortcut key is used to move the cursor one word to the left in MS-Word 365?", "comp": "", "opts": ["Ctrl + Left arrow key", "Shift + Left arrow key", "Shift + PageUp", "Ctrl + PageUp"], "cidx": 0, "sol": "Ctrl + Left arrow key is the shortcut key that can be used to move the cursor one word to the left in MS Word 365. It enables the cursor to jump from one word to another towards the left side of the current cursor position, facilitating easy editing and formatting.", "pos": 0, "neg": 0}, {"n": 21, "si": 0, "text": "What will be the result of formula &#39;=16/2^3&#39; in a cell in MS Excel?", "comp": "", "opts": ["2", "512", "124", "6"], "cidx": 0, "sol": "<p>Initialize a formula in excel cell using the <strong>=</strong> (equals to) sign.The value of 2^3 stands for 2<sup>3</sup>, which results in a value of 8.The 16 is divided by 2<sup>3</sup>, which equals 16/8, and that results\u00a0in a value\u00a0of 2.\u200b</p>\n", "pos": 0, "neg": 0}, {"n": 22, "si": 0, "text": "In MS Excel 365, Which of the following is NOT a type of chart in MS Excel?&nbsp;", "comp": "", "opts": ["Line chart&nbsp;", "Bar chart&nbsp;", "Pie chart&nbsp;", "Space chart&nbsp;"], "cidx": 3, "sol": "<p>The correct answer is <u><strong>Space chart</strong></u> .</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul style=\"color:  (33, 37, 41);\">\n\t<li><span style=\"font-weight: bolder;\">Microsoft Excel</span> is a spreadsheet program included in the Microsoft Office suite of applications.</li>\n\t<li>It features calculation, graphing tools, pivot tables, and a macro programming language called VBA (Visual Basic for Applications).</li>\n\t<li>Excel is widely used for data analysis, financial modeling, and other tasks involving numerical data.</li>\n\t<li>Users can customize various aspects of Excel, including column widths, to better suit their specific needs and preferences.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><strong><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></strong></span></p>\n\n<ul>\n\t<li><strong>Space Chart:</strong> A visual representation of data using symbols or icons to depict information, often used for geographical or spatial data.</li>\n\t<li><strong>Line Chart:</strong> A chart that uses lines to connect data points, showing trends and changes over time or across categories.</li>\n\t<li><strong>Bar Chart:</strong> A chart that uses rectangular bars to represent data, comparing values across different categories.</li>\n\t<li><strong>Pie Chart:</strong> A circular chart divided into slices, each representing a proportion of a whole.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 23, "si": 0, "text": "Which of the following does <strong>NOT</strong> appear as a part of the &#39;Clipboard&#39; command group under the Home menu in recent versions of MS Word, such as Word 2016?", "comp": "", "opts": ["Format Painter", "Paste", "Cut", "Show / Hide"], "cidx": 3, "sol": "<ul>\n\t<li>Among the options, only\u00a0<u><span style=\"font-weight: 700;\">Show / Hide</span></u>\u00a0does NOT appear\u00a0as a part of the 'Clipboard' command group under the Home menu in recent versions of MS Word, such as Word 2016.</li>\n\t<li><span style=\"color: rgb(33, 37, 41);\">The home tab in MS Word gives you access to the most commonly used commands and is displayed by default when you open an instance of Word.</span></li>\n\t<li>The clipboard group is present on the far left of the Home Tab.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 24, "si": 0, "text": "In MS Excel 365 , which of the following keyboard shortcuts will open the &lsquo;Open&rsquo; dialog box, where you can navigate to the location of a spreadsheet file and open it?", "comp": "", "opts": ["Alt + O&nbsp;", "Shift + Alt + O&nbsp;", "Ctrl + O&nbsp;", "Ctrl + Shift + O"], "cidx": 2, "sol": "<p>The correct answer is <u><strong>Ctrl + O</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /> <strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong> </span></p>\n\n<ul>\n\t<li>In MS Excel 365, pressing <strong>Ctrl + O</strong> will open the &#39;Open&#39; dialog box.\n\n\t<ul>\n\t\t<li>This dialog box allows you to navigate to the location of a spreadsheet file on your computer or network and open it.</li>\n\t\t<li>The shortcut is a quick way to access the &#39;Open&#39; function without using the mouse.</li>\n\t\t<li>It is part of a set of standard keyboard shortcuts that are consistent across many Microsoft Office applications.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /> <strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong> </span></p>\n\n<ul>\n\t<li>Other common keyboard shortcuts in MS Excel include:\n\t<ul>\n\t\t<li><strong>Ctrl + N</strong> to create a new workbook.</li>\n\t\t<li><strong>Ctrl + S</strong> to save the current workbook.</li>\n\t\t<li><strong>Ctrl + P</strong> to open the &#39;Print&#39; dialog box.</li>\n\t</ul>\n\t</li>\n\t<li>Using keyboard shortcuts can significantly increase efficiency and productivity by minimizing the need to switch between the keyboard and mouse.</li>\n\t<li>These shortcuts are especially useful for users who work extensively with spreadsheets and need to perform repetitive tasks quickly.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 25, "si": 0, "text": "_________ is used to describe the page direction in which the contents of the page are to be displayed or printed in MS Word 365.", "comp": "", "opts": ["Columns", "Page margin&nbsp;", "Page orientation", "Page size"], "cidx": 2, "sol": "<p>The correct answer is&nbsp;<u><strong>Page orientation</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Page orientation</strong> in MS Word 365 determines the direction in which a document is displayed or printed.</li>\n\t<li>There are two types of page orientations: <strong>Portrait</strong> and <strong>Landscape</strong>.</li>\n\t<li><strong>Portrait orientation</strong> is taller than it is wide, commonly used for letters and documents.</li>\n\t<li><strong>Landscape orientation</strong> is wider than it is tall, often used for spreadsheets and presentations.</li>\n\t<li>You can change the page orientation by navigating to the <strong>Layout</strong> tab and selecting the desired option.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Page Margin</strong>:\n\n\t<ul>\n\t\t<li>The blank space around the edges of the page, which can be adjusted to make room for headers, footers, and binding.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Page Size</strong>:\n\t<ul>\n\t\t<li>Refers to the dimensions of the paper being used, such as A4, Letter, Legal, etc.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Columns</strong>:\n\t<ul>\n\t\t<li>Used to split text into multiple vertical sections, often used in newspapers and magazines.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Header and Footer</strong>:\n\t<ul>\n\t\t<li>Sections at the top and bottom of the page where you can add text or graphics that will appear on every page, such as page numbers, titles, or dates.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 26, "si": 0, "text": "Which of the following statements about MS Word table is <strong>FALSE</strong>?", "comp": "", "opts": ["Two or more consecutive cells of a column can be merged.", "Two or more consecutive cells of a row can be merged.", "Alternate cells of a row or column cannot be merged.", "The first and last cells of a table can be merged."], "cidx": 3, "sol": "<p><u><span style=\"font-weight: 700;\">The first and last cells of a table that can be merged</span></u>\u00a0is\u00a0<span style=\"font-weight: 700;\">NOT</span>\u00a0correct.</p>\n\n<ul>\n\t<li><span style=\"color: rgb(64, 64, 64);\"><span style=\"font-weight: 700;\">Merging cells</span>\u00a0in a table combines two or more adjacent cells in a word table.</span></li>\n\t<li>They can be adjacent cells in a<span style=\"font-weight: 700;\">\u00a0row or column.</span></li>\n\t<li><span style=\"color: rgb(64, 64, 64);\">Combining cells can<span style=\"font-weight: 700;\">\u00a0increase the size</span>\u00a0of the cell.</span></li>\n\t<li>The first and last cells of a table\u00a0<span style=\"font-weight: 700;\">can not be merged.</span></li>\n\t<li>You can only merge two or more consecutive rows or two adjacent columns.\n\t<ul>\n\t\t<li>Two or more consecutive cells of a<span style=\"font-weight: 700;\">\u00a0column</span>\u00a0can be merged.</li>\n\t\t<li>Two or more consecutive cells of a\u00a0<span style=\"font-weight: 700;\">row</span>\u00a0can be merged.</li>\n\t</ul>\n\t</li>\n\t<li>Alternate cells of a row or column<span style=\"font-weight: 700;\">\u00a0cannot be merged.</span></li>\n\t<li>For merging two cells first\u00a0select the cells you want to merge.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 27, "si": 0, "text": "By default how many worksheets are there in an MS-Excel workbook2007?", "comp": "", "opts": ["1", "4", "2", "3"], "cidx": 3, "sol": "<ul>\n\t<li>When we open an\u00a0<span style=\"font-weight: 700;\">Excel workbook,</span>\u00a0there are three sheets by default, and the default name on the tabs are\u00a0<span style=\"font-weight: 700;\">Sheet1</span>,\u00a0<span style=\"font-weight: 700;\">Sheet2</span>, and\u00a0<span style=\"font-weight: 700;\">Sheet3</span>.</li>\n\t<li>These are not very informative names.</li>\n\t<li><span style=\"font-weight: 700;\">Excel 2007\u00a0</span>allows us to create a meaningful name for each worksheet in a workbook so we can quickly locate information.</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 28, "si": 0, "text": "In MS Word, which option allows you to align text in a way that it appears vertically at the bottom of a cell or text box?", "comp": "", "opts": ["Center Alignment", "Bottom Alignment", "Justify Alignment", "Distributed Alignment<span style=\"display: none;\">&nbsp;</span>"], "cidx": 1, "sol": "Bottom Alignment in MS Word allows you to align text so that it appears vertically at the bottom of a cell or text box. This is useful when you want the text to start from the bottom edge, leaving space above it. To apply this, select the cell or text box, go to the \"Layout\" or \"Table Tools Layout\" tab, and choose \"Bottom Align\" from the \"Alignment\" group. MS Word also offers other vertical alignment options like Top and Center Alignment, as well as horizontal alignment options like Left, Center, Right, and Justify, accessible from the \"Home\" tab or \"Table Tools Layout\" tab.", "pos": 0, "neg": 0}, {"n": 29, "si": 0, "text": "In MS Excel 365 which of the following is an example of absolute reference pointing to cell A1 in MS Excel?", "comp": "", "opts": ["$A$1&nbsp;", "A1", "@A1&nbsp;", "1A"], "cidx": 0, "sol": "<p>The correct answer is <u><strong>$A$1</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>In MS Excel, an <strong>absolute reference</strong> is a reference that remains constant, even if the formula is copied to another cell.</li>\n\t<li>The <strong>syntax for an absolute reference</strong> includes a dollar sign ($) before the column letter and row number, such as <strong>$A$1</strong>.</li>\n\t<li><strong>$A$1</strong> refers to cell A1 and will not change when copied or filled to other cells.</li>\n\t<li>Absolute references are useful when you want to maintain the reference to a specific cell in formulas, despite changes in the location of the formula.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Relative References</strong>\n\n\t<ul>\n\t\t<li>Relative references change when a formula is copied to another cell. For example, a reference to cell A1 changes to B1 when copied one cell to the right.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Mixed References</strong>\n\t<ul>\n\t\t<li>Mixed references contain a dollar sign either before the column letter or the row number, but not both. For example, $A1 or A$1.</li>\n\t\t<li>Mixed references are partially fixed and partially relative.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Creating Absolute References</strong>\n\t<ul>\n\t\t<li>To create an absolute reference in a formula, press F4 after selecting the cell reference in the formula.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Use Cases</strong>\n\t<ul>\n\t\t<li>Absolute references are commonly used in financial modeling, data analysis, and any scenario requiring consistent reference points in calculations.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 30, "si": 0, "text": "What is the category of software that enables word processing, database management, graphic manipulation and spreadsheet creation?&nbsp;", "comp": "", "opts": ["Structure", "Application", "Framework", "System"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong>Application</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Application:</strong>\n\n\t<ul>\n\t\t<li>This refers to the specific software program itself.</li>\n\t\t<li>For example, Microsoft Word is an application for word processing, Microsoft Excel is an application for spreadsheet creation, and Adobe Photoshop is an application for graphic manipulation.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Structure</strong>:\n\n\t<ul>\n\t\t<li>This refers to the underlying organization and design of the software.</li>\n\t\t<li>It encompasses how the different components of the application interact, such as the user interface, data storage, and processing logic.</li>\n\t\t<li>.A well-structured application is typically more efficient, reliable, and easier to maintain.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Framework: </strong>\n\t<ul>\n\t\t<li>This is a set of pre-built code libraries and tools that provide a foundation for developers to build applications more quickly and efficiently.</li>\n\t\t<li>Frameworks often include features like user interface components, data handling routines, and security measures.</li>\n\t</ul>\n\t</li>\n\t<li><strong>System:</strong>\n\t<ul>\n\t\t<li>This refers to the entire software ecosystem, including the operating system, hardware, and other software components that the application interacts with.</li>\n\t\t<li>For example, a word processing application relies on the operating system to manage hardware resources, and it may interact with other applications like a printer driver.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 31, "si": 0, "text": "<p>Which of the given options best matches the items of LIST-1 with the items of LIST-2 with reference to editing cells in a spreadsheet?</p>\n\n<p>LIST-1 LIST-2</p>\n\n<p>(i) Enter (a) moves you to the next cell to the right</p>\n\n<p>(ii) Shift + tab (b) moves you to the next cell down</p>\n\n<p>(iii) Tab (c) moves you in the direction of the arrow</p>\n\n<p>(iv) Arrow key (d) moves you to the next cell to the left</p>\n", "comp": "", "opts": ["(i) - b, (ii) - a, (iii) - d, (iv) - c", "(i) - b, (ii) - d, (iii) - a, (iv) - c", "(i) - c, (ii) - d, (iii) - a, (iv) - b", "(i) - a, (ii) - d, (iii) - b, (iv) - c"], "cidx": 1, "sol": "<p><span style=\"font-weight: 700;\">To move to the next cell of the arrow direction key -\u00a0Press Arrow Keys.</span></p>\n\n<p><span style=\"font-weight: 700;\">To move to the next cell -\u00a0Press Enter</span></p>\n\n<p><span style=\"font-weight: 700;\">To move to the next cell to the right -\u00a0Press TAB.</span></p>\n\n<p><span style=\"font-weight: 700;\">To move to the next cell to the left -\u00a0Press SHIFT + TAB.</span></p>\n", "pos": 0, "neg": 0}, {"n": 32, "si": 0, "text": "Which of the following is the default alignment of text in a Microsoft Word document?&nbsp;", "comp": "", "opts": ["Justified&nbsp;", "Right&nbsp;", "Left&nbsp;", "Center"], "cidx": 2, "sol": "The default alignment of text in a Microsoft Word document is left alignment. In this format, the text is aligned with the left margin, creating a clean and organized appearance with a ragged right edge. This alignment is commonly used for most documents as it ensures readability and consistency. Microsoft Word also offers other alignment options like right, center, and justified, which users can select based on their formatting needs. Understanding and utilizing these alignment options is crucial for producing professional and well-structured documents.", "pos": 0, "neg": 0}, {"n": 33, "si": 0, "text": "What action should be taken to add a new row or column in a spreadsheet?", "comp": "", "opts": ["Right-click on an existing row or column and select &lsquo;Insert&rsquo; from the context menu.&nbsp;", "Use the &lsquo;Find and Replace&rsquo; function to search for a specific cell, and then insert a new row or column using the results.&nbsp;", "Highlight a range of cells, right-click, and choose &lsquo;Delete&rsquo; from the context menu to create space for the new row or column.&nbsp;", "Select a row or column, press the &lsquo;Ctrl + X&rsquo; keyboard shortcut to cut it, and then press &lsquo;Ctrl + V&rsquo; to paste it in the desired location.&nbsp;"], "cidx": 0, "sol": "<p>The correct answer is <u><strong>Right-click on an existing row or column and select &#39;Insert&#39; from the context menu.</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>Right-clicking on an existing row or column opens the context menu which contains the &#39;Insert&#39; option.</li>\n\t<li>The &#39;Insert&#39; option allows you to add a new row above the selected row or a new column to the left of the selected column.</li>\n\t<li>This action is straightforward and is supported in most spreadsheet applications such as Microsoft Excel, Google Sheets, and LibreOffice Calc.</li>\n\t<li>Inserting new rows or columns helps in organizing data more effectively and can be used to expand the existing dataset.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Spreadsheet Basics:</strong>\n\n\t<ul>\n\t\t<li>A spreadsheet is a digital document that arranges data in rows and columns, making it easier to organize, analyze, and visualize data.</li>\n\t\t<li>Common spreadsheet applications include Microsoft Excel, Google Sheets, and LibreOffice Calc.</li>\n\t\t<li>Spreadsheets are widely used for financial calculations, data analysis, project management, and more.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Context Menu:</strong>\n\t<ul>\n\t\t<li>The context menu is a pop-up menu that appears when you right-click on a specific area or object within a software application.</li>\n\t\t<li>It provides quick access to commonly used commands relevant to the selected area or object.</li>\n\t\t<li>In the context of spreadsheets, the context menu typically includes options like &#39;Insert&#39;, &#39;Delete&#39;, &#39;Cut&#39;, &#39;Copy&#39;, &#39;Paste&#39;, and formatting options.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Inserting Rows and Columns:</strong>\n\t<ul>\n\t\t<li>Inserting a row adds a new row above the selected row, shifting the existing rows down.</li>\n\t\t<li>Inserting a column adds a new column to the left of the selected column, shifting the existing columns to the right.</li>\n\t\t<li>This feature is useful for adding new data without overwriting existing data in the spreadsheet.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Keyboard Shortcuts:</strong>\n\t<ul>\n\t\t<li>Keyboard shortcuts can streamline your workflow and increase productivity. For example, in Excel, you can use &#39;Ctrl + Shift + +&#39; to quickly insert a new row or column.</li>\n\t\t<li>Learning and utilizing keyboard shortcuts can save time and improve efficiency when working with spreadsheets.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 34, "si": 0, "text": "In MS Excel 365, Which feature in Microsoft Excel is used to visually represent data through graphical representation?&nbsp;", "comp": "", "opts": ["Macro", "Charts", "Formula", "PivotTable"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>Charts</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li><strong>Charts in Microsoft Excel</strong> are used to visually represent data, making it easier to understand and analyze.</li>\n\t<li>They help in identifying patterns, trends, and relationships within the data.</li>\n\t<li>Excel provides various types of charts like bar charts, line charts, pie charts, and more to suit different types of data analysis needs.</li>\n\t<li>Charts can be customized with different colors, labels, and other formatting options to enhance readability and presentation.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Macro</strong>\n\n\t<ul>\n\t\t<li>A macro in Excel is a set of instructions that can be used to automate repetitive tasks.</li>\n\t\t<li>Macros are written in VBA (Visual Basic for Applications) and can significantly improve productivity.</li>\n\t\t<li>They are useful for tasks like data entry, formatting, and complex calculations.</li>\n\t\t<li>Macros can be recorded and edited to tailor them to specific needs.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Formula</strong>\n\t<ul>\n\t\t<li>A formula in Excel is an expression that operates on values in a range of cells or a single cell.</li>\n\t\t<li>Common formulas include SUM, AVERAGE, and VLOOKUP.</li>\n\t\t<li>Formulas are used for calculations, data analysis, and decision-making processes.</li>\n\t\t<li>They can be simple or complex, involving multiple functions and references.</li>\n\t</ul>\n\t</li>\n\t<li><strong>PivotTable</strong>\n\t<ul>\n\t\t<li>A PivotTable is a powerful tool in Excel used for data summarization, analysis, and exploration.</li>\n\t\t<li>It allows users to quickly summarize large amounts of data and reorganize it for better insights.</li>\n\t\t<li>PivotTables can group, filter, and sort data, making it easier to find patterns and trends.</li>\n\t\t<li>They are highly customizable and interactive, providing a dynamic way to explore data.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 35, "si": 0, "text": "Which of the following view options in MS Word shows the contents of a document as bulleted points?", "comp": "", "opts": ["Draft", "Web Layout", "Outline", "Print Layout<span style=\"display: none;\">&nbsp;</span>"], "cidx": 2, "sol": "<p><u><span style=\"font-weight: 700;\">Outline.</span></u></p>\n\n<ul>\n\t<li>The\u00a0<span style=\"font-weight: 700;\">outline</span>\u00a0option in MS Word shows the contents of a document as bulleted points.</li>\n\t<li>Outline in Word means seeing just the headings of a long document.</li>\n\t<li>Outline view makes viewing complex documents easier by\u00a0<span style=\"font-weight: 700;\">breaking the headings and paragraphs</span>\u00a0into collapsible sections</li>\n\t<li>The outline option is present under the\u00a0<span style=\"font-weight: 700;\">view tab.</span></li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 36, "si": 0, "text": "Which of the following statements related to addressing of cells in MS Excel is INCORRECT?", "comp": "", "opts": ["The cell in the second column and third row is B3.", "Columns in MS Excel are identified by numbers.&nbsp;", "The cell in the first column and first row is A1.", "Rows in MS Excel are identified by numbers.&nbsp;"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>Columns in MS Excel are identified by numbers.</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>In MS Excel, columns are identified by letters (A, B, C, etc.).</li>\n\t<li>The cell in the second column and third row is B3.</li>\n\t<li>The cell in the first column and first row is A1.</li>\n\t<li>Rows in MS Excel are identified by numbers.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Cell Addressing in MS Excel:</strong>\n\n\t<ul>\n\t\t<li>Each cell in Excel is identified by a unique cell reference, formed by combining the column letter and the row number.</li>\n\t\t<li>For example, the cell in the second column and third row is referred to as B3.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Columns and Rows:</strong>\n\t<ul>\n\t\t<li>Columns in Excel are labeled with letters starting from A, B, C, and so on.</li>\n\t\t<li>Once the letters are exhausted, columns are identified as AA, AB, AC, and so on.</li>\n\t\t<li>Rows in Excel are labeled with numbers starting from 1, 2, 3, and so on.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Understanding Cell References:</strong>\n\t<ul>\n\t\t<li>A cell reference is a combination of the column letter and the row number, such as A1, B2, C3, etc.</li>\n\t\t<li>It is used to identify and access the value or formula contained in a specific cell.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Importance of Correct Cell Addressing:</strong>\n\t<ul>\n\t\t<li>Accurate cell referencing is crucial for performing calculations, creating formulas, and analyzing data effectively.</li>\n\t\t<li>Incorrect cell addressing can lead to errors in data analysis and results.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 37, "si": 0, "text": "In PPT What method can be used to move among slides if your hands are already on the keyboard?", "comp": "", "opts": ["Pressing the Esc key to exit the presentation", "Scrolling with the mouse wheel", "Clicking on the slide thumbnail in the Slides tab", "Using the keyboard directional keys"], "cidx": 3, "sol": "Using the keyboard directional keys (left and right arrows) allows for quick navigation between slides without removing your hands from the keyboard. This method is convenient for presenters, helping maintain focus during presentations. The up and down arrows enable controlled transitions. This technique is applicable across various presentation software, including Microsoft PowerPoint. Other methods like pressing the Esc key, scrolling with the mouse wheel, or clicking on slide thumbnails are less effective during live presentations and often interrupt the flow or require switching to a mouse, which is not ideal for seamless presentation management.", "pos": 0, "neg": 0}, {"n": 38, "si": 0, "text": "Which of the following keys is used to select a range of continuous cells in an MS Excel worksheet?", "comp": "", "opts": ["Alt", "Shift", "Tab", "Ctrl"], "cidx": 1, "sol": "<p>Shift\u00a0key\u00a0is used to select a range of continuous cells in an MS Excel worksheet.</p>\n\n<p>To select a range of cells, use the shift\u00a0key in combination with any of the movement keys.</p>\n\n<p><span style=\"color: rgb(0, 0, 0);  \">You can also click and hold the left mouse button and drag through the range you want to select.</span></p>\n\n<p>To select all the cells to the right of the active cell in the row, hold down Shift, Cntrl\u00a0and press the Right Arrow Key.</p>\n\n<p>To select all the cells below the active cell in the worksheet, hold down Shift, Cntrl and press the Down Arrow key.</p>\n\n<p>To select a single cell simply\u00a0left-click on it.</p>\n\n<p>Tab key is\u00a0used to\u00a0moves the cell cursor from one column to next from the left to\u00a0right in the MS Excel worksheet.</p>\n", "pos": 0, "neg": 0}, {"n": 39, "si": 0, "text": "Where can you find the options &lsquo;From Beginning&rsquo; and &lsquo;From Current Slide&rsquo; to run a slide show in MS PowerPoint?", "comp": "", "opts": ["Home tab", "Slide Sorter tab", "Slide Show tab", "View tab"], "cidx": 2, "sol": "In MS PowerPoint, the options 'From Beginning' and 'From Current Slide' for running a slide show are located in the Slide Show tab. This tab offers various tools to start and customize slide show presentations, helping presenters control and manage their settings effectively. It includes features such as setting up slide show timings and rehearsing presentations. The Home tab contains basic formatting tools and is not related to slide shows. The Slide Sorter tab does not exist; slide sorting is done in the View tab. The View tab changes presentation views but does not include slide show options.", "pos": 0, "neg": 0}, {"n": 40, "si": 0, "text": "Consider a formula &quot;= $D$3 + $C$5&quot; in cell B4. If cell B4 is copied and pasted into F10, then what will be the formula in cell F10?", "comp": "", "opts": ["=&nbsp; $E$3 + $D$5", "= $D$3 + $C$5", "= $E$4 + $D$6", "= $D$4 + $C$6"], "cidx": 1, "sol": "<p>If cell B4 is copied and pasted into F10, then the formula in cell F10\u00a0<span style=\"font-weight: 700;\"><u>= $D$3 + $C$5</u>.</span></p>\n\n<ul>\n\t<li><span style=\"font-weight: 700;\">Ctrl + C\u00a0</span>is used to copy the selected content to the clipboard.</li>\n\t<li><span style=\"font-weight: 700;\">Ctrl + V\u00a0</span>is used to paste\u00a0the selected\u00a0content to the clipboard</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 41, "si": 0, "text": "Which of the following shortcut key is used to display the font dialog box in MS-Word 365?", "comp": "", "opts": ["Ctrl + F", "Ctrl + D", "Alt + D", "Alt+F"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong>Ctrl + D</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">\n\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Use the&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">Ctrl+D</span>&nbsp;keyboard shortcut to quickly summon the&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">Font dialog box.</span></li>\n\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">The best benefit of the&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">Font dialog box</span>&nbsp;is its&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">Preview window</span>, at the bottom.</li>\n\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\"><span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">This window</span>&nbsp;shows you exactly how your&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">choices affect text</span>&nbsp;in your document.</li>\n\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\"><span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">The Font names +Body and +Heading refer</span>&nbsp;to the fonts&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">selected&nbsp;</span>by the&nbsp;<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; font-weight: bolder;\">current document theme</span>.</li>\n</ul>\n\n<p style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\"><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">\n\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Important Shortcut keys:\n\t<ul style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">\n\t\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Cut the selected content to the Clipboard - Ctrl+X</li>\n\t\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Copy the selected content to the Clipboard -<span style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; white-space: pre;\"> </span>Ctrl+C</li>\n\t\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Paste the contents of the Clipboard -Ctrl+V</li>\n\t\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Increase the font size by 1 point.- Ctrl+]</li>\n\t\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Center the text -&nbsp;Ctrl+E.</li>\n\t\t<li style=\"--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / .5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ;\">Align the text to the left -&nbsp;Ctrl+L</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 42, "si": 0, "text": "Which function key displays the Print Preview window in Microsoft Office?", "comp": "", "opts": ["Alt + Ctrl + F2", "Alt + F2", "Shift + F2", "Ctrl + F2"], "cidx": 3, "sol": "In Microsoft Office, pressing Ctrl + F2 opens the Print Preview window. This shortcut provides a quick way to see how your document will look when printed, allowing you to make necessary adjustments before finalizing the print.", "pos": 0, "neg": 0}, {"n": 43, "si": 0, "text": "Which of the following charts is used in MS Excel 365 to display data as a series of points connected by straight lines and is used for showing trends over time?", "comp": "", "opts": ["Line chart&nbsp;", "Bar chart", "Pie chart&nbsp;", "Column chart"], "cidx": 0, "sol": "<p>The correct answer is <u><strong>Line chart</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>A line chart displays information as a series of data points called &#39;markers&#39; connected by straight line segments.</li>\n\t<li>It is particularly useful for showing trends over time, such as monthly sales data or stock prices.</li>\n\t<li>In MS Excel 365, line charts can be created by selecting the data range and choosing the &#39;Insert Line Chart&#39; option.</li>\n\t<li>Line charts help in visualizing the data trend, making it easier to identify any patterns or anomalies over a period.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Bar Chart</strong>\n\n\t<ul>\n\t\t<li>A bar chart represents data with rectangular bars with lengths proportional to the values they represent.</li>\n\t\t<li>Bar charts are used for comparing different categories of data.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Pie Chart</strong>\n\t<ul>\n\t\t<li>A pie chart is a circular statistical graphic divided into slices to illustrate numerical proportions.</li>\n\t\t<li>Each slice of the pie chart represents a category&#39;s contribution to the whole.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Column Chart</strong>\n\t<ul>\n\t\t<li>Similar to bar charts, column charts use vertical bars to display data.</li>\n\t\t<li>They are often used for comparing data across different categories over time.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Trend Analysis</strong>\n\t<ul>\n\t\t<li>Trend analysis is a technique used to analyze the current trend of data to predict future movements.</li>\n\t\t<li>Line charts are particularly useful for trend analysis as they show data points over a specific period.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 44, "si": 0, "text": "In a worksheet, there is a list of student scores in a column. To count the number of students who scored above 90, which Excel 365 function should be used?", "comp": "", "opts": ["COUNT", "COUNTIF", "COUNTBLANK", "COUNTA"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>COUNTIF</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li data-end=\"155\" data-start=\"0\">To <strong data-end=\"55\" data-start=\"3\">count the number of students who scored above 90</strong> in a worksheet, the appropriate Excel 365 function to use is <strong data-end=\"128\" data-start=\"117\">COUNTIF</strong>. Here&#39;s how you can do it:</li>\n\t<li data-end=\"343\" data-start=\"157\">\n\t<p data-end=\"181\" data-start=\"160\"><strong data-end=\"180\" data-start=\"160\">COUNTIF Function</strong>:</p>\n\n\t<ul data-end=\"343\" data-start=\"185\">\n\t\t<li data-end=\"343\" data-start=\"185\">\n\t\t<p data-end=\"343\" data-start=\"187\">The <strong data-end=\"202\" data-start=\"191\">COUNTIF</strong> function counts the number of cells that meet a specific condition. In this case, the condition is that the score should be greater than 90.</p>\n\t\t</li>\n\t</ul>\n\t</li>\n\t<li data-end=\"454\" data-start=\"345\">\n\t<p data-end=\"370\" data-start=\"348\"><strong data-end=\"369\" data-start=\"348\">Formula Structure</strong>:</p>\n\n\t<ul data-end=\"454\" data-start=\"374\">\n\t\t<li data-end=\"454\" data-start=\"374\">\n\t\t<p data-end=\"454\" data-start=\"376\">The syntax for the <strong data-end=\"406\" data-start=\"395\">COUNTIF</strong> function is:</p>\n\n\t\t<p data-end=\"454\" data-start=\"376\"><code data-end=\"454\" data-start=\"427\">=COUNTIF(range, criteria)</code></p>\n\t\t</li>\n\t</ul>\n\t</li>\n\t<li data-end=\"626\" data-start=\"456\">\n\t<p data-end=\"469\" data-start=\"459\"><strong data-end=\"468\" data-start=\"459\">Steps</strong>:</p>\n\n\t<ul data-end=\"626\" data-start=\"473\">\n\t\t<li data-end=\"548\" data-start=\"473\">\n\t\t<p data-end=\"548\" data-start=\"475\"><strong data-end=\"484\" data-start=\"475\">range</strong>: Select the range of cells where the student scores are listed.</p>\n\t\t</li>\n\t\t<li data-end=\"626\" data-start=\"552\">\n\t\t<p data-end=\"626\" data-start=\"554\"><strong data-end=\"566\" data-start=\"554\">criteria</strong>: Use the condition <code data-end=\"593\" data-start=\"586\">&quot;&gt;90&quot;</code> to count scores greater than 90.</p>\n\t\t</li>\n\t</ul>\n\t</li>\n\t<li data-end=\"864\" data-start=\"628\">\n\t<p data-end=\"643\" data-start=\"631\"><strong data-end=\"642\" data-start=\"631\">Example</strong>:</p>\n\n\t<ul data-end=\"864\" data-start=\"647\">\n\t\t<li data-end=\"778\" data-start=\"647\">\n\t\t<p data-end=\"726\" data-start=\"649\">If the student scores are in column B (from B2 to B20), the formula would be:</p>\n\n\t\t<div class=\"contain-inline-size rounded-md border-[0.5px] border-token-border-medium relative bg-token-sidebar-surface-primary\">\n\t\t<div class=\"overflow-y-auto p-4\" dir=\"ltr\"><code class=\"!whitespace-pre language-excel\">=COUNTIF(B2:B20, &quot;&gt;90&quot;) </code></div>\n\t\t</div>\n\t\t</li>\n\t\t<li data-end=\"864\" data-start=\"782\">\n\t\t<p data-end=\"864\" data-start=\"784\">This formula will return the number of students who have scores greater than 90.</p>\n\n\t\t<ul data-end=\"1099\" data-start=\"888\">\n\t\t\t<li data-end=\"951\" data-start=\"888\">\n\t\t\t<p data-end=\"951\" data-start=\"890\"><strong data-end=\"901\" data-start=\"890\">COUNTIF</strong> is useful for single-condition counting in Excel.</p>\n\t\t\t</li>\n\t\t\t<li data-end=\"1099\" data-start=\"955\">\n\t\t\t<p data-end=\"1099\" data-start=\"957\">You can modify the condition (criteria) for different ranges, such as counting scores less than a certain value or equal to a specific number.</p>\n\t\t\t</li>\n\t\t</ul>\n\t\t</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 45, "si": 0, "text": "In MS Excel 365, which of the following functions can be used to display the formula applied to a specific cell?", "comp": "", "opts": ["=RETFORMULA(Cell_Reference)&nbsp;", "=FORMULATEXT(Cell_Reference)", "=CALLFORMULA(Cell_Reference)&nbsp;", "=TEXTFORMULA(Cell_Reference)&nbsp;"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>=FORMULATEXT(Cell_Reference).</strong></u></p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The <strong>=FORMULATEXT(Cell_Reference)</strong> error in MS Excel generally occurs when there is an issue with the <strong>function name or syntax</strong>.</li>\n\t<li>It can arise if you <strong>attempt to display a formula</strong> or use a function that is incorrectly spelled or not recognized by Excel.</li>\n\t<li>To display the formula applied to a specific cell, use the <strong>FORMULATEXT()</strong> function, but ensure it is supported in your version of Excel.</li>\n\t<li>The <strong>#NAME?</strong> error also highlights that Excel cannot identify text used in a formula, typically due to missing quotes or undefined names.</li>\n\t<li>This error serves as a diagnostic tool in Excel to identify and correct issues in functions or formulas.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>FORMULATEXT() Function:</strong>\n\n\t<ul>\n\t\t<li>This function returns the formula as a text string from a referenced cell.</li>\n\t\t<li>Syntax: <code>FORMULATEXT(reference)</code>.</li>\n\t\t<li>It is especially useful for auditing and reviewing formulas in large spreadsheets.</li>\n\t\t<li>Available in Excel 2013 and later versions, including MS Excel 365.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Common Excel Errors:</strong>\n\t<ul>\n\t\t<li><strong>#DIV/0!</strong>: Occurs when dividing by zero or an empty cell.</li>\n\t\t<li><strong>#VALUE!</strong>: Indicates incorrect data types in a formula.</li>\n\t\t<li><strong>#REF!</strong>: Arises when a cell reference is invalid.</li>\n\t\t<li><strong>#NAME?</strong>: Triggered by unrecognized text in a formula.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Excel Formula Auditing Tools:</strong>\n\t<ul>\n\t\t<li>Excel provides tools like <strong>Trace Precedents</strong> and <strong>Trace Dependents</strong> to track formula references.</li>\n\t\t<li>The <strong>Evaluate Formula</strong> feature helps debug complex formulas step-by-step.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Excel Function Best Practices:</strong>\n\t<ul>\n\t\t<li>Always ensure correct syntax and spelling of functions.</li>\n\t\t<li>Use <strong>Name Manager</strong> to define and manage named ranges or constants.</li>\n\t\t<li>Double-check quotes and parentheses in formulas to avoid errors.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 46, "si": 0, "text": "In MS Word, which feature allows you to create different headers and footers for odd and even pages in a document?", "comp": "", "opts": ["Section Breaks", "Different First Page", "Page Breaks", "Different Odd &amp; Even Pages"], "cidx": 3, "sol": "The \"Different Odd & Even Pages\" feature in MS Word allows the creation of distinct headers and footers for odd and even pages, useful for documents like books, reports, and academic papers. To enable it, go to the Header & Footer Tools Design tab and check the Different Odd & Even Pages box, then customize each separately. Additionally, MS Word offers \"Different First Page\" for unique headers/footers on the first page and section breaks for different headers/footers in different sections, enhancing document professionalism and readability.", "pos": 0, "neg": 0}, {"n": 47, "si": 0, "text": "Which is the correct syntax for writing SUMIF() function in MS Excel?", "comp": "", "opts": ["SUMIF(criteria)&nbsp;", "SUMIF(range, criteria, [sum_range])", "SUMIF(range, criteria)", "SUMIF(range)"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>SUMIF(range, criteria, [sum_range])</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The SUMIF function in MS Excel is used to sum the values in a range that meet specific criteria.</li>\n\t<li>The correct syntax is <strong>SUMIF(range, criteria, [sum_range])</strong>.</li>\n\t<li>The &quot;range&quot; is the group of cells you want to apply the criteria to.</li>\n\t<li>The &quot;criteria&quot; defines the condition that must be met for the cells to be included in the sum.</li>\n\t<li>The &quot;[sum_range]&quot; is optional and specifies the actual cells to add if different from the range.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>SUMIFS Function</strong>\n\n\t<ul>\n\t\t<li>The SUMIFS function allows for multiple criteria to be applied, using the syntax <strong>SUMIFS(sum_range, criteria_range1, criteria1, [criteria_range2, criteria2], ...)</strong>.</li>\n\t\t<li>It sums the values in a range that meet multiple criteria.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Example Usage</strong>\n\t<ul>\n\t\t<li>To sum the values in cells A1 to A10 that are greater than 100, you would use: <strong>=SUMIF(A1:A10, &quot;&gt;100&quot;)</strong>.</li>\n\t\t<li>To sum the values in cells B1 to B10 where the corresponding cells in A1 to A10 are &quot;Apples&quot;, you would use: <strong>=SUMIF(A1:A10, &quot;Apples&quot;, B1:B10)</strong>.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Common Errors</strong>\n\t<ul>\n\t\t<li>#VALUE! error occurs if the criteria argument is not valid.</li>\n\t\t<li>If sum_range and range are not the same size, SUMIF will return incorrect results.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Comparison with SUM Function</strong>\n\t<ul>\n\t\t<li>The SUM function simply adds up values without any criteria, using the syntax <strong>SUM(number1, [number2], ...)</strong>.</li>\n\t\t<li>SUMIF provides conditional summing capabilities, making it more versatile for data analysis.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 48, "si": 0, "text": "In MS Excel 365 which of the following is one of the options to edit cells in MS-Excel?", "comp": "", "opts": ["Edit bar", "Formula bar", "Space bar", "Ribbon"], "cidx": 1, "sol": "<p>The correct answer is&nbsp;<u><strong>Formula bar</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Key Points</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Formula Bar</strong>\n\n\t<ul>\n\t\t<li>The Formula Bar is a crucial element located above the worksheet grid.</li>\n\t\t<li>It displays the contents of the currently selected cell.</li>\n\t\t<li>If the cell contains a value, the value is shown.</li>\n\t\t<li>If the cell contains a formula, the formula itself is displayed in the Formula Bar.</li>\n\t\t<li>This allows you to:</li>\n\t\t<li>View and edit existing formulas: You can directly modify the formula within the Formula Bar to change its behavior.</li>\n\t\t<li>Enter new formulas: Type the equal sign (=) to start a new formula, then enter the formula components.</li>\n\t\t<li>Debug formulas: Identify and correct errors in your formulas by examining them in the Formula Bar.</li>\n\t</ul>\n\t</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Edit Bar</strong>\n\n\t<ul>\n\t\t<li>In Excel, the term &quot;Edit Bar&quot; is not a standard component. It&#39;s possible you might be referring to a similar concept within older versions or specific customizations.</li>\n\t\t<li>However, the core editing functionality in Excel is primarily handled within the Formula Bar itself.</li>\n\t\t<li>You can directly edit cell contents, including formulas, within the Formula Bar.</li>\n\t\t<li>Features like auto-complete and function suggestions assist in editing and formula entry.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Space Bar</strong>\n\t<ul>\n\t\t<li>While not a dedicated feature like the Formula Bar, the Space Bar plays a crucial role in Excel.</li>\n\t\t<li>It&#39;s used for:</li>\n\t\t<li>Moving between cells: Pressing the Space Bar moves the active cell selection to the right.</li>\n\t\t<li>Entering spaces within a cell: When entering text data, the Space Bar inserts spaces between characters.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Ribbon</strong>\n\t<ul>\n\t\t<li>The Ribbon is the primary user interface in modern versions of Excel.</li>\n\t\t<li>It&#39;s a collection of tabs (Home, Insert, Data, etc.) containing groups of related commands and tools.</li>\n\t\t<li>These commands and tools are used for:</li>\n\t\t<li>Formatting cells: Changing fonts, colors, alignment, etc.</li>\n\t\t<li>Inserting data: Adding charts, images, shapes, etc.</li>\n\t\t<li>Working with data: Sorting, filtering, analyzing data with formulas and functions.</li>\n\t\t<li>Customizing the Excel environment: Adjusting settings, creating macros, etc.</li>\n\t\t<li>The Ribbon provides easy access to a wide range of Excel&#39;s features, making it a central hub for user interaction.</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 49, "si": 0, "text": "Which function is used to display the current date in MS-excel 365?", "comp": "", "opts": ["DATE()", "TODAY()", "MONTH()", "DAY()"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>TODAY()</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The <strong>TODAY()</strong> function in MS Excel returns the current date.</li>\n\t<li>It is a volatile function, meaning it updates itself every time the worksheet is recalculated.</li>\n\t<li>The <strong>TODAY()</strong> function does not take any arguments.</li>\n\t<li>It is useful for creating dynamic date-based calculations, such as calculating age or the number of days between dates.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>DATE()</strong>\n\n\t<ul>\n\t\t<li>The DATE() function is used to create a date from individual year, month, and day components.</li>\n\t\t<li>Syntax: DATE(year, month, day)</li>\n\t\t<li>It is useful for combining date parts stored in separate cells into a single date.</li>\n\t</ul>\n\t</li>\n\t<li><strong>MONTH()</strong>\n\t<ul>\n\t\t<li>The MONTH() function returns the month portion of a date as a number (1-12).</li>\n\t\t<li>Syntax: MONTH(serial_number)</li>\n\t\t<li>It is typically used to extract the month from a given date.</li>\n\t</ul>\n\t</li>\n\t<li><strong>DAY()</strong>\n\t<ul>\n\t\t<li>The DAY() function returns the day portion of a date as a number (1-31).</li>\n\t\t<li>Syntax: DAY(serial_number)</li>\n\t\t<li>It is useful for extracting the day from a given date.</li>\n\t</ul>\n\t</li>\n\t<li><strong>Additional Functions</strong>\n\t<ul>\n\t\t<li><strong>NOW()</strong>: Returns the current date and time. Syntax: NOW()</li>\n\t\t<li><strong>YEAR()</strong>: Returns the year portion of a date. Syntax: YEAR(serial_number)</li>\n\t\t<li><strong>DATEDIF()</strong>: Calculates the difference between two dates. Syntax: DATEDIF(start_date, end_date, unit)</li>\n\t</ul>\n\t</li>\n</ul>\n", "pos": 0, "neg": 0}, {"n": 50, "si": 0, "text": "Which of the following is used to move a selected text from one place to another in MS word 365?", "comp": "", "opts": ["Cut-Copy", "Cut-Paste", "Copy-Copy", "Copy-Paste"], "cidx": 1, "sol": "<p>The correct answer is <u><strong>Cut-Paste</strong></u>.</p>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/key-point-image.png\" width=\"26px\" /><u style=\"font-size: 21px; font-weight: bolder; font-family: var(--bs-body-font-family); text-align: var(--bs-body-text-align);\">Key Points</u></span></p>\n\n<ul>\n\t<li>The &quot;Cut&quot; command in MS Word removes the selected text from its original location.</li>\n\t<li>The &quot;Paste&quot; command inserts the cut text into the new location where the cursor is placed.</li>\n\t<li>This functionality helps in efficiently moving text within a document without the need for retyping.</li>\n\t<li>Keyboard shortcuts for Cut (Ctrl + X) and Paste (Ctrl + V) can speed up the process.</li>\n\t<li>Cut-Paste ensures that the text is moved rather than duplicated, unlike Copy-Paste which duplicates the text.</li>\n</ul>\n\n<p><span style=\"display: flex;gap: 6px;align-items: center;\"><img height=\"26px\" src=\"//cdn.testbook.com/resources/lms_creative_elements/additional-information-image.png\" width=\"26px\" /><strong><span style=\"vertical-align: middle;font-size: 21px;\"><u>Additional Information</u></span></strong></span></p>\n\n<ul>\n\t<li><strong>Clipboard</strong>: The temporary storage area where cut or copied text is stored before it is pasted.</li>\n\t<li><strong>Undo and Redo</strong>: Commands that allow users to revert or reapply the last action, enhancing editing flexibility.</li>\n\t<li><strong>Drag and Drop</strong>: An alternative method to move text by dragging it with the mouse to a new location.</li>\n\t<li><strong>Formatting Preservation</strong>: When text is cut and pasted, MS Word retains the formatting of the text.</li>\n\t<li><strong>Context Menu</strong>: Right-clicking on selected text provides options for Cut, Copy, and Paste among other editing commands.</li>\n</ul>\n", "pos": 0, "neg": 0}];
+var SEC_NAMES  = ["Test"];
+var SEC_QNUMS  = [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]];
+var ANALYSIS   = {};   // attempt/rank stats from Testbook (may be empty)
+var TOTAL      = 50;
+var NUM_SECS   = SEC_NAMES.length;
+
+// State
+var answers   = {};  // qnum(str) -> optIdx or -1
+var marked    = {};  // qnum(str) -> bool
+var qTimes    = {};  // qnum(str) -> seconds spent
+var qVisited  = {};  // qnum(str) -> bool
+var submitted = false;
+var reattempt = true;
+
+var curQ   = 1;       // 1-based
+var curSec = 0;
+var curMode = 'attempt'; // 'attempt' | 'view'
+var solFilter = -1;   // -1 = all sections, else section index
+
+// timer
+var timerSecs = 126000;
+var timerInterval = null;
+var paused = false;
+var qStartTime = Date.now();
+
+// init
+Object.keys(Q_MAP).forEach(function(k){
+  answers[k] = -1;
+  marked[k]  = false;
+  qTimes[k]  = 0;
+  qVisited[k] = false;
+});
+
+// ══════════════════════════════════════════
+// BUILD DOM
+// ══════════════════════════════════════════
+function buildAll() {
+  buildSecTabs();
+  buildAttemptCards();
+  buildSidePanel();
+  buildSolQRow();
+  buildSolSecCircles();
+  buildViewCards();
+  goToQ(1);
+  startTimer();
+}
+
+function buildSecTabs() {
+  var t = document.getElementById('sec-tabs');
+  t.innerHTML = '';
+  SEC_NAMES.forEach(function(name, i) {
+    var b = document.createElement('button');
+    b.className = 'stab' + (i===0?' active':'');
+    b.textContent = name;
+    b.onclick = function(){ secTabClick(i); };
+    t.appendChild(b);
+  });
+}
+
+function buildAttemptCards() {
+  var body = document.getElementById('attempt-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'qcard-attempt';
+    div.id = 'acard' + q.n;
+    div.innerHTML = buildAttemptCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildAttemptCard(q) {
+  var pos = q.pos || ''; var neg = q.neg || '';
+  var badges = '';
+  if(pos) badges += '<span class="badge-pos">+ ' + pos + '</span>';
+  if(neg) badges += '<span class="badge-neg">- ' + neg + '</span>';
+
+  var comp = q.comp ? '<div class="passage">' + q.comp + '</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    opts += '<div class="opt-a" id="opta_' + q.n + '_' + oi + '" onclick="selectOpt(' + q.n + ',' + oi + ')">' +
+      '<span class="opt-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-body-a">' + ot + '</span>' +
+      '<span class="opt-icon" id="oicon_' + q.n + '_' + oi + '"></span>' +
+      '</div>';
+  });
+
+  return '<div class="qrow-hdr">' +
+    '<div class="qnum-circle" id="qnc' + q.n + '">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="qt' + q.n + '">00:00</span></div>' +
+    badges +
+    '<div class="qicons">' +
+      '<button class="qicon-btn" id="qibookmark' + q.n + '" onclick="toggleBookmark(' + q.n + ',event)" title="Bookmark">🔖</button>' +
+      '<button class="qicon-btn" id="qistar' + q.n + '" onclick="toggleStar(' + q.n + ',event)" title="Mark">☆</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="qcard-body-a">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap">' + opts + '</div>' +
+    '</div>';
+}
+
+function buildSidePanel() {
+  var sp = document.getElementById('sp-sections');
+  sp.innerHTML = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var block = document.createElement('div');
+    block.className = 'sp-sec-block';
+    block.id = 'spblock' + si;
+    block.innerHTML =
+      '<div class="sp-sec-hdr" onclick="toggleSpSec(' + si + ')">' +
+        '<span>' + name + '</span>' +
+        '<span id="sp-arrow' + si + '">∧</span>' +
+      '</div>' +
+      '<div class="sp-sec-stats" id="spstats' + si + '"></div>' +
+      '<div class="sp-pal" id="sppal' + si + '"></div>';
+    sp.appendChild(block);
+  });
+  // Build palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'pal-btn';
+    btn.id = 'palbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ goToQ(q.n); closePanel(); };
+    document.getElementById('sppal' + q.si).appendChild(btn);
+  });
+  refreshPalette();
+}
+
+function buildSolQRow() {
+  var row = document.getElementById('sol-qrow');
+  row.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-qbtn';
+    btn.id = 'sqbtn' + q.n;
+    btn.textContent = q.n;
+    btn.onclick = function(){ solScrollToQ(q.n); };
+    row.appendChild(btn);
+  });
+}
+
+function buildViewCards() {
+  var body = document.getElementById('view-body');
+  body.innerHTML = '';
+  Q_DATA.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'sol-card';
+    div.id = 'vcard' + q.n;
+    div.innerHTML = buildViewCard(q);
+    body.appendChild(div);
+  });
+}
+
+function buildViewCard(q) {
+  var pos = q.pos||''; var neg = q.neg||'';
+  var badges = '';
+
+  var myAns   = answers[String(q.n)];
+  var correct = q.cidx;
+
+  // Status badge — show whether the user skipped / got it right / got it wrong
+  if(myAns === -1 || myAns === undefined) {
+    badges += '<span class="status-badge status-skip">⏭ Skipped</span>';
+  } else if(myAns === correct) {
+    badges += '<span class="status-badge status-ok">✓ Correct</span>';
+  } else {
+    badges += '<span class="status-badge status-err">✗ Incorrect</span>';
+  }
+
+  if(pos) badges += '<span class="badge-pos">+ '+pos+'</span>';
+  if(neg) badges += '<span class="badge-neg">- '+neg+'</span>';
+
+  var comp = q.comp ? '<div class="passage">'+q.comp+'</div>' : '';
+
+  var opts = '';
+  q.opts.forEach(function(ot, oi) {
+    var cls = 'opt-sol';
+    var icon = '';
+    var youLabel = '';
+    var isCorrect = (oi === correct);
+    var isMine    = (myAns !== -1 && myAns !== undefined && oi === myAns);
+
+    if(isCorrect) {
+      cls += ' sol-correct';
+      icon = '<span class="opt-sol-icon" style="color:#4caf50;font-size:18px">✓</span>';
+    }
+    if(isMine && !isCorrect) {
+      cls += ' sol-wrong-sel';
+      icon = '<span class="opt-sol-icon" style="color:#f44336;font-size:18px">✗</span>';
+    }
+    if(isMine) {
+      youLabel = '<span class="your-answer-badge">Your Answer</span>';
+    }
+
+    opts += '<div class="' + cls + '">' +
+      '<span class="opt-sol-num">' + (oi+1) + '.</span>' +
+      '<span class="opt-sol-body">' + ot + '</span>' +
+      youLabel +
+      icon +
+      '</div>';
+  });
+
+  var correctAns = correct + 1;
+  var pctHtml = '<span class="correct-pct">-- got this right</span>';
+
+  var solHtml = '';
+  if(q.sol) {
+    solHtml = '<div class="solution-section">' +
+      '<div class="sol-heading">Solution</div>' +
+      '<div class="sol-text">' + q.sol + '</div>' +
+      '</div>';
+  }
+
+  var timeSpent = qTimes[String(q.n)] || 0;
+  var ts = timeSpent < 3 ? timeSpent + 'sec' : Math.floor(timeSpent/60) ? Math.floor(timeSpent/60)+'min '+( timeSpent%60)+'sec' : timeSpent+'sec';
+
+  return '<div class="sol-card-hdr">' +
+    '<div class="qnum-circle ' + stateClass(q.n) + '" style="width:28px;height:28px;font-size:12px">' + q.n + '</div>' +
+    '<div class="qtimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + ts + '</div>' +
+    badges +
+    '</div>' +
+    '<div class="sol-card-body">' +
+    comp +
+    '<div class="qtext">' + q.text + '</div>' +
+    '<div class="opts-wrap" style="margin-top:14px">' + opts + '</div>' +
+    '<div class="correct-bar"><span>Correct Answers Is: ' + correctAns + '</span>' + pctHtml + '</div>' +
+    solHtml +
+    '</div>';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToQ(n) {
+  // save time for previous question
+  if(curQ && curMode === 'attempt') {
+    qTimes[String(curQ)] += Math.round((Date.now() - qStartTime) / 1000);
+    qVisited[String(curQ)] = true;
+    // update per-question timer display
+    var ts = qTimes[String(curQ)];
+    var el = document.getElementById('qt' + curQ);
+    if(el) el.textContent = (ts >= 60 ? Math.floor(ts/60)+':'+pad(ts%60) : '00:'+pad(ts));
+  }
+  // hide previous card
+  var prevCard = document.getElementById('acard' + curQ);
+  if(prevCard) prevCard.classList.remove('active-card');
+
+  qStartTime = Date.now();
+  curQ = n;
+  qVisited[String(n)] = true;
+
+  var q = Q_DATA[n-1];
+  curSec = q.si;
+  // update sec tabs
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i === curSec);
+  });
+  // show current card only
+  var card = document.getElementById('acard' + n);
+  if(card) {
+    card.classList.add('active-card');
+    window.scrollTo(0, 0);
+  }
+  refreshPalette();
+}
+
+function secTabClick(si) {
+  curSec = si;
+  document.querySelectorAll('.stab').forEach(function(b,i){
+    b.classList.toggle('active', i===si);
+  });
+  // go to first q of this section
+  if(SEC_QNUMS[si] && SEC_QNUMS[si].length) goToQ(SEC_QNUMS[si][0]);
+}
+
+function saveAndNext() {
+  // just advance
+  nextQ();
+}
+
+function markAndNext() {
+  marked[String(curQ)] = true;
+  refreshPalette();
+  updateQCircle(curQ);
+  nextQ();
+}
+
+function clearCurrent() {
+  answers[String(curQ)] = -1;
+  marked[String(curQ)] = false;
+  renderOpts(curQ);
+  updateQCircle(curQ);
+  refreshPalette();
+}
+
+function nextQ() {
+  if(curQ < TOTAL) goToQ(curQ + 1);
+}
+
+function prevQ() {
+  if(curQ > 1) goToQ(curQ - 1);
+}
+
+// ══════════════════════════════════════════
+// OPTION SELECT
+// ══════════════════════════════════════════
+function selectOpt(qn, oi) {
+  if(submitted && !reattempt) return;
+  if(submitted && reattempt) {
+    // reattempt mode: allow re-selection
+    answers[String(qn)] = oi;
+    renderOpts(qn);
+    return;
+  }
+  // toggle
+  if(answers[String(qn)] === oi) {
+    answers[String(qn)] = -1;
+  } else {
+    answers[String(qn)] = oi;
+  }
+  renderOpts(qn);
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+function renderOpts(qn) {
+  var q = Q_DATA[qn-1];
+  q.opts.forEach(function(_, oi) {
+    var el = document.getElementById('opta_' + qn + '_' + oi);
+    if(!el) return;
+    el.classList.remove('sel','reveal-correct','reveal-wrong');
+    var icon = document.getElementById('oicon_' + qn + '_' + oi);
+    if(icon) icon.innerHTML = '';
+
+    if(submitted && !reattempt) {
+      if(oi === q.cidx) {
+        el.classList.add('reveal-correct');
+        if(icon) icon.innerHTML = '<span style="color:#4caf50;font-size:18px">✓</span>';
+      } else if(oi === answers[String(qn)] && answers[String(qn)] !== q.cidx) {
+        el.classList.add('reveal-wrong');
+        if(icon) icon.innerHTML = '<span style="color:#f44336">✗ <span style="color:#aaa;font-size:12px">○</span> <span style="color:#4caf50">↺</span></span>';
+      }
+    } else if(answers[String(qn)] === oi) {
+      el.classList.add('sel');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// Q CIRCLE / PALETTE
+// ══════════════════════════════════════════
+function stateClass(qn) {
+  if(submitted) {
+    var ans = answers[String(qn)];
+    var correct = Q_MAP[String(qn)].correct;
+    if(ans === -1) return '';
+    return ans === correct ? 'correct' : 'wrong';
+  }
+  if(marked[String(qn)]) return 'marked';
+  if(answers[String(qn)] !== -1) return 'attempted';
+  return '';
+}
+
+function updateQCircle(qn) {
+  var el = document.getElementById('qnc' + qn);
+  if(!el) return;
+  el.className = 'qnum-circle ' + stateClass(qn);
+}
+
+function refreshPalette() {
+  // update palette buttons
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('palbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'pal-btn';
+    var sc = stateClass(q.n);
+    if(sc === 'attempted') btn.classList.add('p-attempted');
+    else if(sc === 'marked') btn.classList.add('p-marked');
+    else if(sc === 'correct') btn.classList.add('p-correct');
+    else if(sc === 'wrong') btn.classList.add('p-wrong');
+    if(q.n === curQ) btn.classList.add('p-current');
+  });
+  // update section stats
+  SEC_NAMES.forEach(function(_, si) {
+    var qns = SEC_QNUMS[si];
+    var att=0, mrk=0, unatt=0, unseen=0;
+    qns.forEach(function(qn) {
+      if(marked[String(qn)]) mrk++;
+      else if(answers[String(qn)] !== -1) att++;
+      else if(!qVisited[String(qn)]) unseen++;
+      else unatt++;
+    });
+    var el = document.getElementById('spstats' + si);
+    if(el) el.innerHTML =
+      '<div class="sp-stat"><div class="dot" style="background:#f44336"></div><span style="color:#f44336">★ '+mrk+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#2196f3"></div><span>'+att+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="background:#bbb"></div><span>'+unatt+'</span></div>' +
+      '<div class="sp-stat"><div class="dot" style="border:1.5px solid #ccc;background:#fff"></div><span>'+unseen+'</span></div>';
+  });
+  // update q circles for all
+  Q_DATA.forEach(function(q) { updateQCircle(q.n); });
+}
+
+function toggleSpSec(si) {
+  var pal = document.getElementById('sppal'+si);
+  var arrow = document.getElementById('sp-arrow'+si);
+  if(!pal) return;
+  if(pal.style.display === 'none') {
+    pal.style.display = '';
+    if(arrow) arrow.textContent = '∧';
+  } else {
+    pal.style.display = 'none';
+    if(arrow) arrow.textContent = '∨';
+  }
+}
+
+// ══════════════════════════════════════════
+// BOOKMARK / STAR
+// ══════════════════════════════════════════
+function toggleBookmark(qn, e) {
+  e.stopPropagation();
+  var btn = document.getElementById('qibookmark'+qn);
+  if(!btn) return;
+  btn.classList.toggle('bookmark-on');
+}
+function toggleStar(qn, e) {
+  e.stopPropagation();
+  marked[String(qn)] = !marked[String(qn)];
+  var btn = document.getElementById('qistar'+qn);
+  if(btn) { btn.classList.toggle('star-on', marked[String(qn)]); btn.textContent = marked[String(qn)] ? '★' : '☆'; }
+  updateQCircle(qn);
+  refreshPalette();
+}
+
+// ══════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════
+function openPanel() {
+  document.getElementById('side-overlay').style.display = 'block';
+  document.getElementById('side-panel').classList.add('open');
+  refreshPalette();
+}
+function closePanel() {
+  document.getElementById('side-overlay').style.display = 'none';
+  document.getElementById('side-panel').classList.remove('open');
+}
+function spTab(i) {
+  document.querySelectorAll('.sp-tab').forEach(function(b,idx){ b.classList.toggle('active',idx===i); });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+function openSubmitModal() {
+  var att=0, mrk=0;
+  Object.keys(answers).forEach(function(k){ if(answers[k]!==-1) att++; if(marked[k]) mrk++; });
+  document.getElementById('modal-attempted').textContent    = att;
+  document.getElementById('modal-unattempted').textContent  = TOTAL - att;
+  document.getElementById('modal-marked').textContent       = mrk;
+  document.getElementById('modal-timer').textContent        = document.getElementById('hdr-timer').textContent;
+  document.getElementById('submit-modal').classList.add('show');
+  closePanel();
+}
+function closeSubmitModal() {
+  document.getElementById('submit-modal').classList.remove('show');
+}
+function confirmSubmit() {
+  closeSubmitModal();
+  submitted = true;
+  clearInterval(timerInterval);
+  // reveal all opts in attempt mode
+  Q_DATA.forEach(function(q) { renderOpts(q.n); });
+  refreshPalette();
+  // show analysis page
+  showAnalysis();
+}
+
+function normCdf(z) {
+  // Abramowitz-Stegun approximation of the standard normal CDF.
+  var t = 1/(1+0.2316419*Math.abs(z));
+  var d = 0.3989423*Math.exp(-z*z/2);
+  var p = d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));
+  return z>0 ? 1-p : p;
+}
+
+function renderRank(score, maxScore) {
+  var card = document.getElementById('ana-rank-card');
+  var A = ANALYSIS || {};
+  var attempts = A.attempts || 0;
+  var maxMarks = A.maxMarks || maxScore || 0;
+  var topper   = A.topperMarks || 0;
+  var avg      = A.avgMarks;
+  // Nothing useful to estimate from → hide the card entirely.
+  if(!attempts && (avg===undefined||avg===null) && !topper) { card.style.display='none'; return; }
+  // Approximate the score distribution as a normal curve.
+  if(avg===undefined||avg===null) avg = topper ? topper*0.45 : maxMarks*0.35;
+  var std = (topper && topper>avg) ? (topper-avg)/3 : Math.max(1,(maxMarks||1)*0.15);
+  if(std<=0) std = Math.max(1,(maxMarks||1)*0.15);
+  var z = (score-avg)/std;
+  var pct = normCdf(z)*100;
+  if(topper && score>=topper) pct = 99.9;
+  pct = Math.max(0.1, Math.min(99.9, pct));
+  document.getElementById('ana-percentile').textContent = pct.toFixed(1) + ' %ile';
+  if(attempts) {
+    var rank = Math.max(1, Math.round((1-pct/100)*attempts));
+    if(topper && score>=topper) rank = 1;
+    document.getElementById('ana-rank').textContent = '#' + rank.toLocaleString();
+    document.getElementById('ana-attempts').textContent = attempts.toLocaleString();
+  } else {
+    document.getElementById('ana-rank').textContent = '-';
+    document.getElementById('ana-attempts').textContent = '-';
+  }
+  var meta = [];
+  if(topper) meta.push('Topper: ' + (topper%1===0?topper:topper.toFixed(1)) + ' / ' + maxMarks);
+  if(A.avgMarks!==undefined && A.avgMarks!==null) meta.push('Avg: ' + (A.avgMarks%1===0?A.avgMarks:A.avgMarks.toFixed(1)));
+  if(A.cutoff) meta.push('Cutoff: ' + A.cutoff);
+  meta.push('Estimated from Testbook attempt data — actual rank may vary.');
+  document.getElementById('ana-rank-meta').innerHTML = meta.join(' &nbsp;•&nbsp; ');
+  card.style.display = 'block';
+}
+
+function showAnalysis() {
+  var totalCorrect=0, totalWrong=0, totalSkip=0;
+  var totalScore=0, maxScore=0;
+  Q_DATA.forEach(function(q) {
+    var ans = answers[String(q.n)];
+    var pos = Q_MAP[String(q.n)].pos || 1;
+    var neg = Q_MAP[String(q.n)].neg || 0;
+    maxScore += pos;
+    if(ans === -1) { totalSkip++; }
+    else if(ans === q.cidx) { totalCorrect++; totalScore += pos; }
+    else { totalWrong++; totalScore -= neg; }
+  });
+  var attempted = totalCorrect + totalWrong;
+  var accuracy = attempted > 0 ? Math.round((totalCorrect / attempted) * 100) : 0;
+
+  document.getElementById('ana-score').textContent = totalScore % 1 === 0 ? totalScore : totalScore.toFixed(2);
+  document.getElementById('ana-max').textContent = maxScore % 1 === 0 ? maxScore : maxScore.toFixed(2);
+  document.getElementById('ana-accuracy').textContent = accuracy + ' %';
+  document.getElementById('ana-attempted').textContent = attempted + '/' + TOTAL;
+  document.getElementById('ana-correct-count').textContent = totalCorrect;
+  document.getElementById('ana-wrong-count').textContent = totalWrong;
+
+  // Estimated rank & percentile (only when Testbook attempt stats exist)
+  renderRank(totalScore, maxScore);
+
+  // Question analysis grid
+  document.getElementById('ana-grid').innerHTML =
+    '<div class="analysis-grid-item ag-correct"><div class="analysis-grid-val">' + totalCorrect + '</div><div class="analysis-grid-label">Correct</div></div>' +
+    '<div class="analysis-grid-item ag-wrong"><div class="analysis-grid-val">' + totalWrong + '</div><div class="analysis-grid-label">Incorrect</div></div>' +
+    '<div class="analysis-grid-item ag-skip"><div class="analysis-grid-val">' + totalSkip + '</div><div class="analysis-grid-label">Unattempted</div></div>' +
+    '<div class="analysis-grid-item ag-total"><div class="analysis-grid-val">' + TOTAL + '</div><div class="analysis-grid-label">Total Questions</div></div>';
+
+  // Section-wise breakdown
+  var secHtml = '';
+  SEC_NAMES.forEach(function(name, si) {
+    var qns = SEC_QNUMS[si];
+    var sc=0, wc=0, sk=0, secScore=0, secMax=0;
+    qns.forEach(function(qn) {
+      var ans = answers[String(qn)];
+      var pos = Q_MAP[String(qn)].pos || 1;
+      var neg = Q_MAP[String(qn)].neg || 0;
+      secMax += pos;
+      if(ans === -1) sk++;
+      else if(ans === Q_MAP[String(qn)].correct) { sc++; secScore += pos; }
+      else { wc++; secScore -= neg; }
+    });
+    var pct = secMax > 0 ? Math.round(Math.max(0, secScore) / secMax * 100) : 0;
+    secHtml += '<div class="analysis-bar-row">' +
+      '<span class="analysis-bar-label">' + name + '</span>' +
+      '<div class="analysis-bar-track"><div class="analysis-bar-fill" style="width:' + pct + '%;background:' + (pct >= 50 ? '#4caf50' : '#f44336') + '"></div></div>' +
+      '<span class="analysis-bar-val">' + (secScore % 1 === 0 ? secScore : secScore.toFixed(1)) + '/' + secMax + '</span>' +
+      '</div>';
+  });
+  document.getElementById('ana-sections').innerHTML = secHtml;
+
+  switchMode('analysis');
+}
+
+// ══════════════════════════════════════════
+// MODE SWITCH
+// ══════════════════════════════════════════
+function switchMode(mode) {
+  curMode = mode;
+  var isAttempt = mode === 'attempt';
+  var isView = mode === 'view';
+  var isAnalysis = mode === 'analysis';
+  document.getElementById('hdr-attempt').style.display = isAttempt ? 'flex' : 'none';
+  document.getElementById('hdr-view').style.display    = isView ? 'flex' : 'none';
+  document.getElementById('mode-attempt').style.display = isAttempt ? 'block' : 'none';
+  document.getElementById('mode-view').style.display    = isView ? 'block' : 'none';
+  document.getElementById('mode-analysis').style.display = isAnalysis ? 'block' : 'none';
+  document.getElementById('attempt-bar').style.display  = isAttempt ? 'flex' : 'none';
+  document.getElementById('sol-bar').style.display      = isView ? 'flex' : 'none';
+  document.getElementById('sec-tabs').style.display     = isAnalysis ? 'none' : 'flex';
+  if(isView) {
+    // rebuild view cards with current answer state
+    buildViewCards();
+    refreshSolQRow();
+    solScrollToQ(1);
+  }
+}
+
+function refreshSolQRow() {
+  Q_DATA.forEach(function(q) {
+    var btn = document.getElementById('sqbtn' + q.n);
+    if(!btn) return;
+    btn.className = 'sol-qbtn';
+    var ans = answers[String(q.n)];
+    if(ans === -1) btn.classList.add('sq-skip');
+    else if(ans === q.cidx) btn.classList.add('sq-correct');
+    else btn.classList.add('sq-wrong');
+  });
+}
+
+function solScrollToQ(n) {
+  curQ = n;
+  var card = document.getElementById('vcard' + n);
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function solNav(dir) {
+  var newQ = curQ + dir;
+  if(newQ < 1) newQ = 1;
+  if(newQ > TOTAL) newQ = TOTAL;
+  solScrollToQ(newQ);
+  document.getElementById('btn-prev').disabled = (newQ <= 1);
+  document.getElementById('btn-next').disabled = (newQ >= TOTAL);
+}
+
+function buildSolSecCircles() {
+  var container = document.getElementById('sol-sec-circles');
+  if(!container) return;
+  container.innerHTML = '';
+  var allBtn = document.createElement('button');
+  allBtn.className = 'sol-sec-circle sec-all sec-active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = function() { filterSolSec(-1); };
+  allBtn.id = 'sol-sec-all';
+  container.appendChild(allBtn);
+  SEC_NAMES.forEach(function(name, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sol-sec-circle';
+    btn.textContent = (i + 1);
+    btn.title = name;
+    btn.id = 'sol-sec-btn' + i;
+    btn.onclick = function() { filterSolSec(i); };
+    container.appendChild(btn);
+  });
+}
+
+function filterSolSec(si) {
+  solFilter = si;
+  var allBtn = document.getElementById('sol-sec-all');
+  if(allBtn) allBtn.classList.toggle('sec-active', si === -1);
+  SEC_NAMES.forEach(function(_, i) {
+    var btn = document.getElementById('sol-sec-btn' + i);
+    if(btn) btn.classList.toggle('sec-active', i === si);
+  });
+  Q_DATA.forEach(function(q) {
+    var card = document.getElementById('vcard' + q.n);
+    var qbtn = document.getElementById('sqbtn' + q.n);
+    var show = (si === -1 || q.si === si);
+    if(card) card.style.display = show ? 'block' : 'none';
+    if(qbtn) qbtn.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// REATTEMPT TOGGLE
+// ══════════════════════════════════════════
+function toggleReattempt() {
+  reattempt = !reattempt;
+  var track = document.getElementById('rt-track');
+  var thumb = document.getElementById('rt-thumb');
+  track.classList.toggle('off', !reattempt);
+  thumb.classList.toggle('on', reattempt);
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(function() {
+    if(paused) return;
+    timerSecs--;
+    if(timerSecs <= 0) { timerSecs = 0; clearInterval(timerInterval); confirmSubmit(); }
+    var h = Math.floor(timerSecs/3600);
+    var m = Math.floor((timerSecs%3600)/60);
+    var s = timerSecs%60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    document.getElementById('hdr-timer').textContent = str;
+    document.getElementById('modal-timer').textContent = str;
+  }, 1000);
+}
+function pad(n){ return n<10?'0'+n:n; }
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+}
+
+// ══════════════════════════════════════════
+// OFFLINE SUPPORT
+// ══════════════════════════════════════════
+if(!navigator.onLine) {
+  document.getElementById('offline-notice').style.display = 'block';
+}
+window.addEventListener('offline', function() {
+  document.getElementById('offline-notice').style.display = 'block';
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-notice').style.display = 'none';
+});
+document.addEventListener('error', function(e) {
+  if(e.target.tagName === 'IMG' && !e.target.dataset.fixed) {
+    e.target.dataset.fixed = '1';
+    var src = e.target.getAttribute('src') || '';
+    // Fix protocol-relative URL
+    if(src.indexOf('//') === 0) {
+      e.target.src = 'https:' + src;
+      return;
+    }
+    // Show small placeholder only after fixing attempt
+    e.target.style.cssText = 'max-width:100%;min-height:40px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px';
+    e.target.alt = navigator.onLine ? 'Image failed to load' : 'Offline - image unavailable';
+  }
+}, true);
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,2631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocks Wallah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #5649c0;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --light: #f8f9fa;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --light-gray: #dfe6e9;
+            --card-bg: #ffffff;
+            --body-bg: #f5f6fa;
+            --header-bg: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            --footer-bg: #ffffff;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --box-shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 80px; /* Space for fixed navigation */
+            overflow-x: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--header-bg);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .header-brand i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .control-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .control-btn.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .timer-display {
+            background: rgba(0,0,0,0.2);
+            border-radius: 18px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .timer-display i {
+            margin-right: 6px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 60px;
+            padding: 16px;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--box-shadow-sm);
+            border: none;
+            transition: var(--transition);
+        }
+        
+        .question-counter {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .option-item {
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+            .question-text {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%;
+    }
+
+    .question-text img,
+    .option-label img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 8px 0;
+        border-radius: 8px;
+    }
+
+    .option-label {
+        overflow: hidden;
+    }
+
+    .question-card {
+        overflow: hidden;
+    }
+        
+        .option-label {
+            display: block;
+            padding: 14px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .option-input:checked + .option-label {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+        
+        .option-input:checked + .option-label::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        /* When reviewing answers */
+        .review-mode .option-input:checked + .option-label.correct {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.correct::after {
+            background: var(--success);
+        }
+        
+        .review-mode .option-input:checked + .option-label.incorrect {
+            border-color: var(--danger);
+            background: rgba(214, 48, 49, 0.05);
+            box-shadow: 0 0 0 1px var(--danger);
+        }
+        
+        .MathJax, .mjx-chtml {
+            overflow-x: auto;
+            max-width: 100%;
+            display: inline-block;
+        }
+
+        
+        .review-mode .option-input:checked + .option-label.incorrect::after {
+            background: var(--danger);
+        }
+        
+        .review-mode .option-label.correct-answer {
+            border-color: var(--success);
+            background: rgba(0, 184, 148, 0.05);
+            box-shadow: 0 0 0 1px var(--success);
+        }
+        
+        .review-mode .option-label.correct-answer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--success);
+        }
+        
+        .solution-container {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 12px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .solution-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        /* Question Navigation */
+        .question-nav {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            bottom: 80px;
+            width: 100%;
+            max-width: 320px;
+            background: var(--card-bg);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: var(--transition);
+            z-index: 900;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        
+        .question-nav.show {
+            transform: translateX(0);
+        }
+        
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .nav-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        .question-stats {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .stat-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .section-selector {
+            width: 100%;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 10px 16px;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            font-size: 0.9rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+        }
+        
+        .q-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            border: 1px solid var(--light-gray);
+            background: var(--card-bg);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .q-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .q-box.attempted {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .q-box.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        
+        .q-box.incorrect {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .q-box.current {
+            border: 2px solid var(--accent) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .q-box.unattempted {
+            background-color: var(--gray);
+            color: white;
+            border-color: var(--gray);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: var(--footer-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 800;
+        }
+        
+        .nav-btn {
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            transition: var(--transition);
+            gap: 8px;
+        }
+        
+        .nav-btn i {
+            font-size: 1rem;
+        }
+        
+        .nav-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .nav-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .nav-btn-outline:hover {
+            background: rgba(108, 92, 231, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* Overlay when nav is open */
+        .nav-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            background: rgba(0,0,0,0.5);
+            z-index: 800;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .nav-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Results Modal */
+        .results-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            padding: 16px;
+        }
+        
+        .results-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .results-card {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+        
+        .results-modal.show .results-card {
+            transform: translateY(0);
+        }
+        
+        .results-header {
+            background: var(--header-bg);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .results-title {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .results-body {
+            padding: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: var(--box-shadow-sm);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .results-footer {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        /* Responsive Adjustments */
+        @media (min-width: 992px) {
+            .question-nav {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 320px;
+            }
+            
+            .nav-overlay {
+                display: none;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .question-grid {
+                grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+                gap: 6px;
+            }
+            
+            .q-box {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .option-label {
+                padding: 12px 14px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+            
+            .header-brand {
+                font-size: 1rem;
+            }
+            
+            .control-btn {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .timer-display {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            
+            .nav-btn {
+                height: 44px;
+                padding: 0 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="header-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Mocks Wallah</span>
+            </a>
+            
+            <div class="header-controls">
+                <!-- Timer -->
+                <div class="timer-display">
+                    <i class="far fa-clock"></i>
+                    <span id="timer-display">60:00</span>
+                </div>
+                
+                <!-- Language toggle -->
+                <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">
+                    <span id="lang-text">En</span>
+                </button>
+                
+                <!-- Submit button -->
+                <button class="control-btn" id="submit-btn" onclick="confirmSubmit()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                
+                <!-- Questions toggle for mobile -->
+                <button class="control-btn nav-toggle-btn" id="nav-toggle" onclick="toggleNav()">
+                    <i class="fas fa-th"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="main-content" id="main-content">
+        <div class="question-counter" id="question-counter">Question 1 of 100</div>
+        
+        <!-- Questions will be displayed here -->
+        <div id="questions-container"></div>
+    </main>
+    
+    <!-- Overlay for mobile nav -->
+    <div class="nav-overlay" id="nav-overlay" onclick="toggleNav(false)"></div>
+    
+    <!-- Question navigation sidebar -->
+    <aside class="question-nav" id="question-nav">
+        <div class="nav-header">
+            <h3 class="nav-title">Questions</h3>
+            <div class="question-stats">
+                <span class="stat-badge bg-primary" id="attempted-count">0</span>
+                <span class="stat-badge bg-gray" id="total-count">100</span>
+                <button class="control-btn d-lg-none" onclick="toggleNav(false)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Section selector -->
+        <select class="section-selector" id="section-selector" onchange="switchSection(this.value)">
+            <option value="all">All Sections</option>
+        </select>
+        
+        <!-- Question grid -->
+        <div class="question-grid" id="question-boxes"></div>
+    </aside>
+    
+    <!-- Bottom navigation for mobile -->
+    <nav class="bottom-nav d-lg-none">
+        <button class="nav-btn nav-btn-outline" onclick="prevQuestion()">
+            <i class="fas fa-chevron-left"></i>
+            <span>Previous</span>
+        </button>
+        <button class="nav-btn nav-btn-outline" onclick="nextQuestion()">
+            <span>Next</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </nav>
+    
+    <!-- Results modal -->
+    <div class="results-modal" id="results-modal">
+        <div class="results-card">
+            <div class="results-header">
+                <h3 class="results-title">Test Results</h3>
+            </div>
+            <div class="results-body">
+                <div class="stats-grid">
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark))">
+                        <div class="stat-value" id="score-value">0</div>
+                        <div class="stat-label">Score</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--success), #1b9aaa)">
+                        <div class="stat-value" id="correct-value">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--danger), var(--accent))">
+                        <div class="stat-value" id="incorrect-value">0</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, var(--gray), var(--dark))">
+                        <div class="stat-value" id="unattempted-value">0</div>
+                        <div class="stat-label">Unattempted</div>
+                    </div>
+                </div>
+            </div>
+            <div class="results-footer">
+                <button class="nav-btn nav-btn-primary" onclick="reviewTest()">
+                    <i class="fas fa-search me-1"></i>
+                    <span>Review Test</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Questions data
+        const questions = [];
+        const sections = {};
+        let currentLang = "en";
+        let currentQuestion = 0;
+        let answers = {};
+        let submitted = false;
+        let totalTime = 60 * 60;
+        
+        // Initialize the test
+        window.onload = function() {
+            initializeTest();
+            startTimer();
+            
+            // If on desktop, show the question navigation by default
+            if (window.innerWidth >= 992) {
+                document.getElementById('question-nav').classList.add('show');
+                document.getElementById('main-content').classList.add('with-nav');
+            }
+        };
+        
+        // Initialize test data
+        function initializeTest() {
+            // Add sections and questions
+            
+            sections["6"] = {
+                name: "Reasoning",
+                start: 0,
+                end: 23
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="6">Reasoning</option>`;
+            
+            sections["18"] = {
+                name: "General Awareness",
+                start: 24,
+                end: 48
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="18">General Awareness</option>`;
+            
+            sections["17"] = {
+                name: "Quantitative Aptitude",
+                start: 49,
+                end: 73
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="17">Quantitative Aptitude</option>`;
+            
+            sections["7"] = {
+                name: "English",
+                start: 74,
+                end: 98
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="7">English</option>`;
+            
+            sections["misc"] = {
+                name: "Miscellaneous",
+                start: 99,
+                end: 99
+            };
+            
+            document.getElementById('section-selector').innerHTML += 
+                `<option value="misc">Miscellaneous</option>`;
+            
+            
+                questions.push({
+                    id: "1",
+                    section: "6",
+                    question_en: "<p>1. Select the figure that can replace the question mark (?) in the following series.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358462926.png\" alt=\"rId5\" width=\"272\" height=\"77\"></p>",
+                    question_hi: "<p>1. उस आकृति का चयन कीजिए जो नीचे दी गयी श्रृंखला में प्रश्न चिन्ह ( ? ) के स्थान पर आ सकती है।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358462926.png\" alt=\"rId5\" width=\"272\" height=\"77\"></p>",
+                    options_en: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463063.png\" alt=\"rId6\" width=\"71\" height=\"71\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463220.png\" alt=\"rId7\" width=\"71\" height=\"71\"></p>", 
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463344.png\" alt=\"rId8\" width=\"73\" height=\"73\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463455.png\" alt=\"rId9\" width=\"73\" height=\"73\"></p>"],
+                    options_hi: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463063.png\" alt=\"rId6\" width=\"73\" height=\"73\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463220.png\" alt=\"rId7\" width=\"72\" height=\"72\"></p>",
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463344.png\" alt=\"rId8\" width=\"70\" height=\"70\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463455.png\" alt=\"rId9\" width=\"72\" height=\"72\"></p>"],
+                    solution_en: "<p>1.(c) The diagram given below depicts how all the signs in the question are moving:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463344.png\" alt=\"rId8\" width=\"72\" height=\"72\"></p>",
+                    solution_hi: "<p>1.(c) नीचे दिया गया चित्र दर्शाता है कि प्रश्न के सभी चिन्ह किस प्रकार गति कर रहे हैं:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463344.png\" alt=\"rId8\" width=\"75\" height=\"75\"></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "2",
+                    section: "6",
+                    question_en: "<p>2. Select the correct combination of mathematical signs to sequentially replace the * signs, to balance the following equation.<br>(14 * 9 * 6) * 15 * 8</p>",
+                    question_hi: "<p>2. निम्नलिखित समीकरण को संतुलित करने के लिए, * चिह्नों को क्रमिक रूप से बदलने के लिए गणितीय चिह्नों के सही संयोजन का चयन करें।<br>(14 * 9 * 6) * 15 * 8</p>",
+                    options_en: ["<p>&nbsp;-, &divide;, &times;, =</p>", "<p>&times;, =, +, -</p>", 
+                                "<p>&divide;, -, =, &times;</p>", "<p>&times;, -,&divide;, =</p>"],
+                    options_hi: ["<p>-, &divide;, &times;, =</p>", "<p>&times;, =, +, -</p>",
+                                "<p>&divide;, -, =, &times;</p>", "<p>&times;, -,&divide;, =</p>"],
+                    solution_en: "<p>2.(d) (14 * 9 * 6) * 15 * 8<br>By observing all the options, we find that &lsquo;<math display=\"inline\"><mo>&#215;</mo></math>, -, &divide;, =&rsquo; will be the correct mathematical combination to balance the given equation.<br><math display=\"inline\"><mo>&#8658;</mo></math>(14 &times; 9 - 6 ) &divide;15 = 8 <br>LHS<br><math display=\"inline\"><mo>&#8658;</mo></math>(14 &times; 9 - 6 ) &divide;15 &rArr;( 126 - 6 ) &divide;15<br><math display=\"inline\"><mo>&#8658;</mo></math>120 &divide; 15 &rArr; 8 = RHS</p>",
+                    solution_hi: "<p>2.(d) (14 * 9 * 6) * 15 * 8<br>सभी विकल्पों को देखने पर, हम पाते हैं कि दिए गए समीकरण को संतुलित करने के लिए \' <math display=\"inline\"><mo>&#215;</mo></math>, -,&divide; , =\' सही गणितीय संयोजन होगा।<br><math display=\"inline\"><mo>&#8658;</mo></math>(14 &times; 9 - 6 ) &divide;15 = 8 <br>LHS<br><math display=\"inline\"><mo>&#8658;</mo></math>(14 &times; 9 - 6 ) &divide;15 &rArr;( 126 - 6 ) &divide;15<br><math display=\"inline\"><mo>&#8658;</mo></math>120 &divide; 15 &rArr; 8 = RHS</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "3",
+                    section: "6",
+                    question_en: "<p>3. Select the letter-cluster that can replace the question mark(?) in the following series.<br>eBd , hXi , kTn , nPs , ?</p>",
+                    question_hi: "<p>3. उस अक्षर समूह का चयन कीजिए जो नीचे दी गयी श्रृंखला में प्रश्न चिन्ह ( ? ) के स्थान पर आ सकती है । <br>eBd , hXi , kTn , nPs , ?</p>",
+                    options_en: ["<p>Qlv</p>", "<p>pLw</p>", 
+                                "<p>qLx</p>", "<p>qKx</p>"],
+                    options_hi: ["<p>Qlv</p>", "<p>pLw</p>",
+                                "<p>qLx</p>", "<p>qKx</p>"],
+                    solution_en: "<p>3.(c) The required pattern is:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463646.png\" alt=\"rId10\" width=\"228\" height=\"77\"></p>",
+                    solution_hi: "<p>3.(c) आवश्यक पैटर्न है:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463646.png\" alt=\"rId10\" width=\"228\" height=\"77\"></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "4",
+                    section: "6",
+                    question_en: "<p>4. Select the box that CANNOT be formed by folding the given unfolded box.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463808.png\" alt=\"rId11\" width=\"123\" height=\"88\"></p>",
+                    question_hi: "<p>4. उस बॉक्स का चयन कीजिए जिसका निर्माण दिए गए खुले बॉक्स को मोड़कर नहीं किया जा सकता है। <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358463808.png\" alt=\"rId11\" width=\"123\" height=\"88\"></p>",
+                    options_en: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464014.png\" alt=\"rId12\" width=\"75\" height=\"69\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464168.png\" alt=\"rId13\" width=\"75\" height=\"68\"></p>", 
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464297.png\" alt=\"rId14\" width=\"75\" height=\"68\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464433.png\" alt=\"rId15\" width=\"75\" height=\"68\"></p>"],
+                    options_hi: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464014.png\" alt=\"rId12\" width=\"77\" height=\"70\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464168.png\" alt=\"rId13\" width=\"76\" height=\"70\"></p>",
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464297.png\" alt=\"rId14\" width=\"75\" height=\"68\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464433.png\" alt=\"rId15\" width=\"75\" height=\"68\"></p>"],
+                    solution_en: "<p>4.(b) After folding the given unfolded<br>box, the following faces will appear opposite to each other.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464651.png\" alt=\"rId16\" width=\"169\" height=\"108\"><br>Thus, option (b) will not be formed because &lsquo;d&rsquo; is opposite to &lsquo;e&rsquo; so they both can&rsquo;t be placed adjacent to each other.</p>",
+                    solution_hi: "<p>4.(b) दिए गए अनफोल्डेड बॉक्स को मोड़ने के बाद, निम्नलिखित फलक एक दूसरे के विपरीत दिखाई देंगे।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464651.png\" alt=\"rId16\" width=\"169\" height=\"108\"><br>इस प्रकार, विकल्प (b) नहीं बनेगा क्योंकि \'d\' , \'\'e के विपरीत है इसलिए वे दोनों एक दूसरे के आसन्न नहीं रखे जा सकते हैं।</p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "5",
+                    section: "6",
+                    question_en: "<p>5. Select the option in which the numbers are related in the same way as are the numbers in the given set.<br>17 : 102 : 153</p>",
+                    question_hi: "<p>5.उस विकल्प का चयन कीजिए जिसमें संख्याओं के बीच ठीक वही संबंध है जो संबंध संख्याओं के दिए गए समूह में है। <br>17 : 102 : 153</p>",
+                    options_en: ["<p>18 : 104 : 171</p>", "<p>23 : 162 : 207</p>", 
+                                "<p>16 : 96 : 144</p>", "<p>13 : 78 : 108</p>"],
+                    options_hi: ["<p>18 : 104 : 171</p>", "<p>23 : 162 : 207</p>",
+                                "<p>16 : 96 : 144</p>", "<p>13 : 78 : 108</p>"],
+                    solution_en: "<p>5.(c) The pattern given below is being followed:<br>17 : 102 : 153<br>17 &times; 6 = 102<br>17&times;9 = 153<br>Similarly, only (16 : 96 : 144) follow the given rule<br>16 &times;6 = 96<br>16 &times; 9 = 144</p>",
+                    solution_hi: "<p>5.(c) नीचे दिए गए पैटर्न का पालन किया जा रहा है:<br>17 : 102 : 153<br>17 &times; 6 = 102<br>17&times;9 = 153<br>इसी प्रकार, केवल (16 : 96 : 144) दिए गए नियम का पालन करते हैं<br>16 &times;6 = 96<br>16 &times; 9 = 144</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "6",
+                    section: "6",
+                    question_en: "<p>6. Study the given pattern carefully and select the number that can replace the question mark(?) in it.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464862.png\" alt=\"rId17\" width=\"170\" height=\"170\"></p>",
+                    question_hi: "<p>6. दिए गए प्रारूप का ध्यानपूर्वक अध्ययन कीजिए तथा उस संख्या का चयन कीजिए जो इसमें प्रश्न चिन्ह ( ? ) के स्थान पर आ सकती है। <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358464862.png\" alt=\"rId17\"></p>",
+                    options_en: ["<p>4</p>", "<p>6</p>", 
+                                "<p>5</p>", "<p>3</p>"],
+                    options_hi: ["<p>4</p>", "<p>6</p>",
+                                "<p>5</p>", "<p>3</p>"],
+                    solution_en: "<p>6.(c) Here, the required pattern is being followed column-wise.<br>In 1st column<br>8 &times; 4 = 32 , 32 - 3 = 29<br>In second column<br>11 &times; 7 = 77 , 77 - 6 = 71<br>Similarly, <br>In third column<br>14 &times; 5 = 70 , 70 - 3 = 67</p>",
+                    solution_hi: "<p>6.(c) यहां कॉलम अनुसार अपेक्षित पैटर्न का पालन किया जा रहा है।<br>पहले कॉलम में<br>8 &times; 4 = 32 , 32 - 3 = 29<br>दूसरे कॉलम में<br>11 &times; 7 = 77 , 77 - 6 = 71<br>इसी तरह,<br>तीसरे कॉलम में<br>14 &times; 5 = 70 , 70 - 3 = 67</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "7",
+                    section: "6",
+                    question_en: "<p>7. In a certain code language, &lsquo;CREATION&rsquo; is written as RCAEITNO.How will &lsquo;SEQUENCE&rsquo; be written as in that language?</p>",
+                    question_hi: "<p>7. किसी निश्चित कूट भाषा में, &lsquo;CREATION&rsquo; को RCAEITNO लिखा जाता है । इसी भाषा में &lsquo;SEQUENCE&rsquo; को कैसे लिखा जाएगा ?</p>",
+                    options_en: ["<p>ESUQENEC</p>", "<p>QESEUENC</p>", 
+                                "<p>ESUQNEEC</p>", "<p>QESEUCNE</p>"],
+                    options_hi: ["<p>ESUQENEC</p>", "<p>QESEUENC</p>",
+                                "<p>ESUQNEEC</p>", "<p>QESEUCNE</p>"],
+                    solution_en: "<p>7.(c) The required pattern is:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358465014.png\" alt=\"rId18\" width=\"252\" height=\"59\"><br>Similarly, &lsquo;SEQUENCE&rsquo; will be coded as &lsquo;ESUQNEEC&rsquo;.</p>",
+                    solution_hi: "<p>7.(c) आवश्यक पैटर्न है:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358465014.png\" alt=\"rId18\" width=\"252\" height=\"59\"><br>इसी तरह, \'SEQUENCE\' को \'ESUQNEEC\' के रूप में कोडित किया जाएगा।</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "8",
+                    section: "6",
+                    question_en: "<p>8. How many triangles are present in the given figure?<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358465303.png\" alt=\"rId19\" width=\"133\" height=\"90\"></p>",
+                    question_hi: "<p>8. दी गयी आकृति में कितने त्रिभुज हैं ? <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358465303.png\" alt=\"rId19\" width=\"133\" height=\"90\"></p>",
+                    options_en: ["<p>30</p>", "<p>22</p>", 
+                                "<p>28</p>", "<p>26</p>"],
+                    options_hi: ["<p>30</p>", "<p>22</p>",
+                                "<p>28</p>", "<p>26</p>"],
+                    solution_en: "<p>8.(a)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358465599.png\" alt=\"rId20\" width=\"155\" height=\"114\"><br>AUO, AOH, EOH, EOU, AHU, EHU, AUE, AHE, CXV, CXD, GXD, GXV, CVD, GVD, CDG, CVG, BFV, BUF, AUB, EUF, BVC, FVG, ABF, ABE, AEF, BEF, BCF, BCG, CGF, BFG, BEG, AFC.<br>Note: SSC has given option a(30) as the answer. But actually, there are a total 32 distinct triangles in the given figure. So, 32 is the correct answer.</p>",
+                    solution_hi: "<p>8.(a)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358465599.png\" alt=\"rId20\" width=\"155\" height=\"114\"><br>AUO, AOH, EOH, EOU, AHU, EHU, AUE, AHE, CXV, CXD, GXD, GXV, CVD, GVD, CDG, CVG, BFV, BUF, AUB, EUF, BVC, FVG, ABF, ABE, AEF, BEF, BCF, BCG, CGF, BFG, BEG, AFC.<br>नोट: SSC ने उत्तर के रूप में विकल्प a(30) दिया है। लेकिन वास्तव में, दी गई आकृति में कुल 32 अलग-अलग त्रिभुज हैं। अत: 32 सही उत्तर है</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "9",
+                    section: "6",
+                    question_en: "<p>9. A private taxi company charges a fixed charge along with a per kilometer charge based on the distance covered. For a journey of 24 Km, the charges paid are Rs 368 and for a journey of 32 Km , the charges paid are Rs 464. How much will a person have to pay for travelling a distance of 15 Km?</p>",
+                    question_hi: "<p>9. एक निजी टैक्सी कंपनी तय की गयी दूरी के आधार पर प्रति किलोमीटर शुल्क वसूलने के साथ ही एक निर्धारित शुल्क भी लेती है। 24 किमी की यात्रा में, 368 रुपये तथा 32 किमी की यात्रा में 464 रुपये का भुगतान करना पड़ता है। 15 किमी की दूरी तय करने के लिए एक व्यक्ति को कितनी राशि का भुगतान करना होगा ?</p>",
+                    options_en: ["<p>Rs 280</p>", "<p>Rs 180</p>", 
+                                "<p>Rs 260</p>", "<p>Rs 290</p>"],
+                    options_hi: ["<p>Rs 280</p>", "<p>Rs 180</p>",
+                                "<p>Rs 260</p>", "<p>Rs 290</p>"],
+                    solution_en: "<p>9.(c) Let F be the fixed value &amp; X be the per kilometer charge based on the distance covered.<br>Rs.368 = F + 24X-------- I<br>Rs.464 = F + 32X---------II<br>By solving equations 1 &amp; 2, we get the fixed and variable value as F = 80, x = 12.<br>Now, for 15 kilometers<br>Total Charge= 80(F) + 15 &times;12(x) = 260.</p>",
+                    solution_hi: "<p>9.(c) मान लें कि F निश्चित मान है और X तय की गई दूरी के आधार पर प्रति किलोमीटर चार्ज है।<br>Rs.368= F + 24X-------- I<br>Rs.464= F + 32X---------II<br>समीकरण 1 और 2 को हल करने पर, हम F = 80, x = 12 के रूप में निश्चित और परिवर्तनशील मान प्राप्त करते हैं।<br>अब, 15 किलोमीटर के लिए<br>कुल शुल्क = 80(F) + 15 &times;12(x)= 260.</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "10",
+                    section: "6",
+                    question_en: "10.  Select the option in which the words share the same relationship as that shared by the given pair of words.<br />Bacteria  : Illness  ",
+                    question_hi: "10.उस विकल्प का चयन कीजिए जिसमें शब्दों के बीच ठीक वही संबंध है जो संबंध शब्दों के दिए गए युग्म में है | <br />जीवाणु  : बीमारी ",
+                    options_en: [" Carelessness   : Errors  ", " Disease  : Doctor  ", 
+                                " Appraisal   : Performance  ", " Painting   : Painter  "],
+                    options_hi: [" लापरवाही  : अशुद्धियाँ ", " रोग  : चिकित्सक ",
+                                " मूल्यांकन  : प्रदर्शन ", " चित्रकारी  : चित्रकार "],
+                    solution_en: "10.(a) As ‘ Bacteria’ causes ‘Illness’ Similarly, ‘Carelessness’ causes ‘Errors’",
+                    solution_hi: "10.(a)  जैसे जीवाणु रोग का कारण बनता है, उसी तरह \'लापरवाही\' \'त्रुटियों\' का कारण बनती है।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "11",
+                    section: "6",
+                    question_en: "11. Select the option that is related to the third number in the same way as the second number is related to the first number and the sixth number is related to the fifth number.<br />6 : 16 :: 20 : ? :: 11 : 81",
+                    question_hi: "11. उस विकल्प का चयन कीजिए जो तीसरी संख्या से ठीक उसी प्रकार संबंधित है जिस प्रकार दूसरी संख्या पहली संख्या से और छठी संख्या पाँचवीं संख्या से संबंधित है।<br />6 : 16 :: 20 : ? :: 11 : 81",
+                    options_en: [" 324", " 91", 
+                                " 120", " 361"],
+                    options_hi: [" 324", " 91",
+                                " 120", " 361"],
+                    solution_en: "11.(a) The required pattern is:<br />6 - 2 = 4, 4²= 16.<br />11-2 = 9, 9²= 81<br />Similarly, <br />20 - 2 = 18, 18² = 324.",
+                    solution_hi: "11.(a) आवश्यक पैटर्न है:<br />6-2 = 4,  4²= 16.<br />11 - 2 = 9, 9²= 81<br />उसीप्रकार <br />20 - 2= 18, 18²  = 324.",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "12",
+                    section: "6",
+                    question_en: "<p>12. Read the given statements and conclusions carefully. Assuming that the information given in the statements is true , even if it appears to be at variance with commonly known facts, decide which of the given conclusions logically follow(s) <br><strong>Statement:</strong><br>Some cars are buses. <br>Some buses are trucks. <br>Some trucks are scooters. <br><strong>Conclusions:</strong><br>I. Some cars are scooters. <br>II. Some trucks are buses.<br>III. Some scooters are buses. <br>IV. All scooters are trucks.</p>",
+                    question_hi: "<p>12. दिए गए कथनों तथा निष्कर्षों का ध्यानपूर्वक अध्ययन कीजिए। यह मानते हुए कि कथनों में दी गयी जानकारी सही है, भले ही यह सामान्य तथ्यों से अलग प्रतीत होती है, यह तय कीजिए कि इन कथनों से कौन सा निष्कर्ष निकाला जा सकता है ? <br><strong>कथन :</strong><br>1. कुछ कारें, बस हैं।<br>2. कुछ बसें, ट्रक हैं।<br>3. कुछ ट्रक, स्कूटर हैं ।<br><strong>निष्कर्ष :</strong><br>I. कुछ कारें, स्कूटर हैं। <br>II. कुछ ट्रक, बस हैं।<br>III. कुछ स्कूटर, बस हैं।<br>IV. सभी स्कूटर, ट्रक हैं।</p>",
+                    options_en: ["<p>Only conclusion II follows.</p>", "<p>All the conclusions follow.</p>", 
+                                "<p>Only conclusions II and IV follow.</p>", "<p>Only conclusions I and II follow.</p>"],
+                    options_hi: ["<p>केवल निष्कर्ष II सही है।</p>", "<p>सभी निष्कर्ष सही हैं।</p>",
+                                "<p>केवल निष्कर्ष II और IV सही है।</p>", "<p>केवल निष्कर्ष I और II सही है।</p>"],
+                    solution_en: "<p>12.(a)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358466051.png\" alt=\"rId21\" width=\"206\" height=\"59\"><br>Clearly, Only conclusion II follows.</p>",
+                    solution_hi: "<p>12.(a)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358466508.png\" alt=\"rId22\" width=\"215\" height=\"62\"><br>स्पष्ट रूप से, केवल निष्कर्ष II अनुसरण करता है।</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "13",
+                    section: "6",
+                    question_en: "<p>13. A + B means &lsquo;A is the mother of &lsquo;B&rsquo;. <br>A - B means &lsquo;A is the husband of B&rsquo;. <br>A &times; B means &lsquo;A is the son of B&rsquo; . <br>A &divide; B means &lsquo;A is the daughter of B&rsquo;. <br>If, W &times; Z + Y &divide; X , then how is X related to Z ?</p>",
+                    question_hi: "<p>13. A + B का अर्थ है, &lsquo;A, B की माँ है ।&rsquo;<br>A - B का अर्थ है, &lsquo;A, B का पिता है।&rsquo; <br>A &times;B का अर्थ है, &lsquo;A, B का बेटा है ।&rsquo;<br>A &divide;B का अर्थ है, &lsquo;A, B की बेटी है ।&rsquo; <br>यदि W &times; Z + Y &divide; X है, तो X, Z से किस प्रकार संबंधित है ?</p>",
+                    options_en: ["<p>Daughter</p>", "<p>Son</p>", 
+                                "<p>Wife</p>", "<p>Husband</p>"],
+                    options_hi: ["<p>बेटी</p>", "<p>बेटा</p>",
+                                "<p>पत्नी</p>", "<p>पति</p>"],
+                    solution_en: "<p>13.(d) According to the following family chart X is the husband of Z.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358466752.png\" alt=\"rId23\" width=\"98\" height=\"93\"></p>",
+                    solution_hi: "<p>13.(d) निम्नलिखित परिवार चार्ट के अनुसार X, Z का पति है।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358466752.png\" alt=\"rId23\" width=\"98\" height=\"93\"></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "14",
+                    section: "6",
+                    question_en: "14. Select the odd word.",
+                    question_hi: "14.अलग शब्द का चयन कीजिए ।",
+                    options_en: [" Shout ", " Mumble ", 
+                                " Scream  ", " Roar "],
+                    options_hi: ["   चिल्लाना ", "   बुदबुदाना ",
+                                "   चीखना  ", "   दहाड़ना "],
+                    solution_en: "14.(b) ‘Shout’, ‘Scream’ and ‘Roar’ are high pitched and loud voices, but ‘mumble’ is to say something indistinctly and quietly. <br />So, Mumble is different among all the options.",
+                    solution_hi: "14.(b) \' चिल्लाना \', \' चीखना \' और \' दहाड़ना \' उच्च स्वर और तेज आवाज हैं, लेकिन \'बुदबुदाना\' कुछ अस्पष्ट और चुपचाप कहना है।  इसलिए, बुदबुदाना <br />(मम्बल) सभी विकल्पों में से अलग है।",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "15",
+                    section: "6",
+                    question_en: "15. Select the number-pair that is different. ",
+                    question_hi: "15. उस संख्या युग्म का चयन कीजिए जो अलग है ।",
+                    options_en: [" 25/41 : 8", " 4 / 5 : 3", 
+                                " 30/ 51 : 9", " 16/ 20 : 6"],
+                    options_hi: [" 25/41 : 8", " 4 / 5 : 3",
+                                " 30/ 51 : 9", " 16/ 20 : 6"],
+                    solution_en: "15.(a) Logic is : sum of first two digit = square of the third But this logic in not followed by option (a)<br />As, 25+41=66≠64",
+                    solution_hi: "15.(a) तर्क है : पहले दो अंकों का योग = तीसरे का वर्ग है। लेकिन यह तर्क विकल्प (a) में नहीं  है। जैसे, 25 + 41 = 66 ≠ 64",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "16",
+                    section: "6",
+                    question_en: "16.Select the odd letter-cluster.",
+                    question_hi: "16.अलग अक्षर समूह का चयन कीजिए।",
+                    options_en: [" FIK", " SVY ", 
+                                " NQT ", " XAD"],
+                    options_hi: [" FIK  ", " SVY     ",
+                                " NQT    ", " XAD"],
+                    solution_en: "16.(a) Except for FIK, all the options have a common gap between two consecutive alphabets. <br />For example, S + 3= V, V + 3= Y<br />But, F+2= I, I+1= K",
+                    solution_hi: "16.(a) FIK को छोड़कर, सभी विकल्पों में लगातार दो अक्षरों के बीच एक सामान्य अंतर होता है।<br />उदाहरण के लिए, S + 3= V, V + 3= Y<br />लेकिन, F+2= I, I+1= K",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "17",
+                    section: "6",
+                    question_en: "<p>17. The given Venn diagram represents results of a class of students <br>The triangle represents students who scored 85% and above in Maths , the circle represents students who scored 85% and above in English, the rectangle represents students who scored 85% and above in Science, and the square represents students who scored 85% and above in Social Sciences. The numbers given in the diagram represent the number of students in that particular category. <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467078.png\" alt=\"rId24\" width=\"131\" height=\"149\"> <br>How many students scored 85% and above in all the subjects ?</p>",
+                    question_hi: "<p>17. दिया गया वेन आरेख एक कक्षा के छात्रों के परिणाम को दर्शाता है।त्रिभुज उन छात्रों को दर्शाता है जिन्होंने गणित में 85% अथवा उससे अधिक अंक प्राप्त किया है, वृत्त उन छात्रों को दर्शाता है जिन्होंने अंग्रेजी में 85% तथा अधिक अंक प्राप्त किये हैं, आयत उन छात्रों को दर्शाता है जिन्होंने विज्ञान में 85% तथा अधिक अंक प्राप्त किये हैं तथा वर्ग उन छात्रों को दर्शाता है जिन्हें सामाजिक विज्ञान में 85% तथा अधिक अंक मिले हैं। आरेख में दी गयी संख्याएँ उस विशेष श्रेणी में छात्रों की संख्या को दर्शाती हैं।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467078.png\" alt=\"rId24\" width=\"131\" height=\"149\"><br>कितने छात्रों ने सभी विषयों में 85% तथा उससे अधिक प्राप्त किया है ?</p>",
+                    options_en: ["<p>17</p>", "<p>5</p>", 
+                                "<p>15</p>", "<p>11</p>"],
+                    options_hi: ["<p>17</p>", "<p>5</p>",
+                                "<p>15</p>", "<p>11</p>"],
+                    solution_en: "<p>17.(b) &lsquo;5&rsquo; depicts students who scored 85% and above in all the subjects because it is common to all the figures which are containing different subjects.</p>",
+                    solution_hi: "<p>17.(b) \'5\' उन छात्रों को दर्शाता है जिन्होंने सभी विषयों में 85% और उससे अधिक अंक प्राप्त किए हैं क्योंकि यह अंक उन सभी के में है जिनमें विभिन्न विषय शामिल हैं।</p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "18",
+                    section: "6",
+                    question_en: "18. In a certain code language, CIRCULAR is coded as 24-3-9-24-1-15-5-9. How will VERTICAL be coded as in that language ? ",
+                    question_hi: "18. किसी निश्चित कूट भाषा में, CIRCULAR को 24-3-9-24-1-15-5-9 के रूप में कूटबद्ध किया जाता है। इसी भाषा में VERTICAL को किस प्रकार कूटबद्ध किया जाएगा ? ",
+                    options_en: [" 5 - 4 -9 - 7 - 3 - 24 - 5 - 15", " 22 - 4 - 9 - 7 - 3 - 23 - 1 - 15", 
+                                " 5 - 2 - 9 - 7 - 3 - 24 - 5 - 15", " 22 - 4 - 9 - 7 - 9 - 24 - 5 - 15"],
+                    options_hi: [" 5 - 4 -9 - 7 - 3 - 24 - 5 - 15", " 22 - 4 - 9 - 7 - 3 - 23 - 1 - 15",
+                                " 5 - 2 - 9 - 7 - 3 - 24 - 5 - 15", " 22 - 4 - 9 - 7 - 9 - 24 - 5 - 15"],
+                    solution_en: "18.(a) logic is : consonant is coded in reverse alphabetical order<br />And vowel is coded as reverse alphabetical position of vowel (A=5, E=4, I=3 O=2, U=1)<br />So, VERTICAL is coded as 5 - 4 - 9 - 7 - 3- 24 - 5 - 15",
+                    solution_hi: "18.(a) तर्क है : व्यंजन को उल्टे वर्णानुक्रम में कोडित किया जाता है<br />और स्वर को स्वर की विपरीत वर्णानुक्रम स्थिति के रूप में कोडित किया जाता है (A = 5,E = 4, I = 3 , O = 2, U = 1)<br />तो, VERTICAL को 5 - 4 - 9 - 7 - 3 - 24 - 5 - 15 के रूप में कोडित किया जाता है।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "19",
+                    section: "6",
+                    question_en: "<p>19. Select the set of letters that when sequentially placed in the blanks of the given letter series will complete the series.<br>p_rsqrps_pqs_qr_qrps_p_s</p>",
+                    question_hi: "<p>19. अक्षरों के उस समूह का चयन कीजिए जिन्हें दी गयी अक्षर श्रृंखला के खाली स्थानों में क्रमिक रूप से रखने पर यह श्रृंखला पूरी हो जाएगी।<br>p_rsqrps_pqs_qr_qrps_p_s</p>",
+                    options_en: ["<p>q , r, p , s , r, q</p>", "<p>r , p , q , s , r , q</p>", 
+                                "<p>q , r , p , p , r , q</p>", "<p>p , r , p , s , r , p</p>"],
+                    options_hi: ["<p>q, r, p, s, r, q</p>", "<p>r, p, q, s, r, q</p>",
+                                "<p>q, r, p, p, r, q</p>", "<p>p, r, p, s, r, p</p>"],
+                    solution_en: "<p>19.(a) The required pattern is:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467334.png\" alt=\"rId25\" width=\"304\" height=\"100\"></p>",
+                    solution_hi: "<p>19.(a) आवश्यक पैटर्न है:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467556.png\" alt=\"rId26\" width=\"290\" height=\"98\"></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "20",
+                    section: "6",
+                    question_en: "<p>20. Select the option figure in which the given figure is embedded (rotation is NOT allowed).<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467678.png\" alt=\"rId27\" width=\"82\" height=\"84\"></p>",
+                    question_hi: "<p>20. विकल्पों में से उस आकृति का चयन कीजिए जिसमें दी गयी आकृति अंतर्निहित है ।( घुमाने की अनुमति नहीं है ) <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467678.png\" alt=\"rId27\" width=\"82\" height=\"84\"></p>",
+                    options_en: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467822.png\" alt=\"rId28\" width=\"81\" height=\"79\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467999.png\" alt=\"rId29\" width=\"81\" height=\"81\"></p>", 
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468159.png\" alt=\"rId30\" width=\"80\" height=\"79\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468314.png\" alt=\"rId31\" width=\"81\" height=\"83\"></p>"],
+                    options_hi: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467822.png\" alt=\"rId28\" width=\"81\" height=\"80\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358467999.png\" alt=\"rId29\" width=\"81\" height=\"81\"></p>",
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468159.png\" alt=\"rId30\" width=\"81\" height=\"80\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468314.png\" alt=\"rId31\" width=\"80\" height=\"82\"></p>"],
+                    solution_en: "<p>20.(c) The image given below shows how the question figure is embedded in option (c).<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468505.png\" alt=\"rId32\" width=\"80\" height=\"79\"></p>",
+                    solution_hi: "<p>20.(c) नीचे दिया गया चित्र दिखाता है कि कैसे प्रश्न आकृति विकल्प (c) में सन्निहित है।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468505.png\" alt=\"rId32\" width=\"80\" height=\"79\"></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "21",
+                    section: "6",
+                    question_en: "<p>.21. Which of the option figures is the exact mirror image of the given figure when the mirror is held at the right side ?<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468627.png\" alt=\"rId33\" width=\"180\" height=\"22\"></p>",
+                    question_hi: "<p>21. विकल्पों में दी गयी कौन सी आकृति दी गयी आकृति का सटीक दर्पण प्रतिबिंब बनेगी, जब दर्पण को दायीं ओर रखा जाता है ।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468627.png\" alt=\"rId33\" width=\"180\" height=\"22\"></p>",
+                    options_en: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468778.png\" alt=\"rId34\" width=\"179\" height=\"21\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468945.png\" alt=\"rId35\" width=\"180\" height=\"21\"></p>", 
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469134.png\" alt=\"rId36\" width=\"181\" height=\"21\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469266.png\" alt=\"rId37\" width=\"180\" height=\"21\"></p>"],
+                    options_hi: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468778.png\" alt=\"rId34\" width=\"180\" height=\"21\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358468945.png\" alt=\"rId35\" width=\"181\" height=\"21\"></p>",
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469134.png\" alt=\"rId36\" width=\"181\" height=\"21\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469266.png\" alt=\"rId37\" width=\"180\" height=\"21\"></p>"],
+                    solution_en: "<p>21.(d)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469266.png\" alt=\"rId37\" width=\"180\" height=\"21\"></p>",
+                    solution_hi: "<p>21.(d)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469266.png\" alt=\"rId37\" width=\"180\" height=\"21\"></p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "22",
+                    section: "6",
+                    question_en: "<p>22. Arrange the following words in the order in which they appear in an English dictionary.<br>1. Decipher <br>2. Decide<br>3. Decline <br>4. Deceive<br>5. Decimal <br>6. Decision</p>",
+                    question_hi: "<p>22. निम्नलिखित शब्दों को उस क्रम में व्यवस्थित कीजिए, जिस क्रम में वे अंग्रेजी के शब्दकोष में पाए जाते हैं।<br>1. Decipher <br>2. Decide<br>3. Decline <br>4. Deceive<br>5. Decimal <br>6. Decision</p>",
+                    options_en: ["<p>4, 2, 5, 1, 6, 3</p>", "<p>4, 5, 2, 1, 6, 3</p>", 
+                                "<p>3, 5, 4, 1, 6, 2</p>", "<p>4, 3, 2, 1, 5, 6</p>"],
+                    options_hi: ["<p>4, 2, 5, 1, 6, 3</p>", "<p>4, 5, 2, 1, 6, 3</p>",
+                                "<p>3, 5, 4, 1, 6, 2</p>", "<p>4, 3, 2, 1, 5, 6</p>"],
+                    solution_en: "<p>22.(a) As per the English Dictionary, the correct order for the given words is as follows: 4, 2, 5, 1, 6, 3<br>Deceive, Decide, Decimal, Decipher, Decision, Decline.</p>",
+                    solution_hi: "<p>22.(a) अंग्रेजी शब्दकोश के अनुसार, दिए गए शब्दों का सही क्रम इस प्रकार है: 4, 2, 5, 1, 6, 3<br>Deceive, Decide, Decimal, Decipher, Decision, Decline.</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "23",
+                    section: "6",
+                    question_en: "23. Select the option that is related to the third word in the same way as the second word is related to the first word.<br />Amusing  : Hilarious  :: Moisten  : ?",
+                    question_hi: "23. उस विकल्प का चयन कीजिए जो तीसरे शब्द से ठीक उसी प्रकार संबंधित है जिस प्रकार दूसरा शब्द पहले शब्द से संबंधित है।<br /> मनोरंजक  :   प्रफुल्ल  ::   गीला  : ?",
+                    options_en: [" Soak    ", " Water", 
+                                " Humid ", " Dry "],
+                    options_hi: ["   डुबाना ", "   पानी ",
+                                "   आर्द्र ", "   सूखा "],
+                    solution_en: "23.(a) Amusing means causing laughter and providing entertainment and Hilarious means extremely amusing.<br />Similarly, Moisten means wet slightly and ‘Soak’ means make or allow (something) to become thoroughly wet by immersing it in liquid.",
+                    solution_hi: "23.(a) मनोरंजक का अर्थ है हँसी पैदा करना और मनोरंजन प्रदान करना और प्रफुल्लित करने वाला का अर्थ है अत्यंत मनोरंजक।<br />इसी तरह,  गीला  का अर्थ है थोड़ा गीला और \'डुबाना\' का अर्थ है (किसी चीज को) तरल में डुबोकर पूरी तरह से गीला करना।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "24",
+                    section: "6",
+                    question_en: "<p>24. The sequence of folding a piece of paper and the manner in which the folded paper has been cut is shown in the following figures.How would this paper look when unfolded?<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469492.png\" alt=\"rId38\" width=\"254\" height=\"80\"></p>",
+                    question_hi: "<p>24. कागज़ के एक टुकड़े को मोड़ने का क्रम तथा उसे काटने का तरीका नीचे दी गयी आकृतियों में दर्शाया गया है। खुलने के बाद यह कागज़ कैसा दिखेगा ? <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469492.png\" alt=\"rId38\" width=\"247\" height=\"78\"></p>",
+                    options_en: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469592.png\" alt=\"rId39\" width=\"79\" height=\"79\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469696.png\" alt=\"rId40\" width=\"81\" height=\"79\"></p>", 
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469811.png\" alt=\"rId41\" width=\"81\" height=\"81\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470052.png\" alt=\"rId42\" width=\"81\" height=\"80\"></p>"],
+                    options_hi: ["<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469592.png\" alt=\"rId39\" width=\"81\" height=\"81\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469696.png\" alt=\"rId40\" width=\"82\" height=\"81\"></p>",
+                                "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469811.png\" alt=\"rId41\" width=\"81\" height=\"81\"></p>", "<p><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470052.png\" alt=\"rId42\" width=\"80\" height=\"78\"></p>"],
+                    solution_en: "<p>24.(c) The figure given below shows how the paper will look when it is unfolded.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469811.png\" alt=\"rId41\" width=\"82\" height=\"82\"></p>",
+                    solution_hi: "<p>24.(c) नीचे दिया गया चित्र दिखाता है कि कागज को खोलने पर वह कैसा दिखेगा।<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358469811.png\" alt=\"rId41\" width=\"82\" height=\"82\"></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "25",
+                    section: "18",
+                    question_en: "<p>25. Select the number that can replace the question mark(?) in the following series.<br>17, 19 , 22 , 27, 34 , 45 , 58 , ?</p>",
+                    question_hi: "<p>25. उस संख्या का चयन कीजिए जो नीचे दी गयी श्रृंखला में प्रश्न चिन्ह ( ? ) के स्थान पर आ सकती है।<br>17, 19 , 22 , 27 , 34 , 45 , 58 , ?</p>",
+                    options_en: ["<p>78</p>", "<p>73</p>", 
+                                "<p>75</p>", "<p>67</p>"],
+                    options_hi: ["<p>78</p>", "<p>73</p>",
+                                "<p>75</p>", "<p>67</p>"],
+                    solution_en: "<p>25.(c) The pattern mentioned below is being followed.<br>17 + 2 = 19<br>19 + 3 = 22<br>22 + 5 = 27<br>27 + 7 = 34<br>34 + 11 = 45<br>45 + 13 = 58<br>58 + 17 = 75<br>Here, 2 , 3 , 5 , 7 , 11 , 13 , 17&hellip;&hellip;. are consecutive prime numbers.</p>",
+                    solution_hi: "<p>25.(c) नीचे उल्लिखित पैटर्न का पालन किया जा रहा है।<br>17 + 2 = 19<br>19 + 3 = 22<br>22 + 5 = 27<br>27 + 7 = 34<br>34 + 11 = 45<br>45 + 13 = 58<br>58 + 17 = 75<br>यहाँ, 2, 3, 5, 7, 11, 13, 17&hellip;&hellip;. क्रमागत अभाज्य संख्याएँ हैं।</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "26",
+                    section: "18",
+                    question_en: "26. Which of the following pairs is CORRECT with reference to mountain passes?",
+                    question_hi: "26. निम्नलिखित में से कौन सी जोड़ी पहाड़ी दर्रे के संदर्भ में सही है?",
+                    options_en: [" Rohtang-Sikkim ", " Nathula-Arunachal Pradesh ", 
+                                " Bomdila-Himachal Pradesh ", " Lipulekh- Uttarakhand "],
+                    options_hi: [" रोहतांग-सिक्किम", " नाथुला-अरुणाचल प्रदेश",
+                                " बोमडिला-हिमाचल प्रदेश", " लिपुलेख- उत्तराखंड"],
+                    solution_en: "26. (d) Lipulekh is a Himalayan pass on the border between India\'s Uttarakhand state and the Tibet region of China, near their trijunction with Nepal. Nepal has ongoing claims to the southern side of the pass, called Kalapani territory, which is controlled by India.",
+                    solution_hi: "26.(d) लिपुलेख भारत के उत्तराखंड राज्य और चीन के तिब्बत क्षेत्र के बीच की सीमा पर एक हिमालयी दर्रा है, जो नेपाल के साथ उनके त्रिजंक्शन के पास है। नेपाल के पास कालापानी क्षेत्र कहे जाने वाले दर्रे के दक्षिणी हिस्से पर चल रहे दावे हैं, जो भारत द्वारा नियंत्रित है।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "27",
+                    section: "18",
+                    question_en: "27. Which of the following states does NOT share its boundary with Bangladesh?",
+                    question_hi: "27. निम्नलिखित राज्यों में से कौन बांग्लादेश के साथ अपनी सीमा साझा नहीं करता है?",
+                    options_en: [" Tripura", " Meghalaya ", 
+                                " Assam ", " Manipur "],
+                    options_hi: [" त्रिपुरा", " मेघालय",
+                                " असम", " मणिपुर"],
+                    solution_en: "27.(d) Indian states that share borders with Bangladesh are: Assam, West Bengal, Mizoram, Meghalaya and Tripura. ",
+                    solution_hi: "27.(d) बांग्लादेश के साथ सीमा साझा करने वाले भारतीय राज्य हैं: असम, पश्चिम बंगाल, मिजोरम, मेघालय और त्रिपुरा।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "28",
+                    section: "18",
+                    question_en: "28. Which of the following rivers forms the Dhuandhar waterfall near Jabalpur?",
+                    question_hi: "28. निम्नलिखित में से कौन सी नदी जबलपुर के पास धूंधर जलप्रपात बनाती है?",
+                    options_en: [" Tapi", " Tungabhadra ", 
+                                " Luni ", " Narmada "],
+                    options_hi: [" तापी", " तुंगभद्रा",
+                                " लूनी", "  नर्मदा"],
+                    solution_en: "28.(d) The Dhuandhar Falls are located on Narmada River in Bhedaghat and are 30 meters high. The Narmada River, making its way through the world-famous Marble Rocks, narrows down and then plunges in a waterfall known as Dhuandhaar.",
+                    solution_hi: "28.(d)  धुआंधार जलप्रपात भेड़ाघाट में नर्मदा नदी पर स्थित हैं और 30 मीटर ऊंचे हैं। नर्मदा नदी, विश्व प्रसिद्ध संगमरमर की चट्टानों के माध्यम से अपना रास्ता बनाते हुए, संकरी हो जाती है और फिर धुंधार नामक झरने में गिर जाती है।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "29",
+                    section: "18",
+                    question_en: "29. The scentific study of a cell is called:",
+                    question_hi: "29. कोशिका के वैज्ञानिक अध्ययन को कहा जाता है:",
+                    options_en: [" cytology               ", " histology ", 
+                                " physiology", " taxonomy "],
+                    options_hi: [" कोशिका विज्ञान             ", " हिस्टोलॉजी",
+                                " शरीर विज्ञान                  ", " टैक्सोनॉमी"],
+                    solution_en: "29.(a) Cytology: the branches of biology and medicine concerned with the structure and function of plant and animal cells.<br />Histology  is the branch of biology which studies the microscopic anatomy of biological tissues.<br />Physiology is the scientific study of functions and mechanisms in a living system.<br />Taxonomy is the science of naming, defining and classifying groups of biological organisms on the basis of shared characteristics.",
+                    solution_hi: "29.(a) कोशिका विज्ञान: जीव विज्ञान और चिकित्सा की शाखाएँ जो पौधे और पशु कोशिकाओं की संरचना और कार्य से संबंधित हैं।<br />ऊतक विज्ञान जीव विज्ञान की वह शाखा है जो जैविक ऊतकों की सूक्ष्म शरीर रचना का अध्ययन करती है।<br />फिजियोलॉजी एक जीवित प्रणाली में कार्यों और तंत्र का वैज्ञानिक अध्ययन है।<br />टैक्सोनॉमी साझा विशेषताओं के आधार पर जैविक जीवों के समूहों के नामकरण, परिभाषित और वर्गीकृत करने का विज्ञान है।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "30",
+                    section: "18",
+                    question_en: "30. In which year was the first amendment to the Constitution of India made?",
+                    question_hi: "30. भारत के संविधान में पहला संशोधन किस वर्ष किया गया था?",
+                    options_en: ["1950", "1952", 
+                                "1951", "1953"],
+                    options_hi: [" 1950", " 1952",
+                                " 1951", " 1953"],
+                    solution_en: "30.(c) The Constitution (First Amendment) Act, 1951, enacted in 1951, made several changes to the Fundamental Rights provisions of the Indian constitution. It provided against abuse of freedom of speech and expression, validation of zamindari abolition laws, and clarified that the right to equality does not bar the enactment of laws which provide \"special consideration\" for weaker sections of society.",
+                    solution_hi: "30.(c) 1951 में अधिनियमित संविधान (प्रथम संशोधन) अधिनियम, 1951 ने भारतीय संविधान के मौलिक अधिकारों के प्रावधानों में कई बदलाव किए। यह भाषण और अभिव्यक्ति की स्वतंत्रता के दुरुपयोग, जमींदारी उन्मूलन कानूनों के सत्यापन के खिलाफ प्रदान करता है, और स्पष्ट करता है कि समानता का अधिकार उन कानूनों के अधिनियमन को रोकता नहीं है जो समाज के कमजोर वर्गों के लिए \"विशेष विचार\" प्रदान करते हैं।",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "31",
+                    section: "18",
+                    question_en: "31. With reference to the Vedangas, which of the following terms denotes \'Ritual\'?",
+                    question_hi: "31. वेदांगों के संदर्भ में, निम्नलिखित में से कौन सा शब्द \'अनुष्ठान\' को दर्शाता है?",
+                    options_en: [" Vyakarana ", " Chada ", 
+                                " Kalpa ", " Shiksha "],
+                    options_hi: [" व्याकरण  ", " चडा",
+                                " कल्प   ", " शिक्षा"],
+                    solution_en: "31.(c)  Kalpa ritual instructions.This field focused on standardizing procedures for Vedic rituals, rites of passage rituals associated with major life events such as birth, wedding and death in family, as well as discussing the personal conduct and proper duties of an individual in different stages of his life.",
+                    solution_hi: "31.(c) कल्प अनुष्ठान निर्देश। यह क्षेत्र वैदिक अनुष्ठानों के लिए प्रक्रियाओं के मानकीकरण, परिवार में जन्म, विवाह और मृत्यु जैसी प्रमुख जीवन घटनाओं से जुड़े  अनुष्ठानों के साथ-साथ विभिन्न चरणों में एक व्यक्ति जीवन के व्यक्तिगत आचरण और उचित कर्तव्यों पर चर्चा करने पर केंद्रित है।  ",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "32",
+                    section: "18",
+                    question_en: "<p>32. The Council of Ministers during the time of Shivaji Maharaj was known as:</p>",
+                    question_hi: "<p>32. शिवाजी महाराज के समय मंत्रिपरिषद के रूप में जाना जाता था:</p>",
+                    options_en: ["<p>Agraharam</p>", "<p>Ashtadiggajas</p>", 
+                                "<p>Ashta Pradhan</p>", "<p>Navaratnas</p>"],
+                    options_hi: ["<p>अग्रहारम</p>", "<p>अष्ट दिग्गज</p>",
+                                "<p>अष्ट प्रधान</p>", "<p>नवरत्न</p>"],
+                    solution_en: "<p>32.(c) The coronation of Shivaji Maharaj was held in 1674, at the fort of Raigad in present-day Indian state of Maharashtra. On that occasion, Shivaji Maharaj formalized the institution of a council of eight ministers to guide the administration of his nascent state. This council came to be known as the Ashta Pradhan.</p>",
+                    solution_hi: "<p>32.(c) शिवाजी महाराज का राज्याभिषेक 1674 में, वर्तमान भारतीय राज्य महाराष्ट्र में रायगढ़ के किले में हुआ था। उस अवसर पर, शिवाजी महाराज ने अपने नव निर्मित राज्य के प्रशासन का मार्गदर्शन करने के लिए आठ मंत्रियों की एक परिषद की संस्था को औपचारिक रूप दिया। इस परिषद को अष्ट प्रधान के रूप में जाना जाने लगा।</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "33",
+                    section: "18",
+                    question_en: "33. Which among the following has its refractive index closest to that of crown glass ?",
+                    question_hi: "33. निम्नलिखित में से इसका अपवर्तनांक क्राउन ग्लास के सबसे निकट है ?",
+                    options_en: ["Canada balsam  ", "Sapphire ", 
+                                "Diamond ", "Ruby  "],
+                    options_hi: [" कनाडा बालसम", " नीलम",
+                                " हीरा", " रूबी"],
+                    solution_en: "33.(a) Due to its high optical quality and the similarity of its refractive index to that of crown glass (n = 1.55), purified and filtered Canada balsam was traditionally used in optics as an invisible when dry glue for glass, such as lens elements. ",
+                    solution_hi: "33.(a) इसकी उच्च ऑप्टिकल गुणवत्ता और क्राउन ग्लास ( n = 1.55) के अपवर्तक सूचकांक की समानता के कारण, शुद्ध और फ़िल्टर किए गए कनाडा बाल्सम को पारंपरिक रूप से प्रकाशिकी में अदृश्य के रूप में उपयोग किया जाता था जब ये कांच के लिए सूखी गोंद, जैसे लेंस तत्व के रूप में  पायी जाती है ।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "34",
+                    section: "18",
+                    question_en: "34. The power of a lens is -2.0 D. Here \'D\' stands for:",
+                    question_hi: "34. एक लेंस की शक्ति -2.0 डी है। यहां \'डी\' का अर्थ है:",
+                    options_en: [" distance", " dilation ", 
+                                " dioptre ", " degree"],
+                    options_hi: [" दूरी", " दिलेशन",
+                                " डिऑप्टर", " डिग्री"],
+                    solution_en: "34.(c) A dioptre is a unit of measurement of the optical power of a lens or curved mirror, which is equal to the reciprocal of the focal length measured in metres. (1 dioptre = 1 m−1.) It is thus a unit of reciprocal length.",
+                    solution_hi: "34.(c) एक डायोप्टर एक लेंस या घुमावदार दर्पण की ऑप्टिकल शक्ति के मापन की एक इकाई है, जो मीटर में मापी गई फोकल लंबाई के व्युत्क्रम के बराबर है। (1 डायोप्ट्रे = 1 m -1) इस प्रकार यह पारस्परिक लंबाई की एक इकाई है।",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "35",
+                    section: "18",
+                    question_en: "35. Which among the following is a cation?",
+                    question_hi: "35. निम्नलिखित में से कौन एक धनायन है ?",
+                    options_en: ["Ammonium", "lodide ", 
+                                "Fluoride ", "Chloride "],
+                    options_hi: [" अमोनियम", " आयोडाइड",
+                                " फ्लोराइड", " क्लोराइड"],
+                    solution_en: "35.(a) The ammonium cation is a positively charged polyatomic ion with the chemical formula NH4+ . It is formed by the protonation of ammonia.",
+                    solution_hi: "35.(a) अमोनियम धनायन एक धनावेशित बहुपरमाणुक आयन है जिसका रासायनिक सूत्र NH⁺ ₄ है। यह अमोनिया के प्रोटोनेशन द्वारा बनता है।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "36",
+                    section: "18",
+                    question_en: "36.Which among the following is NOT an insulator?",
+                    question_hi: "36. निम्नलिखित में से कौन एक इन्सुलेटर नहीं है?",
+                    options_en: ["Ebonite", "Glass ", 
+                                "Dry Paper ", "Mercury"],
+                    options_hi: [" इबोनाइट", " ग्लास",
+                                " ड्राई पेपर", " पारा"],
+                    solution_en: "36.(d) Mercury is a heavy, silvery-white liquid metal. Compared to other metals, it is a poor conductor of heat, but a fair conductor of electricity. It is also a good conductor of electricity, so it is a useful component of electrical switches.",
+                    solution_hi: "36.(d)  पारा एक भारी, चांदी जैसा सफेद तरल धातु है। अन्य धातुओं की तुलना में, यह ऊष्मा का कुचालक है, लेकिन विद्युत का सुचालक है। यह विद्युत का सुचालक भी है, इसलिए यह विद्युत स्विच का एक उपयोगी घटक है।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "37",
+                    section: "18",
+                    question_en: "37. Select the correct pair of dance form and its state.",
+                    question_hi: "37. डांस फॉर्म और उसके राज्य की सही जोड़ी को चुनें।",
+                    options_en: ["Dalkhai-Karnataka", "Kalbelia-HimachalPradesh ", 
+                                "Thang Ta-Bihar ", "Padayani-Kerala "],
+                    options_hi: [" दलखाई-कर्नाटक", " कालबेलिया-हिमाचल प्रदेश",
+                                " थांग ता-बिहार", " पडायनी-केरल"],
+                    solution_en: "37.(d) Padayani literally means “row of warriors” is a dance form belonging to Kerala. Performed in honour of “Bhadrakali” (i.e. an avatar of Lord Shiva) this dance form has its origins in the Pathanamthitta district in Kerala.",
+                    solution_hi: "37.(d) पदयानी का शाब्दिक अर्थ है \"योद्धाओं की पंक्ति\" केरल से संबंधित एक नृत्य रूप है। \"भद्रकाली\" (अर्थात भगवान शिव का एक अवतार) के सम्मान में प्रदर्शित इस नृत्य रूप की उत्पत्ति केरल के पथानामथिट्टा जिले में हुई है।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "38",
+                    section: "18",
+                    question_en: "38. Who is the author of the book \'Wise and Otherwise : A Salute to Life?\'",
+                    question_hi: "38. पुस्तक \'वाइज एंड अदर: अ सैल्यूट टू लाइफ\' के लेखक कौन हैं?",
+                    options_en: [" Kiran Desai ", " Sudha Murthy ", 
+                                " Zoya Hasan ", " Amrita Pritam "],
+                    options_hi: [" किरण देसाई", " सुधा मूर्ति",
+                                " जोया हसन", "अमृता प्रीतम"],
+                    solution_en: "38.(b) Sudha Murty\'s book Wise and otherwise will take you to a journey across the length and breadth of India through narrations of 51 stories inspired by the extensive travels of the author herself.",
+                    solution_hi: "38.(b) सुधा मूर्ति की पुस्तक Wise and otherwise आपको लेखक की व्यापक यात्राओं से प्रेरित 51 कहानियों के वर्णन के माध्यम से भारत की लंबाई और चौड़ाई में एक यात्रा पर ले जाएगी।",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "39",
+                    section: "18",
+                    question_en: "39. What does \'T\' stand for in ATM?",
+                    question_hi: "39. ATM में \'T\' का क्या अर्थ है?",
+                    options_en: ["Teller.", "Trunk", 
+                                "Translation", "Transfer"],
+                    options_hi: ["Teller", "Trunk",
+                                "Translation", "Transfer"],
+                    solution_en: "39.(a) The full form of ATM is Automated Teller Machine. An ATM is an electro-mechanical machine that is used for making financial transactions from a bank account. These machines are used to withdraw money from personal bank accounts.",
+                    solution_hi: "39.(a) ATM का फुल फॉर्म Automated Teller Machine है। ATM एक इलेक्ट्रो-मैकेनिकल मशीन है जिसका उपयोग बैंक खाते से वित्तीय लेनदेन करने के लिए किया जाता है। इन मशीनों का उपयोग व्यक्तिगत बैंक खातों से पैसे निकालने के लिए किया जाता है।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "40",
+                    section: "18",
+                    question_en: "40. Which of the following monasteries is located in Sikkim?",
+                    question_hi: "40. निम्नलिखित में से कौन सा मठ सिक्किम में स्थित है?",
+                    options_en: ["Kye", "Hemis", 
+                                "Tabo", "Rumtek "],
+                    options_hi: [" के", " हेमिस",
+                                "  टैबो", " रुमटेक"],
+                    solution_en: "40.(d) Rumtek Monastery, also called the Dharmachakra Centre, is a gompa located in the Indian state of Sikkim near the capital Gangtok. It is a focal point for the sectarian tensions within the Karma Kagyu school of Tibetan Buddhism that characterize the Karmapa controversy. ",
+                    solution_hi: "40.(d) रुमटेक मठ, जिसे धर्मचक्र केंद्र भी कहा जाता है, भारत के सिक्किम राज्य में राजधानी गंगटोक के पास स्थित एक गोम्पा है। यह तिब्बती बौद्ध धर्म के कर्म काग्यू स्कूल के भीतर सांप्रदायिक तनाव का केंद्र बिंदु है जो करमापा विवाद की विशेषता है।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "41",
+                    section: "18",
+                    question_en: "41. The Pritzker prize is an international award given to recognise contribution in the field of_____.",
+                    question_hi: "41. प्रित्जकर पुरस्कार _____ के क्षेत्र में योगदान को मान्यता देने के लिए दिया जाने वाला एक अंतर्राष्ट्रीय पुरस्कार है।",
+                    options_en: [" literature", " mathematics", 
+                                " architecture", " medicine "],
+                    options_hi: [" साहित्य", " गणित",
+                                " वास्तुकला", " दवा"],
+                    solution_en: "41.(c) Pritzker Architecture Prize, international award given annually to recognize the contributions of a living architect. It has often been called the Nobel Prize of architecture.",
+                    solution_hi: "41.(c)प्रित्ज़कर वास्तुकला पुरस्कार, एक जीवित वास्तुकार के योगदान को मान्यता देने के लिए प्रतिवर्ष दिया जाने वाला अंतर्राष्ट्रीय पुरस्कार। इसे अक्सर वास्तुकला का नोबेल पुरस्कार कहा जाता है।",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "42",
+                    section: "18",
+                    question_en: "42. For which game has the Father of Leander Paes been a member of the Indian National Team?",
+                    question_hi: "42. किस खेल के लिए लिएंडर पेस के पिता भारतीय राष्ट्रीय टीम के सदस्य रहे हैं?",
+                    options_en: ["  Hockey ", "  Tennis ", 
+                                "  Basketball     ", " Badminton "],
+                    options_hi: [" हॉकी", " टेनिस",
+                                " बास्केटबॉल", " बैडमिंटन"],
+                    solution_en: "42.(a) Vece Paes was a former Indian hockey midfielder, and representing the Indian team in the 1972 Munich Olympics, that won the bronze medal. He is the father of India\'s tennis player Leander Paes. He is also a doctor in sports medicine. ",
+                    solution_hi: "42.(a) वेस पेस एक पूर्व भारतीय हॉकी मिडफील्डर थे, और 1972 के म्यूनिख ओलंपिक में भारतीय टीम का प्रतिनिधित्व कर रहे थे, जिसने कांस्य पदक जीता था। वह भारत के टेनिस खिलाड़ी लिएंडर पेस के पिता हैं। वह स्पोर्ट्स मेडिसिन के डॉक्टर भी हैं।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "43",
+                    section: "18",
+                    question_en: "43. Which Indian male cricketer won the BCCI CK Nayudu Lifetime Achievement Award for the year 2019?",
+                    question_hi: "43. किस भारतीय पुरुष क्रिकेटर ने वर्ष 2019 के लिए बीसीसीआई सीके नायडू लाइफटाइम अचीवमेंट पुरस्कार जीता?",
+                    options_en: [" Sachin Tendulkar ", " Rahul Dravid", 
+                                " Sunil Gavaskar ", " K Srikanth "],
+                    options_hi: [" सचिन तेंदुलकर      ", " राहुल द्रविड़",
+                                " सुनील गावस्कर   ", " के श्रीकांत"],
+                    solution_en: "43.(d) Former India captain and member of the 1983 World Cup - winning team Krishnamachari Srikkanth will be the recipient of this year\'s prestigious CK Nayudu Lifetime Award given by the BCCI. Former India women\'s captain Anjum Chopra is the co-recipient of the lifetime achievement award for the year 2019.",
+                    solution_hi: "43.(d)  भारत के पूर्व कप्तान और 1983 विश्व कप विजेता टीम के सदस्य कृष्णमाचारी श्रीकांत बीसीसीआई द्वारा दिए जाने वाले इस साल के प्रतिष्ठित सीके नायडू लाइफटाइम अवार्ड के प्राप्तकर्ता होंगे। भारत की पूर्व महिला कप्तान अंजुम चोपड़ा वर्ष 2019 के लिए लाइफटाइम अचीवमेंट अवार्ड की सह-प्राप्तकर्ता हैं।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "44",
+                    section: "18",
+                    question_en: "44. In December 2019, the Rohtang passageway in Himachal Pradesh was renamed as:",
+                    question_hi: "44. दिसंबर 2019 में, हिमाचल प्रदेश में रोहतांग मार्ग का नाम बदलकर रखा गया:",
+                    options_en: [" Atal Tunnel   ", " Muherjee Tunnel ", 
+                                " Bose Tunnel   ", " Swaraj Tunnel "],
+                    options_hi: [" अटल सुरंग", " मुखर्जी टनल",
+                                " बोस टनल", " स्वराज टनल"],
+                    solution_en: "44.(a) Atal Tunnel, named after India\'s former Prime Minister Atal Bihari Vajpayee, is a highway tunnel being built under the Rohtang Pass in the eastern Pir Panjal range of the Himalayas on the Leh-Manali Highway.",
+                    solution_hi: "44.(a) भारत के पूर्व प्रधान मंत्री अटल बिहारी वाजपेयी के नाम पर अटल सुरंग, लेह-मनाली राजमार्ग पर हिमालय के पूर्वी पीर पंजाल रेंज में रोहतांग दर्रे के नीचे बनाई जा रही एक राजमार्ग सुरंग है।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "45",
+                    section: "18",
+                    question_en: "45. Who was appointed as brand ambassador of Visa-the payment technology company in 2019?",
+                    question_hi: "45. 2019 में वीजा-भुगतान प्रौद्योगिकी कंपनी का ब्रांड एंबेसडर किसे नियुक्त किया गया?",
+                    options_en: ["Dutee Chand", "PV Sindhu", 
+                                "Sania Mirza", "PT Usha"],
+                    options_hi: [" दुती चंद             ", " पीवी सिंधु",
+                                " सानिया मिर्जा", " पीटी उषा"],
+                    solution_en: "45.(b)  In September,2019  Visa, the payment technology company, has signed up the world badminton champion Pusarla Venkata Sindhu as its brand ambassador for two years.",
+                    solution_hi: "45.(b) सितंबर, 2019 में, भुगतान प्रौद्योगिकी कंपनी वीज़ा ने विश्व बैडमिंटन चैंपियन पुसरला वेंकट सिंधु को दो साल के लिए अपने ब्रांड एंबेसडर के रूप में साइन किया है। ",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "46",
+                    section: "18",
+                    question_en: "46. Pradhan Mantri Jeevan Yojana offers a protection term insurance cover of____ to the insurer.",
+                    question_hi: "46. प्रधान मंत्री जीवन योजना बीमाकर्ता को ____ की सुरक्षा अवधि प्रदान करती है।",
+                    options_en: [" 5 lakh", " 2 lakh", 
+                                " 8 lakh", " 4 lakh"],
+                    options_hi: [" 5 lakh", " 2 lakh",
+                                " 8 lakh", " 4 lakh"],
+                    solution_en: "46.(b) PMJJBY is a pure term insurance policy which covers only mortality with no investment component and has a life cover of Rs. 2 lakh. Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY) is a one-year life insurance scheme, renewable from year to year, offering coverage for death.",
+                    solution_hi: "46.(b) PMJJBY एक शुद्ध टर्म इंश्योरेंस पॉलिसी है जो बिना किसी निवेश घटक के केवल मृत्यु दर को कवर करती है और इसमें रुपये का जीवन कवर है। 2 लाख। प्रधान मंत्री जीवन ज्योति बीमा योजना (पीएमजेजेबीवाई) एक साल की जीवन बीमा योजना है, जो साल-दर-साल नवीकरणीय है, जो मृत्यु के लिए कवरेज प्रदान करती है।",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "47",
+                    section: "18",
+                    question_en: "47.The Indian National Congress session of September 1920 was held at_____.",
+                    question_hi: "47.सितंबर 1920 का भारतीय राष्ट्रीय कांग्रेस अधिवेशन _____ में आयोजित किया गया था।",
+                    options_en: [" Calcutta ", " Lucknow", 
+                                " Nagpur", " Madras"],
+                    options_hi: [" Calcutta", " Lucknow",
+                                " Nagpur", " Madras"],
+                    solution_en: "47. (a) Indian national congress 1920 session took place in calcutta and from here non-cooperation movement was started with an aim of self governance and obtaining full independence by withdrawing its support to Britishers following  Rowlatt Act,1919 and Jallianwala Bagh massacre, 1919.",
+                    solution_hi: "47.(a) भारतीय राष्ट्रीय कांग्रेस का 1920 का सत्र कलकत्ता में हुआ और यहीं से असहयोग आंदोलन स्वशासन के उद्देश्य से शुरू हुआ और रॉलेट एक्ट, 1919 और जलियांवाला बाग हत्याकांड, 1919 के बाद अंग्रेजों से अपना समर्थन वापस लेते हुए पूर्ण स्वतंत्रता प्राप्त की।",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "48",
+                    section: "18",
+                    question_en: "48.Where is the Dharmraja Ratha monument located?",
+                    question_hi: "48.धर्मराज रथ स्मारक कहाँ स्थित है?",
+                    options_en: [" Kanchipuram", " Khajuraho", 
+                                " Mahabalipuram", " Suchindram"],
+                    options_hi: [" कांचीपुरम", " खजुराहो",
+                                " महाबलीपुरम", " सुचिंद्रम"],
+                    solution_en: "48.(C)the Dharmraja Ratha monument located in     Mahabalipuram ( Tamilnadu ) ",
+                    solution_hi: "48.(C)धर्मराज रथ स्मारक महाबलीपुरम (तमिलनाडु) में स्थित है",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "49",
+                    section: "18",
+                    question_en: "49.Pravasi Bhartiya Divas is celebrated on:",
+                    question_hi: "49. प्रवासी भारतीय दिवस किस दिन मनाया जाता है:",
+                    options_en: [" 8th January ", " 2nd January", 
+                                " 9th January", " 1st January"],
+                    options_hi: [" 8 जनवरी ", " 2 जनवरी",
+                                " 9 जनवरी", " 1 जनवरी"],
+                    solution_en: "49.(c) Pravasi Bharatiya Divas is a celebratory day observed on 9 January by the Republic of India to mark the contribution of the overseas Indian community towards the development of India. The day commemorates the return of Mahatma Gandhi from South Africa to Mumbai on 9 January 1915. ",
+                    solution_hi: "49.(C) प्रवासी भारतीय दिवस भारत के विकास के लिए प्रवासी भारतीय समुदाय के योगदान को चिह्नित करने के लिए भारत गणराज्य द्वारा 9 जनवरी को मनाया जाने वाला एक उत्सव दिवस है। यह दिन 9 जनवरी 1915 को महात्मा गांधी की दक्षिण अफ्रीका से मुंबई वापसी की याद में मनाया जाता है।",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "50",
+                    section: "17",
+                    question_en: "50. Which of the following Articles of the Constitution of India gurantees the Right to Freedom of Religion?",
+                    question_hi: "50. भारत के संविधान के निम्नलिखित में से कौन सा अनुछेद धर्म का स्वतंत्रता का अधिकार प्रदान करता है ?",
+                    options_en: [" Articles 14-18 ", " Articles 19-22 ", 
+                                " Articles 23-24", " Articles 25-28"],
+                    options_hi: [" अनुच्छेद 14-18", " अनुच्छेद 19-22",
+                                " अनुच्छेद 23-24", " अनुच्छेद 25-28"],
+                    solution_en: "50.(d) Article 25. Freedom of conscience and free profession, practice and propagation of religion.<br />Article 26. Freedom to manage religious affairs.<br />Article 27. Freedom as to payment of taxes for promotion of any particular religion.<br />Article 28. Freedom as to attendance at religious instruction or religious worship in certain education institutions.",
+                    solution_hi: "50.(d) अनुच्छेद 25. अंतःकरण की स्वतंत्रता और धर्म के स्वतंत्र व्यवसाय, आचरण और प्रचार-प्रसार की स्वतंत्रता।<br />अनुच्छेद 26. धार्मिक मामलों के प्रबंधन की स्वतंत्रता।<br />अनुच्छेद 27. किसी विशेष धर्म के प्रचार के लिए करों के भुगतान के बारे में स्वतंत्रता।<br />अनुच्छेद 28. कुछ शिक्षा संस्थानों में धार्मिक शिक्षा या धार्मिक पूजा में उपस्थिति के बारे में स्वतंत्रता।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "51",
+                    section: "17",
+                    question_en: "<p>51. The value of<math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><mn>2</mn><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi></mrow><mrow><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi><mo>+</mo><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi></mrow></mfrac><mo>-</mo><mn>1</mn></math> is:</p>",
+                    question_hi: "<p>51. <math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><mn>2</mn><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi></mrow><mrow><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi><mo>+</mo><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi></mrow></mfrac><mo>-</mo><mn>1</mn></math> का मान है :</p>",
+                    options_en: ["<p>-2sin<sup>2</sup>&theta;cos<sup>2</sup>&theta;</p>", "<p>-1</p>", 
+                                "<p>0</p>", "<p>1</p>"],
+                    options_hi: ["<p>-2sin<sup>2</sup>&theta;cos<sup>2</sup>&theta;</p>", "<p>-1</p>",
+                                "<p>0</p>", "<p>1</p>"],
+                    solution_en: "<p>51.(c) <math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><mn>2</mn><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi></mrow><mrow><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi><mo>+</mo><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi></mrow></mfrac><mo>-</mo><mn>1</mn></math> <br>Put <math display=\"inline\"><mi>&#952;</mi></math> = 0&deg;, we get&nbsp;<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mrow><mn>1</mn><mo>-</mo><mn>2</mn><msup><mi>sin</mi><mn>2</mn></msup><mi>&#952;</mi><msup><mi>cos</mi><mn>2</mn></msup><mi>&#952;</mi></mrow><mrow><msup><mi>sin</mi><mn>4</mn></msup><mi>&#952;</mi><mo>+</mo><msup><mi>cos</mi><mn>4</mn></msup><mi>&#952;</mi></mrow></mfrac><mo>-</mo><mn>1</mn></math><br>= 0</p>",
+                    solution_hi: "<p>51.(c) <math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><mn>2</mn><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi></mrow><mrow><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi><mo>+</mo><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi></mrow></mfrac><mo>-</mo><mn>1</mn></math> <br><math display=\"inline\"><mi>&#952;</mi></math> = 0&deg; रखें।,<br>हम पाते हैं की, <math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><mn>2</mn><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></msup><mi>&#952;</mi></mrow><mrow><mi>s</mi><mi>i</mi><msup><mrow><mi>n</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi><mo>+</mo><mi>c</mi><mi>o</mi><msup><mrow><mi>s</mi></mrow><mrow><mn>4</mn></mrow></msup><mi>&#952;</mi></mrow></mfrac><mo>-</mo><mn>1</mn></math>&nbsp;<br>= 0</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "52",
+                    section: "17",
+                    question_en: "<p>52. While selling an article of marked price ₹ 5,040 at a discount of 40%, if a trader gains 20%, then the profit in ₹ is:</p>",
+                    question_hi: "<p>52. 5040 रुपये अंकित मूल्य वाली वस्तु को 40% की छूट पर बेचने के दौरान, यदि किसी विक्रेता को 20% का लाभ होता है, तो उसका लाभ रुपये में कितना है ?</p>",
+                    options_en: ["<p>₹ 2,520</p>", "<p>₹ 720</p>", 
+                                "<p>₹ 642</p>", "<p>₹ 504</p>"],
+                    options_hi: ["<p>₹ 2,520</p>", "<p>₹ 720</p>",
+                                "<p>₹ 642</p>", "<p>₹ 504</p>"],
+                    solution_en: "<p>52.(d) <br>Marked price = ₹ 5040<br><math display=\"inline\"><mo>&#8658;</mo></math> <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>60</mn><mn>100</mn></mfrac></math> &times; 5040 = <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>120</mn><mn>100</mn></mfrac></math>&times;CP<br><math display=\"inline\"><mo>&#8658;</mo></math>CP = ₹ 2520<br><math display=\"inline\"><mo>&#8658;</mo></math>SP = ₹ 3024<br><math display=\"inline\"><mo>&#8658;</mo></math>Profit = ₹ 504</p>",
+                    solution_hi: "<p>52.(d) अंकित मूल्य = ₹ 5040<br><math display=\"inline\"><mo>&#8658;</mo><mfrac><mrow><mn>60</mn></mrow><mrow><mn>100</mn></mrow></mfrac></math> &times; 5040 = <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>120</mn><mn>100</mn></mfrac></math>&times; CP<br><math display=\"inline\"><mo>&#8658;</mo></math> CP = ₹ 2520<br><math display=\"inline\"><mo>&#8658;</mo></math>SP = ₹ 3024<br><math display=\"inline\"><mo>&#8658;</mo></math> लाभ = ₹ 504</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "53",
+                    section: "17",
+                    question_en: "<p>53. The coefficient of y in the expansion (2y - 5)<sup>3</sup>, is:</p>",
+                    question_hi: "<p>53. व्यंजक (2y - 5)<sup>3</sup> में y का गुणांक कौन सा है ?</p>",
+                    options_en: ["<p>50</p>", "<p>-30</p>", 
+                                "<p>-150</p>", "<p>150</p>"],
+                    options_hi: ["<p>50</p>", "<p>-30</p>",
+                                "<p>-150</p>", "<p>150</p>"],
+                    solution_en: "<p>53.(d) (2y - 5)<sup>3</sup> = 8y<sup>3 </sup>- 125 - 60y<sup>2</sup> + 150y&nbsp;<br>Coefficient of y = 150</p>",
+                    solution_hi: "<p>53.(d) (2y - 5)<sup>3</sup> = 8y<sup>3 </sup>- 125 - 60y<sup>2</sup> + 150y&nbsp;<br>y का गुणांक = 150</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "54",
+                    section: "17",
+                    question_en: "<p>54. In a school, the distribution of teachers is as follows:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470199.png\" alt=\"rId43\" width=\"263\" height=\"355\"> <br>The total number of teachers of age less than 40 years is/</p>",
+                    question_hi: "<p>54. एक विद्यालय में, शिक्षकों का वितरण इस प्रकार है : <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470312.png\" alt=\"rId44\"><br>40 वर्ष से कम उम्र के शिक्षकों की कुल संख्या कितनी है ?</p>",
+                    options_en: ["<p>39</p>", "<p>10</p>", 
+                                "<p>12</p>", "<p>18</p>"],
+                    options_hi: ["<p>39</p>", "<p>10</p>",
+                                "<p>12</p>", "<p>18</p>"],
+                    solution_en: "<p>54.(c) Teachers of age less than 40 years = 2+3+5+2 = 12</p>",
+                    solution_hi: "<p>54.(c) 40 वर्ष से कम आयु के शिक्षक = 2+3+5+2 = 12</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "55",
+                    section: "17",
+                    question_en: "<p>55. The area of four walls of a room having length 6 m, breadth 4 m and height 4 m, is:</p>",
+                    question_hi: "<p>55. 6 मीटर लंबाई, 4 मीटर चौड़ाई तथा 4 मीटर ऊंचाई वाले कमरे की चार दीवारों का क्षेत्रफल कितना होगा ?</p>",
+                    options_en: ["<p>50 m<sup>2</sup></p>", "<p>60 m<sup>2</sup></p>", 
+                                "<p>80 m<sup>2</sup></p>", "<p>40 m<sup>2</sup></p>"],
+                    options_hi: ["<p>50 m<sup>2</sup></p>", "<p>60 m<sup>2</sup></p>",
+                                "<p>80 m<sup>2</sup></p>", "<p>40 m<sup>2</sup></p>"],
+                    solution_en: "<p>55.(c) Area of four walls = 2 &times; (l + b) &times; h <br>= 2 &times; (6 + 4) &times; 4 = 80 m<sup>2</sup></p>",
+                    solution_hi: "<p>55.(c) चार दीवारों का क्षेत्रफल = 2 &times; (l + b) &times; h<br>= 2 &times; (6 + 4) &times; 4 = 80 m<sup>2</sup></p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "56",
+                    section: "17",
+                    question_en: "<p>56. The average of five consecutive odd numbers is m. If the next three odd numbers are also included, then what is the increase in the average?</p>",
+                    question_hi: "<p>56. पाँच लगातार विषम संख्याओं का औसत m है | यदि अगली तीन विषम संख्याओं को भी शामिल कर लिया जाए, तो औसत में कितनी वृद्धि होगी ?</p>",
+                    options_en: ["<p>3</p>", "<p>17</p>", 
+                                "<p>0</p>", "<p>8</p>"],
+                    options_hi: ["<p>3</p>", "<p>17</p>",
+                                "<p>0</p>", "<p>8</p>"],
+                    solution_en: "<p>56.(a) Average of five consecutive odd numbers = m<br>Thus, middle number is &lsquo;m&rsquo;<br>First five odd numbers = m-4,m-2,m,m+2,m+4<br>Next three odd consecutive numbers = m+6,m+8,m+10<br>Average of these 8 consecutive numbers = <math display=\"inline\"><mfrac><mrow><mi>m</mi><mo>-</mo><mn>4</mn><mo>+</mo><mi>m</mi><mo>-</mo><mn>2</mn><mo>+</mo><mi>m</mi><mo>+</mo><mi>m</mi><mo>+</mo><mn>2</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>4</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>6</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>8</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>10</mn></mrow><mrow><mn>8</mn></mrow></mfrac></math><br>= m+3<br>Increase in average = 3</p>",
+                    solution_hi: "<p>56.(a) पाँच क्रमागत विषम संख्याओं का औसत = m<br>अत: मध्य संख्या \'m\' है<br>पहली पांच विषम संख्या = m-4,m-2,m,m+2,m+4<br>अगले तीन विषम क्रमागत अंक = m+6,m+8,m+10<br>इन 8 क्रमागत संख्याओं का औसत = <math display=\"inline\"><mfrac><mrow><mi>m</mi><mo>-</mo><mn>4</mn><mo>+</mo><mi>m</mi><mo>-</mo><mn>2</mn><mo>+</mo><mi>m</mi><mo>+</mo><mi>m</mi><mo>+</mo><mn>2</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>4</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>6</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>8</mn><mo>+</mo><mi>m</mi><mo>+</mo><mn>10</mn></mrow><mrow><mn>8</mn></mrow></mfrac></math><br>= m+3<br>औसत में वृद्धि = 3</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "57",
+                    section: "17",
+                    question_en: "<p>57. Two cars A and B leave Delhi at 8:30 a.m. and 9 a.m. for Shimla, respectively. They travel at the speeds of 40km/h and 50 km/h respectively. How many kilometres away from Delhi will the two cars be together?</p>",
+                    question_hi: "<p>57. दो कारें A तथा B दिल्ली से क्रमशः 8 : 30 a.m एवं 9 a.m में शिमला जाने के लिए खुलती है | वे क्रमशः 40 किमी/घंटा तथा 50 किमी/घंटा की चाल से यात्रा करती हैं | दोनों कारें दिल्ली से कितने किलोमीटर की दूरी पर एक साथ होंगी ?</p>",
+                    options_en: ["<p>200 km</p>", "<p>45 km</p>", 
+                                "<p>100 km</p>", "<p>5 km</p>"],
+                    options_hi: ["<p>200 km</p>", "<p>45 km</p>",
+                                "<p>100 km</p>", "<p>5 km</p>"],
+                    solution_en: "<p>57.(c) Speed of car A = 40km/h<br>Speed of car B = 50km/h<br>Distance travelled by car A in 30 minutes = 20 km<br>Meeting time = <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>20</mn><mrow><mn>50</mn><mo>-</mo><mn>40</mn></mrow></mfrac></math>= 2 hour<br>Distance travelled by car B in 2 = 100km</p>",
+                    solution_hi: "<p>57.(c) कार A की गति = 40 किमी/घंटा<br>कार B की गति = 50 किमी/घंटा<br>कार A द्वारा 30 मिनट में तय की गई दूरी = 20 किमी<br>मुलाकात का समय = <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>20</mn><mrow><mn>50</mn><mo>-</mo><mn>40</mn></mrow></mfrac></math>= 2 घंटे<br>कार B द्वारा 2 घंटे में तय की गई दूरी = 100 किमी</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "58",
+                    section: "17",
+                    question_en: "<p>58. If 1 - 64x<sup>3 </sup>- 12x + px<sup>2</sup> = (1 - 4x)<sup>3</sup>, then the value of p is:</p>",
+                    question_hi: "<p>58. यदि 1 - 64x<sup>3 </sup>- 12x + px<sup>2</sup> = (1 - 4x)<sup>3</sup>, है, तो p का मान क्या होगा ?</p>",
+                    options_en: ["<p>16</p>", "<p>-12</p>", 
+                                "<p>48</p>", "<p>-48</p>"],
+                    options_hi: ["<p>16</p>", "<p>-12</p>",
+                                "<p>48</p>", "<p>-48</p>"],
+                    solution_en: "<p>58.(c) (1 - 4x)<sup>3</sup> = 1 - 64x<sup>3 </sup>- 12x + 48x<sup>2</sup>p = 48</p>",
+                    solution_hi: "<p>58.(c)(1 - 4x)<sup>3</sup> = 1 - 64x<sup>3 </sup>- 12x + 48x<sup>2</sup>p = 48</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "59",
+                    section: "17",
+                    question_en: "<p>59. What is the value of sin 30&deg; + cos 30&deg; - tan 45&deg; ?</p>",
+                    question_hi: "<p>59. sin 30&deg; + cos 30&deg; - tan 45&deg; का मान क्या होगा ?</p>",
+                    options_en: ["<p><math display=\"inline\"><mfrac><mrow><msqrt><mn>3</mn></msqrt><mo>-</mo><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><msqrt><mn>3</mn></msqrt></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>", 
+                                "<p><math display=\"inline\"><mfrac><mrow><msqrt><mn>2</mn></msqrt><mo>+</mo><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><msqrt><mn>3</mn></msqrt><mo>+</mo><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>"],
+                    options_hi: ["<p><math display=\"inline\"><mfrac><mrow><msqrt><mn>3</mn></msqrt><mo>-</mo><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><mn>1</mn><mo>-</mo><msqrt><mn>3</mn></msqrt></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>",
+                                "<p><math display=\"inline\"><mfrac><mrow><msqrt><mn>2</mn></msqrt><mo>+</mo><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><msqrt><mn>3</mn></msqrt><mo>+</mo><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>"],
+                    solution_en: "<p>59.(a) sin 30&deg;+ cos 30&deg;- tan 45&deg;<br><math display=\"inline\"><mo>&#8658;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math> + <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><msqrt><mn>3</mn></msqrt><mn>2</mn></mfrac></math>- 1 &rArr; <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mrow><msqrt><mn>3</mn></msqrt><mo>-</mo><mn>1</mn></mrow><mn>2</mn></mfrac></math></p>",
+                    solution_hi: "<p>59.(a) sin 30&deg;+ cos 30&deg;- tan 45&deg;<br><math display=\"inline\"><mo>&#8658;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math> + <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><msqrt><mn>3</mn></msqrt><mn>2</mn></mfrac></math>- 1 &rArr; <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mrow><msqrt><mn>3</mn></msqrt><mo>-</mo><mn>1</mn></mrow><mn>2</mn></mfrac></math></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "60",
+                    section: "17",
+                    question_en: "60. Study the given table carefully and answer the questions that follows: <br /> <img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470444.png\" alt=\"rId45\" /> <br />The percentage of students who have passed with distinction in the year 2012 is: ",
+                    question_hi: "60. निम्नलिखित तालिका का ध्यानपूर्वक अध्ययन कीजिए तथा फिर पूछे गए प्रश्नों के उत्तर दीजिए | <br /> <img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470613.png\" alt=\"rId46\" /> <br />ऐसे छात्रों का प्रतिशत बताएँ जो वर्ष 2012 में डिस्टिंक्शन के साथ सफल हुए हैं ?",
+                    options_en: [" 27% ", " 20% ", 
+                                " 25%  ", " 22%"],
+                    options_hi: [" 27%", " 20% ",
+                                " 25%  ", " 22%<br />."],
+                    solution_en: "60.(c) % students who have passed with distinction in 2012<br /> =<math display=\"inline\"><mfrac><mrow><mn>210</mn></mrow><mrow><mn>840</mn></mrow></mfrac></math> ×100 = 25%",
+                    solution_hi: "60.(c) 2012 में डिस्टिंक्शन के साथ पास हुए छात्रों का %  <br /> =<math display=\"inline\"><mfrac><mrow><mn>210</mn></mrow><mrow><mn>840</mn></mrow></mfrac></math> ×100 = 25%",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "61",
+                    section: "17",
+                    question_en: "<p>61. If the given number 925x85 is divisible by 11, then the smallest value of x is:</p>",
+                    question_hi: "<p>61. यदि दी गयी संख्या 925x85 , 11 से विभाज्य है, तो x का सबसे छोटा मान कितना होगा ?</p>",
+                    options_en: ["<p>4</p>", "<p>2</p>", 
+                                "<p>1</p>", "<p>3</p>"],
+                    options_hi: ["<p>4</p>", "<p>2</p>",
+                                "<p>1</p>", "<p>3</p>"],
+                    solution_en: "<p>61.(a) For a number to be divisible by 11, the difference of the sum of digits at odd and even places must be divisible by 11.<br>(9 + 5 + 8) - (2 + x + 5) = 15 - x<br>For x = 4, the number is divisible by 11</p>",
+                    solution_hi: "<p>61.(a) किसी संख्या को 11 से विभाज्य होने के लिए, विषम और सम स्थानों पर अंकों के योग का अंतर 11 से विभाज्य होना चाहिए।<br>( 9 + 5 + 8 ) - ( 2 + x + 5) = 15 - x<br>x = 4 के लिए, संख्या 11 से विभाज्य है।.</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "62",
+                    section: "17",
+                    question_en: "<p>62. Ten men or twelve women can finish the same work in 10 days. If 5 men and 2 women undertake the work together; how many days will they take to complete the work?</p>",
+                    question_hi: "<p>62. दस पुरुष या बारह महिलाएं एक कार्य को 10 दिनों में पूरा कर सकती हैं | यदि 5 पुरुष तथा 2 महिलाओं ने उस कार्य को शुरू किया, तो कार्य पूरा करने में उन्हें कितने दिन लगेंगे ?</p>",
+                    options_en: ["<p>40</p>", "<p>15</p>", 
+                                "<p>60</p>", "<p>20</p>"],
+                    options_hi: ["<p>40</p>", "<p>15</p>",
+                                "<p>60</p>", "<p>20</p>"],
+                    solution_en: "<p>62.(b) 10 men = 12 women<br><math display=\"inline\"><mo>&#8658;</mo></math> m : w = 6 : 5<br><math display=\"inline\"><mo>&#8658;</mo></math>Total work = work done by 10 men in 10 days = 10 &times; 6 &times; 10 = 600 units<br><math display=\"inline\"><mo>&#8658;</mo></math>Work done by 5 men and 2 women in 1 day = 5 &times; 6 + 2 &times; 5 = 40 units&nbsp;<br><math display=\"inline\"><mo>&#8658;</mo></math>time to complete 600 units work = <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>600</mn><mn>40</mn></mfrac></math>days = 15 days</p>",
+                    solution_hi: "<p>62.(b) 10 पुरुष = 12 महिलाएं<br>M : W = 6 : 5<br>कुल कार्य = 10 पुरुषों द्वारा 10 दिनों में किया गया कार्य = 10<math display=\"inline\"><mo>&#215;</mo><mn>6</mn><mo>&#215;</mo><mn>10</mn><mi>&#160;</mi></math> = 600 इकाई <br>5 पुरुषों और 2 महिलाओं द्वारा 1 दिन में किया गया कार्य = 5 <math display=\"inline\"><mo>&#215;</mo></math> 6 + 2 &times; 5 = 40 यूनिट<br>600 इकाइयों का कार्य पूरा करने का समय = <math display=\"inline\"><mfrac><mrow><mn>600</mn></mrow><mrow><mn>40</mn></mrow></mfrac></math> दिन = 15 दिन</p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "63",
+                    section: "17",
+                    question_en: "<p>63. The value of 151<sup>2 </sup>- 149<sup>2</sup> is:</p>",
+                    question_hi: "<p>63. 151<sup>2</sup>&nbsp; - 149<sup>2</sup> का मान है :</p>",
+                    options_en: ["<p>300</p>", "<p>400</p>", 
+                                "<p>200</p>", "<p>600</p>"],
+                    options_hi: ["<p>300</p>", "<p>400</p>",
+                                "<p>200</p>", "<p>600</p>"],
+                    solution_en: "<p>63.(d) 151<sup>2 </sup>- 149<sup>2</sup>&nbsp; = (151 - 149)(151 + 149) = (2)(300) = 600</p>",
+                    solution_hi: "<p>63.(d) 151<sup>2 </sup>- 149<sup>2</sup>&nbsp; = (151 - 149)(151 + 149) = (2)(300) = 600</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "64",
+                    section: "17",
+                    question_en: "64. The simple interest on a sum of ₹ 50,000 at the end of two years is ₹ 4,000. What would be the compound interest on the same sum at the same rate for the same period?",
+                    question_hi: "64. 50,000 रुपये की राशि पर दो वर्षों के अंत में 4000 रुपये का साधारण ब्याज मिलता है | इसी राशि पर इसी दर से इसी अवधि का चक्रवृद्धि ब्याज ज्ञात करें |  ",
+                    options_en: [" ₹ 8,000", " ₹ 4,040", 
+                                " ₹ 4,008         ", " ₹ 4,080"],
+                    options_hi: [" ₹ 8,000", " ₹ 4,040",
+                                " ₹ 4,008", " ₹ 4,080"],
+                    solution_en: "64.(d)  rate = <math display=\"inline\"><mfrac><mrow><mn>4000</mn><mo>×</mo><mn>100</mn></mrow><mrow><mn>50000</mn><mo>×</mo><mn>2</mn></mrow></mfrac></math> = 4%<br />Compound interest = SI for 2 years+ 4% of SI for 1 year<br />SI remains equal for each year. Thus SI for 1 year = ₹ 2000<br />CI = 4000+<math display=\"inline\"><mfrac><mrow><mn>4</mn></mrow><mrow><mn>100</mn></mrow></mfrac><mo>×</mo><mn>2000</mn></math> = ₹4080",
+                    solution_hi: "64.(d) दर = <math display=\"inline\"><mfrac><mrow><mn>4000</mn><mo>×</mo><mn>100</mn></mrow><mrow><mn>50000</mn><mo>×</mo><mn>2</mn></mrow></mfrac></math> = 4%<br />चक्रवृद्धि ब्याज = 2 वर्षो के लिए साधारण ब्याज + 1 वर्ष के लिए 4% का साधारण ब्याज <br />साधारण ब्याज प्रत्येक वर्ष बराबर रहता है  . <br />इस प्रकार, 1 वर्ष के लिए साधारण ब्याज = ₹ 2000<br />चक्रवृद्धि ब्याज = 4000+ <math display=\"inline\"><mfrac><mrow><mn>4</mn></mrow><mrow><mn>100</mn></mrow></mfrac><mo>×</mo><mn>2000</mn></math><br />= ₹4080",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "65",
+                    section: "17",
+                    question_en: "<p>65. In the given figure, cos&theta; is equal to: <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470801.png\" alt=\"rId47\" width=\"163\" height=\"166\"></p>",
+                    question_hi: "<p>65. दी गयी आकृति में, cos&theta; किसके बराबर है ? <br><br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470801.png\" alt=\"rId47\" width=\"163\" height=\"166\"></p>",
+                    options_en: ["<p><math display=\"inline\"><mfrac><mrow><mn>5</mn></mrow><mrow><mn>13</mn></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><mn>12</mn></mrow><mrow><mn>5</mn></mrow></mfrac></math></p>", 
+                                "<p><math display=\"inline\"><mfrac><mrow><mn>5</mn></mrow><mrow><mn>12</mn></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><mn>12</mn></mrow><mrow><mn>13</mn></mrow></mfrac></math></p>"],
+                    options_hi: ["<p><math display=\"inline\"><mfrac><mrow><mn>5</mn></mrow><mrow><mn>13</mn></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><mn>12</mn></mrow><mrow><mn>5</mn></mrow></mfrac></math></p>",
+                                "<p><math display=\"inline\"><mfrac><mrow><mn>5</mn></mrow><mrow><mn>12</mn></mrow></mfrac></math></p>", "<p><math display=\"inline\"><mfrac><mrow><mn>12</mn></mrow><mrow><mn>13</mn></mrow></mfrac></math></p>"],
+                    solution_en: "<p>65.(a) In <math display=\"inline\"><mi>&#916;</mi><mi>P</mi><mi>Q</mi><mi>R</mi><mo>,</mo></math> PR =&nbsp;<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><msqrt><msup><mn>13</mn><mn>2</mn></msup><mo>-</mo><msup><mn>12</mn><mn>2</mn></msup></msqrt></math> = 5<br><br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470974.png\" alt=\"rId48\" width=\"157\" height=\"187\"><br>cos&theta; = <math display=\"inline\"><mfrac><mrow><mn>5</mn></mrow><mrow><mn>13</mn></mrow></mfrac></math></p>",
+                    solution_hi: "<p>65.(a) <math display=\"inline\"><mi>&#916;</mi><mi>P</mi><mi>Q</mi><mi>R</mi></math> में, PR = <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><msqrt><msup><mn>13</mn><mn>2</mn></msup><mo>-</mo><msup><mn>12</mn><mn>2</mn></msup></msqrt></math> = 5<br><br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358470974.png\" alt=\"rId48\" width=\"157\" height=\"187\"><br>cos&theta; = <math display=\"inline\"><mfrac><mrow><mn>5</mn></mrow><mrow><mn>13</mn></mrow></mfrac></math></p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "66",
+                    section: "17",
+                    question_en: "<p>66. In the given figure, MP is the tangent to a circle with centre A and NQ is a tangent to a circle with centre B. If MP = 15 cm, NQ = 8 cm, PA = 17 cm and BQ = 10 cm, then AB is: <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471188.png\" alt=\"rId49\" width=\"240\" height=\"99\"></p>",
+                    question_hi: "<p>66. दी गयी आकृति में, MP एक वृत्त की स्पर्श रेखा है जिसका केंद्र A है तथा NQ उस वृत्त की स्पर्श रेखा है जिसका केंद्र B है | यदि MP = 15 सेमी, NQ = 8 सेमी, PA = 17 सेमी तथा BQ = 10 सेमी है, तो AB का मान क्या होगा ? <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471188.png\" alt=\"rId49\" width=\"240\" height=\"99\"></p>",
+                    options_en: ["<p>13.5 cm</p>", "<p>23 cm</p>", 
+                                "<p>14 cm</p>", "<p>28 cm</p>"],
+                    options_hi: ["<p>13.5 cm</p>", "<p>23 cm</p>",
+                                "<p>14 cm</p>", "<p>28 cm</p>"],
+                    solution_en: "<p>66.(c) MP = 15 cm, NQ = 8 cm, PA = 17 cm and BQ = 10 cm<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471188.png\" alt=\"rId49\" width=\"252\" height=\"104\"><br>AM = <math display=\"inline\"><msqrt><msup><mrow><mn>17</mn></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><msup><mrow><mn>15</mn></mrow><mrow><mn>2</mn></mrow></msup></msqrt></math> = 8 cm<br>NB = <math display=\"inline\"><msqrt><msup><mrow><mn>10</mn></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><msup><mrow><mn>8</mn></mrow><mrow><mn>2</mn></mrow></msup></msqrt></math> = 6 cm<br>AB = 8+6 = 14 cm</p>",
+                    solution_hi: "<p>66.(c) MP = 15 cm, NQ = 8 cm, PA = 17 cm और BQ = 10 cm<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471188.png\" alt=\"rId49\" width=\"252\" height=\"104\"><br>AM = <math display=\"inline\"><msqrt><msup><mrow><mn>17</mn></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><msup><mrow><mn>15</mn></mrow><mrow><mn>2</mn></mrow></msup></msqrt></math> = 8 cm<br>NB = <math display=\"inline\"><msqrt><msup><mrow><mn>10</mn></mrow><mrow><mn>2</mn></mrow></msup><mo>-</mo><msup><mrow><mn>8</mn></mrow><mrow><mn>2</mn></mrow></msup></msqrt></math> = 6 cm<br>AB = 8 + 6 = 14 cm</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "67",
+                    section: "17",
+                    question_en: "<p>67. In the given figure, the measure of &ang;BAC is:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471360.png\" alt=\"rId50\" width=\"242\" height=\"142\"></p>",
+                    question_hi: "<p>67. दी गयी आकृति में, कोण BAC का मान क्या होगा ? <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471360.png\" alt=\"rId50\" width=\"223\" height=\"131\"></p>",
+                    options_en: ["<p>56&deg;</p>", "<p>62&deg;</p>", 
+                                "<p>48&deg;</p>", "<p>58&deg;</p>"],
+                    options_hi: ["<p>56&deg;</p>", "<p>62&deg;</p>",
+                                "<p>48&deg;</p>", "<p>58&deg;</p>"],
+                    solution_en: "<p>67.(c) Exterior angle is equal to sum of interior opposite angles. <br>&ang;ACD = &ang;ABC + &ang;BAC<br>110&deg; = 62&deg; + &ang;BAC<br>&ang;BAC = 48&deg;</p>",
+                    solution_hi: "<p>67.(c) बाह्य कोण अंत: सम्मुख कोणों के योग के बराबर होता है।<br>&ang;ACD = &ang;ABC + &ang;BAC<br>110&deg; = 62&deg; + &ang;BAC<br>&ang;BAC = 48&deg;</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "68",
+                    section: "17",
+                    question_en: "<p>68. In a particular year, the number of students enrolled in different streams in a college is as follows:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471532.png\" alt=\"rId51\"> <br>The percentage of girl students is:</p>",
+                    question_hi: "<p>68. एक विशेष वर्ष में, किसी कॉलेज के विभिन्न विषयों में नामांकित छात्रों की संख्या इस प्रकार है : <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471780.png\" alt=\"rId52\" width=\"531\" height=\"121\"> <br>छात्राओं का प्रतिशत है :</p>",
+                    options_en: ["<p>54%</p>", "<p>46%</p>", 
+                                "<p>135%</p>", "<p>50%</p>"],
+                    options_hi: ["<p>54%</p>", "<p>46%</p>",
+                                "<p>135%</p>", "<p>50%</p>"],
+                    solution_en: "<p>68.(a) Total number of boys = 32 + 28 + 42 + 13 = 115<br>Total number of girls = 18 + 45 + 42 + 30 = 135<br>Total number of students = 250<br>% of girls =<math display=\"inline\"><mfrac><mrow><mn>135</mn></mrow><mrow><mn>250</mn></mrow></mfrac></math> &times;100 = 54%</p>",
+                    solution_hi: "<p>68.(a) लड़कों की कुल संख्या = 32 + 28 + 42 + 13 = 115<br>लड़कियों की कुल संख्या = 18 + 45 + 42 + 30 = 135<br>छात्रों की कुल संख्या = 250<br>लड़कियों का % = <math display=\"inline\"><mfrac><mrow><mn>135</mn></mrow><mrow><mn>250</mn></mrow></mfrac><mo>&#215;</mo></math>100 = 54%</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "69",
+                    section: "17",
+                    question_en: "69. If A:B = 3:5 and B:C = 2:3, then A:B:C is equal to:",
+                    question_hi: "69. यदि A:B = 3:5 तथा B:C = 2:3 है, तो A:B:C का मान क्या होगा ? ",
+                    options_en: [" 6:10:15", " 6:15:10", 
+                                " 3:7:3", " 3:8:6"],
+                    options_hi: [" 6:10:15", " 6:15:10",
+                                " 3:7:3 ", " 3:8:6"],
+                    solution_en: "69.(a)  A:B = 3:5 and B:C = 2:3<br />A:B:C = 6:10:15",
+                    solution_hi: "69.(a) A:B = 3:5 और B:C = 2:3<br />A:B:C = 6:10:15",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "70",
+                    section: "17",
+                    question_en: "<p>70. From the given table, what is the percentage of students scoring 40 or more, but less than 70.<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358471912.png\" alt=\"rId53\" width=\"273\" height=\"323\"></p>",
+                    question_hi: "<p>70. दी गयी तालिका से, ऐसे छात्रों का प्रतिशत ज्ञात करें जिन्होंने 40 अथवा अधिक लेकिन 70 से कम अंक प्राप्त किया है | <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358472030.png\" alt=\"rId54\" width=\"221\" height=\"298\"></p>",
+                    options_en: ["<p>8%</p>", "<p>96%</p>", 
+                                "<p>56%</p>", "<p>48%</p>"],
+                    options_hi: ["<p>8%</p>", "<p>96</p>",
+                                "<p>56%</p>", "<p>48%</p>"],
+                    solution_en: "<p>70.(d) Total number of students = 50 <br>Students scoring more than 40 and less than 70 = 46 - 22 = 24<br>Required % =<math display=\"inline\"><mfrac><mrow><mn>24</mn></mrow><mrow><mn>50</mn></mrow></mfrac></math> &times; 100 = 48%</p>",
+                    solution_hi: "<p>70.(d) छात्रों की कुल संख्या = 50 <br>40 से अधिक और 70 से कम स्कोर करने वाले छात्र = 46 - 22 = 24<br>आवश्यक % =<math display=\"inline\"><mfrac><mrow><mn>24</mn></mrow><mrow><mn>50</mn></mrow></mfrac></math> &times; 100 = 48%</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "71",
+                    section: "17",
+                    question_en: "<p>71. In the given figure, if &ang;A = 100&deg;, then &ang;C=?<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358472209.png\" alt=\"rId55\" width=\"157\" height=\"123\"></p>",
+                    question_hi: "<p>71. दी गयी आकृति में, यदि &ang;A = 100&deg; है, तो कोण C = ? <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358472209.png\" alt=\"rId55\" width=\"157\" height=\"123\"></p>",
+                    options_en: ["<p>50&deg;</p>", "<p>100&deg;</p>", 
+                                "<p>80&deg;</p>", "<p>90&deg;</p>"],
+                    options_hi: ["<p>50&deg;</p>", "<p>100&deg;</p>",
+                                "<p>80&deg;</p>", "<p>90&deg;</p>"],
+                    solution_en: "<p>71.(c) Sum of opposite angles of a cyclic quadrilateral is 180&deg;.<br>&ang;A = 100&deg; then &ang;C = 80&deg;</p>",
+                    solution_hi: "<p>71.(c) एक चक्रीय चतुर्भुज के सम्मुख कोणों का योग 180&deg; होता है।<br>&ang;A = 100&deg; तब &ang;C = 80&deg;</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "72",
+                    section: "17",
+                    question_en: "<p>72. In the given figure, <math display=\"inline\"><mi>&#916;</mi><mi>A</mi><mi>B</mi><mi>C</mi></math>is an isosceles triangle, in which AB=AC, AD&perp;BC, BC = 6cm and AD = 4cm. The length of AB is:<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358472422.png\" alt=\"rId56\" width=\"142\" height=\"142\"></p>",
+                    question_hi: "<p>72. दी गयी आकृति में, त्रिभुज ABC एक समद्विबाहु त्रिभुज है जिसमें AB = AC, AD<math display=\"inline\"><mo>&#8869;</mo></math>BC, BC = 6 सेमी तथा AD = 4 सेमी है | AB की लंबाई कितनी है ? <br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1744358472422.png\" alt=\"rId56\" width=\"142\" height=\"142\"></p>",
+                    options_en: ["<p>6 cm</p>", "<p>7 cm</p>", 
+                                "<p>4 cm</p>", "<p>5 cm</p>"],
+                    options_hi: ["<p>6 cm</p>", "<p>7 cm</p>",
+                                "<p>4 cm</p>", "<p>5 cm</p>"],
+                    solution_en: "<p>72.(d) In an isosceles triangle, perpendicular from common vertex to opposite side acts as its bisector. <br>Therefore, D is the midpoint of BC. BD=DC = 3 cm<br>In <math display=\"inline\"><mi>&#916;</mi></math>ABD, BD = 3 cm and AD = 4 cm<br>Thus, AB = 5 cm (using pythagoras theorem)</p>",
+                    solution_hi: "<p>72.(d) एक समद्विबाहु त्रिभुज में, उभयनिष्ठ शीर्ष से विपरीत भुजा पर लंबवत उसके समद्विभाजक के रूप में कार्य करता है।<br>अत: D, BC का मध्यबिंदु है। BD = DC = 3 cm<br><math display=\"inline\"><mi>&#916;</mi></math>ABD में, BD = 3 cm तथा AD = 4 cm<br>इस प्रकार, AB = 5 cm (पाइथागोरस प्रमेय का उपयोग करने पर)</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "73",
+                    section: "17",
+                    question_en: "73. In an examination, Anita scored 31% marks and failed by 16 marks. Sunita scored 40% marks and obtained 56 marks more than those required to pass. Find the minimum marks required to pass.",
+                    question_hi: "73. एक परीक्षा में, अनीता को 31% अंक मिले तथा वह 16 अंकों से फेल हो गयी | सुनीता को 40% अंक मिले तथा उसके अंक उत्तीर्ण होने के लिए आवश्यक अंक से 56 अधिक थे | उत्तीर्ण होने के लिए न्यूनतम कितने अंकों की आवश्यकता है ?",
+                    options_en: [" 3116     ", " 3944   ", 
+                                " 7100   ", " 264"],
+                    options_hi: [" 3116     ", " 3944    ",
+                                " 7100   ", " 264"],
+                    solution_en: "73.(d) Let M be the maximum marks<br />According to question: <br />31% of M +16 = 40% of M - 56<br />9% of M = 72<br />M = 800<br />Passing marks = 40% of M - 56 <br />= 320-56 = 264",
+                    solution_hi: "73.(d) माना M अधिकतम अंक है<br />प्रश्न के अनुसार:<br />M का 31% +16 = M का 40%  - 56<br />M का 9% = 72<br />M = 800<br />उत्तीर्ण अंक = 40% of M - 56 = 320-56 = 264",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "74",
+                    section: "17",
+                    question_en: "<p>74. The value of 3 - (9 - 3 <math display=\"inline\"><mo>&#215;</mo></math> 8 &divide; 2) is:</p>",
+                    question_hi: "<p>74. 3 - (9 - 3 <math display=\"inline\"><mo>&#215;</mo></math> 8 &divide; 2) का मान क्या होगा ?</p>",
+                    options_en: ["<p>-21</p>", "<p><math display=\"inline\"><mfrac><mrow><mn>21</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>", 
+                                "<p>0</p>", "<p>6</p>"],
+                    options_hi: ["<p>-21</p>", "<p><math display=\"inline\"><mfrac><mrow><mn>21</mn></mrow><mrow><mn>2</mn></mrow></mfrac></math></p>",
+                                "<p>0</p>", "<p>6</p>"],
+                    solution_en: "<p>74.(d) 3 - (9 - 3 <math display=\"inline\"><mo>&#215;</mo></math> 8 &divide; 2) = 6 (using BODMAS theorem)</p>",
+                    solution_hi: "<p>74.(d) 3 - (9 - 3 <math display=\"inline\"><mo>&#215;</mo></math> 8 &divide; 2) = 6</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "75",
+                    section: "7",
+                    question_en: "<p>75. A person loses 10% by selling 18 table fans for Rs. 11,664. How many fans should he sell for ₹ 17,424 to earn 10% profit?</p>",
+                    question_hi: "<p>75. 18 टेबल पंखों को 11,664 रुपये में बेचने के बाद एक व्यक्ति को 10% की हानि होती है | 10% का लाभ कमाने के लिए उसे 17,424 रुपये में कितने पंखे बेचने चाहिए ?</p>",
+                    options_en: ["<p>23</p>", "<p>18</p>", 
+                                "<p>20</p>", "<p>22</p>"],
+                    options_hi: ["<p>23</p>", "<p>18</p>",
+                                "<p>20</p>", "<p>22</p>"],
+                    solution_en: "<p>75.(d) CP of 18 tables <br>=<math display=\"inline\"><mfrac><mrow><mn>11664</mn></mrow><mrow><mn>90</mn></mrow></mfrac><mo>&#215;</mo></math> 100 = ₹12960<br>CP of 1 table = <math display=\"inline\"><mi>&#8377;</mi></math>720<br>Number of tables for <math display=\"inline\"><mi>&#8377;</mi></math>17,424 <br>= <math display=\"inline\"><mfrac><mrow><mn>17424</mn></mrow><mrow><mn>720</mn></mrow></mfrac></math> = 24.2<br>To earn 10% profit, number of table that can be sold for <math display=\"inline\"><mi>&#8377;</mi></math>17,424 &rArr; <math xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mn>10</mn><mn>100</mn></mfrac></math><br>= <math display=\"inline\" xmlns=\"http://www.w3.org/1998/Math/MathML\"><mfrac><mrow><mn>24</mn><mo>.</mo><mn>2</mn><mo>-</mo><mi>S</mi></mrow><mi>S</mi></mfrac></math>S = 22 tables</p>",
+                    solution_hi: "<p>75.(d) 18 टेबल का क्रय मूल्य<br>=<math display=\"inline\"><mfrac><mrow><mn>11664</mn></mrow><mrow><mn>90</mn></mrow></mfrac></math> &times; 100 = ₹12960<br>1 टेबल का क्रय मूल्य= <math display=\"inline\"><mi>&#8377;</mi></math>720<br>10% लाभ अर्जित करने के लिए 1 टेबल का विक्रय मूल्य =<br><math display=\"inline\"><mfrac><mrow><mn>720</mn></mrow><mrow><mn>100</mn></mrow></mfrac></math> &times; 110 = 792<br>₹17,424 में टेबलों की संख्या = <math display=\"inline\"><mfrac><mrow><mn>17424</mn></mrow><mrow><mn>792</mn></mrow></mfrac></math> = 22</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "76",
+                    section: "7",
+                    question_en: "<p>76. Select the option that can be used as a one word substitute for the given group of words.<br>A game in which neither party wins</p>",
+                    question_hi: "<p>76. Select the option that can be used as a one word substitute for the given group of words.<br>A game in which neither party wins</p>",
+                    options_en: ["<p>Equal</p>", "<p>Flop</p>", 
+                                "<p>Draw</p>", "<p>Quit</p>"],
+                    options_hi: ["<p>Equal</p>", "<p>Flop</p>",
+                                "<p>Draw</p>", "<p>Quit</p>"],
+                    solution_en: "<p>76.(c) <strong>Draw</strong> - A game in which neither party wins.</p>",
+                    solution_hi: "<p>76.(c) <strong>Draw</strong> (ड्रा) - A game in which neither party wins.</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "77",
+                    section: "7",
+                    question_en: "77. Select the INCORRECTLY spelt word.",
+                    question_hi: "77. Select the INCORRECTLY spelt word.",
+                    options_en: [" Awful", " Accross", 
+                                " Already", " Alien"],
+                    options_hi: [" Awful", " Accross",
+                                " Already", " Alien"],
+                    solution_en: "77.(b) Accross. <br />‘Across’ is the correct spelling.",
+                    solution_hi: "77.(b) Accross. <br />‘Across’ सही spelling है।",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "78",
+                    section: "7",
+                    question_en: "78. Select the correct passive form of the given sentence.<br />The children sang the National Anthem with great enthusiasm.",
+                    question_hi: "78. Select the correct passive form of the given sentence.<br />The children sang the National Anthem with great enthusiasm.",
+                    options_en: [" The National Anthem has been sung with great enthusiasm by the children.", "The National Anthem was being sung with great enthusiasm by the children.", 
+                                " The National Anthem was sung with great enthusiasm by the children.", " The National Anthem is sung with great enthusiasm by the children"],
+                    options_hi: [" The National Anthem has been sung with great enthusiasm by the children.", "The National Anthem was being sung with great enthusiasm by the children.",
+                                " The National Anthem was sung with great enthusiasm by the children.", " The National Anthem is sung with great enthusiasm by the children"],
+                    solution_en: "78.(c) The National anthem was sung with great enthusiasm by the children - Passive voice.",
+                    solution_hi: "78.(c) The National anthem was sung with great enthusiasm by the children - Passive voice.",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "79",
+                    section: "7",
+                    question_en: "<p>79. Select the most appropriate synonym of the given word.<br>Sacred</p>",
+                    question_hi: "<p>79. Select the most appropriate synonym of the given word.<br>Sacred</p>",
+                    options_en: ["<p>Precious</p>", "<p>Valued</p>", 
+                                "<p>Holy</p>", "<p>Scarce</p>"],
+                    options_hi: ["<p>Precious</p>", "<p>Valued</p>",
+                                "<p>Holy</p>", "<p>Scarce</p>"],
+                    solution_en: "<p>79.(c)<br><strong>Holy</strong> - dedicated or consecrated to God or a religious purpose; sacred.<br><strong>Sacred</strong> - connected with God or a god or dedicated to a religious purpose and so deserving veneration.<br><strong>Precious</strong> - of great value; not to be wasted or treated carelessly.<br><strong>Valued</strong> - considered to be important or beneficial; cherished.<br><strong>Scarce</strong> - (especially of food, money, or some other resource) insufficient for the demand.</p>",
+                    solution_hi: "<p>79.(c) <br><strong>Holy</strong> (पवित्र) - dedicated or consecrated to God or a religious purpose; sacred.<br><strong>Sacred</strong> (पवित्र ) - connected with God or a god or dedicated to a religious purpose and so deserving of veneration.<br><strong>Precious</strong> (कीमती) - of great value; not to be wasted or treated carelessly.<br><strong>Valued</strong> (मूल्यवान) - considered to be important or beneficial; cherished.<br><strong>Scarce</strong> (दुर्लभ) - (especially of food, money, or some other resource) insufficient for the demand.</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "80",
+                    section: "7",
+                    question_en: "80. Select the most appropriate ANTONYM of the given word.<br />Native",
+                    question_hi: "80. Select the most appropriate ANTONYM of the given word.<br />Native",
+                    options_en: [" Foreign", " Urban", 
+                                " Rustic", " Rural"],
+                    options_hi: [" Foreign", " Urban",
+                                " Rustic", " Rural"],
+                    solution_en: "<p>80.(a) <br><strong>Foreign</strong> - of, from, in, or characteristic of a country or language other than one\'s own.<br><strong>Native</strong> - a person born in a specified place or associated with a place by birth, whether subsequently resident there or not.<br><strong>Urban</strong> - in, relating to, or characteristic of a town or city.<br><strong>Rustic</strong> - relating to the countryside; rural.<br><strong>Rural</strong> - in, relating to, or characteristic of the countryside rather than the town.</p>",
+                    solution_hi: "<p><strong>80.(a)</strong> <br><strong>Foreign</strong> (विदेशी) - of, from, in, or characteristic of a country or language other than one\'s own.<br><strong>Native</strong> (देशी) - a person born in a specified place or associated with a place by birth, whether subsequently resident there or not.<br><strong>Urban</strong> (शहरी) - in, relating to, or characteristic of a town or city.<br><strong>Rustic</strong> (देहाती) - relating to the countryside; rural.<br><strong>Rural</strong> (ग्रामीण) - in, relating to, or characteristic of the countryside rather than the town.</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "81",
+                    section: "7",
+                    question_en: "<p>81. Select the most appropriate meaning of the given idiom.<br>Look down upon</p>",
+                    question_hi: "<p>81. Select the most appropriate meaning of the given idiom.<br>Look down upon</p>",
+                    options_en: ["<p>To look for something underground</p>", "<p>To consider someone inferior</p>", 
+                                "<p>To be full of guilt</p>", "<p>To look down from a height</p>"],
+                    options_hi: ["<p>To look for something underground</p>", "<p>To consider someone inferior</p>",
+                                "<p>To be full of guilt</p>", "<p>To look down from a height</p>"],
+                    solution_en: "<p>81.(b) <strong>Look down upon</strong> - to consider someone inferior.</p>",
+                    solution_hi: "<p>81.(b) <strong>Look down upon</strong> - to consider someone inferior./किसी को हीन समझना।</p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "82",
+                    section: "7",
+                    question_en: "<p>82. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the most appropriate option to fill blank number (82).</p>",
+                    question_hi: "<p>82. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.</p>",
+                    options_en: ["<p>occasion</p>", "<p>opportunity</p>", 
+                                "<p>event</p>", "<p>excuse</p>"],
+                    options_hi: ["<p>occasion</p>", "<p>opportunity</p>",
+                                "<p>event</p>", "<p>excuse</p>"],
+                    solution_en: "<p>82.(b) opportunity.<br>The given passage states that &lsquo;Advertising is the promotion of goods and services. It provides an &ldquo;opportunity&rdquo; to the manufacturing companies&rsquo;.</p>",
+                    solution_hi: "<p>82.(b) opportunity.<br>दिए गए passage में कहा गया है कि &ldquo;Advertising, वस्तुओं एवं सेवाओं का promotion है। यह manufacturing companies को एक &ldquo;opportunity&rdquo; प्रदान करती है।</p>",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "83",
+                    section: "7",
+                    question_en: "<p>83. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the most appropriate option to ﬁll blank number (83).</p>",
+                    question_hi: "<p>83. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the most appropriate option to ﬁll blank number (83).</p>",
+                    options_en: ["<p>compounds</p>", "<p>outcome</p>", 
+                                "<p>products</p>", "<p>creation</p>"],
+                    options_hi: ["<p>compounds</p>", "<p>outcome</p>",
+                                "<p>products</p>", "<p>creation</p>"],
+                    solution_en: "<p>83.(c) products.<br>The given passage states that &ldquo;It provides an opportunity to the Manufacturing companies to sell their &lsquo;products&rsquo; better than their competitors&rdquo;.</p>",
+                    solution_hi: "<p>83.(c) products.<br>दिए गए passage में कहा गया है कि &ldquo;यह manufacturing companies को अपने competitors की तुलना में अपने &lsquo;products&rsquo; को बेहतर ढंग से बेचने का अवसर प्रदान करता है&rdquo;।</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "84",
+                    section: "7",
+                    question_en: "<p>84. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the most appropriate option to ﬁll blank number (84).</p>",
+                    question_hi: "<p>84. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the most appropriate option to ﬁll blank number (84).</p>",
+                    options_en: ["<p>at</p>", "<p>off</p>", 
+                                "<p>on</p>", "<p>in</p>"],
+                    options_hi: ["<p>at</p>", "<p>off</p>",
+                                "<p>on</p>", "<p>in</p>"],
+                    solution_en: "<p>84.(c) on. <br>The preposition &lsquo;on&rsquo; here means &lsquo;start&rsquo; thus, on starting the television we see different advertisements.</p>",
+                    solution_hi: "<p>84.(c) on. <br>यहाँ पर preposition &lsquo;on&rsquo; का अर्थ है &lsquo;start&rsquo;, इस प्रकार television चालू करने पर हमें अलग-अलग विज्ञापन दिखाई देते हैं।</p>",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "85",
+                    section: "7",
+                    question_en: "<p>85. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the appropriate option to ﬁll blank number (85).</p>",
+                    question_hi: "<p>85. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the appropriate option to ﬁll blank number (85).</p>",
+                    options_en: ["<p>being</p>", "<p>be</p>", 
+                                "<p>been</p>", "<p>to be</p>"],
+                    options_hi: ["<p>being</p>", "<p>be</p>",
+                                "<p>been</p>", "<p>to be</p>"],
+                    solution_en: "<p>85.(a) being. <br>The given passage states that &ldquo;the other &lsquo;being&rsquo; pushed towards us&rdquo;. &lsquo;Being&rsquo; is used because the sentence is past continuous.</p>",
+                    solution_hi: "<p>85.(a) being. <br>दिए गए passage में कहा गया है कि &ldquo;the other &lsquo;being&rsquo; pushed towards us&rdquo;। &lsquo;Being&rsquo; का प्रयोग इसलिए किया गया है क्योंकि sentence में past continuous है।</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "86",
+                    section: "7",
+                    question_en: "<p>86. <strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the appropriate option to ﬁll blank number (86).</p>",
+                    question_hi: "<p>86.<strong>Cloze Test</strong><br>Advertising is the promotion of goods and services. It provides an (82) ____ to the manufacturing companies to sell their (83) ____ better than their competitors. Every time we switch (84) _____the television we ﬁnd some product or the other (85) _____pushed towards us. It cannot be denied that the (86) ____behind commercial advertising is to increase sales and earn more profit.<br>Select the appropriate option to ﬁll blank number (86).</p>",
+                    options_en: ["<p>inﬂuence</p>", "<p>feeling</p>", 
+                                "<p>emotion</p>", "<p>motive</p>"],
+                    options_hi: ["<p>inﬂuence</p>", "<p>feeling</p>",
+                                "<p>emotion</p>", "<p>motive</p>"],
+                    solution_en: "<p>86.(d) motive. <br>The given passage states that &ldquo;It cannot be denied that the &lsquo;motive&rsquo; behind commercial advertising is to increase sales and earn more profit&rdquo;. Here &lsquo;motive&rsquo; means &lsquo;a reason for doing something&rsquo;.</p>",
+                    solution_hi: "<p>86.(d) motive. <br>दिए गए passage में कहा गया है कि &ldquo;इस बात से इनकार नहीं किया जा सकता है कि commercial advertising के पीछे का &lsquo;motive&rsquo; बिक्री बढ़ाना और अधिक लाभ कमाना है&rdquo;। यहाँ &lsquo;motive&rsquo; का अर्थ है &lsquo;कुछ करने का कारण&rsquo;</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "87",
+                    section: "7",
+                    question_en: "87. Given below are four jumbled sentences. Out of the given options pick the one that gives their correct order.<br />A. When a calf is born underwater, the mother must get it to the surface before it drowns.<br />B. The young ones remain with their parents for up to ﬁfteen years or more.<br />C. Often another whale assists the mother nudging the baby gently and encouraging it to swim.<br />D. Whales have highly developed maternal instincts.",
+                    question_hi: "87. Given below are four jumbled sentences. Out of the given options pick the one that gives their correct order.<br />A. When a calf is born underwater, the mother must get it to the surface before it drowns.<br />B. The young ones remain with their parents for up to ﬁfteen years or more.<br />C. Often another whale assists the mother nudging the baby gently and encouraging it to swim.<br />D. Whales have highly developed maternal instincts.",
+                    options_en: [" DBCA", " BCAD", 
+                                " CBDA", " DACB"],
+                    options_hi: [" DBCA", " BCAD",
+                                " CBDA", " DACB"],
+                    solution_en: "87.(d) DACB. <br />Option (d) DACB is the correct sequence.",
+                    solution_hi: "87.(d) DACB. <br />Option (d) DACB में sequence है।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "88",
+                    section: "7",
+                    question_en: "<p>88. Select the most appropriate option to substitute the underlined segment in the given sentence. If there is no need to substitute it, select No improvement.<br>Scarcely had the passengers boarded the plane <span style=\"text-decoration: underline;\"><strong>when the captain welcomed them.</strong></span></p>",
+                    question_hi: "<p>88. Select the most appropriate option to substitute the underlined segment in the given sentence. If there is no need to substitute it, select No improvement.<br>Scarcely had the passengers boarded the plane <span style=\"text-decoration: underline;\"><strong>when the captain welcomed them.</strong></span></p>",
+                    options_en: ["<p>that the captain welcomed them</p>", "<p>than the captain welcomes them</p>", 
+                                "<p>when the captain had welcomed them</p>", "<p>No improvement</p>"],
+                    options_hi: ["<p>that the captain welcomed them</p>", "<p>than the captain welcomes them</p>",
+                                "<p>when the captain had welcomed them</p>", "<p>No improvement</p>"],
+                    solution_en: "<p>88.(d) No improvement.</p>",
+                    solution_hi: "<p>88.(d) No improvement.</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "89",
+                    section: "7",
+                    question_en: "<p>89. Select the most appropriate option to substitute the underlined segment in the given sentence. If there is no need to substitute it, select No improvement.<br>Mother was watching a movie when the lights <span style=\"text-decoration: underline;\"><strong>were get off</strong></span></p>",
+                    question_hi: "<p>89. Select the most appropriate option to substitute the underlined segment in the given sentence. If there is no need to substitute it, select No improvement.<br>Mother was watching a movie when the lights <span style=\"text-decoration: underline;\"><strong>were get off</strong></span></p>",
+                    options_en: ["<p>went off</p>", "<p>going off</p>", 
+                                "<p>have gone off</p>", "<p>No improvement</p>"],
+                    options_hi: ["<p>went off</p>", "<p>going off</p>",
+                                "<p>have gone off</p>", "<p>No improvement</p>"],
+                    solution_en: "<p>89.(a) went off.<br>&ldquo;Were going off&rdquo; should be replaced with &lsquo;went off&rsquo;.</p>",
+                    solution_hi: "<p>89.(a) went off.<br>\"Were going off\" के स्थान पर \'went off\' का प्रयोग किया जाना चाहिए।</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "90",
+                    section: "7",
+                    question_en: "<p>90. Select the most appropriate synonym of the given word.<br>Weary</p>",
+                    question_hi: "<p>90. Select the most appropriate synonym of the given word.<br>Weary</p>",
+                    options_en: ["<p>Restless</p>", "<p>Touchy</p>", 
+                                "<p>Lively</p>", "<p>Exhausted</p>"],
+                    options_hi: ["<p>Restless</p>", "<p>Touchy</p>",
+                                "<p>Lively</p>", "<p>Exhausted</p>"],
+                    solution_en: "<p>90.(d) <br><strong>Exhausted</strong> - very tired.<br><strong>Weary</strong> - feeling or showing extreme tiredness, especially as a result of excessive exertion.<br><strong>Restless</strong> - unable to rest or relax as a result of anxiety or boredom.<br><strong>Touchy</strong> - easily upset or offended; oversensitive.<br><strong>Lively</strong> - full of life and energy; active and outgoing.</p>",
+                    solution_hi: "<p>90.(d) <br><strong>Exhausted</strong> (थका हुआ) - very tired.<br><strong>Weary</strong> (थका हुआ) - feeling or showing extreme tiredness, especially as a result of excessive exertion.<br><strong>Restless</strong> (बेचैन होना) - unable to rest or relax as a result of anxiety or boredom.<br><strong>Touchy</strong> (चिड़चिड़ा) - easily upset or offended; oversensitive.<br><strong>Lively</strong> (जीवंत) - full of life and energy; active and outgoing.</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "91",
+                    section: "7",
+                    question_en: "<p>91. Select the most appropriate ANTONYM of the given word.<br>Repulsive</p>",
+                    question_hi: "<p>91. Select the most appropriate ANTONYM of the given word.<br>Repulsive</p>",
+                    options_en: ["<p>Hideous</p>", "<p>Revolting</p>", 
+                                "<p>Brilliant</p>", "<p>Attractive</p>"],
+                    options_hi: ["<p>Hideous</p>", "<p>Revolting</p>",
+                                "<p>Brilliant</p>", "<p>Attractive</p>"],
+                    solution_en: "<p>91.(d) <br><strong>Attractive</strong> - pleasing or appealing to the senses.<br><strong>Repulsive</strong> - arousing intense distaste or disgust.<br><strong>Hideous</strong> - extremely ugly.<br><strong>Revolting</strong> - causing intense disgust; disgusting.<br><strong>Brilliant</strong> - (of light or colour) very bright.</p>",
+                    solution_hi: "<p>91.(d) <br><strong>Attractive</strong> (आकर्षक) - pleasing or appealing to the senses.<br><strong>Repulsive</strong> (प्रतिकूल) - arousing intense distaste or disgust.<br><strong>Hideous</strong> (घिनौना) - extremely ugly.<br><strong>Revolting</strong> (विद्रोही) - causing intense disgust; disgusting.<br><strong>Brilliant</strong> (शानदार) - (of light or colour) very bright.</p>",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "92",
+                    section: "7",
+                    question_en: "92. Select the INCORRECTLY spelt word.",
+                    question_hi: "92. Select the INCORRECTLY spelt word.",
+                    options_en: [" Guardian", " Guilty", 
+                                " Guarranty", " Guidance "],
+                    options_hi: [" Guardian", " Guilty",
+                                " Guarranty", " Guidance"],
+                    solution_en: "92.(c) Guarranty. <br />‘Guaranty’ is the correct spelling.",
+                    solution_hi: "92.(c) Guarranty. <br />‘Guaranty’ सही spelling है।",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "93",
+                    section: "7",
+                    question_en: "<p>93. Select the correct indirect form of the given sentence.<br>The traveller said to a passerby, \"Can you help me find my way, please?\"</p>",
+                    question_hi: "<p>93. Select the correct indirect form of the given sentence.<br>The traveller said to a passerby, \"Can you help me find my way, please?\"</p>",
+                    options_en: ["<p>The traveller asked the passerby if he could kindly help him ﬁnd his way.</p>", "<p>The traveller asked the passerby that he can kindly help him find his way.</p>", 
+                                "<p>The traveller requested to the passerby if he can help him find his way.</p>", "<p>The traveller asked the passerby could you kindly help me ﬁnd my way?</p>"],
+                    options_hi: ["<p>The traveller asked the passerby if he could kindly help him ﬁnd his way.</p>", "<p>The traveller asked the passerby that he can kindly help him find his way.</p>",
+                                "<p>The traveller requested to the passerby if he can help him find his way.</p>", "<p>The traveller asked the passerby could you kindly help me ﬁnd my way?</p>"],
+                    solution_en: "<p>93.(a) The traveller asked the passer by if he could kindly help him find his way.(indirect speech)</p>",
+                    solution_hi: "<p>93.(a) The traveller asked the passer by if he could kindly help him find his way.(indirect speech)</p>",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "94",
+                    section: "7",
+                    question_en: "94. Select the most appropriate meaning of the given idiom.<br />Keep abreast of",
+                    question_hi: "94. Select the most appropriate meaning of the given idiom.<br />Keep abreast of",
+                    options_en: [" Keep ahead of", " Keep a watch on", 
+                                " Keep up the good work", " Keep oneself updated"],
+                    options_hi: [" Keep ahead of", " Keep a watch on",
+                                " Keep up the good work", " Keep oneself updated"],
+                    solution_en: "94.(d) Keep abreast of - Keep oneself updated.",
+                    solution_hi: "94.(d) Keep abreast of - Keep oneself updated./स्वयं को अपडेट रखना।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "95",
+                    section: "7",
+                    question_en: "95. Select the option that can be used as a one word substitute for the given group of words<br />That which cannot be satisﬁed",
+                    question_hi: "95. Select the option that can be used as a one word substitute for the given group of words<br />That which cannot be satisﬁed",
+                    options_en: [" Insatiable", " Insane", 
+                                " Ingenuous", " Inapt"],
+                    options_hi: [" Insatiable", " Insane",
+                                " Ingenuous", " Inapt"],
+                    solution_en: "95.(a) Insatiable - That which cannot be satisfied.",
+                    solution_hi: "95.(a) Insatiable (अतृप्त) - That which cannot be satisfied.",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "96",
+                    section: "7",
+                    question_en: "96. Identify the segment in the sentence which contains the grammatical error. If there is no error, select \'No error\'<br />The famous author and actor are being honoured at a function today",
+                    question_hi: "96. Identify the segment in the sentence which contains the grammatical error. If there is no error, select \'No error\'<br />The famous author and actor are being honoured at a function today",
+                    options_en: [" at a function today", " The famous author and actor", 
+                                " No error", " are being honoured "],
+                    options_hi: [" at a function today", " The famous author and actor",
+                                " No error", " are being honoured"],
+                    solution_en: "96.(d) are being honoured. <br />The famous author and actor are being honoured at a function today. Use \'is\' in place of ‘are’ as the author and actor is the same person.<br /> ",
+                    solution_hi: "96.(d) are being honoured. <br />The famous author and actor are being honoured at a function today.  Author एवं actor एक ही व्यक्ति हैं, इसलिए ‘Are’ के स्थान पर ‘is’ का प्रयोग होगा।",
+                    correct: "d",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "97",
+                    section: "7",
+                    question_en: "97. Fill in the blank with the most appropriate word.<br />The minister gave an_______that strict action would be taken against the culprits.",
+                    question_hi: "97. Fill in the blank with the most appropriate word.<br />The minister gave an_______that strict action would be taken against the culprits.",
+                    options_en: [" ambition ", " assurance", 
+                                " insurance", " admission"],
+                    options_hi: [" ambition ", " assurance",
+                                " insurance", " admission"],
+                    solution_en: "97.(b) assurance. <br />Assurance means a positive declaration intended to give confidence; a promise.",
+                    solution_hi: "97.(b) assurance. <br />Assurance का अर्थ है विश्वास दिलाने के उद्देश्य से की गई एक सकारात्मक घोषणा (positive declaration); एक वादा।",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "98",
+                    section: "7",
+                    question_en: "98. Identify the segment in the sentence which contains the grammatical error. If there is no error, select \'No error\'<br />He married with a rich heiress last year.",
+                    question_hi: "98. Identify the segment in the sentence which contains the grammatical error. If there is no error, select \'No error\'<br />He married with a rich heiress last year.",
+                    options_en: [" with a rich heiress", " No error", 
+                                " He married", " last year"],
+                    options_hi: [" with a rich heiress", " No error",
+                                " He married", " last year"],
+                    solution_en: "98.(a) with a rich heiress. <br />The correct sentence would be: \"He married a rich heiress last year.\"",
+                    solution_hi: "98.(a) with a rich heiress. <br />सही sentence होगा: \"He married a rich heiress last year.\"",
+                    correct: "a",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "99",
+                    section: "7",
+                    question_en: "99. Fill in the blank with the most appropriate word.<br />She was loved by her employees for her_______ .",
+                    question_hi: "99. Fill in the blank with the most appropriate word.<br />She was loved by her employees for her_______ .",
+                    options_en: [" insolence", " benevolence", 
+                                " malevolence", " condolence"],
+                    options_hi: [" insolence", " benevolence",
+                                " malevolence", " condolence"],
+                    solution_en: "99.(b) benevolence. <br />Benevolence - the quality of being well meaning; kindness.",
+                    solution_hi: "99.(b) benevolence. <br />Benevolence (दया/कृपा) - the quality of being well meaning; kindness.",
+                    correct: "b",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+                questions.push({
+                    id: "100",
+                    section: "misc",
+                    question_en: "100. Given below are four jumbled sentences. Out of the given options pick the one that gives their correct order.<br />A. While he was doing this, he missed seeing a velvet purse full of gold coins lying on the road.<br />B. Ramesh always worried about how he would become sick and weak in old age.<br />C. To try how he would cope with blindness, Ramesh started walking with his eyes closed.<br />D. He feared that he might even lose his sight and go blind.",
+                    question_hi: "100. Given below are four jumbled sentences. Out of the given options pick the one that gives their correct order.<br />A. While he was doing this, he missed seeing a velvet purse full of gold coins lying on the road.<br />B. Ramesh always worried about how he would become sick and weak in old age.<br />C. To try how he would cope with blindness, Ramesh started walking with his eyes closed.<br />D. He feared that he might even lose his sight and go blind.",
+                    options_en: [" DBAC", " BCAD", 
+                                " BDCA", " CABD"],
+                    options_hi: [" DBAC", " BCAD",
+                                " BDCA", " CABD"],
+                    solution_en: "100.(c) BDCA. <br />Option (c) BDCA is the correct sequence.",
+                    solution_hi: "100.(c) BDCA. <br />Option (c) BDCA में सही sequence है।",
+                    correct: "c",
+                    pos_marks: 2.0,
+                    neg_marks: 0.5
+                });
+            
+            // Generate question boxes
+            const boxesContainer = document.getElementById('question-boxes');
+            questions.forEach((q, index) => {
+                const box = document.createElement('div');
+                box.className = 'q-box';
+                box.textContent = index + 1;
+                box.onclick = () => showQuestion(index);
+                box.id = `box-${index}`;
+                boxesContainer.appendChild(box);
+            });
+            
+            // Show first question
+            showQuestion(0);
+            updateProgress();
+        }
+        
+        // Show a specific question
+        
+        function formatContent(text) {
+            if (!text) return '';
+            return text.replace(/<img/g, '<img style="max-width:100%;height:auto;"');
+        }
+        
+        function showQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+            
+            currentQuestion = index;
+            const question = questions[index];
+            
+            // Update question counter
+            document.getElementById('question-counter').textContent = `Question ${index + 1} of ${questions.length}`;
+            
+            // Update question boxes
+            document.querySelectorAll('.q-box').forEach(box => box.classList.remove('current'));
+            document.getElementById(`box-${index}`).classList.add('current');
+            
+            // Generate question HTML
+            let html = `
+                <div class="question-card">
+                    <div class="question-text">
+                        <div class="en">${formatContent(question.question_en)}</div>
+                        <div class="hi" style="display:none">${formatContent(question.question_hi)} </div>
+                    </div>
+                    <div class="options" id="options-container">`;
+            
+            // Add options
+            ['a', 'b', 'c', 'd'].forEach((opt, i) => {
+                let optionClass = '';
+                let isCorrectAnswer = opt === question.correct;
+                let isUserAnswer = answers[question.id] === opt;
+                
+                // When reviewing, add appropriate classes
+                if (submitted) {
+                    if (isCorrectAnswer) {
+                        optionClass += ' correct-answer';
+                    } else if (isUserAnswer && !isCorrectAnswer) {
+                        optionClass += ' incorrect';
+                    }
+                }
+                
+                html += `
+                    <div class="option-item">
+                        <input class="option-input" type="radio" name="q${index}" 
+                            id="opt-${index}-${opt}" value="${opt}" 
+                            ${isUserAnswer ? 'checked' : ''}
+                            onclick="selectAnswer('${question.id}', '${opt}')">
+                       <label class="option-label${optionClass}" for="opt-${index}-${opt}">
+                            <div class="en">${question.options_en[i]}</div>
+                            <div class="hi" style="display:none">${question.options_hi[i]}</div>
+                        </label>
+                    </div>`;
+            });
+            
+            // Add solution if submitted
+            if (submitted) {
+                const isCorrect = answers[question.id] === question.correct;
+                const resultText = answers[question.id] ? (isCorrect ? 'Correct!' : 'Incorrect!') : 'Not attempted';
+                
+                html += `
+                    <div class="solution-container">
+                        <div class="solution-title">${resultText}</div>
+                        <div class="solution-text">
+                            <div class="en">${question.solution_en}</div>
+                            <div class="hi" style="display:none">${question.solution_hi}</div>
+                        </div>
+                    </div>`;
+            }
+            
+            html += `</div></div>`;
+            
+            document.getElementById('questions-container').innerHTML = html;
+            
+            // Apply language settings
+            applyLanguage();
+            
+            // If in mobile view, close the menu
+            if (window.innerWidth < 992) {
+                toggleNav(false);
+            }
+            
+            // Add review mode class if submitted
+            if (submitted) {
+                document.getElementById('options-container').classList.add('review-mode');
+            }
+        }
+        
+        // Apply current language
+        function applyLanguage() {
+            document.querySelectorAll(`.${currentLang}`).forEach(el => el.style.display = 'block');
+            document.querySelectorAll(`.${currentLang === 'en' ? 'hi' : 'en'}`).forEach(el => el.style.display = 'none');
+            
+            // Update language button text
+            document.getElementById('lang-text').textContent = currentLang === 'en' ? 'Hi' : 'En';
+        }
+        
+        // Select an answer
+        function selectAnswer(qId, option) {
+            if (submitted) return;
+            
+            answers[qId] = option;
+            updateProgress();
+            
+            // Mark question as attempted in the navigation
+            const index = questions.findIndex(q => q.id === qId);
+            if (index >= 0) {
+                const box = document.getElementById(`box-${index}`);
+                box.classList.add('attempted');
+                box.classList.remove('unattempted');
+            }
+        }
+        
+        // Navigate to previous/next question
+        function prevQuestion() { 
+            if (currentQuestion > 0) showQuestion(currentQuestion - 1); 
+        }
+        
+        function nextQuestion() { 
+            if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1); 
+        }
+        
+        // Switch section
+        function switchSection(sectionId) {
+            if (sectionId === 'all') {
+                showQuestion(0);
+                return;
+            }
+            
+            const section = sections[sectionId];
+            if (section) showQuestion(section.start);
+        }
+        
+        // Toggle language
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'hi' : 'en';
+            applyLanguage();
+        }
+        
+        // Toggle navigation sidebar
+        function toggleNav(show) {
+            const nav = document.getElementById('question-nav');
+            const overlay = document.getElementById('nav-overlay');
+            
+            if (show === undefined) {
+                show = !nav.classList.contains('show');
+            }
+            
+            if (show) {
+                nav.classList.add('show');
+                overlay.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // Update progress
+        function updateProgress() {
+            const attempted = Object.keys(answers).length;
+            document.getElementById('attempted-count').textContent = attempted;
+        }
+        
+        // Start timer
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            let timeLeft = totalTime;
+            
+            const timerInterval = setInterval(() => {
+                if (timeLeft <= 0 || submitted) {
+                    clearInterval(timerInterval);
+                    if (!submitted) submitTest();
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                timeLeft--;
+            }, 1000);
+        }
+        
+        // Confirm before submitting
+        function confirmSubmit() {
+            if (submitted) return;
+            
+            const attempted = Object.keys(answers).length;
+            const remaining = questions.length - attempted;
+            
+            // Create a more modern confirmation dialog
+            const confirmHtml = `
+                <div style="text-align: center; padding: 20px;">
+                    <h4 style="margin-bottom: 16px; color: var(--dark);">Confirm Submission</h4>
+                    <p style="margin-bottom: 24px; color: var(--gray);">
+                        You have attempted ${attempted} of ${questions.length} questions.<br>
+                        ${remaining} questions are unattempted.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 12px;">
+                        <button onclick="this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; border: 1px solid var(--light-gray); background: white; border-radius: 8px; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button onclick="submitTest(); this.closest('.modal').querySelector('.cancel-btn').click()" 
+                            style="padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Submit Test
+                        </button>
+                    </div>
+                </div>`;
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'results-modal show';
+            modal.innerHTML = `
+                <div class="results-card" style="max-width: 400px;">
+                    <button class="cancel-btn" style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--gray);" onclick="this.closest('.results-modal').remove()">
+                        ×
+                    </button>
+                    ${confirmHtml}
+                </div>`;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // Submit test
+        function submitTest() {
+            if (submitted) return;
+            
+            submitted = true;
+            
+            let score = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unattemptedCount = 0;
+            
+            questions.forEach((q, index) => {
+                const userAns = answers[q.id];
+                const box = document.getElementById(`box-${index}`);
+                
+                box.classList.remove('attempted');
+                
+                if (!userAns) {
+                    unattemptedCount++;
+                    box.classList.add('unattempted');
+                } else if (userAns === q.correct) {
+                    correctCount++;
+                    score += q.pos_marks;
+                    box.classList.add('correct');
+                } else {
+                    incorrectCount++;
+                    score -= q.neg_marks;
+                    box.classList.add('incorrect');
+                }
+            });
+            
+            // Update result values
+            document.getElementById('score-value').textContent = score.toFixed(2);
+            document.getElementById('correct-value').textContent = correctCount;
+            document.getElementById('incorrect-value').textContent = incorrectCount;
+            document.getElementById('unattempted-value').textContent = unattemptedCount;
+            
+            // Show the results modal
+            document.getElementById('results-modal').classList.add('show');
+            
+            // Disable submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i>';
+            submitBtn.style.backgroundColor = 'var(--success)';
+            
+            // Refresh current question view to show solution
+            showQuestion(currentQuestion);
+        }
+        
+        // Review test
+        function reviewTest() {
+            document.getElementById('results-modal').classList.remove('show');
+            showQuestion(0);
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('results-modal')) {
+                document.getElementById('results-modal').classList.remove('show');
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') prevQuestion();
+            if (e.key === 'ArrowRight') nextQuestion();
+        });
+    </script>
+</body>
+</html>
